@@ -1,23 +1,15 @@
-
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { categories as categoriesMap } from '../../Arena/categories'
-import { challenges } from '../../Arena/challenges'
+import { categories as categoriesData } from '../../Arena/categories'
+import { challenges as challengesData } from '../../Arena/challenges'
 import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
 
 export default function TasksTab() {
   const { t } = useTranslation()
   const { customChallenges } = useTaskSuggestions()
 
-  // Turn categories object into an array: [{ id: 'fate', labelKey: 'categories.fate' }, ...]
-  const categoryList = useMemo(
-    () =>
-      Object.entries(categoriesMap).map(([id, labelKey]) => ({
-        id,
-        labelKey: String(labelKey),
-      })),
-    []
-  )
+  // Categories is already in the correct format
+  const categoryList = categoriesData
 
   const [selectedCategoryKey, setSelectedCategoryKey] = useState<string>(
     categoryList[0]?.id ?? 'fate'
@@ -25,7 +17,7 @@ export default function TasksTab() {
 
   // Merge builtin challenges with custom ones
   const mergedTasks: string[] = useMemo(() => {
-    const builtin = challenges[selectedCategoryKey] ?? []
+    const builtin = challengesData[selectedCategoryKey] ?? []
     const custom = customChallenges[selectedCategoryKey] ?? []
     return [...builtin, ...custom]
   }, [selectedCategoryKey, customChallenges])
@@ -45,7 +37,7 @@ export default function TasksTab() {
       >
         {categoryList.map((category) => {
           const isActive = selectedCategoryKey === category.id
-          const builtinCount = (challenges[category.id] ?? []).length
+          const builtinCount = (challengesData[category.id] ?? []).length
           const customCount = (customChallenges[category.id] ?? []).length
           const totalCount = builtinCount + customCount
 
@@ -93,12 +85,12 @@ export default function TasksTab() {
       {/* Tasks list */}
       <div>
         <h3 style={{ margin: '0 0 12px', fontSize: '18px' }}>
-          {t(categoryList.find(c => c.id === selectedCategoryKey)?.labelKey || '')} 
+          {t(categoryList.find(c => c.id === selectedCategoryKey)?.labelKey || '')}
           {' '} - {t('menu.tasks.count', { count: mergedTasks.length })}
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {mergedTasks.map((task, index) => {
-            const isCustom = index >= (challenges[selectedCategoryKey]?.length ?? 0)
+            const isCustom = index >= (challengesData[selectedCategoryKey]?.length ?? 0)
             return (
               <div
                 key={index}
@@ -132,11 +124,11 @@ export default function TasksTab() {
             )
           })}
           {mergedTasks.length === 0 && (
-            <div style={{ 
-              padding: '24px', 
-              textAlign: 'center', 
+            <div style={{
+              padding: '24px',
+              textAlign: 'center',
               color: 'rgba(255,255,255,0.6)',
-              fontStyle: 'italic' 
+              fontStyle: 'italic'
             }}>
               Keine Aufgaben in dieser Kategorie
             </div>

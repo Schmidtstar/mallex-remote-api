@@ -1,5 +1,7 @@
 
-export const challenges = {
+import { CategoryId } from './categories'
+
+export const challenges: Record<CategoryId, string[]> = {
   fate: [
     'arena.fate.item1',
     'arena.fate.item2', 
@@ -35,4 +37,4 @@ export const challenges = {
     'arena.shame.item4',
     'arena.shame.item5'
   ]
-} as const;
+}

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { usePlayers } from '../../context/PlayersContext'
 import { categories } from './categories'
+import { challenges } from './challenges'
 
 type RevealState = 'idle' | 'revealing-player' | 'revealing-category' | 'revealing-challenge' | 'complete'
 
@@ -28,16 +29,16 @@ export default function ArenaScreen() {
       setRevealState('revealing-category')
       
       // Select random category
-      const categoryKeys = Object.keys(categories)
-      const randomCategoryKey = categoryKeys[Math.floor(Math.random() * categoryKeys.length)]
-      setSelectedCategory(randomCategoryKey)
+      const randomCategory = categories[Math.floor(Math.random() * categories.length)]
+      setSelectedCategory(randomCategory.id)
       
       setTimeout(() => {
         setRevealState('revealing-challenge')
         
         // Select random challenge from category
-        const challenges = categories[randomCategoryKey as keyof typeof categories]
-        const randomChallenge = challenges[Math.floor(Math.random() * challenges.length)]
+        const categoryTasks = challenges[randomCategory.id]
+        const randomChallengeKey = categoryTasks[Math.floor(Math.random() * categoryTasks.length)]
+        const randomChallenge = t(randomChallengeKey)
         setSelectedChallenge(randomChallenge)
         
         setTimeout(() => {

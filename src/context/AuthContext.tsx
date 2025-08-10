@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react'
+
+import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { getFirebase } from '../lib/firebase'
 
 type User = { uid: string; email?: string | null; isAnonymous: boolean } | null
@@ -7,9 +8,11 @@ type AuthCtx = {
   user: User
   loading: boolean
   mode: 'guest' | 'firebase'
+  error: string | null
   signInEmail: (email: string, password: string) => Promise<void>
   signUpEmail: (email: string, password: string) => Promise<void>
   signInGuest: () => Promise<void>
+  loginAsGuest: () => Promise<void>
   signOutAll: () => Promise<void>
 }
 
@@ -23,6 +26,7 @@ export const useAuth = () => {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [fbMode, setFbMode] = useState<'guest' | 'firebase'>('guest')
 
   useEffect(() => {
@@ -45,29 +49,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsub()
   }, [])
 
+  const loginAsGuest = useCallback(async () => {
+    setError(null)
+    try {
+      const fb = await getFirebase()
+      if (!fb) {
+        // Fallback für lokalen Gastmodus
+        setUser({ uid: 'guest', isAnonymous: true, email: null })
+        return
+      }
+      await fb.signInAnonymously(fb.auth)
+    } catch (e: any) {
+      if (e?.code === 'auth/admin-restricted-operation') {
+        setError('Anonymous Sign-In ist in Firebase nicht aktiviert. Bitte im Firebase-Auth-Panel aktivieren.')
+      } else {
+        setError(e?.message ?? 'Guest login failed')
+      }
+    }
+  }, [])
+
   const api = useMemo<AuthCtx>(() => ({
-    user, loading, mode: fbMode,
+    user, loading, mode: fbMode, error,
     async signInEmail(email, password) {
+      setError(null)
       const fb = await getFirebase()
       if (!fb) throw new Error('Firebase nicht konfiguriert')
       await fb.signInWithEmailAndPassword(fb.auth, email, password)
     },
     async signUpEmail(email, password) {
+      setError(null)
       const fb = await getFirebase()
       if (!fb) throw new Error('Firebase nicht konfiguriert')
       await fb.createUserWithEmailAndPassword(fb.auth, email, password)
     },
     async signInGuest() {
+      setError(null)
       const fb = await getFirebase()
       if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
       await fb.signInAnonymously(fb.auth)
     },
+    loginAsGuest,
     async signOutAll() {
+      setError(null)
       const fb = await getFirebase()
       if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
       await fb.signOut(fb.auth)
     }
-  }), [user, loading, fbMode])
+  }), [user, loading, fbMode, error, loginAsGuest])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

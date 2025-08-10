@@ -1,4 +1,7 @@
+
 import { readFirebaseEnv, hasAuthEnv } from '@/utils/env'
+
+let auth: import('firebase/auth').Auth | null = null
 
 export async function getFirebase(): Promise<{
   app: any
@@ -20,7 +23,7 @@ export async function getFirebase(): Promise<{
     await Promise.all([import('firebase/app'), import('firebase/auth')])
 
   const app = initializeApp(cfg as any)
-  const auth = getAuth(app)
+  auth = getAuth(app)
 
   let analytics: any
   if (cfg.measurementId) {
@@ -32,3 +35,5 @@ export async function getFirebase(): Promise<{
 
   return { app, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, analytics }
 }
+
+export { auth }

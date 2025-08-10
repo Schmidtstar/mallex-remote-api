@@ -58,7 +58,7 @@ export default function MenuScreen() {
         <ActiveComponent />
       </main>
 
-      <style jsx>{`
+      <style>{`
         .menu-screen {
           display: flex;
           flex-direction: column;

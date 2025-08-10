@@ -4,7 +4,11 @@
     "arena": "Arena",
     "legends": "Legends",
     "auth": "Sign In",
-    "language": "Language"
+    "language": "Language",
+    "logout": "Log out",
+    "register": "Register",
+    "accountActions": "Account Actions",
+    "guestActions": "Guest Actions"
   },
   "auth": {
     "title": "Welcome to MALLEX",

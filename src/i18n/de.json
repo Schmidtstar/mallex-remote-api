@@ -4,7 +4,11 @@
     "arena": "Arena",
     "legends": "Legends",
     "auth": "Anmelden",
-    "language": "Sprache"
+    "language": "Sprache",
+    "logout": "Abmelden",
+    "register": "Registrieren",
+    "accountActions": "Konto-Aktionen",
+    "guestActions": "Gast-Aktionen"
   },
   "auth": {
     "title": "Willkommen bei MALLEX",

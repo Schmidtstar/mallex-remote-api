@@ -96,6 +96,26 @@ export default function MenuScreen() {
             <option value="en">English</option>
           </select>
         </div>
+
+        {user && (
+          <div className="card glass">
+            {isAnonymous ? (
+              <div>
+                <h3>{t('menu.guestActions')}</h3>
+                <button onClick={() => nav('/auth')} disabled={busy}>
+                  {t('menu.register')}
+                </button>
+              </div>
+            ) : (
+              <div>
+                <h3>{t('menu.accountActions')}</h3>
+                <button onClick={logout} disabled={busy}>
+                  {busy ? t('actions.loggingOut') : t('menu.logout')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   )

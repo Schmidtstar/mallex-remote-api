@@ -71,4 +71,3 @@ const router = useHash
     })
 
 export { router }
-export { router }

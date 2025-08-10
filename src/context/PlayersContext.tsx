@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
 import { getFirebase } from '../lib/firebase'
@@ -41,7 +40,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
           const firestore = getFirestore(fb.app)
           const docRef = doc(firestore, 'users', user.uid, 'data', 'players')
           const docSnap = await getDoc(docRef)
-          
+
           if (docSnap.exists()) {
             const data = docSnap.data()
             setPlayers(data.players || [])
@@ -49,7 +48,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
           }
         }
       }
-      
+
       // Fallback to localStorage
       const saved = localStorage.getItem('mallex.players')
       if (saved) {
@@ -68,7 +67,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
     try {
       // Always save to localStorage as fallback
       localStorage.setItem('mallex.players', JSON.stringify(players))
-      
+
       // Only save to Firestore for authenticated non-anonymous users
       if (mode === 'firebase' && user && !user.isAnonymous) {
         const fb = await getFirebase()

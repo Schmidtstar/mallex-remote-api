@@ -2,7 +2,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
-export default function SettingsTab() {
+export function SettingsTab() {
   const { t, i18n } = useTranslation()
 
   const changeLanguage = (lng: string) => {

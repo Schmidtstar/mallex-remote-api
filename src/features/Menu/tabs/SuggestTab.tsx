@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { categories } from '../../Arena/categories'
 import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
 
-export default function SuggestTab() {
+export function SuggestTab() {
   const { t } = useTranslation()
   const { addSuggestion } = useTaskSuggestions()
   const [selectedCategory, setSelectedCategory] = useState(categories[0].id)

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { challenges } from '../features/Arena/challenges'
 
@@ -74,15 +73,15 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
 
   const addSuggestion = (categoryId: string, text: string): boolean => {
     const trimmedText = text.trim()
-    
+
     if (trimmedText.length < 8) return false
-    
+
     // Check for duplicates (case-insensitive)
     const isDuplicate = pending.some(s => 
       s.categoryId === categoryId && 
       s.text.toLowerCase() === trimmedText.toLowerCase()
     )
-    
+
     if (isDuplicate) return false
 
     const newSuggestion: Suggestion = {
@@ -124,7 +123,7 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
     const approvedTexts = approved
       .filter(task => task.categoryId === categoryId)
       .map(task => task.text)
-    
+
     return [...baseTasks, ...approvedTexts]
   }
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlayers } from '../../context/PlayersContext'
 
-export default function LegendsScreen() {
+export function LegendsScreen() {
   const { t } = useTranslation()
   const { players, addPlayer, removePlayer } = usePlayers()
   const [newPlayerName, setNewPlayerName] = useState('')

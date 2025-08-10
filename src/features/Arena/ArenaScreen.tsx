@@ -5,7 +5,7 @@ import { usePlayers } from '../../context/PlayersContext'
 import { categories } from './categories'
 import { challenges } from './challenges'
 
-export default function ArenaScreen() {
+export function ArenaScreen() {
   const { t } = useTranslation()
   const { players } = usePlayers()
   const [currentChallenge, setCurrentChallenge] = useState<{

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
 import { categories } from '../../Arena/categories'
 
-export default function AdminTab() {
+export function AdminTab() {
   const { t } = useTranslation()
   const { pending, approve, reject, localAdmin, toggleLocalAdmin } = useTaskSuggestions()
   const [notes, setNotes] = useState<Record<string, string>>({})

@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { menuItems } from '../config/menuItems'
 
-export default function BottomNavigation() {
+export function BottomNavigation() {
   const { t } = useTranslation()
   
   // Get main navigation items (Arena, Legends)

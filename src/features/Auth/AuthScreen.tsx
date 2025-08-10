@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styles from './AuthScreen.module.css'
 
-export default function AuthScreen() {
+export function AuthScreen() {
   const { signInEmail, signUpEmail, loginAsGuest, mode, loading, error } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

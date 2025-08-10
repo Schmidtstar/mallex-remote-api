@@ -1,10 +1,10 @@
 import React from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
-import TabLayout from './layouts/TabLayout'
-import ArenaScreen from './features/Arena/ArenaScreen'
-import LegendsScreen from './features/Legends/LegendsScreen'
-import MenuScreen from './features/Menu/MenuScreen'
-import AuthScreen from './features/Auth/AuthScreen'
+import { TabLayout } from './layouts/TabLayout'
+import { ArenaScreen } from './features/Arena/ArenaScreen'
+import { LegendsScreen } from './features/Legends/LegendsScreen'
+import { MenuScreen } from './features/Menu/MenuScreen'
+import { AuthScreen } from './features/Auth/AuthScreen'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useAuth } from './context/AuthContext'
 
@@ -21,8 +21,8 @@ function withAuth(element: React.ReactNode) {
 }
 
 const routes = [
-  { 
-    path: '/auth', 
+  {
+    path: '/auth',
     element: <AuthScreen />,
     errorElement: <ErrorBoundary><div>Fehler beim Laden der Anmeldung</div></ErrorBoundary>
   },
@@ -31,23 +31,23 @@ const routes = [
     element: withAuth(<TabLayout />),
     errorElement: <ErrorBoundary><div>Fehler beim Laden der App</div></ErrorBoundary>,
     children: [
-      { 
-        index: true, 
+      {
+        index: true,
         element: <ArenaScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
       },
-      { 
-        path: 'arena', 
+      {
+        path: 'arena',
         element: <ArenaScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
       },
-      { 
-        path: 'legends', 
+      {
+        path: 'legends',
         element: <LegendsScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Legenden</div></ErrorBoundary>
       },
-      { 
-        path: 'menu', 
+      {
+        path: 'menu',
         element: <MenuScreen />,
         errorElement: <ErrorBoundary><div>Fehler im Menü</div></ErrorBoundary>
       }
@@ -55,7 +55,7 @@ const routes = [
   }
 ]
 
-export default useHash 
+export default useHash
   ? createHashRouter(routes, {
       future: {
         v7_startTransition: true,

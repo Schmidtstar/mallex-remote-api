@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface UIContextType {
@@ -22,7 +21,7 @@ interface UIProviderProps {
   children: ReactNode;
 }
 
-export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
+export function UIProvider({ children }: UIProviderProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleDrawer = () => setIsDrawerOpen(prev => !prev);

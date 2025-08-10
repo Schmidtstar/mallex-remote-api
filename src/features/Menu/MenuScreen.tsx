@@ -2,11 +2,11 @@ import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdmin } from '../../context/AdminContext'
 import { useTaskSuggestions } from '../../context/TaskSuggestionsContext'
-import ProfileTab from './tabs/ProfileTab'
-import SettingsTab from './tabs/SettingsTab'
-import TasksTab from './tabs/TasksTab'
-import SuggestTab from './tabs/SuggestTab'
-import AdminTab from './tabs/AdminTab'
+import { ProfileTab } from './tabs/ProfileTab'
+import { SettingsTab } from './tabs/SettingsTab'
+import { TasksTab } from './tabs/TasksTab'
+import { SuggestTab } from './tabs/SuggestTab'
+import { AdminTab } from './tabs/AdminTab'
 
 export default function MenuScreen() {
   const { t } = useTranslation();

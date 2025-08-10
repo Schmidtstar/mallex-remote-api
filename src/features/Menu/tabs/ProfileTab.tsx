@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 
-export default function ProfileTab() {
+export function ProfileTab() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()

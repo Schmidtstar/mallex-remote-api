@@ -4,7 +4,6 @@ import { BottomNavigation } from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
-import { AppDrawer } from '../components/AppDrawer'
 
 export function TabLayout() {
   const location = useLocation()
@@ -106,9 +105,6 @@ export function TabLayout() {
           ☰
         </button>
       </div>
-
-      {/* App Drawer */}
-      <AppDrawer />
     </div>
   )
 }

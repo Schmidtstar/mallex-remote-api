@@ -14,6 +14,18 @@ export function MenuScreen() {
   const { localAdmin } = useTaskSuggestions();
   const [activeTab, setActiveTab] = useState<'settings' | 'profile' | 'tasks' | 'suggest' | 'admin' | 'leaderboard' | 'rules' | 'about' | 'dev'>('settings')
 
+  const menuTabs = [
+    { id: 'settings', label: t('menu.tabs.settings'), icon: '⚙️' },
+    { id: 'profile', label: t('menu.tabs.profile'), icon: '👤' },
+    { id: 'tasks', label: t('menu.tabs.tasks'), icon: '✅' },
+    { id: 'suggest', label: t('menu.tabs.suggest'), icon: '💡' },
+    ...(isAdmin ? [{ id: 'admin', label: t('menu.tabs.admin'), icon: '🛠️' }] : []),
+    { id: 'leaderboard', label: t('menu.tabs.leaderboard'), icon: '🏆' },
+    { id: 'rules', label: t('menu.tabs.rules'), icon: '📋' },
+    { id: 'about', label: t('menu.tabs.about'), icon: 'ℹ️' },
+    ...(localAdmin ? [{ id: 'dev', label: t('menu.tabs.dev'), icon: '🔧' }] : [])
+  ]
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'settings':
@@ -54,6 +66,35 @@ export function MenuScreen() {
       margin: '0 auto',
       minHeight: '100vh'
     }}>
+      {/* Tab Navigation */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-around', 
+        marginBottom: '24px',
+        borderBottom: '1px solid var(--border-color)',
+        paddingBottom: '10px'
+      }}>
+        {menuTabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{ 
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              color: activeTab === tab.id ? 'var(--primary)' : 'var(--fg)',
+              fontWeight: activeTab === tab.id ? 'bold' : 'normal'
+            }}
+          >
+            <span style={{ fontSize: '1.5rem' }}>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
       {/* Tab Content */}
       <div>
         {renderTabContent()}

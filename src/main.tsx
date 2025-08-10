@@ -8,19 +8,17 @@ import { AuthProvider } from './context/AuthContext'
 import { AdminProvider } from './context/AdminContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
-import { UIProvider } from './context/UIContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
+
 createRoot(document.getElementById('root')!).render(
   <AuthProvider>
     <AdminProvider>
       <PlayersProvider>
         <TaskSuggestionsProvider>
-          <UIProvider>
-            <RouterProvider router={router} future={{
-              v7_startTransition: true
-            }}
-            />
-          </UIProvider>
+          <RouterProvider router={router} future={{
+            v7_startTransition: true
+          }}
+          />
         </TaskSuggestionsProvider>
       </PlayersProvider>
     </AdminProvider>

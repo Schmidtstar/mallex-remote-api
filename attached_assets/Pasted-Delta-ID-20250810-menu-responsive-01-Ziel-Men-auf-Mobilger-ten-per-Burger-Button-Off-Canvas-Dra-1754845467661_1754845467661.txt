@@ -1,0 +1,53 @@
+Delta-ID: 20250810-menu-responsive-01
+
+Ziel
+
+Menü auf Mobilgeräten per Burger-Button (Off-Canvas Drawer) anzeigen; Tabs nur noch ab Desktop-Breite. Inhalte/Logik bleiben unverändert.
+
+Änderungen (statisch im Code)
+	1.	Neue Komponenten
+	•	src/features/Menu/components/MobileDrawer.tsx
+	•	Props: {open:boolean, onClose:()=>void, items: NavItem[]}
+	•	Animiertes Panel von rechts, Vollhöhe, Blur/Glassmorphism.
+	•	NavItem = { key: string; labelKey: string; icon?: ReactNode; onClick: ()=>void; badge?: ReactNode; visible?: boolean }.
+	•	src/features/Menu/components/BurgerButton.tsx
+	•	Schlichter Icon-Button (☰ / ✕), große Touch-Area.
+	2.	MenuScreen umbauen (responsive)
+	•	Datei: src/features/Menu/MenuScreen.tsx
+	•	Oben rechts Burger-Button nur auf < md (CSS/utility Klassen).
+	•	Beim Klick: MobileDrawer öffnen und folgende Punkte vertikal listen (Bausteine):
+	•	Einstellungen (settings)
+	•	Profil (profile) – zeigt Logout oder „Registrieren/Einloggen“, je nach Auth
+	•	Aufgaben-Manager (tasks)
+	•	Aufgabe vorschlagen (suggest)
+	•	Spieler-Rangliste (leaderboard) – (Platzhalter: später befüllen)
+	•	Spielregeln (rules) – (Platzhalter/Modal/Text)
+	•	Über MALLEX (about)
+	•	Entwickler-Manager (dev) – nur sichtbar, wenn localAdmin aktiv
+	•	Adminbereich (admin) – nur sichtbar, wenn isAdmin
+	•	Tabs beibehalten, aber als Desktop-Navigation: Tabs nur ab md anzeigen; auf Mobil ausblenden.
+	3.	Navigation wiring
+	•	items im MenuScreen aus einer lokalen Liste erzeugen; für jeden Eintrag setActiveTab('settings' | 'profile' | 'tasks' | 'suggest' | 'admin' | 'leaderboard' | 'rules' | 'about' | 'dev').
+	•	Drawer schließt nach Auswahl (onClick ➜ setActiveTab(...); setOpen(false)).
+	4.	i18n
+	•	Prüfen/ergänzen in src/i18n/{de,en}.json unter menu.tabs (falls Keys fehlen):
+leaderboard, rules, about, plus optional openMenu, closeMenu für ARIA.
+	•	Bestehende Keys nicht umbenennen.
+	5.	Styles
+	•	Keine neuen Libraries.
+	•	Drawer: fixed right, width: 85vw (max 420px), backdrop-filter: blur(10px), softer Shadow, große Listenelemente (min-tap 44px).
+
+Akzeptanzkriterien
+	•	Auf Mobil (< md): Tabs sind unsichtbar, stattdessen Burger-Button oben rechts.
+Beim Tippen öffnet ein Off-Canvas-Menü mit allen Punkten (inkl. bedingter Sichtbarkeit).
+	•	Auf Desktop (≥ md): Tabs wie bisher sichtbar; Burger-Button & Drawer nicht sichtbar.
+	•	Keine neuen Console-Errors/Warnings.
+	•	Keine Änderung an Arena/Legends-Logik.
+	•	Admin/Dev-Einträge erscheinen nur, wenn Berechtigung/Flag gesetzt.
+
+Dateien
+	•	src/features/Menu/MenuScreen.tsx (anpassen)
+	•	src/features/Menu/components/MobileDrawer.tsx (neu)
+	•	src/features/Menu/components/BurgerButton.tsx (neu)
+	•	src/i18n/de.json, src/i18n/en.json (nur Keys ergänzen, falls fehlen)
+	•	Optional: kleine Ergänzung in src/styles/tokens.css (Z-Index/Overlay-Color)

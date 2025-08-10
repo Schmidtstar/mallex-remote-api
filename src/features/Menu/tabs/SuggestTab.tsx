@@ -1,166 +1,116 @@
-
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { categories } from '../../Arena/categories';
-import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext';
+// src/features/Menu/tabs/SuggestTab.tsx
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { categories } from "@/features/Arena/categories";
+import { useTaskSuggestions } from "@/features/Menu/context/TaskSuggestionsContext";
 
 export default function SuggestTab() {
   const { t } = useTranslation();
-  const { addSuggestion } = useTaskSuggestions();
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [taskText, setTaskText] = useState('');
-  const [showThanks, setShowThanks] = useState(false);
+  const { addSuggestion } = useTaskSuggestions(); // <- existierende API
+  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.id ?? "fate");
+  const [taskText, setTaskText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    
-    if (!selectedCategory || !taskText.trim()) {
+    setError(null);
+    const text = taskText.trim();
+    if (!text) {
+      setError(t("menu.suggest.placeholder")); // simple client validation
       return;
     }
-
-    await addSuggestion(selectedCategory, taskText.trim());
-
-    // Reset form and show thanks
-    setSelectedCategory('');
-    setTaskText('');
-    setShowThanks(true);
-    
-    // Hide thanks after 3 seconds
-    setTimeout(() => setShowThanks(false), 3000);
+    try {
+      setSubmitting(true);
+      await addSuggestion(selectedCategory, text); // <- await nur hier
+      setSent(true);
+      setTaskText("");
+      // optional: nach kurzer Zeit das "Danke" wieder ausblenden
+      setTimeout(() => setSent(false), 2500);
+    } catch (err) {
+      setError((err as Error)?.message ?? "Failed to submit");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="suggest-tab">
-      <h2>{t('menu.suggest.title')}</h2>
-      
-      {showThanks && (
-        <div className="thanks-message">
-          {t('menu.suggest.thanks')}
-        </div>
-      )}
+    <div style={{ display: "grid", gap: 16 }}>
+      <h2 style={{ margin: 0 }}>{t("menu.suggest.title")}</h2>
 
-      <form onSubmit={handleSubmit} className="suggest-form">
-        <div className="form-group">
-          <label htmlFor="category-select">
-            {t('menu.suggest.choose')}
-          </label>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
+        {/* Kategorie-Auswahl */}
+        <label style={{ display: "grid", gap: 6 }}>
+          <span style={{ opacity: 0.9 }}>{t("menu.suggest.choose")}</span>
           <select
-            id="category-select"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            required
+            style={{
+              padding: "10px 12px",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.25)",
+              background: "rgba(255,255,255,0.06)",
+              color: "inherit",
+            }}
           >
-            <option value="">{t('menu.suggest.choose')}</option>
-            {categories.map(category => (
-              <option key={category.id} value={category.id}>
-                {t(category.labelKey)}
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {t(c.labelKey)}
               </option>
             ))}
           </select>
-        </div>
+        </label>
 
-        <div className="form-group">
-          <label htmlFor="task-text">
-            {t('menu.suggest.title')}
-          </label>
+        {/* Textfeld */}
+        <label style={{ display: "grid", gap: 6 }}>
+          <span style={{ opacity: 0.9 }}>{t("menu.suggest.placeholder")}</span>
           <textarea
-            id="task-text"
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            placeholder={t('menu.suggest.placeholder')}
-            rows={4}
-            required
+            rows={3}
+            placeholder={t("menu.suggest.placeholder")}
+            style={{
+              padding: "12px",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.25)",
+              background: "rgba(255,255,255,0.06)",
+              color: "inherit",
+              resize: "vertical",
+            }}
           />
-        </div>
+        </label>
 
-        <button type="submit" className="submit-button">
-          {t('menu.suggest.submit')}
+        {/* Status / Fehler */}
+        {error && (
+          <div style={{ fontSize: 14, color: "#ffb4b4" }}>
+            {error}
+          </div>
+        )}
+        {sent && (
+          <div style={{ fontSize: 14, opacity: 0.9 }}>
+            {t("menu.suggest.thanks")}
+          </div>
+        )}
+
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={submitting}
+          style={{
+            padding: "12px 14px",
+            borderRadius: 14,
+            border: "1px solid rgba(255,255,255,0.25)",
+            background: "linear-gradient(135deg, rgba(255,96,96,0.85), rgba(255,128,64,0.85))",
+            color: "white",
+            fontWeight: 700,
+            cursor: submitting ? "default" : "pointer",
+            opacity: submitting ? 0.7 : 1,
+          }}
+        >
+          {t("menu.suggest.submit")}
         </button>
       </form>
-
-      <style jsx>{`
-        .suggest-tab {
-          max-width: 500px;
-        }
-
-        .suggest-tab h2 {
-          margin-bottom: 1.5rem;
-          color: var(--text-primary, #333);
-        }
-
-        .thanks-message {
-          background: var(--success-color, #28a745);
-          color: white;
-          padding: 0.75rem 1rem;
-          border-radius: 6px;
-          margin-bottom: 1rem;
-          animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .suggest-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .form-group label {
-          font-weight: 600;
-          color: var(--text-primary, #333);
-        }
-
-        .form-group select,
-        .form-group textarea {
-          padding: 0.75rem;
-          border: 1px solid var(--border-color, #ddd);
-          border-radius: 6px;
-          font-size: 1rem;
-          transition: border-color 0.2s ease;
-        }
-
-        .form-group select:focus,
-        .form-group textarea:focus {
-          outline: none;
-          border-color: var(--primary-color, #007bff);
-          box-shadow: 0 0 0 2px var(--primary-color-light, #007bff33);
-        }
-
-        .form-group textarea {
-          resize: vertical;
-          min-height: 100px;
-        }
-
-        .submit-button {
-          padding: 0.875rem 1.5rem;
-          background: var(--primary-color, #007bff);
-          color: white;
-          border: none;
-          border-radius: 6px;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-        }
-
-        .submit-button:hover {
-          background: var(--primary-color-dark, #0056b3);
-        }
-
-        .submit-button:disabled {
-          background: var(--disabled-color, #6c757d);
-          cursor: not-allowed;
-        }
-      `}</style>
     </div>
   );
 }

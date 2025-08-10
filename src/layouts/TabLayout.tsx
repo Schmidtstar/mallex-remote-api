@@ -4,7 +4,6 @@ import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
-import styles from './TabLayout.module.css'
 
 const tabs = ['/arena','/legends','/menu']
 
@@ -45,10 +44,19 @@ export default function TabLayout() {
   })
 
   return (
-    <div {...swipeHandlers} className={styles.container}>
+    <div 
+      {...swipeHandlers} 
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--bg)',
+        color: 'var(--fg)'
+      }}
+    >
       <main 
-        className={styles.main}
         style={{
+          flex: 1,
           opacity: isTransitioning ? 0.7 : 1,
           transform: isTransitioning ? 'scale(0.98)' : 'scale(1)',
           transition: 'all 0.15s ease-out'

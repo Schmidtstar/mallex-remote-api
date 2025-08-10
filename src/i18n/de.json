@@ -83,6 +83,46 @@
       "item5": "Was würdest du niemals zugeben?"
     }
   },
+  "menu": {
+    "tabs": {
+      "settings": "Einstellungen",
+      "profile": "Profil", 
+      "tasks": "Aufgaben",
+      "suggest": "Vorschlagen",
+      "admin": "Admin"
+    },
+    "profile": {
+      "guest": "Gast",
+      "loginCta": "Registrieren / Einloggen",
+      "logout": "Abmelden",
+      "admin": "Admin"
+    },
+    "tasks": {
+      "title": "Aufgaben",
+      "count": "{count} Aufgaben"
+    },
+    "suggest": {
+      "title": "Aufgabe vorschlagen",
+      "choose": "Kategorie wählen",
+      "placeholder": "Formuliere deine Aufgabe...",
+      "submit": "Senden",
+      "thanks": "Danke! Deine Aufgabe wird geprüft."
+    },
+    "admin": {
+      "title": "Adminbereich",
+      "pending": "Offene Vorschläge",
+      "approve": "Freigeben",
+      "reject": "Ablehnen", 
+      "note": "Notiz (optional)",
+      "custom": "Eigene Aufgaben",
+      "add": "Hinzufügen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "hide": "Ausblenden",
+      "unhide": "Einblenden",
+      "localBadge": "Lokaler Admin-Modus"
+    }
+  },
   "categories": {
     "fate": "Schicksal",
     "seduce": "Verführung",

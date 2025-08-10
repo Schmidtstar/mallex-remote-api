@@ -1,113 +1,67 @@
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useAdmin } from '../../context/AdminContext'
 
-// src/features/Menu/MenuScreen.tsx
-import React, { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { categories as categoriesMap } from '../Arena/categories';
-import { challenges } from '../Arena/challenges';
+import SettingsTab from './tabs/SettingsTab'
+import ProfileTab from './tabs/ProfileTab'
+import TasksTab from './tabs/TasksTab'
+import SuggestTab from './tabs/SuggestTab'
+import AdminTab from './tabs/AdminTab'
+
+type TabKey = 'settings' | 'profile' | 'tasks' | 'suggest' | 'admin'
 
 export default function MenuScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
+  const { isAdmin } = useAdmin()
+  const [activeTab, setActiveTab] = useState<TabKey>('profile')
 
-  // Turn categories object into an array: [{ id: 'fate', labelKey: 'categories.fate' }, ...]
-  const categoryList = useMemo(
-    () =>
-      Object.entries(categoriesMap).map(([id, labelKey]) => ({
-        id,
-        labelKey: String(labelKey),
-      })),
-    []
-  );
+  const tabs: Array<{ key: TabKey; label: string; component: React.ReactNode; adminOnly?: boolean }> = [
+    { key: 'settings', label: t('menu.tabs.settings'), component: <SettingsTab /> },
+    { key: 'profile', label: t('menu.tabs.profile'), component: <ProfileTab /> },
+    { key: 'tasks', label: t('menu.tabs.tasks'), component: <TasksTab /> },
+    { key: 'suggest', label: t('menu.tabs.suggest'), component: <SuggestTab /> },
+    { key: 'admin', label: t('menu.tabs.admin'), component: <AdminTab />, adminOnly: true },
+  ]
 
-  const [selectedCategoryKey, setSelectedCategoryKey] = useState<string>(
-    categoryList[0]?.id ?? ''
-  );
-
-  const tasks: string[] = challenges[selectedCategoryKey] ?? [];
+  const visibleTabs = tabs.filter(tab => !tab.adminOnly || isAdmin)
 
   return (
-    <div style={{ padding: '16px', display: 'grid', gap: 16 }}>
-      {/* Category selector */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 8,
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}
-      >
-        {categoryList.map((category) => {
-          const isActive = selectedCategoryKey === category.id;
-          const count = (challenges[category.id] ?? []).length;
-
-          return (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategoryKey(category.id)}
-              style={{
-                padding: '10px 14px',
-                backgroundColor: isActive ? '#4CAF50' : 'rgba(255,255,255,0.18)',
-                color: '#fff',
-                border: isActive
-                  ? '2px solid #4CAF50'
-                  : '2px solid rgba(255,255,255,0.28)',
-                borderRadius: 24,
-                cursor: 'pointer',
-                fontSize: 14,
-                fontWeight: isActive ? 700 : 500,
-                backdropFilter: 'blur(8px)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                transition: 'all .2s ease',
-              }}
-            >
-              <span>{t(category.labelKey) || category.labelKey}</span>
-              <span
-                style={{
-                  backgroundColor: isActive
-                    ? 'rgba(255,255,255,0.3)'
-                    : 'rgba(255,255,255,0.35)',
-                  padding: '2px 6px',
-                  borderRadius: 12,
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-              >
-                {count}
-              </span>
-            </button>
-          );
-        })}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Tab navigation */}
+      <div style={{
+        display: 'flex',
+        backgroundColor: 'var(--glass)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid var(--stroke)',
+        overflowX: 'auto'
+      }}>
+        {visibleTabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              flex: '1 1 auto',
+              minWidth: 'fit-content',
+              padding: '12px 16px',
+              backgroundColor: activeTab === tab.key ? 'var(--primary)' : 'transparent',
+              color: activeTab === tab.key ? 'var(--bg)' : 'var(--fg)',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: activeTab === tab.key ? 600 : 400,
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Tasks list for active category */}
-      <div
-        style={{
-          backgroundColor: 'rgba(255,255,255,0.1)',
-          borderRadius: 12,
-          padding: 16,
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.18)',
-        }}
-      >
-        <h3 style={{ margin: '0 0 12px 0' }}>
-          {t(categoriesMap[selectedCategoryKey] || '') ||
-            selectedCategoryKey ||
-            '—'}
-        </h3>
-
-        {tasks.length === 0 ? (
-          <div style={{ opacity: 0.8 }}>{t('menu.noTasks') || 'No tasks'}</div>
-        ) : (
-          <ul style={{ margin: 0, paddingLeft: 18, display: 'grid', gap: 8 }}>
-            {tasks.map((key) => (
-              <li key={key} style={{ lineHeight: 1.4 }}>
-                {t(key) || key}
-              </li>
-            ))}
-          </ul>
-        )}
+      {/* Tab content */}
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        {visibleTabs.find(tab => tab.key === activeTab)?.component}
       </div>
     </div>
-  );
+  )
 }

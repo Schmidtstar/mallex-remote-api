@@ -95,6 +95,46 @@
     "pflicht": "Dare",
     "mixed": "Mixed"
   },
+  "menu": {
+    "tabs": {
+      "settings": "Settings",
+      "profile": "Profile", 
+      "tasks": "Tasks",
+      "suggest": "Suggest",
+      "admin": "Admin"
+    },
+    "profile": {
+      "guest": "Guest",
+      "loginCta": "Sign Up / Login",
+      "logout": "Logout",
+      "admin": "Admin"
+    },
+    "tasks": {
+      "title": "Tasks",
+      "count": "{count} Tasks"
+    },
+    "suggest": {
+      "title": "Suggest Task",
+      "choose": "Choose Category",
+      "placeholder": "Formulate your task...",
+      "submit": "Submit",
+      "thanks": "Thank you! Your task will be reviewed."
+    },
+    "admin": {
+      "title": "Admin Area",
+      "pending": "Pending Suggestions",
+      "approve": "Approve",
+      "reject": "Reject", 
+      "note": "Note (optional)",
+      "custom": "Custom Tasks",
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "hide": "Hide",
+      "unhide": "Show",
+      "localBadge": "Local Admin Mode"
+    }
+  },
   "fate": {
     "item1": "Choose a person to drink 2 sips.",
     "item2": "Everyone wearing red drinks 1 sip.",

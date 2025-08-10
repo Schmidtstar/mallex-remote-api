@@ -56,5 +56,15 @@ const routes = [
 ]
 
 export default useHash 
-  ? createHashRouter(routes)
-  : createBrowserRouter(routes)
+  ? createHashRouter(routes, {
+      future: {
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }
+    })
+  : createBrowserRouter(routes, {
+      future: {
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }
+    })

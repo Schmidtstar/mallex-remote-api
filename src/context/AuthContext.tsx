@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { getFirebase } from '@/lib/firebase'
 
 type User = { uid: string; email?: string | null; isAnonymous: boolean } | null

@@ -208,7 +208,6 @@ const styles = {
   },
   categoryButton: {
     padding: '0.75rem',
-    border: 'none',
     borderRadius: '12px',
     background: 'rgba(255,255,255,0.1)',
     backdropFilter: 'blur(10px)',

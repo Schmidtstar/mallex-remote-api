@@ -83,5 +83,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children
   }
 }
-
-export { ErrorBoundary }

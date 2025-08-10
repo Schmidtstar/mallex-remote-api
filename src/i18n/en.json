@@ -24,28 +24,51 @@
   },
   "arena": {
     "title": "Arena",
-    "tip": "Tip: Swipe over the card to get the next challenge.",
+    "selectCategory": "Select Category:",
     "new": "New Challenge",
-    "swipeForNext": "Swipe for next card",
-    "selectCategory": "Select Category",
-    "generateChallenge": "New Challenge",
-    "noChallenge": "Choose a category and generate your first challenge!",
-    "enableTimer": "Enable Timer (30s)"
+    "tip": "Swipe or tap for new challenge",
+    "enableTimer": "Enable Timer (30s)",
+    "history": "Recent Challenges",
+    "fate": {
+      "item1": "Anyone with an even birthday drinks 1 sip.",
+      "item2": "Roll your fate: draw one more challenge.",
+      "item3": "Person to your left drinks 2 sips."
+    },
+    "seduce": {
+      "item1": "Whisper a compliment.",
+      "item2": "Hold eye contact for 10 seconds.",
+      "item3": "Send a heart emoji to a player."
+    },
+    "confess": {
+      "item1": "Confess an awkward autocorrect.",
+      "item2": "Confess a bad habit.",
+      "item3": "Who did you last stalk online?"
+    },
+    "escalate": {
+      "item1": "Everyone drinks 1, you drink 2.",
+      "item2": "Swap seats with anyone.",
+      "item3": "Accept the next challenge instantly."
+    },
+    "shame": {
+      "item1": "Show your oldest phone photo (if ok) — else drink 2.",
+      "item2": "Read your last sent message (if ok) — else drink 2.",
+      "item3": "Hold a silly pose for one round."
+    }
   },
   "categories": {
     "fate": "Fate",
-    "truth": "Truth",
-    "dare": "Dare",
-    "daredevil": "Daredevil",
-    "funny": "Funny",
-    "mythology": "Mythology",
-    "sports": "Sports",
-    "creativity": "Creativity"
+    "seduce": "Seduce",
+    "confess": "Confess",
+    "escalate": "Escalate",
+    "shame": "Shame",
+    "wahrheit": "Truth",
+    "pflicht": "Dare",
+    "mixed": "Mixed"
   },
   "fate": {
     "item1": "Choose a person to drink 2 sips.",
     "item2": "Everyone wearing red drinks 1 sip.",
-    "item3": "The person to your left drinks 3 sips.",
+    "item3": "The person to your right drinks 3 sips.",
     "item4": "All men drink 2 sips.",
     "item5": "The youngest person drinks 1 sip."
   },

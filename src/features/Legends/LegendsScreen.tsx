@@ -50,7 +50,7 @@ export default function LegendsScreen() {
             {history.map((entry, index) => (
               <div key={index} style={styles.historyCard}>
                 <div style={styles.categoryBadge}>
-                  {t(`categories.${entry.category}`)}
+                  {t(`categories.${entry.category}`, entry.category)}
                 </div>
                 <p style={styles.challengeText}>{entry.challenge}</p>
                 <span style={styles.timeStamp}>

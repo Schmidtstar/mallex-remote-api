@@ -24,23 +24,46 @@
   },
   "arena": {
     "title": "Arena",
-    "tip": "Tipp: Streiche über die Karte, um zur nächsten Herausforderung zu wechseln.",
-    "new": "Neue Herausforderung",
-    "swipeForNext": "Wische für nächste Karte",
-    "selectCategory": "Kategorie wählen",
-    "generateChallenge": "Neue Herausforderung",
-    "noChallenge": "Wähle eine Kategorie und generiere deine erste Herausforderung!",
-    "enableTimer": "Timer aktivieren (30s)"
+    "selectCategory": "Kategorie wählen:",
+    "new": "Neue Challenge",
+    "tip": "Swipe oder tippe für neue Challenge",
+    "enableTimer": "Timer aktivieren (30s)",
+    "history": "Letzte Challenges",
+    "fate": {
+      "item1": "Alle mit gerader Geburtstagszahl trinken 1 Schluck.",
+      "item2": "Würfle dein Schicksal: Ziehe eine zweite Challenge.",
+      "item3": "Die Person links von dir trinkt 2 Schlucke."
+    },
+    "seduce": {
+      "item1": "Flüstere jemandem ein Kompliment ins Ohr.",
+      "item2": "Halte 10 Sekunden lang intensiven Augenkontakt.",
+      "item3": "Schicke einem Mitspieler ein Herz-Emoji."
+    },
+    "confess": {
+      "item1": "Gestehe eine peinliche Chat-Autokorrektur.",
+      "item2": "Beichte eine schlechte Angewohnheit.",
+      "item3": "Wen hast du zuletzt gestalkt?"
+    },
+    "escalate": {
+      "item1": "Alle trinken 1, du 2.",
+      "item2": "Wechsle Sitzplatz mit einer Person nach Wahl.",
+      "item3": "Nimm die nächste Challenge sofort an – ohne zu lesen."
+    },
+    "shame": {
+      "item1": "Zeige dein ältestes Foto im Handy (wenn okay) – sonst trink 2.",
+      "item2": "Lies die letzte gesendete Nachricht vor (wenn okay) – sonst trink 2.",
+      "item3": "Trage für 1 Runde eine lustige Pose."
+    }
   },
   "categories": {
     "fate": "Schicksal",
-    "truth": "Wahrheit",
-    "dare": "Mutprobe",
-    "daredevil": "Waghalsig",
-    "funny": "Lustig",
-    "mythology": "Mythologie",
-    "sports": "Sport",
-    "creativity": "Kreativität"
+    "seduce": "Verführung",
+    "confess": "Beichte",
+    "escalate": "Eskalation",
+    "shame": "Schande",
+    "wahrheit": "Wahrheit",
+    "pflicht": "Pflicht",
+    "mixed": "Mixed"
   },
   "fate": {
     "item1": "Wähle eine Person, die 2 Schluck trinkt.",

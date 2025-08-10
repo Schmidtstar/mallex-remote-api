@@ -21,8 +21,8 @@ export default function ArenaScreen() {
   const { t } = useTranslation()
   const categories = useCategories()
 
-  const [catId, setCatId] = useState(categories[0].id)
-  const current = useMemo(() => categories.find(c => c.id === catId)!, [catId, categories])
+  const [catId, setCatId] = useState('fate')
+  const current = useMemo(() => categories.find(c => c.id === catId) || categories[0], [catId, categories])
   const [item, setItem] = useState(() => pick(current.items))
 
   // New states for timer and history
@@ -161,7 +161,7 @@ export default function ArenaScreen() {
         </div>
 
         <div className="card glass" style={styles.challengeCard} {...swipe}>
-          <p style={{ minHeight: 64, display:'flex', alignItems:'center' }}>{item}</p>
+          <p style={{ minHeight: 64, display:'flex', alignItems:'center' }}>{t(item)}</p>
           <small style={{opacity:.7}}>{t('arena.tip')}</small>
         </div>
 

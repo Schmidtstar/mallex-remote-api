@@ -1,47 +1,50 @@
-import { useTranslation } from 'react-i18next';
 
 export interface Category {
-  id: string;
-  name: string;
-  items: string[];
+  id: string
+  items: string[]
 }
 
-export const useCategories = (): Category[] => {
-  const { t } = useTranslation();
-
+export function useCategories(): Category[] {
   return [
     {
       id: 'fate',
-      name: t('arena.categories.fate'),
       items: [
-        t('arena.fate.item1'),
-        t('arena.fate.item2'),
-        t('arena.fate.item3'),
-        t('arena.fate.item4'),
-        t('arena.fate.item5')
+        'arena.fate.item1',
+        'arena.fate.item2',
+        'arena.fate.item3'
       ]
     },
     {
-      id: 'truth',
-      name: t('arena.categories.truth'),
+      id: 'seduce',
       items: [
-        t('arena.truth.item1'),
-        t('arena.truth.item2'),
-        t('arena.truth.item3'),
-        t('arena.truth.item4'),
-        t('arena.truth.item5')
+        'arena.seduce.item1',
+        'arena.seduce.item2',
+        'arena.seduce.item3'
       ]
     },
     {
-      id: 'dare',
-      name: t('arena.categories.dare'),
+      id: 'confess',
       items: [
-        t('arena.dare.item1'),
-        t('arena.dare.item2'),
-        t('arena.dare.item3'),
-        t('arena.dare.item4'),
-        t('arena.dare.item5')
+        'arena.confess.item1',
+        'arena.confess.item2',
+        'arena.confess.item3'
+      ]
+    },
+    {
+      id: 'escalate',
+      items: [
+        'arena.escalate.item1',
+        'arena.escalate.item2',
+        'arena.escalate.item3'
+      ]
+    },
+    {
+      id: 'shame',
+      items: [
+        'arena.shame.item1',
+        'arena.shame.item2',
+        'arena.shame.item3'
       ]
     }
-  ];
-};
+  ]
+}

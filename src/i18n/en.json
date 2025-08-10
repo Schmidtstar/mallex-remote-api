@@ -101,7 +101,10 @@
       "profile": "Profile", 
       "tasks": "Tasks",
       "suggest": "Suggest",
-      "admin": "Admin"
+      "admin": "Admin",
+      "rules": "Rules",
+      "about": "About MALLEX",
+      "ranklist": "Player Ranking"
     },
     "profile": {
       "guest": "Guest",

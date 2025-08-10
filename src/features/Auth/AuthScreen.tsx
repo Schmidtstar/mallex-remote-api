@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import styles from './AuthScreen.module.css'
 
 export default function AuthScreen() {

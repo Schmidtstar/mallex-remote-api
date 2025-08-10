@@ -7,65 +7,12 @@ import SettingsTab from './tabs/SettingsTab'
 import TasksTab from './tabs/TasksTab'
 import SuggestTab from './tabs/SuggestTab'
 import AdminTab from './tabs/AdminTab'
-import BurgerButton from './components/BurgerButton'
-import MobileDrawer, { NavItem } from './components/MobileDrawer'
 
 export default function MenuScreen() {
   const { t } = useTranslation();
   const { isAdmin } = useAdmin();
   const { localAdmin } = useTaskSuggestions();
   const [activeTab, setActiveTab] = useState<'settings' | 'profile' | 'tasks' | 'suggest' | 'admin' | 'leaderboard' | 'rules' | 'about' | 'dev'>('settings')
-  const [drawerOpen, setDrawerOpen] = useState(false)
-
-  const navItems: NavItem[] = useMemo(() => [
-    {
-      key: 'settings',
-      labelKey: 'menu.tabs.settings',
-      onClick: () => { setActiveTab('settings'); setDrawerOpen(false) }
-    },
-    {
-      key: 'profile',
-      labelKey: 'menu.tabs.profile',
-      onClick: () => { setActiveTab('profile'); setDrawerOpen(false) }
-    },
-    {
-      key: 'tasks',
-      labelKey: 'menu.tabs.tasks',
-      onClick: () => { setActiveTab('tasks'); setDrawerOpen(false) }
-    },
-    {
-      key: 'suggest',
-      labelKey: 'menu.tabs.suggest',
-      onClick: () => { setActiveTab('suggest'); setDrawerOpen(false) }
-    },
-    {
-      key: 'leaderboard',
-      labelKey: 'menu.tabs.leaderboard',
-      onClick: () => { setActiveTab('leaderboard'); setDrawerOpen(false) }
-    },
-    {
-      key: 'rules',
-      labelKey: 'menu.tabs.rules',
-      onClick: () => { setActiveTab('rules'); setDrawerOpen(false) }
-    },
-    {
-      key: 'about',
-      labelKey: 'menu.tabs.about',
-      onClick: () => { setActiveTab('about'); setDrawerOpen(false) }
-    },
-    {
-      key: 'dev',
-      labelKey: 'menu.tabs.dev',
-      onClick: () => { setActiveTab('dev'); setDrawerOpen(false) },
-      visible: localAdmin
-    },
-    {
-      key: 'admin',
-      labelKey: 'menu.tabs.admin',
-      onClick: () => { setActiveTab('admin'); setDrawerOpen(false) },
-      visible: isAdmin
-    }
-  ], [isAdmin, localAdmin])
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -107,37 +54,14 @@ export default function MenuScreen() {
       margin: '0 auto',
       minHeight: '100vh'
     }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+      <h1 style={{ 
+        fontSize: '2rem', 
+        color: 'var(--fg)',
+        margin: 0,
         marginBottom: '2rem'
       }}>
-        <h1 style={{ 
-          fontSize: '2rem', 
-          color: 'var(--fg)',
-          margin: 0
-        }}>
-          {t('menu.title', 'Menü')}
-        </h1>
-
-        {/* Mobile Burger Button */}
-        <div>
-          <BurgerButton 
-            isOpen={drawerOpen}
-            onClick={() => setDrawerOpen(!drawerOpen)}
-          />
-        </div>
-      </div>
-
-      
-
-      {/* Mobile Drawer */}
-      <MobileDrawer 
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        items={navItems}
-      />
+        {t('menu.title') || 'Menü'}
+      </h1>
 
       {/* Tab Content */}
       <div>

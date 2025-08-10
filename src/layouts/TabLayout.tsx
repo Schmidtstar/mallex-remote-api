@@ -6,17 +6,13 @@ import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import BurgerButton from '../features/Menu/components/BurgerButton'
-import MobileDrawer, { NavItem } from '../features/Menu/components/MobileDrawer'
-import { useAdmin } from '../context/AdminContext'
-import { useTaskSuggestions } from '../context/TaskSuggestionsContext'
+import MobileDrawer from '../features/Menu/components/MobileDrawer'
 
 export default function TabLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { t } = useTranslation()
-  const { isAdmin } = useAdmin()
-  const { localAdmin } = useTaskSuggestions()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const tabs = [
@@ -51,34 +47,7 @@ export default function TabLayout() {
     }
   })
 
-  const navItems: NavItem[] = [
-    {
-      key: 'settings',
-      labelKey: 'menu.tabs.settings',
-      onClick: () => { navigate('/menu'); setDrawerOpen(false) }
-    },
-    {
-      key: 'profile',
-      labelKey: 'menu.tabs.profile',
-      onClick: () => { navigate('/menu'); setDrawerOpen(false) }
-    },
-    {
-      key: 'tasks',
-      labelKey: 'menu.tabs.tasks',
-      onClick: () => { navigate('/menu'); setDrawerOpen(false) }
-    },
-    {
-      key: 'suggest',
-      labelKey: 'menu.tabs.suggest',
-      onClick: () => { navigate('/menu'); setDrawerOpen(false) }
-    },
-    {
-      key: 'admin',
-      labelKey: 'menu.tabs.admin',
-      onClick: () => { navigate('/menu'); setDrawerOpen(false) },
-      visible: isAdmin || localAdmin
-    }
-  ]
+  
 
   return (
     <div style={{ 
@@ -134,7 +103,6 @@ export default function TabLayout() {
       <MobileDrawer 
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        items={navItems}
       />
     </div>
   )

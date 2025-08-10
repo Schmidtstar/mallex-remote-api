@@ -1,27 +1,30 @@
 
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import styles from './MobileDrawer.module.css'
-
-export interface NavItem {
-  key: string
-  labelKey: string
-  icon?: React.ReactNode
-  onClick: () => void
-  badge?: React.ReactNode
-  visible?: boolean
-}
+import { MENU_ITEMS } from '../menuItems'
+import { useAdmin } from '../../../context/AdminContext'
+import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
 
 interface MobileDrawerProps {
   open: boolean
   onClose: () => void
-  items: NavItem[]
 }
 
-export default function MobileDrawer({ open, onClose, items }: MobileDrawerProps) {
-  const { t } = useTranslation()
+export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
+  const { t, ready } = useTranslation()
+  const navigate = useNavigate()
+  const { isAdmin } = useAdmin()
+  const { localAdmin } = useTaskSuggestions()
 
   if (!open) return null
+  if (!ready) return null
+
+  const handleItemClick = (to: string) => {
+    navigate(to)
+    onClose()
+  }
 
   return (
     <>
@@ -29,19 +32,37 @@ export default function MobileDrawer({ open, onClose, items }: MobileDrawerProps
       <div className={`${styles.drawer} ${open ? styles.open : ''}`}>
         <div className={styles.content}>
           <nav className={styles.nav}>
-            {items
-              .filter(item => item.visible !== false)
-              .map(item => (
-                <button
-                  key={item.key}
-                  className={styles.navItem}
-                  onClick={item.onClick}
-                >
-                  {item.icon && <span className={styles.icon}>{item.icon}</span>}
-                  <span className={styles.label}>{t(item.labelKey)}</span>
-                  {item.badge && <span className={styles.badge}>{item.badge}</span>}
-                </button>
-              ))}
+            {MENU_ITEMS.map(item => (
+              <button
+                key={item.id}
+                className={styles.navItem}
+                onClick={() => handleItemClick(item.to)}
+              >
+                <span className={styles.icon}>{item.icon}</span>
+                <span className={styles.label}>{t(item.labelKey) || item.fallbackLabel}</span>
+              </button>
+            ))}
+            {/* Admin items */}
+            {localAdmin && (
+              <button
+                key="dev"
+                className={styles.navItem}
+                onClick={() => handleItemClick('/menu?tab=dev')}
+              >
+                <span className={styles.icon}>🔧</span>
+                <span className={styles.label}>{t('menu.tabs.dev') || 'Entwickler'}</span>
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                key="admin"
+                className={styles.navItem}
+                onClick={() => handleItemClick('/menu?tab=admin')}
+              >
+                <span className={styles.icon}>👑</span>
+                <span className={styles.label}>{t('menu.tabs.admin') || 'Admin'}</span>
+              </button>
+            )}
           </nav>
         </div>
       </div>

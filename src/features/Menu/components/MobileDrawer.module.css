@@ -3,35 +3,35 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  backdrop-filter: blur(4px);
 }
 
 .drawer {
   position: fixed;
   top: 0;
-  right: 0;
-  bottom: 0;
+  right: -100%;
   width: 85vw;
   max-width: 420px;
-  background: var(--glass);
+  height: 100vh;
+  background: var(--bg);
   backdrop-filter: blur(10px);
   border-left: 1px solid var(--stroke);
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: right 0.3s ease;
 }
 
 .drawer.open {
-  transform: translateX(0);
+  right: 0;
 }
 
 .content {
-  height: 100%;
   padding: 24px;
+  height: 100%;
   overflow-y: auto;
 }
 
@@ -44,34 +44,27 @@
 .navItem {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  width: 100%;
   min-height: 44px;
+  padding: 16px;
   background: transparent;
-  border: none;
+  border: 1px solid var(--stroke);
   border-radius: var(--radius);
   color: var(--fg);
-  text-align: left;
   cursor: pointer;
-  transition: background 0.2s ease;
-  font-size: 16px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  text-align: left;
 }
 
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.navItem:active {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--glass);
+  color: var(--primary);
 }
 
 .icon {
+  margin-right: 12px;
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .label {
@@ -79,18 +72,11 @@
 }
 
 .badge {
-  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 2px 8px;
   background: var(--primary);
   color: var(--bg);
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-@media (min-width: 768px) {
-  .backdrop,
-  .drawer {
-    display: none;
-  }
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
 }

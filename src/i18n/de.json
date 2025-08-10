@@ -186,10 +186,10 @@
   },
   "categories": {
     "fate": "Schicksal",
+    "shame": "Scham",
     "seduce": "Verführung",
-    "confess": "Beichte",
     "escalate": "Eskalation",
-    "shame": "Schande"
+    "confess": "Geständnis"
   },
   "fate": {
     "item1": "Wähle eine Person, die 2 Schluck trinkt.",

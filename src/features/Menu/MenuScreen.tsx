@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuth } from '../../context/AuthContext'
 import { useAdmin } from '../../context/AdminContext'
+import { useTaskSuggestions } from '../../context/TaskSuggestionsContext'
 import ProfileTab from './tabs/ProfileTab'
 import SettingsTab from './tabs/SettingsTab'
 import TasksTab from './tabs/TasksTab'
@@ -10,33 +10,12 @@ import AdminTab from './tabs/AdminTab'
 import BurgerButton from './components/BurgerButton'
 import MobileDrawer, { NavItem } from './components/MobileDrawer'
 
-type TabId = 'settings' | 'profile' | 'tasks' | 'suggest' | 'admin';
-
-interface TabConfig {
-  id: TabId;
-  labelKey: string;
-  component: React.ComponentType;
-  adminOnly?: boolean;
-}
-
 export default function MenuScreen() {
   const { t } = useTranslation();
-  const { user } = useAuth()
-  const { isAdmin, localAdmin } = useAdmin();
+  const { isAdmin } = useAdmin();
+  const { localAdmin } = useTaskSuggestions();
   const [activeTab, setActiveTab] = useState<'settings' | 'profile' | 'tasks' | 'suggest' | 'admin' | 'leaderboard' | 'rules' | 'about' | 'dev'>('settings')
   const [drawerOpen, setDrawerOpen] = useState(false)
-
-  const tabs: TabConfig[] = [
-    { id: 'settings', labelKey: 'menu.tabs.settings', component: SettingsTab },
-    { id: 'profile', labelKey: 'menu.tabs.profile', component: ProfileTab },
-    { id: 'tasks', labelKey: 'menu.tabs.tasks', component: TasksTab },
-    { id: 'suggest', labelKey: 'menu.tabs.suggest', component: SuggestTab },
-    { id: 'admin', labelKey: 'menu.tabs.admin', component: AdminTab, adminOnly: true },
-  ];
-
-  const visibleTabs = tabs.filter(tab => 
-    !tab.adminOnly || isAdmin || localAdmin
-  );
 
   const navItems: NavItem[] = useMemo(() => [
     {
@@ -143,7 +122,7 @@ export default function MenuScreen() {
         </h1>
 
         {/* Mobile Burger Button */}
-        <div style={{ display: 'block' }} className="md:hidden">
+        <div>
           <BurgerButton 
             isOpen={drawerOpen}
             onClick={() => setDrawerOpen(!drawerOpen)}
@@ -151,35 +130,7 @@ export default function MenuScreen() {
         </div>
       </div>
 
-      {/* Desktop Tab Navigation */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        marginBottom: '2rem',
-        borderBottom: '1px solid var(--stroke)',
-        overflowX: 'auto'
-      }} className="hidden md:flex">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-            style={{
-              padding: '12px 20px',
-              background: activeTab === tab.id ? 'var(--glass)' : 'transparent',
-              border: 'none',
-              borderRadius: '8px 8px 0 0',
-              color: activeTab === tab.id ? 'var(--primary)' : 'var(--fg)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              borderBottom: activeTab === tab.id ? '2px solid var(--primary)' : '2px solid transparent',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {t(tab.labelKey)}
-          </button>
-        ))}
-      </div>
+      
 
       {/* Mobile Drawer */}
       <MobileDrawer 

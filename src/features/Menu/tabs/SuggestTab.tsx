@@ -1,116 +1,131 @@
-// src/features/Menu/tabs/SuggestTab.tsx
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { categories } from "@/features/Arena/categories";
-import { useTaskSuggestions } from "@/context/TaskSuggestionsContext";
+
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { categories } from '../../Arena/categories'
+import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
 
 export default function SuggestTab() {
-  const { t } = useTranslation();
-  const { addSuggestion } = useTaskSuggestions(); // <- existierende API
-  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.id ?? "fate");
-  const [taskText, setTaskText] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation()
+  const { addSuggestion } = useTaskSuggestions()
+  const [selectedCategory, setSelectedCategory] = useState(categories[0].id)
+  const [taskText, setTaskText] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-    setError(null);
-    const text = taskText.trim();
-    if (!text) {
-      setError(t("menu.suggest.placeholder")); // simple client validation
-      return;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    const success = addSuggestion(selectedCategory, taskText)
+    
+    if (success) {
+      setTaskText('')
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 3000)
+    } else {
+      if (taskText.trim().length < 8) {
+        setError('Aufgabe muss mindestens 8 Zeichen haben')
+      } else {
+        setError('Diese Aufgabe wurde bereits vorgeschlagen')
+      }
     }
-    try {
-      setSubmitting(true);
-      await addSuggestion(selectedCategory, text); // <- await nur hier
-      setSent(true);
-      setTaskText("");
-      // optional: nach kurzer Zeit das "Danke" wieder ausblenden
-      setTimeout(() => setSent(false), 2500);
-    } catch (err) {
-      setError((err as Error)?.message ?? "Failed to submit");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  }
 
   return (
-    <div style={{ display: "grid", gap: 16 }}>
-      <h2 style={{ margin: 0 }}>{t("menu.suggest.title")}</h2>
+    <div>
+      <h2 style={{ color: 'var(--fg)', marginBottom: '1.5rem' }}>
+        {t('menu.suggest.title')}
+      </h2>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
-        {/* Kategorie-Auswahl */}
-        <label style={{ display: "grid", gap: 6 }}>
-          <span style={{ opacity: 0.9 }}>{t("menu.suggest.choose")}</span>
+      <form onSubmit={handleSubmit}>
+        {/* Category Select */}
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ 
+            display: 'block', 
+            color: 'var(--fg)', 
+            marginBottom: '8px',
+            fontSize: '0.9rem'
+          }}>
+            {t('menu.suggest.choose')}
+          </label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             style={{
-              padding: "10px 12px",
-              borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.25)",
-              background: "rgba(255,255,255,0.06)",
-              color: "inherit",
+              width: '100%',
+              padding: '12px',
+              background: 'var(--glass)',
+              border: '1px solid var(--stroke)',
+              borderRadius: 'var(--radius)',
+              color: 'var(--fg)',
+              fontSize: '1rem'
             }}
           >
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {t(c.labelKey)}
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {t(category.labelKey, category.id)}
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        {/* Textfeld */}
-        <label style={{ display: "grid", gap: 6 }}>
-          <span style={{ opacity: 0.9 }}>{t("menu.suggest.placeholder")}</span>
+        {/* Task Text */}
+        <div style={{ marginBottom: '1rem' }}>
           <textarea
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            rows={3}
-            placeholder={t("menu.suggest.placeholder")}
+            placeholder={t('menu.suggest.placeholder')}
+            rows={4}
             style={{
-              padding: "12px",
-              borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.25)",
-              background: "rgba(255,255,255,0.06)",
-              color: "inherit",
-              resize: "vertical",
+              width: '100%',
+              padding: '12px',
+              background: 'var(--glass)',
+              border: '1px solid var(--stroke)',
+              borderRadius: 'var(--radius)',
+              color: 'var(--fg)',
+              fontSize: '1rem',
+              resize: 'vertical'
             }}
           />
-        </label>
+          {error && (
+            <div style={{ color: '#ff6b6b', fontSize: '0.9rem', marginTop: '4px' }}>
+              {error}
+            </div>
+          )}
+        </div>
 
-        {/* Status / Fehler */}
-        {error && (
-          <div style={{ fontSize: 14, color: "#ffb4b4" }}>
-            {error}
-          </div>
-        )}
-        {sent && (
-          <div style={{ fontSize: 14, opacity: 0.9 }}>
-            {t("menu.suggest.thanks")}
-          </div>
-        )}
-
-        {/* Submit */}
+        {/* Submit Button */}
         <button
           type="submit"
-          disabled={submitting}
+          disabled={taskText.trim().length < 8}
           style={{
-            padding: "12px 14px",
-            borderRadius: 14,
-            border: "1px solid rgba(255,255,255,0.25)",
-            background: "linear-gradient(135deg, rgba(255,96,96,0.85), rgba(255,128,64,0.85))",
-            color: "white",
-            fontWeight: 700,
-            cursor: submitting ? "default" : "pointer",
-            opacity: submitting ? 0.7 : 1,
+            padding: '12px 24px',
+            background: taskText.trim().length >= 8 ? 'var(--primary)' : 'var(--glass)',
+            color: taskText.trim().length >= 8 ? 'var(--bg)' : 'var(--fg)',
+            border: '1px solid var(--stroke)',
+            borderRadius: 'var(--radius)',
+            cursor: taskText.trim().length >= 8 ? 'pointer' : 'not-allowed',
+            fontSize: '1rem',
+            opacity: taskText.trim().length >= 8 ? 1 : 0.5
           }}
         >
-          {t("menu.suggest.submit")}
+          {t('menu.suggest.submit')}
         </button>
       </form>
+
+      {/* Success Message */}
+      {showSuccess && (
+        <div style={{
+          marginTop: '1rem',
+          padding: '12px',
+          background: 'rgba(107, 213, 255, 0.1)',
+          border: '1px solid var(--primary)',
+          borderRadius: 'var(--radius)',
+          color: 'var(--primary)'
+        }}>
+          {t('menu.suggest.thanks')}
+        </div>
+      )}
     </div>
-  );
+  )
 }

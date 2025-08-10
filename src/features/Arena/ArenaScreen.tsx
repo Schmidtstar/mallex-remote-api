@@ -1,199 +1,115 @@
 
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { usePlayers } from '../../context/PlayersContext'
 import { categories } from './categories'
 import { challenges } from './challenges'
 
-type RevealState = 'idle' | 'revealing-player' | 'revealing-category' | 'revealing-challenge' | 'complete'
-
 export default function ArenaScreen() {
   const { t } = useTranslation()
   const { players } = usePlayers()
-  const [revealState, setRevealState] = useState<RevealState>('idle')
-  const [selectedPlayer, setSelectedPlayer] = useState<string>('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
-  const [selectedChallenge, setSelectedChallenge] = useState<string>('')
+  const [currentChallenge, setCurrentChallenge] = useState<{
+    player: string
+    category: string
+    challenge: string
+  } | null>(null)
 
-  const startReveal = async () => {
+  const handleStart = () => {
     if (players.length === 0) return
-    
-    setRevealState('revealing-player')
-    
-    // Select random player
+
+    // Random Player
     const randomPlayer = players[Math.floor(Math.random() * players.length)]
-    setSelectedPlayer(randomPlayer)
     
-    setTimeout(() => {
-      setRevealState('revealing-category')
-      
-      // Select random category
-      const randomCategory = categories[Math.floor(Math.random() * categories.length)]
-      setSelectedCategory(randomCategory.id)
-      
-      setTimeout(() => {
-        setRevealState('revealing-challenge')
-        
-        // Select random challenge from category
-        const categoryTasks = challenges[randomCategory.id]
-        const randomChallengeKey = categoryTasks[Math.floor(Math.random() * categoryTasks.length)]
-        const randomChallenge = t(randomChallengeKey)
-        setSelectedChallenge(randomChallenge)
-        
-        setTimeout(() => {
-          setRevealState('complete')
-        }, 800)
-      }, 800)
-    }, 800)
-  }
+    // Random Category
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)]
+    
+    // Random Challenge
+    const categoryKeys = challenges[randomCategory.id]
+    const randomChallenge = categoryKeys[Math.floor(Math.random() * categoryKeys.length)]
 
-  const reset = () => {
-    setRevealState('idle')
-    setSelectedPlayer('')
-    setSelectedCategory('')
-    setSelectedChallenge('')
-  }
-
-  if (players.length === 0) {
-    return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h1>🏛️ {t('arena.title')}</h1>
-        <div style={{ marginTop: '40px' }}>
-          <p style={{ fontSize: '18px', marginBottom: '20px' }}>
-            {t('legends.noPlayers')}
-          </p>
-          <Link
-            to="/legends"
-            style={{
-              display: 'inline-block',
-              padding: '15px 30px',
-              fontSize: '16px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '8px'
-            }}
-          >
-            {t('legends.addPlayer')}
-          </Link>
-        </div>
-      </div>
-    )
+    setCurrentChallenge({
+      player: randomPlayer,
+      category: randomCategory.labelKey,
+      challenge: randomChallenge
+    })
   }
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h1>⚔️ {t('arena.title')}</h1>
+    <div style={{
+      padding: '24px',
+      textAlign: 'center',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}>
+      <h1 style={{ color: 'var(--primary)', marginBottom: '2rem', fontSize: '2.5rem' }}>
+        MALLEX Arena
+      </h1>
       
-      <div style={{ marginTop: '40px', minHeight: '300px' }}>
-        {revealState === 'idle' && (
-          <div>
-            <p style={{ fontSize: '18px', marginBottom: '30px' }}>
-              Ready with {players.length} players
-            </p>
-            <button
-              onClick={startReveal}
-              style={{
-                padding: '15px 30px',
-                fontSize: '18px',
-                backgroundColor: '#ff6b35',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer'
-              }}
-            >
-              {t('arena.spinWheel')}
-            </button>
-          </div>
-        )}
-
-        {revealState === 'revealing-player' && (
-          <div>
-            <h2 style={{ fontSize: '24px', marginBottom: '20px' }}>
-              {t('arena.revealing.player')}
-            </h2>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ff6b35' }}>
-              {selectedPlayer}
-            </div>
-          </div>
-        )}
-
-        {(revealState === 'revealing-category' || revealState === 'revealing-challenge' || revealState === 'complete') && (
-          <div>
-            <h2 style={{ fontSize: '20px', marginBottom: '20px' }}>
-              {t('arena.selectedPlayer')}: <span style={{ color: '#ff6b35' }}>{selectedPlayer}</span>
-            </h2>
-            {revealState === 'revealing-category' && (
-              <div>
-                <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>
-                  {t('arena.revealing.category')}
-                </h3>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50' }}>
-                  {t(`categories.${selectedCategory}`)}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {(revealState === 'revealing-challenge' || revealState === 'complete') && (
-          <div style={{ marginTop: '20px' }}>
-            <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>
-              {t('arena.category')}: <span style={{ color: '#4CAF50' }}>{t(`categories.${selectedCategory}`)}</span>
-            </h3>
-            {revealState === 'revealing-challenge' && (
-              <div>
-                <h4 style={{ fontSize: '16px', marginBottom: '10px' }}>
-                  {t('arena.revealing.challenge')}
-                </h4>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#9c27b0' }}>
-                  {selectedChallenge.includes('{name}') 
-                    ? selectedChallenge.replace('{name}', selectedPlayer)
-                    : selectedChallenge
-                  }
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {revealState === 'complete' && (
-          <div style={{ marginTop: '30px' }}>
-            <div style={{ 
-              padding: '20px', 
-              backgroundColor: '#f5f5f5', 
-              borderRadius: '12px',
-              marginBottom: '20px'
-            }}>
-              <h4 style={{ fontSize: '16px', marginBottom: '10px' }}>
-                {t('arena.challenge')}:
-              </h4>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#9c27b0' }}>
-                {selectedChallenge.includes('{name}') 
-                  ? selectedChallenge.replace('{name}', selectedPlayer)
-                  : selectedChallenge
-                }
-              </div>
-            </div>
-            <button
-              onClick={reset}
-              style={{
-                padding: '12px 25px',
-                fontSize: '16px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer'
-              }}
-            >
-              {t('arena.newChallenge')}
-            </button>
-          </div>
-        )}
-      </div>
+      {!currentChallenge ? (
+        <button 
+          onClick={handleStart}
+          disabled={players.length === 0}
+          style={{
+            padding: '16px 32px',
+            fontSize: '1.2rem',
+            background: players.length === 0 ? 'var(--glass)' : 'var(--primary)',
+            color: players.length === 0 ? 'var(--fg)' : 'var(--bg)',
+            border: 'none',
+            borderRadius: 'var(--radius)',
+            cursor: players.length === 0 ? 'not-allowed' : 'pointer',
+            opacity: players.length === 0 ? 0.5 : 1
+          }}
+        >
+          {players.length === 0 ? 'Keine Spieler' : 'Start'}
+        </button>
+      ) : (
+        <div style={{
+          background: 'var(--glass)',
+          border: '1px solid var(--stroke)',
+          borderRadius: 'var(--radius)',
+          padding: '2rem',
+          maxWidth: '500px',
+          margin: '0 auto'
+        }}>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>
+            {currentChallenge.player}
+          </h2>
+          <p style={{ 
+            color: 'var(--fg)', 
+            opacity: 0.7, 
+            marginBottom: '1rem',
+            textTransform: 'uppercase',
+            fontSize: '0.9rem',
+            letterSpacing: '1px'
+          }}>
+            {t(currentChallenge.category, currentChallenge.category)}
+          </p>
+          <p style={{ 
+            color: 'var(--fg)', 
+            fontSize: '1.1rem',
+            lineHeight: '1.5',
+            marginBottom: '2rem'
+          }}>
+            {t(currentChallenge.challenge, currentChallenge.challenge)}
+          </p>
+          <button 
+            onClick={() => setCurrentChallenge(null)}
+            style={{
+              padding: '12px 24px',
+              background: 'transparent',
+              border: '1px solid var(--stroke)',
+              borderRadius: 'var(--radius)',
+              color: 'var(--fg)',
+              cursor: 'pointer'
+            }}
+          >
+            Neue Herausforderung
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,25 +6,47 @@ import { useSwipe } from '../hooks/useSwipe'
 const tabs = ['/arena','/legends','/menu']
 
 export default function TabLayout() {
-  const nav = useNavigate()
-  const loc = useLocation()
-  const path = loc.pathname === '/' ? '/arena' : loc.pathname
-  const idx = Math.max(0, tabs.indexOf(path))
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const swipe = useSwipe<HTMLDivElement>({
+  const currentIndex = tabs.indexOf(location.pathname)
+
+  const swipeHandlers = useSwipe({
     onSwipeLeft: () => {
-      const next = tabs[Math.min(tabs.length - 1, idx + 1)]
-      if (next && next !== path) nav(next)
+      if (isTransitioning) return
+
+      const nextIndex = currentIndex + 1
+      if (nextIndex < tabs.length) {
+        setIsTransitioning(true)
+        setTimeout(() => {
+          navigate(tabs[nextIndex])
+          setIsTransitioning(false)
+        }, 150)
+      }
     },
     onSwipeRight: () => {
-      const prev = tabs[Math.max(0, idx - 1)]
-      if (prev && prev !== path) nav(prev)
+      if (isTransitioning) return
+
+      const prevIndex = currentIndex - 1
+      if (prevIndex >= 0) {
+        setIsTransitioning(true)
+        setTimeout(() => {
+          navigate(tabs[prevIndex])
+          setIsTransitioning(false)
+        }, 150)
+      }
     }
   })
 
   return (
-    <div className="app-shell">
-      <main className="app-content" {...swipe}>
+    <div {...swipeHandlers} style={styles.container}>
+      <main style={{
+        ...styles.main,
+        opacity: isTransitioning ? 0.7 : 1,
+        transform: isTransitioning ? 'scale(0.98)' : 'scale(1)',
+        transition: 'all 0.15s ease-out'
+      }}>
         <Outlet />
       </main>
       <BottomNavigation />

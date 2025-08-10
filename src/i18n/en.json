@@ -27,32 +27,69 @@
     "tip": "Tip: Swipe over the card to get the next challenge.",
     "new": "New Challenge",
     "swipeForNext": "Swipe for next card",
-    "categories": {
-      "fate": "Fate",
-      "truth": "Truth",
-      "dare": "Dare"
-    },
-    "fate": {
-      "item1": "Choose a person to drink 2 sips.",
-      "item2": "Everyone wearing red drinks 1 sip.",
-      "item3": "The person to your left drinks 3 sips.",
-      "item4": "All men drink 2 sips.",
-      "item5": "The youngest person drinks 1 sip."
-    },
-    "truth": {
-      "item1": "Tell us about your most embarrassing moment.",
-      "item2": "Who was your first big love?",
-      "item3": "What bad habit do you have?",
-      "item4": "What's your biggest secret?",
-      "item5": "Who among us is the most attractive?"
-    },
-    "dare": {
-      "item1": "Dance for 30 seconds without music.",
-      "item2": "Imitate a famous person.",
-      "item3": "Do 10 push-ups.",
-      "item4": "Sing a song out loud.",
-      "item5": "Exchange a piece of clothing with someone else."
-    }
+    "selectCategory": "Select Category",
+    "generateChallenge": "New Challenge",
+    "noChallenge": "Choose a category and generate your first challenge!",
+    "enableTimer": "Enable Timer (30s)"
+  },
+  "categories": {
+    "fate": "Fate",
+    "truth": "Truth",
+    "dare": "Dare",
+    "daredevil": "Daredevil",
+    "funny": "Funny",
+    "mythology": "Mythology",
+    "sports": "Sports",
+    "creativity": "Creativity"
+  },
+  "fate": {
+    "item1": "Choose a person to drink 2 sips.",
+    "item2": "Everyone wearing red drinks 1 sip.",
+    "item3": "The person to your left drinks 3 sips.",
+    "item4": "All men drink 2 sips.",
+    "item5": "The youngest person drinks 1 sip."
+  },
+  "truth": {
+    "item1": "Tell us about your most embarrassing moment.",
+    "item2": "Who was your first big love?",
+    "item3": "What bad habit do you have?",
+    "item4": "What's your biggest secret?",
+    "item5": "Who among us is the most attractive?"
+  },
+  "dare": {
+    "item1": "Dance for 30 seconds without music.",
+    "item2": "Imitate a famous person.",
+    "item3": "Do 10 push-ups.",
+    "item4": "Sing a song out loud.",
+    "item5": "Exchange a piece of clothing with someone else."
+  },
+  "funny": {
+    "1": "Imitate an animal of your choice for 30 seconds!",
+    "2": "Tell a joke, but backwards!",
+    "3": "Sing 'Happy Birthday' in the style of an opera singer!",
+    "4": "Describe the last meal you ate as if it were the best dish in the world!",
+    "5": "Have a dialogue between your two hands!"
+  },
+  "mythology": {
+    "1": "Embody Zeus and thunder a mighty command with your voice!",
+    "2": "Tell an epic story of the last battle like Odin!",
+    "3": "Perform a ritual dance as an Egyptian Pharaoh!",
+    "4": "Speak like a wise Greek philosopher about the meaning of life!",
+    "5": "Create a song about the elements as a Nordic shaman!"
+  },
+  "sports": {
+    "1": "Do 10 push-ups in slow motion!",
+    "2": "Imitate a goal celebration like a football world champion!",
+    "3": "Do 30 seconds of shadow boxing against an invisible opponent!",
+    "4": "Perform an Olympic victory ceremony for yourself!",
+    "5": "Explain a complicated sports rule as if you were a TV commentator!"
+  },
+  "creativity": {
+    "1": "Invent a new word and explain its meaning!",
+    "2": "Draw your dream house in the air with your eyes closed!",
+    "3": "Spontaneously compose a 30-second song about your day!",
+    "4": "Invent a new greeting for aliens!",
+    "5": "Create a superhero identity and introduce yourself!"
   },
   "legends": {
     "title": "Legends",

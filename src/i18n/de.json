@@ -27,32 +27,69 @@
     "tip": "Tipp: Streiche über die Karte, um zur nächsten Herausforderung zu wechseln.",
     "new": "Neue Herausforderung",
     "swipeForNext": "Wische für nächste Karte",
-    "categories": {
-      "fate": "Schicksal",
-      "truth": "Wahrheit",
-      "dare": "Mutprobe"
-    },
-    "fate": {
-      "item1": "Wähle eine Person, die 2 Schluck trinkt.",
-      "item2": "Alle mit roten Kleidungsstücken trinken 1 Schluck.",
-      "item3": "Die Person links von dir trinkt 3 Schlücke.",
-      "item4": "Alle Männer trinken 2 Schlücke.",
-      "item5": "Die jüngste Person trinkt 1 Schluck."
-    },
-    "truth": {
-      "item1": "Erzähle von deinem peinlichsten Moment.",
-      "item2": "Was war deine erste große Liebe?",
-      "item3": "Welche schlechte Angewohnheit hast du?",
-      "item4": "Was ist dein größtes Geheimnis?",
-      "item5": "Wer von uns ist am attraktivsten?"
-    },
-    "dare": {
-      "item1": "Tanze 30 Sekunden ohne Musik.",
-      "item2": "Imitiere eine berühmte Person.",
-      "item3": "Mache 10 Liegestütze.",
-      "item4": "Singe ein Lied laut vor.",
-      "item5": "Tausche ein Kleidungsstück mit jemand anderem."
-    }
+    "selectCategory": "Kategorie wählen",
+    "generateChallenge": "Neue Herausforderung",
+    "noChallenge": "Wähle eine Kategorie und generiere deine erste Herausforderung!",
+    "enableTimer": "Timer aktivieren (30s)"
+  },
+  "categories": {
+    "fate": "Schicksal",
+    "truth": "Wahrheit",
+    "dare": "Mutprobe",
+    "daredevil": "Waghalsig",
+    "funny": "Lustig",
+    "mythology": "Mythologie",
+    "sports": "Sport",
+    "creativity": "Kreativität"
+  },
+  "fate": {
+    "item1": "Wähle eine Person, die 2 Schluck trinkt.",
+    "item2": "Alle mit roten Kleidungsstücken trinken 1 Schluck.",
+    "item3": "Die Person links von dir trinkt 3 Schlücke.",
+    "item4": "Alle Männer trinken 2 Schlücke.",
+    "item5": "Die jüngste Person trinkt 1 Schluck."
+  },
+  "truth": {
+    "item1": "Erzähle von deinem peinlichsten Moment.",
+    "item2": "Was war deine erste große Liebe?",
+    "item3": "Welche schlechte Angewohnheit hast du?",
+    "item4": "Was ist dein größtes Geheimnis?",
+    "item5": "Wer von uns ist am attraktivsten?"
+  },
+  "dare": {
+    "item1": "Tanze 30 Sekunden ohne Musik.",
+    "item2": "Imitiere eine berühmte Person.",
+    "item3": "Mache 10 Liegestütze.",
+    "item4": "Singe ein Lied laut vor.",
+    "item5": "Tausche ein Kleidungsstück mit jemand anderem."
+  },
+  "funny": {
+    "1": "Imitiere 30 Sekunden lang ein Tier deiner Wahl!",
+    "2": "Erzähle einen Witz, aber rückwärts!",
+    "3": "Singe das Lied 'Happy Birthday' im Stil eines Opern-Sängers!",
+    "4": "Beschreibe das letzte Essen, das du gegessen hast, als wäre es das beste Gericht der Welt!",
+    "5": "Führe einen Dialog zwischen deinen beiden Händen!"
+  },
+  "mythology": {
+    "1": "Verkörpere Zeus und donnere mit mächtiger Stimme einen Befehl!",
+    "2": "Erzähle wie Odin eine epische Geschichte vom letzten Kampf!",
+    "3": "Führe als ägyptischer Pharao einen rituellen Tanz auf!",
+    "4": "Sprich wie ein weiser griechischer Philosoph über die Bedeutung des Lebens!",
+    "5": "Erschaffe als nordischer Schamane ein Lied über die Elemente!"
+  },
+  "sports": {
+    "1": "Führe 10 Liegestütze in Zeitlupe aus!",
+    "2": "Imitiere einen Torjubel wie ein Fußball-Weltmeister!",
+    "3": "Mache 30 Sekunden Schattenboxen gegen einen unsichtbaren Gegner!",
+    "4": "Führe eine olympische Siegerehrung für dich selbst durch!",
+    "5": "Erkläre eine komplizierte Sportregel, als wärst du TV-Kommentator!"
+  },
+  "creativity": {
+    "1": "Erfinde ein neues Wort und erkläre seine Bedeutung!",
+    "2": "Zeichne mit geschlossenen Augen dein Traumhaus in die Luft!",
+    "3": "Komponiere spontan einen 30-Sekunden-Song über deinen Tag!",
+    "4": "Erfinde eine neue Begrüßung für Außerirdische!",
+    "5": "Erschaffe eine Superhelden-Identität und stelle dich vor!"
   },
   "legends": {
     "title": "Legenden",

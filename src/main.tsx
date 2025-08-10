@@ -10,8 +10,6 @@ import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import { UIProvider } from './context/UIContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { AppDrawer } from './components/AppDrawer'
-
 createRoot(document.getElementById('root')!).render(
   <AuthProvider>
     <AdminProvider>
@@ -22,7 +20,6 @@ createRoot(document.getElementById('root')!).render(
               v7_startTransition: true
             }}
             />
-            <AppDrawer />
           </UIProvider>
         </TaskSuggestionsProvider>
       </PlayersProvider>

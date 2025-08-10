@@ -5,6 +5,7 @@ import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { BurgerButton } from '../features/Menu/components/BurgerButton'
+import { AppDrawer } from '../components/AppDrawer'
 
 export function TabLayout() {
   const location = useLocation()
@@ -92,6 +93,9 @@ export function TabLayout() {
           <BurgerButton />
         </div>
       </div>
+
+      {/* App Drawer */}
+      <AppDrawer />
     </div>
   )
 }

@@ -7,7 +7,7 @@ import MenuScreen from '@/features/Menu/MenuScreen'
 import AuthScreen from '@/features/Auth/AuthScreen'
 import { useAuth } from '@/context/AuthContext'
 
-const useHash = import.meta.env.VITE_USE_HASH_ROUTER === '1'
+const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

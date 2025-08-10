@@ -1,4 +1,6 @@
-export type FirebaseBundle = {
+import { readFirebaseEnv, hasAuthEnv } from '@/utils/env'
+
+export async function getFirebase(): Promise<{
   app: any
   auth: import('firebase/auth').Auth
   signInWithEmailAndPassword: typeof import('firebase/auth').signInWithEmailAndPassword
@@ -7,27 +9,12 @@ export type FirebaseBundle = {
   signOut: typeof import('firebase/auth').signOut
   onAuthStateChanged: typeof import('firebase/auth').onAuthStateChanged
   analytics?: any
-}
-
-const cfg = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
-}
-
-function hasAuthEnv() {
-  return Boolean(cfg.apiKey && cfg.authDomain && cfg.projectId && cfg.appId)
-}
-
-let cached: FirebaseBundle | null = null
-
-export async function getFirebase(): Promise<FirebaseBundle | null> {
-  if (!hasAuthEnv()) return null
-  if (cached) return cached
+} | null> {
+  const cfg = readFirebaseEnv()
+  if (!hasAuthEnv(cfg)) {
+    console.warn('[MALLEX] Firebase ENV unvollständig – starte im Gastmodus.')
+    return null
+  }
 
   const [{ initializeApp }, { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged }] =
     await Promise.all([import('firebase/app'), import('firebase/auth')])
@@ -40,9 +27,8 @@ export async function getFirebase(): Promise<FirebaseBundle | null> {
     try {
       const { getAnalytics, isSupported } = await import('firebase/analytics')
       if (await isSupported()) analytics = getAnalytics(app)
-    } catch {}
+    } catch {/* optional */}
   }
 
-  cached = { app, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, analytics }
-  return cached
+  return { app, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, analytics }
 }

@@ -13,7 +13,7 @@ export const useCategories = (): Category[] => {
   return [
     {
       id: 'fate',
-      name: 'Schicksal',
+      name: t('arena.categories.fate'),
       items: [
         t('arena.fate.item1'),
         t('arena.fate.item2'),
@@ -24,7 +24,7 @@ export const useCategories = (): Category[] => {
     },
     {
       id: 'truth',
-      name: 'Wahrheit',
+      name: t('arena.categories.truth'),
       items: [
         t('arena.truth.item1'),
         t('arena.truth.item2'),
@@ -35,7 +35,7 @@ export const useCategories = (): Category[] => {
     },
     {
       id: 'dare',
-      name: 'Mutprobe',
+      name: t('arena.categories.dare'),
       items: [
         t('arena.dare.item1'),
         t('arena.dare.item2'),

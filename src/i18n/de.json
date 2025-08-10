@@ -15,7 +15,14 @@
   },
   "arena": {
     "title": "Arena",
+    "tip": "Tipp: Streiche über die Karte, um zur nächsten Herausforderung zu wechseln.",
+    "new": "Neue Herausforderung",
     "swipeForNext": "Wische für nächste Karte",
+    "categories": {
+      "fate": "Schicksal",
+      "truth": "Wahrheit",
+      "dare": "Mutprobe"
+    },
     "fate": {
       "item1": "Wähle eine Person, die 2 Schluck trinkt.",
       "item2": "Alle mit roten Kleidungsstücken trinken 1 Schluck.",
@@ -41,5 +48,10 @@
   "legends": {
     "title": "Legenden",
     "comingSoon": "Bald verfügbar"
+  },
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Legenden", 
+    "menu": "Menü"
   }
 }

@@ -15,7 +15,14 @@
   },
   "arena": {
     "title": "Arena",
+    "tip": "Tip: Swipe over the card to get the next challenge.",
+    "new": "New Challenge",
     "swipeForNext": "Swipe for next card",
+    "categories": {
+      "fate": "Fate",
+      "truth": "Truth",
+      "dare": "Dare"
+    },
     "fate": {
       "item1": "Choose a person to drink 2 sips.",
       "item2": "Everyone wearing red drinks 1 sip.",
@@ -41,5 +48,10 @@
   "legends": {
     "title": "Legends",
     "comingSoon": "Coming Soon"
+  },
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Legends",
+    "menu": "Menu"
   }
 }

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '../components/BottomNavigation'
@@ -47,7 +46,7 @@ export default function TabLayout() {
     }
   })
 
-  
+
 
   return (
     <div style={{ 
@@ -58,7 +57,7 @@ export default function TabLayout() {
       <main style={{ flex: 1, overflow: 'auto' }}>
         <Outlet />
       </main>
-      
+
       {/* Bottom Navigation */}
       <div style={{
         display: 'flex',
@@ -89,7 +88,7 @@ export default function TabLayout() {
             {tab.label}
           </button>
         ))}
-        
+
         {/* Menu Burger Button */}
         <div style={{ padding: '4px' }}>
           <BurgerButton 

@@ -207,5 +207,19 @@
     "arena": "Arena",
     "legends": "Legends",
     "menu": "Menu"
+  },
+  "navigation": {
+    "arena": "Arena",
+    "legends": "Legends",
+    "menu": "Menu",
+    "profile": "Profile",
+    "settings": "Settings",
+    "suggest": "Suggest",
+    "close": "Close",
+    "admin": {
+      "tasks": "Admin Tasks",
+      "panel": "Admin Panel",
+      "badge": "Admin"
+    }
   }
 }

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useUI } from '../../../context/UIContext';
 import styles from './BurgerButton.module.css';
@@ -7,7 +6,7 @@ interface BurgerButtonProps {
   className?: string;
 }
 
-export const BurgerButton: React.FC<BurgerButtonProps> = ({ className }) => {
+export function BurgerButton({ className }: BurgerButtonProps) {
   const { toggleDrawer } = useUI();
 
   return (

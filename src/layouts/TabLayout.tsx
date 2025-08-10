@@ -4,8 +4,8 @@ import { BottomNavigation } from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
-import BurgerButton from '../features/Menu/components/BurgerButton'
-import MobileDrawer from '../features/Menu/components/MobileDrawer'
+import { BurgerButton } from '../features/Menu/components/BurgerButton'
+import { MobileDrawer } from '../features/Menu/components/MobileDrawer'
 
 export function TabLayout() {
   const location = useLocation()

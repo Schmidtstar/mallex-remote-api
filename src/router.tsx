@@ -71,4 +71,4 @@ const router = useHash
     })
 
 export { router }
-export default router
+export { router }

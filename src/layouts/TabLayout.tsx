@@ -4,7 +4,6 @@ import { BottomNavigation } from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
-import { BurgerButton } from '../features/Menu/components/BurgerButton'
 import { AppDrawer } from '../components/AppDrawer'
 
 export function TabLayout() {
@@ -88,10 +87,24 @@ export function TabLayout() {
           </button>
         ))}
 
-        {/* Menu Burger Button */}
-        <div style={{ padding: '4px' }}>
-          <BurgerButton />
-        </div>
+        {/* Menu Button */}
+        <button
+          onClick={() => navigate('/menu')}
+          aria-label={t('navigation.menu')}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: location.pathname === '/menu' ? 'var(--primary)' : 'var(--fg)',
+            cursor: 'pointer',
+            padding: '12px 16px',
+            fontSize: '24px',
+            borderRadius: 'var(--radius)',
+            transition: 'all 0.2s ease',
+            opacity: location.pathname === '/menu' ? 1 : 0.7
+          }}
+        >
+          ☰
+        </button>
       </div>
 
       {/* App Drawer */}

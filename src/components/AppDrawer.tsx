@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUI } from '../context/UIContext';
 import { useAuth } from '../context/AuthContext';
 import { useAdmin } from '../context/AdminContext';
-import { menuItems, MenuItem } from '../config/menuItems';
+import { menuItems, type MenuItem } from '../config/menuItems';
 import styles from './AppDrawer.module.css';
 
 export const AppDrawer: React.FC = () => {

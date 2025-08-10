@@ -1,16 +1,14 @@
+entrypoint = "index.js"
+modules = ["nodejs-22"]
+hidden = [".config", "package-lock.json"]
 
-language = "nodejs"
-onBoot = "install"
-run = "npm run dev -- --host --port $PORT"
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
-[env]
-VITE_HASH_ROUTER = "1"
+[nix]
+channel = "stable-24_11"
 
-[commands]
-install = "npm ci || npm i"
-dev = "npm run dev -- --host --port $PORT"
-build = "npm run build"
-preview = "npm run preview -- --host --port $PORT"
-
-[workflows]
-runButton = "Dev Server"
+[deployment]
+run = ["node", "index.js"]
+deploymentTarget = "autoscale"
+ignorePorts = false

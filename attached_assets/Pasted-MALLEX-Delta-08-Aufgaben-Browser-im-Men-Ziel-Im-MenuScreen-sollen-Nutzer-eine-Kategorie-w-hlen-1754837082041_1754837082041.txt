@@ -1,0 +1,46 @@
+MALLEX – Delta 08: Aufgaben-Browser im Menü
+
+Ziel
+
+Im MenuScreen sollen Nutzer eine Kategorie wählen und anschließend alle Aufgaben dieser Kategorie sehen (nur Anzeige/Lesen). Keine Änderungen am Arena-Gameplay.
+
+Dateien
+	•	src/features/Menu/MenuScreen.tsx (anpassen)
+	•	Nur lesen aus: src/features/Arena/categories.ts (Quelle der Daten & Label-Keys)
+	•	Optional (falls nicht vorhanden): kleine UI-Hilfsstyles in src/styles/index.css oder lokales CSS-Modul
+
+Anforderungen
+	1.	Kategorie-Auswahl
+	•	Oben im Menü: Auswahl der fünf Kategorien (Schicksal, Verführung, Beichte, Eskalation, Schande).
+	•	UI entweder als Chips/Buttons in einer Zeile (wrap) oder als Select auf kleinen Screens.
+	•	Aktive Kategorie visuell hervorgehoben; neben dem Label die Anzahl der Aufgaben anzeigen.
+	2.	Aufgabenliste
+	•	Darunter eine scrollbare Liste aller Aufgaben der gewählten Kategorie.
+	•	Jede Aufgabe als Card/Row im bestehenden Glas-Stil.
+	•	Alle Texte über i18n: Kategorie-Label via t('categories.<key>'); Aufgaben via vorhandene Keys (z. B. arena.fate.item1 etc.).
+	•	Falls ein i18n-Key fehlt: Fallback ist der Key-String.
+	3.	Datenquelle
+	•	Nicht duplizieren. Kategorien/Items ausschließlich aus src/features/Arena/categories.ts beziehen (das Objekt/Array, das auch die Arena nutzt).
+	4.	Routing / State
+	•	Menü ist read-only. Keine Bearbeiten/Erstellen/Löschen-Aktionen.
+	•	Optional: aktive Kategorie in der URL erhalten (#/menu?cat=fate) und beim Mount auslesen.
+	5.	Kein Seiteneffekt
+	•	Keine Änderungen an Arena, PlayersContext, Auth, Router-Guards.
+	•	Keine neuen Packages, keine Shell-Befehle. Nur Code.
+
+Akzeptanzkriterien (prüfbar)
+	•	Im Tab Menü erscheint oben eine Kategorie-Auswahl mit fünf Einträgen und korrekten Zähler-Badges.
+	•	Beim Wechsel der Kategorie aktualisiert sich die Aufgabenliste darunter ohne Reload.
+	•	Alle sichtbaren Labels kommen aus i18n; keine Hardcodes.
+	•	Daten werden einmalig aus categories.ts bezogen (kein getrenntes Mapping).
+	•	Keine neuen Console-Errors/Warnings; HMR bleibt funktionsfähig.
+	•	(Optional) Aufruf #/menu?cat=confess setzt die Auswahl korrekt.
+
+Hinweise zur Implementierung
+	•	State im MenuScreen.tsx: selectedCategoryKey ('fate' | 'seduce' | 'confess' | 'escalate' | 'shame').
+	•	Beim Rendern:
+	•	Kategorien-Header: map über categories → Button/Chip (aktiv = selectedCategoryKey).
+	•	Items-List: categories[selectedCategoryKey].items.map(...)
+Anzeige via t(itemKey); bei Strings ohne i18n-Key: den String selbst ausgeben.
+	•	Responsives Verhalten: Chips mit flex-wrap; bei schmalen Screens automatisch ein Select verwenden.
+	•	Styling: vorhandenen Glas-Stil nutzen (keine neue Designbibliothek).

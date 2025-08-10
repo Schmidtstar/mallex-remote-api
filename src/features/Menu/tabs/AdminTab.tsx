@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
@@ -110,7 +109,7 @@ export function AdminTab() {
                   {new Date(suggestion.timestamp).toLocaleDateString()}
                 </span>
               </div>
-              
+
               <p style={{ 
                 color: 'var(--fg)', 
                 marginBottom: '12px',

@@ -49,9 +49,9 @@ export function TabLayout() {
 
 
   return (
-    <div style={{ 
-      height: '100vh', 
-      display: 'flex', 
+    <div style={{
+      height: '100vh',
+      display: 'flex',
       flexDirection: 'column'
     }}>
       <main style={{ flex: 1, overflow: 'auto' }}>
@@ -91,7 +91,7 @@ export function TabLayout() {
 
         {/* Menu Burger Button */}
         <div style={{ padding: '4px' }}>
-          <BurgerButton 
+          <BurgerButton
             isOpen={drawerOpen}
             onClick={() => setDrawerOpen(!drawerOpen)}
           />
@@ -99,7 +99,7 @@ export function TabLayout() {
       </div>
 
       {/* Mobile Drawer */}
-      <MobileDrawer 
+      <MobileDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />

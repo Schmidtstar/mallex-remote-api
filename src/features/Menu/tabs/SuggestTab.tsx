@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories } from '../../Arena/categories'
@@ -15,9 +14,9 @@ export function SuggestTab() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    
+
     const success = addSuggestion(selectedCategory, taskText)
-    
+
     if (success) {
       setTaskText('')
       setShowSuccess(true)
@@ -40,9 +39,9 @@ export function SuggestTab() {
       <form onSubmit={handleSubmit}>
         {/* Category Select */}
         <div style={{ marginBottom: '1rem' }}>
-          <label style={{ 
-            display: 'block', 
-            color: 'var(--fg)', 
+          <label style={{
+            display: 'block',
+            color: 'var(--fg)',
             marginBottom: '8px',
             fontSize: '0.9rem'
           }}>

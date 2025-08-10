@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +11,7 @@ export function SettingsTab() {
   return (
     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <h2>{t('menu.tabs.settings')}</h2>
-      
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <label style={{ fontSize: '14px', fontWeight: 500 }}>Sprache / Language:</label>
         <div style={{ display: 'flex', gap: '8px' }}>

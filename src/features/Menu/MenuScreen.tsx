@@ -8,7 +8,7 @@ import { TasksTab } from './tabs/TasksTab'
 import { SuggestTab } from './tabs/SuggestTab'
 import { AdminTab } from './tabs/AdminTab'
 
-export default function MenuScreen() {
+export function MenuScreen() {
   const { t } = useTranslation();
   const { isAdmin } = useAdmin();
   const { localAdmin } = useTaskSuggestions();

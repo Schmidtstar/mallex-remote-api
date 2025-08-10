@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { TabLayout } from './layouts/TabLayout'
@@ -5,7 +6,7 @@ import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
 import { MenuScreen } from './features/Menu/MenuScreen'
 import { AuthScreen } from './features/Auth/AuthScreen'
-import ErrorBoundary from './components/ErrorBoundary'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { useAuth } from './context/AuthContext'
 
 const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
@@ -55,7 +56,7 @@ const routes = [
   }
 ]
 
-export default useHash
+const router = useHash
   ? createHashRouter(routes, {
       future: {
         v7_startTransition: true,
@@ -68,3 +69,6 @@ export default useHash
         v7_relativeSplatPath: true
       }
     })
+
+export { router }
+export default router

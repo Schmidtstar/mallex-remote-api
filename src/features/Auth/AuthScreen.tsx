@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
@@ -31,8 +30,8 @@ export function AuthScreen() {
     try {
       await loginAsGuest()
       nav('/arena')
-    } catch (e: any) { 
-      setFormErr(e.message ?? 'Gastzugang fehlgeschlagen') 
+    } catch (e: any) {
+      setFormErr(e.message ?? 'Gastzugang fehlgeschlagen')
     }
   }
 
@@ -49,7 +48,7 @@ export function AuthScreen() {
         </button>
       </form>
       <div style={{ marginTop: 16 }}>
-        <button 
+        <button
           onClick={onGuest}
           disabled={loading}
           aria-label="continue-as-guest"

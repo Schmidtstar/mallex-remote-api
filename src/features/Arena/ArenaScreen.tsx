@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlayers } from '../../context/PlayersContext'
@@ -19,10 +18,10 @@ export function ArenaScreen() {
 
     // Random Player
     const randomPlayer = players[Math.floor(Math.random() * players.length)]
-    
+
     // Random Category
     const randomCategory = categories[Math.floor(Math.random() * categories.length)]
-    
+
     // Random Challenge
     const categoryKeys = challenges[randomCategory.id]
     const randomChallenge = categoryKeys[Math.floor(Math.random() * categoryKeys.length)]
@@ -47,9 +46,9 @@ export function ArenaScreen() {
       <h1 style={{ color: 'var(--primary)', marginBottom: '2rem', fontSize: '2.5rem' }}>
         MALLEX Arena
       </h1>
-      
+
       {!currentChallenge ? (
-        <button 
+        <button
           onClick={handleStart}
           disabled={players.length === 0}
           style={{
@@ -77,9 +76,9 @@ export function ArenaScreen() {
           <h2 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>
             {currentChallenge.player}
           </h2>
-          <p style={{ 
-            color: 'var(--fg)', 
-            opacity: 0.7, 
+          <p style={{
+            color: 'var(--fg)',
+            opacity: 0.7,
             marginBottom: '1rem',
             textTransform: 'uppercase',
             fontSize: '0.9rem',
@@ -87,15 +86,15 @@ export function ArenaScreen() {
           }}>
             {t(currentChallenge.category, currentChallenge.category)}
           </p>
-          <p style={{ 
-            color: 'var(--fg)', 
+          <p style={{
+            color: 'var(--fg)',
             fontSize: '1.1rem',
             lineHeight: '1.5',
             marginBottom: '2rem'
           }}>
             {t(currentChallenge.challenge, currentChallenge.challenge)}
           </p>
-          <button 
+          <button
             onClick={() => setCurrentChallenge(null)}
             style={{
               padding: '12px 24px',

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories } from '../../Arena/categories'
@@ -62,7 +61,7 @@ export function TasksTab() {
       <div style={{ marginBottom: '1rem', color: 'var(--fg)', opacity: 0.7 }}>
         {t('menu.tasks.count', { count: tasks.length })}
       </div>
-      
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {tasks.map((task, index) => (
           <div

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -22,14 +21,14 @@ export const AppDrawer: React.FC = () => {
   };
 
   const userRole = getUserRole();
-  
+
   const filteredMenuItems = menuItems.filter((item: MenuItem) => {
     // If no roles specified, show to everyone
     if (!item.roles || item.roles.length === 0) return true;
-    
+
     // If visible is explicitly set to false, hide item
     if (item.visible === false) return false;
-    
+
     // Check if user role is in allowed roles
     return item.roles.includes(userRole);
   });

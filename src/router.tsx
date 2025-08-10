@@ -33,10 +33,12 @@ const routes = [
   }
 ]
 
-const routerConfig = {
+export default useHash ? createHashRouter(routes, {
   future: {
     v7_startTransition: true
   }
-}
-
-export default useHash ? createHashRouter(routes, routerConfig) : createBrowserRouter(routes, routerConfig)
+}) : createBrowserRouter(routes, {
+  future: {
+    v7_startTransition: true
+  }
+})

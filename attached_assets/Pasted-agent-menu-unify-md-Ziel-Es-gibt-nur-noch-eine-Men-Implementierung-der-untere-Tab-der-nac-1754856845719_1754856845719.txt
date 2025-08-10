@@ -1,0 +1,98 @@
+agent_menu_unify.md
+
+Ziel
+	•	Es gibt nur noch eine Menü-Implementierung: der untere Tab „≡“, der nach /menu routed.
+	•	Der frühere oben rechts platzierte Hamburger/Drawer (Off-Canvas) wird vollständig entfernt (Code, Kontext, Styles).
+	•	Alle Menüeinträge werden ausschließlich innerhalb der MenuScreen-Route gepflegt/gerendert.
+
+⸻
+
+Änderungen (Schritt für Schritt)
+
+1) Router & Layout
+	•	Datei: src/router.tsx
+	•	Prüfen, dass Route path="/menu" auf MenuScreen zeigt.
+	•	Nichts anderes navigiert mehr ein Menü-Overlay/Drawer.
+	•	Datei: src/layouts/TabLayout.tsx
+	•	Untere Tabbar finalisieren:
+	•	🏟️ → /arena
+	•	🏛️ → /legends
+	•	≡ → /menu (Icon/Label bereits gesetzt).
+	•	Entfernen, falls vorhanden: Imports/Verwendung von AppDrawer, BurgerButton, MobileDrawer oder irgendeinem Drawer-Trigger.
+
+2) Drawer/Hamburger komplett entfernen
+	•	Dateien löschen (falls vorhanden):
+	•	src/components/AppDrawer.tsx
+	•	src/components/AppDrawer.module.css
+	•	src/features/Menu/components/BurgerButton.tsx
+	•	src/features/Menu/components/BurgerButton.module.css
+	•	src/features/Menu/components/MobileDrawer.tsx
+	•	src/features/Menu/components/MobileDrawer.module.css
+	•	Kontexte/Utils aufräumen:
+	•	src/context/UIContext.tsx (falls nur für Drawer-Open/Close genutzt)
+	•	Wird dieser Kontext sonst nirgends benötigt? Wenn nein: Datei löschen, Provider aus main.tsx und Imports entfernen.
+	•	Alle Stellen suchen, die useNavigate() ausschließlich für Drawer öffnen/schließen missbrauchten — entfernen.
+
+3) Main Entry
+	•	Datei: src/main.tsx
+	•	Sicherstellen, dass kein Drawer-/UIContext-Provider mehr eingebunden ist.
+	•	Reihenfolge: <RouterProvider router={router} /> bleibt; keine Wrapper für Drawer/Overlay mehr.
+
+4) Menü-Rendering konsolidieren
+	•	Datei: src/features/Menu/MenuScreen.tsx
+	•	Menü-Inhalt (Tabs im Menü: Einstellungen / Profil / Aufgaben / Vorschlagen / (optional) Rangliste / Spielregeln / Über) wird hier gerendert.
+	•	Falls bisher AppDrawer die Liste aus einer zentralen Config bezog:
+	•	Option A (schnell & klar): Die Items lokal in MenuScreen deklarieren und rendern.
+	•	Option B (zentral): Eine einzige Quelle src/config/menuItems.ts behalten und nur in MenuScreen verwenden.
+	•	i18n: Kopfzeile zeigt „Menü“ → t('menu.title', 'Menü') (Fallback „Menü“).
+	•	Keine Abhängigkeit zu irgendeinem Drawer-State.
+
+5) i18n
+	•	Dateien: src/i18n/de.json, src/i18n/en.json
+	•	Sicherstellen, dass menu.title korrekt ist:
+	•	de: "menu": { "title": "Menü", ... }
+	•	en: "menu": { "title": "Menu", ... }
+	•	Entferne Drawer-bezogene Keys, falls ungenutzt (z. B. drawer.*), nur wenn wirklich nirgendwo referenziert.
+
+6) Alte Exporte/Barrels aufräumen
+	•	Aus vorherigen Refactors sicherstellen:
+	•	Keine export * from '...' mehr im Projekt.
+	•	Keine export default aus ehem. Drawer-Dateien; Importe überall auf benannte Exporte korrigiert.
+	•	Entferne veraltete index.ts Barrel-Files, falls sie nur für Drawer dienten.
+
+7) Styles
+	•	Entferne CSS/Module, die ausschließlich vom Drawer/Burger genutzt wurden.
+	•	Prüfe src/styles/base.css/Tokens: Keine Drawer-spezifischen Klassen mehr.
+
+⸻
+
+Suche & Entfernen (Sicherheitsnetz)
+
+Bitte projektweit suchen und entfernen/ersetzen:
+	•	Bezeichner: AppDrawer, MobileDrawer, BurgerButton, UIContext, openDrawer, closeDrawer, isDrawerOpen.
+	•	Routen/Links: #drawer, ?drawer=, irgendwelche Side-Effects, die Drawer öffnen.
+	•	Doppelte Exporte (aus vorigen Fehlermeldungen): Keine doppelten export { router } oder export { ErrorBoundary }, etc.
+
+⸻
+
+Akzeptanzkriterien (Definition of Done)
+	1.	Unten rechts gibt es den ≡-Tab, der nach /menu routed.
+	2.	Kein Hamburger-Icon/Drawer mehr oben rechts oder sonstwo.
+	3.	Keine Drawer-bezogenen Dateien/Provider/Styles im Code.
+	4.	MenuScreen zeigt alle vorgesehenen Bereiche (Tabs/Listen) und nur dort werden Menüeinträge gepflegt.
+	5.	i18n-Header zeigt „Menü“ (de) bzw. „Menu“ (en) – kein menu.title-Literal sichtbar.
+	6.	Build ohne Warnungen/Fehler bzgl. default export/star export oder doppelter Exporte.
+	7.	Navigation funktioniert:
+	•	🏟️ → /arena
+	•	🏛️ → /legends
+	•	≡ → /menu
+	8.	Kein toter Code: Gelöschte Komponenten/Kontexte werden nirgends mehr importiert.
+
+⸻
+
+Quick-Test-Plan
+	•	App starten → kein Icon oben rechts.
+	•	Unten ≡ tippen → /menu öffnet sich.
+	•	Menü-H1: „Menü“ (de) / „Menu“ (en).
+	•	Browser-Konsole: keine Fehler/Warnungen zu Drawer/Exports.
+	•	Vollständige Navigation: von /menu zu /arena & /legends über Tabs unten → OK.

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
+import styles from './TabLayout.module.css'
 
 const tabs = ['/arena','/legends','/menu']
 

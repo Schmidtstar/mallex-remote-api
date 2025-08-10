@@ -33,12 +33,13 @@ const routes = [
   }
 ]
 
-const routerOptions = {
+// Configure future flags for both router types
+const futureConfig = {
   future: {
     v7_startTransition: true
   }
 }
 
 export default useHash 
-  ? createHashRouter(routes, routerOptions)
-  : createBrowserRouter(routes, routerOptions)
+  ? createHashRouter(routes, futureConfig)
+  : createBrowserRouter(routes, futureConfig)

@@ -2,8 +2,9 @@
   "menu": {
     "title": "MALLEX",
     "arena": "Arena",
-    "legends": "Legenden",
-    "auth": "Anmelden"
+    "legends": "Legends",
+    "auth": "Anmelden",
+    "language": "Sprache"
   },
   "auth": {
     "signIn": "Anmelden",

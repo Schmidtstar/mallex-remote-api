@@ -30,12 +30,3 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev -- --host --port $PORT"
-
-[[workflows.workflow]]
-name = "Run"
-author = 45411998
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev -- --host --port $PORT"

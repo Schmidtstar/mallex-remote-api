@@ -1,20 +1,45 @@
 {
-  "tabs": {
+  "menu": {
+    "title": "MALLEX",
     "arena": "Arena",
     "legends": "Legenden",
-    "menu": "Menü"
+    "auth": "Anmelden"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "signOut": "Abmelden",
+    "guest": "Als Gast fortfahren"
   },
   "arena": {
     "title": "Arena",
-    "new": "Neue Herausforderung",
-    "tip": "Links/Rechts wischen für die nächste Herausforderung"
+    "swipeForNext": "Wische für nächste Karte",
+    "fate": {
+      "item1": "Wähle eine Person, die 2 Schluck trinkt.",
+      "item2": "Alle mit roten Kleidungsstücken trinken 1 Schluck.",
+      "item3": "Die Person links von dir trinkt 3 Schlücke.",
+      "item4": "Alle Männer trinken 2 Schlücke.",
+      "item5": "Die jüngste Person trinkt 1 Schluck."
+    },
+    "truth": {
+      "item1": "Erzähle von deinem peinlichsten Moment.",
+      "item2": "Was war deine erste große Liebe?",
+      "item3": "Welche schlechte Angewohnheit hast du?",
+      "item4": "Was ist dein größtes Geheimnis?",
+      "item5": "Wer von uns ist am attraktivsten?"
+    },
+    "dare": {
+      "item1": "Tanze 30 Sekunden ohne Musik.",
+      "item2": "Imitiere eine berühmte Person.",
+      "item3": "Mache 10 Liegestütze.",
+      "item4": "Singe ein Lied laut vor.",
+      "item5": "Tausche ein Kleidungsstück mit jemand anderem."
+    }
   },
   "legends": {
-    "title": "Legenden & Regeln",
-    "body": "Kurze Regeln & Lore…"
-  },
-  "menu": {
-    "title": "Einstellungen",
-    "language": "Sprache"
+    "title": "Legenden",
+    "comingSoon": "Bald verfügbar"
   }
 }

@@ -1,20 +1,45 @@
 {
-  "tabs": {
+  "menu": {
+    "title": "MALLEX",
     "arena": "Arena",
     "legends": "Legends",
-    "menu": "Menu"
+    "auth": "Sign In"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "signOut": "Sign Out",
+    "guest": "Continue as Guest"
   },
   "arena": {
     "title": "Arena",
-    "new": "New Challenge",
-    "tip": "Swipe left/right for the next challenge"
+    "swipeForNext": "Swipe for next card",
+    "fate": {
+      "item1": "Choose a person to drink 2 sips.",
+      "item2": "Everyone wearing red drinks 1 sip.",
+      "item3": "The person to your left drinks 3 sips.",
+      "item4": "All men drink 2 sips.",
+      "item5": "The youngest person drinks 1 sip."
+    },
+    "truth": {
+      "item1": "Tell us about your most embarrassing moment.",
+      "item2": "Who was your first big love?",
+      "item3": "What bad habit do you have?",
+      "item4": "What's your biggest secret?",
+      "item5": "Who among us is the most attractive?"
+    },
+    "dare": {
+      "item1": "Dance for 30 seconds without music.",
+      "item2": "Imitate a famous person.",
+      "item3": "Do 10 push-ups.",
+      "item4": "Sing a song out loud.",
+      "item5": "Exchange a piece of clothing with someone else."
+    }
   },
   "legends": {
-    "title": "Legends & Rules",
-    "body": "Short rules & lore…"
-  },
-  "menu": {
-    "title": "Settings",
-    "language": "Language"
+    "title": "Legends",
+    "comingSoon": "Coming Soon"
   }
 }

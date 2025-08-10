@@ -54,15 +54,6 @@ export default function MenuScreen() {
       margin: '0 auto',
       minHeight: '100vh'
     }}>
-      <h1 style={{ 
-        fontSize: '2rem', 
-        color: 'var(--fg)',
-        margin: 0,
-        marginBottom: '2rem'
-      }}>
-        {t('menu.title') || 'Menü'}
-      </h1>
-
       {/* Tab Content */}
       <div>
         {renderTabContent()}

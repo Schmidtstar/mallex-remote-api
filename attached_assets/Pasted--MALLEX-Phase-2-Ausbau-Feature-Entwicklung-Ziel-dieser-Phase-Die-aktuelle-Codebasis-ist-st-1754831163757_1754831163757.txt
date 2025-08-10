@@ -1,0 +1,79 @@
+# MALLEX – Phase 2: Ausbau & Feature-Entwicklung
+
+## Ziel dieser Phase
+Die aktuelle Codebasis ist stabil und fehlerfrei.  
+In dieser Phase werden **Gameplay-Funktionen, UI-Verbesserungen und Stil** ergänzt, ohne bestehende Basislogik oder funktionierende Strukturen zu verändern.
+
+---
+
+## Agent-Arbeitsweise
+1. **Keine Änderungen** an bereits funktionierenden Core-Features (Auth, Router, i18n, Swipe, ENV-Handling).
+2. Nur **neuen Code hinzufügen** oder **gezielt bestehende Komponenten erweitern**.
+3. **Keine Shell-Befehle** oder Runtime-Tests durchführen – alle Builds/Tests übernimmt der Nutzer.
+4. Änderungen klar dokumentieren (welche Dateien, was ergänzt).
+5. Vor jeder größeren Änderung Rückmeldung geben, ob Alternative(n) bestehen.
+
+---
+
+## Feature-Aufgaben
+
+### 1. Gameplay-Logik
+- **Challenge-Logik erweitern**:
+  - Keine Wiederholung direkt hintereinander.
+  - Optional: Schwierigkeitsgrad (leicht/mittel/schwer).
+- **Timer-Feature**:
+  - Optionaler Countdown (z. B. 30 Sekunden pro Aufgabe) mit visuellem Fortschrittsbalken.
+
+### 2. Kategorien & Content
+- Neue Kategorien anlegen (mind. 3 weitere).
+- Jede Kategorie mit mind. 5 Challenges in `de.json` & `en.json`.
+- Kategorienamen & Inhalte **vollständig i18n-konform**.
+
+### 3. UI/Style
+- Glas-Optik (Glassmorphism) bei Karten & UI-Elementen.
+- Kräftige Farben (Theme an Gladiator-/Götter-Optik anlehnen).
+- Animationen:
+  - Kartenwechsel → leichter Slide/Fade-Effekt.
+  - Tabwechsel → sanfter Swipe-Übergang.
+
+### 4. Legends-Screen
+- Einfaches Highscore-/Historien-Feature:
+  - Letzte 5 gespielten Challenges anzeigen.
+  - Speicherung lokal im Browser (localStorage).
+
+---
+
+## Technische Vorgaben
+- **Nur bestehende Libraries verwenden** (`react`, `firebase`, `i18next`, etc.).
+- i18n bei allen neuen Strings.
+- Mobile-first Design beibehalten.
+- Swipe-Performance nicht verschlechtern.
+- Änderungen sauber modular halten (neue Hooks/Utils bei neuer Logik).
+
+---
+
+## Akzeptanzkriterien
+- [ ] Keine Console-Warnings oder Errors nach Änderungen.
+- [ ] Neue Kategorien & Challenges vollständig übersetzt (DE/EN).
+- [ ] Gameplay-Logik verhindert Wiederholungen.
+- [ ] Timer-Feature funktioniert (optional deaktivierbar).
+- [ ] Glassmorphism & Animationen sichtbar in UI.
+- [ ] Legends-Screen zeigt Historie korrekt an.
+- [ ] Core-Features laufen unverändert.
+
+---
+
+## Bitte nicht tun
+- Keine Änderungen an funktionierendem Auth-Flow oder Router.
+- Keine neuen Dependencies ohne zwingende Begründung.
+- Keine Hardcoded Strings.
+- Keine Umbenennungen bestehender ENV-Variablen.
+
+---
+
+## Ausführungshinweise für den Agent
+- Nur Code schreiben & Dateien anpassen – keine Ausführung.
+- Nach jedem Feature eine kurze Statusmeldung:
+  - ✅ Fertiggestellte Features
+  - ⚠️ Offene Punkte
+  - 💡 Verbesserungs-Ideen

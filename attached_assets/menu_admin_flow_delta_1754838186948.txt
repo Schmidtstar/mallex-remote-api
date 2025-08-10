@@ -1,0 +1,119 @@
+
+# Delta: Menü in Reiter + Vorschlags-/Admin-Flow
+
+## Ziel
+Das Menü in **5 Reiter** aufteilen und einen durchgehenden Flow für **Aufgaben anzeigen → Vorschlagen → Admin reviewen → Freigeben** bauen. Alles i18n-konform, ohne Timer/History.
+
+## Neue/Rework Dateien
+- src/features/Menu/MenuScreen.tsx – Tabs/Router innerhalb des Menü-Screens (Client-State, keine URL-Wechsel).
+- src/features/Menu/tabs/SettingsTab.tsx
+- src/features/Menu/tabs/ProfileTab.tsx
+- src/features/Menu/tabs/TasksTab.tsx *(nutzt vorhandene Kategorien/Challenges)*
+- src/features/Menu/tabs/SuggestTab.tsx
+- src/features/Menu/tabs/AdminTab.tsx
+- src/context/AdminContext.tsx *(oder Erweiterung AuthContext)* – isAdmin ermitteln.
+- src/features/Arena/challenges.ts – **nicht** überschreiben; nur lesen/mergen.
+- src/i18n/de.json, src/i18n/en.json – neue Keys.
+
+## Admin-Erkennung (ohne Serveränderungen)
+- ENV: VITE_ADMIN_EMAILS="admin@foo.com,second@bar.com"
+- In AdminContext/AuthContext:
+  ```ts
+  const allow = (import.meta.env.VITE_ADMIN_EMAILS ?? '')
+    .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  const isAdmin = !!(user?.email && allow.includes(user.email.toLowerCase()));
+  ```
+- Gäste: isAdmin === false.
+
+## Datenmodell (Vorschläge & Custom-Pool)
+*(Mit Firestore, wenn vorhanden; sonst LocalStorage Fallback)*
+
+- TaskSuggestion
+  ```ts
+  {
+    id: string,
+    categoryId: 'fate'|'seduce'|'confess'|'escalate'|'shame',
+    text: string,
+    authorUid?: string,
+    authorName?: string,
+    createdAt: number,
+    status: 'pending'|'approved'|'rejected',
+    reviewerUid?: string,
+    reviewedAt?: number,
+    note?: string
+  }
+  ```
+- CustomChallenges (freigegebene Zusatzaufgaben)
+  ```ts
+  Record<categoryId, string[]>
+  ```
+- Merge-Strategie in Anzeige (Arena/TasksTab):
+  ```ts
+  const merged = [...builtinChallenges[cat], ...(customChallenges[cat] ?? [])]
+  ```
+- Fallback-Speicher:
+  - localStorage['mallex.taskSuggestions'] (Array<TaskSuggestion>)
+  - localStorage['mallex.customChallenges'] (Record)
+
+## Tab-Inhalte
+
+### 1) Einstellungen (SettingsTab)
+- Sprache (DE/EN) – bereits vorhanden, hier platzieren
+- Theme (optional später)
+- Hinweis auf Gastmodus/ENV-Status
+
+### 2) Profil (ProfileTab)
+- Wenn **Gast**: CTA „Registrieren / Einloggen“ (Link zu #/auth)
+- Wenn **eingeloggt**: E-Mail anzeigen, **Logout**-Button
+- Mini-Status: „Admin“ Badge falls isAdmin
+
+### 3) Aufgaben (TasksTab)
+- Kategorie-Chips (5 Kategorien)
+- Liste der Aufgaben (gemerged: builtin + custom)
+- Zähler pro Kategorie
+- (Keine Bearbeitung hier)
+
+### 4) Vorschlagen (SuggestTab)
+- Select: Kategorie
+- Textarea: Aufgabe (min. 10 Zeichen)
+- Submit → erzeugt **TaskSuggestion** (status: 'pending')
+- UI-Feedback: „Danke, Prüfung ausstehend“
+- Fallback: schreibt in LocalStorage; wenn Firestore aktiv, in Collection taskSuggestions
+
+### 5) Admin (AdminTab) – nur isAdmin
+- **Pending-Liste** (TaskSuggestion)
+  - Approve → wandert in customChallenges[categoryId] und setzt status:'approved'
+  - Reject (+optional Notiz)
+- **Custom-Pool verwalten** (pro Kategorie):
+  - Hinzufügen / Bearbeiten / Ausblenden / Löschen
+- Alles i18n-konform; bei LocalStorage-Fallback Badge „Lokaler Admin-Modus“
+
+## i18n – neue Keys (Auszug)
+```json
+"menu": {
+  "tabs": { "settings":"Einstellungen","profile":"Profil","tasks":"Aufgaben","suggest":"Vorschlagen","admin":"Admin" },
+  "profile": { "guest":"Gast", "loginCta":"Registrieren / Einloggen", "logout":"Abmelden", "admin":"Admin" },
+  "tasks": { "title":"Aufgaben", "count":"{count} Aufgaben" },
+  "suggest": { "title":"Aufgabe vorschlagen", "choose":"Kategorie wählen", "placeholder":"Formuliere deine Aufgabe...", "submit":"Senden", "thanks":"Danke! Deine Aufgabe wird geprüft." },
+  "admin": { "title":"Adminbereich", "pending":"Offene Vorschläge", "approve":"Freigeben", "reject":"Ablehnen", "note":"Notiz (optional)", "custom":"Eigene Aufgaben", "add":"Hinzufügen", "edit":"Bearbeiten", "delete":"Löschen", "hide":"Ausblenden", "unhide":"Einblenden", "localBadge":"Lokaler Admin-Modus" }
+}
+```
+*(EN spiegeln.)*
+
+## Technische Hinweise
+- Tabs im MenuScreen.tsx als interne State-Tabs (kein Routerwechsel), z. B.:
+  ```tsx
+  const [tab, setTab] = useState<'settings'|'profile'|'tasks'|'suggest'|'admin'>('profile');
+  ```
+- **Kein zusätzliches Package**.
+- **Keine** Änderungen an challenges.ts-Struktur außer **Lesen**.
+- **Keine** Shell-Befehle ausführen (Base-Prompt bleibt gültig).
+
+## Akzeptanzkriterien (knackig)
+- [ ] Menü zeigt 5 Reiter; Wechsel ohne Navigation/Reload.
+- [ ] Profil-Reiter: Logout sichtbar, Gast → „Registrieren / Einloggen“.
+- [ ] Aufgaben-Reiter: Kategorien anwählbar, Aufgaben gemerged (builtin+custom), keine Fehler.
+- [ ] Vorschlagen-Reiter: Submit legt Eintrag status:'pending' an (Firestore oder LocalStorage).
+- [ ] Admin-Reiter nur für isAdmin sichtbar; Approve/Reject ändert Status; Approve macht Aufgabe in der Aufgabenliste sichtbar.
+- [ ] i18n vollständig DE/EN, keine Hardcodes.
+- [ ] Keine neuen Console-Errors/Unhandled-Promise-Rejections.

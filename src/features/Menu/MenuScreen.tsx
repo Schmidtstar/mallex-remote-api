@@ -6,13 +6,31 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { categories } from '../Arena/categories'
 import { challenges } from '../Arena/challenges'
 
+type CategoryLike = { id: string; labelKey?: string; items?: string[] };
+
+const toCategoryArray = (input: any): CategoryLike[] => {
+  if (Array.isArray(input)) return input as CategoryLike[];
+  if (input && typeof input === 'object') {
+    return Object.keys(input).map((id) => ({
+      id,
+      labelKey: (input[id]?.labelKey ?? `categories.${id}`),
+      items: Array.isArray(input[id]?.items) ? input[id].items : [],
+    }));
+  }
+  return [];
+};
+
+const categoryList: CategoryLike[] = toCategoryArray(categories);
+
 export default function MenuScreen() {
   const { t } = useTranslation()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   
-  const [selectedCategoryKey, setSelectedCategoryKey] = useState<string>('fate')
+  const [selectedCategoryKey, setSelectedCategoryKey] = useState<string>(
+    categoryList[0]?.id ?? 'fate'
+  )
 
   // Load category from URL params on mount
   useEffect(() => {
@@ -63,7 +81,7 @@ export default function MenuScreen() {
           justifyContent: 'center',
           marginBottom: '20px'
         }}>
-          {categories.map(category => {
+          {categoryList.map(category => {
             const categoryTasks = challenges[category.id as keyof typeof challenges] || []
             const isActive = selectedCategoryKey === category.id
             
@@ -87,7 +105,7 @@ export default function MenuScreen() {
                   gap: '8px'
                 }}
               >
-                <span>{t(category.labelKey)}</span>
+                <span>{t(category.labelKey || `categories.${category.id}`)}</span>
                 <span style={{
                   backgroundColor: isActive ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.4)',
                   borderRadius: '12px',
@@ -99,7 +117,7 @@ export default function MenuScreen() {
                 </span>
               </button>
             )
-          })}
+          })}</div>
         </div>
       </div>
 
@@ -119,7 +137,7 @@ export default function MenuScreen() {
           textAlign: 'center',
           color: '#4CAF50'
         }}>
-          {t(categories.find(cat => cat.id === selectedCategoryKey)?.labelKey || 'categories.fate')} 
+          {t(categoryList.find(cat => cat.id === selectedCategoryKey)?.labelKey || `categories.${selectedCategoryKey}`)} 
           <span style={{ color: '#fff', fontWeight: 'normal' }}>
             {' '}({selectedChallenges.length} {selectedChallenges.length === 1 ? 'Aufgabe' : 'Aufgaben'})
           </span>

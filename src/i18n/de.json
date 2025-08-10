@@ -1,4 +1,61 @@
 {
+  "arena": {
+    "title": "Arena",
+    "selectPlayer": "Spieler auswählen:",
+    "selectCategory": "Kategorie auswählen:",
+    "spinWheel": "Rad drehen",
+    "revealing": {
+      "player": "Ausgewählter Spieler wird enthüllt...",
+      "category": "Kategorie wird enthüllt...",
+      "challenge": "Aufgabe wird enthüllt..."
+    },
+    "selectedPlayer": "Ausgewählter Spieler",
+    "category": "Kategorie",
+    "challenge": "Aufgabe",
+    "newChallenge": "Neue Aufgabe",
+    "fate": {
+      "item1": "Erzähl uns von deinem peinlichsten Moment",
+      "item2": "Nenne drei Dinge, die du an dir ändern würdest",
+      "item3": "Wer war deine erste große Liebe?",
+      "item4": "Beschreibe dein ideales erstes Date",
+      "item5": "Was ist deine größte Angst?"
+    },
+    "seduce": {
+      "item1": "Flirte mit der Person zu deiner Linken",
+      "item2": "Mache jemandem ein Kompliment über sein Aussehen",
+      "item3": "Beschreibe deinen Traumpartner",
+      "item4": "Erzähl uns von deiner romantischsten Erfahrung",
+      "item5": "Was findest du am attraktivsten an einer Person?"
+    },
+    "confess": {
+      "item1": "Gestehe eine Lüge, die du erzählt hast",
+      "item2": "Verrate uns ein Geheimnis über dich",
+      "item3": "Was bereust du am meisten?",
+      "item4": "Nenne jemanden, in den du heimlich verliebt warst",
+      "item5": "Was würdest du gerne an jemandem ändern?"
+    },
+    "escalate": {
+      "item1": "Küsse die Person deiner Wahl",
+      "item2": "Tanze 30 Sekunden lang verführerisch",
+      "item3": "Gib jemandem eine Schultermassage",
+      "item4": "Flüstere jemandem etwas Anzügliches ins Ohr",
+      "item5": "Zieh ein Kleidungsstück aus"
+    },
+    "shame": {
+      "item1": "Erzähl uns von deinem größten Versagen",
+      "item2": "Nenne drei schlechte Angewohnheiten, die du hast",
+      "item3": "Was ist das Gemeinste, was du je getan hast?",
+      "item4": "Erzähl uns von einer Situation, in der du dich geschämt hast",
+      "item5": "Was würdest du niemals zugeben?"
+    }
+  },
+  "categories": {
+    "fate": "Schicksal",
+    "seduce": "Verführung",
+    "confess": "Beichte",
+    "escalate": "Eskalation",
+    "shame": "Schande"
+  },
   "menu": {
     "title": "MALLEX",
     "arena": "Arena",

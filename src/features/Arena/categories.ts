@@ -1,3 +1,4 @@
+
 // Einheitliche Kategorien (5 Stück) – Single Source of Truth
 export type CategoryId = 'fate' | 'shame' | 'seduce' | 'escalate' | 'confess';
 

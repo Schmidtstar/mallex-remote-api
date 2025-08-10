@@ -1,3 +1,4 @@
+
 import type { CategoryId } from './categories';
 
 // Jede Challenge ist ein i18n-Key. Texte liegen in de.json / en.json unter "arena.<cat>.itemX".

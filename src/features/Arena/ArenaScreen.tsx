@@ -61,7 +61,7 @@ export default function ArenaScreen() {
         <h1>🏛️ {t('arena.title')}</h1>
         <div style={{ marginTop: '40px' }}>
           <p style={{ fontSize: '18px', marginBottom: '20px' }}>
-            {t('arena.empty.description')}
+            {t('legends.noPlayers')}
           </p>
           <Link
             to="/legends"
@@ -75,7 +75,7 @@ export default function ArenaScreen() {
               borderRadius: '8px'
             }}
           >
-            {t('arena.empty.cta')}
+            {t('legends.addPlayer')}
           </Link>
         </div>
       </div>
@@ -90,7 +90,7 @@ export default function ArenaScreen() {
         {revealState === 'idle' && (
           <div>
             <p style={{ fontSize: '18px', marginBottom: '30px' }}>
-              {t('arena.ready', { count: players.length })}
+              Ready with {players.length} players
             </p>
             <button
               onClick={startReveal}
@@ -104,7 +104,7 @@ export default function ArenaScreen() {
                 cursor: 'pointer'
               }}
             >
-              {t('arena.start')}
+              {t('arena.spinWheel')}
             </button>
           </div>
         )}
@@ -123,7 +123,7 @@ export default function ArenaScreen() {
         {(revealState === 'revealing-category' || revealState === 'revealing-challenge' || revealState === 'complete') && (
           <div>
             <h2 style={{ fontSize: '20px', marginBottom: '20px' }}>
-              {t('arena.player')}: <span style={{ color: '#ff6b35' }}>{selectedPlayer}</span>
+              {t('arena.selectedPlayer')}: <span style={{ color: '#ff6b35' }}>{selectedPlayer}</span>
             </h2>
             {revealState === 'revealing-category' && (
               <div>

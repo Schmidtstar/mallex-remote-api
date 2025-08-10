@@ -5,14 +5,12 @@ import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { BurgerButton } from '../features/Menu/components/BurgerButton'
-import { MobileDrawer } from '../features/Menu/components/MobileDrawer'
 
 export function TabLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { t } = useTranslation()
-  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const tabs = [
     { path: '/arena', label: '🏟️', ariaLabel: t('tabs.arena') },
@@ -91,18 +89,9 @@ export function TabLayout() {
 
         {/* Menu Burger Button */}
         <div style={{ padding: '4px' }}>
-          <BurgerButton
-            isOpen={drawerOpen}
-            onClick={() => setDrawerOpen(!drawerOpen)}
-          />
+          <BurgerButton />
         </div>
       </div>
-
-      {/* Mobile Drawer */}
-      <MobileDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      />
     </div>
   )
 }

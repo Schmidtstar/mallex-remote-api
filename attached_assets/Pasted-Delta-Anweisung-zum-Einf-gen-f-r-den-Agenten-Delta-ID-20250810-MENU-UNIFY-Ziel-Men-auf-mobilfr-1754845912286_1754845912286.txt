@@ -1,0 +1,104 @@
+Delta-Anweisung (zum Einfügen für den Agenten)
+
+Delta-ID: 20250810-MENU-UNIFY
+Ziel: Menü auf mobilfreundliches Drawer-Design finalisieren; Kategorien/Challenges vereinheitlichen; Vorschlags-/Admin-Flow lokal funktionsfähig; Arena & Menü konsistent.
+
+Details / Anforderungen:
+
+A. Daten & i18n vereinheitlichen
+	1.	src/features/Arena/categories.ts
+	•	Export Array mit genau 5 Kategorien (fate, shame, seduce, escalate, confess) inkl. labelKey wie oben.
+	2.	src/features/Arena/challenges.ts
+	•	Export Record categoryId -> string[] mit i18n-Keys arena.<category>.itemX.
+	3.	src/i18n/de.json & src/i18n/en.json
+	•	Sicherstellen/ergänzen:
+	•	categories.fate/shame/seduce/escalate/confess
+	•	arena.fate.item1..item5 … analog für alle Kategorien.
+	•	Keine doppelten oder verwaisten alten Keys (Truth/Dare/Mixed etc.) in der UI verwenden.
+
+B. Arena konsistent auf Datenmodell bringen
+	1.	src/features/Arena/ArenaScreen.tsx
+	•	Importiert categories & challenges aus obigen Dateien.
+	•	Flow → Start-Button löst nacheinander aus:
+	1.	Random Player aus PlayersContext
+	2.	Random Category aus categories
+	3.	Random Challenge aus challenges[category.id]
+	•	Keine Timer/History.
+	•	i18n: Anzeige über t(labelKey) mit Fallback auf Key, falls Übersetzung fehlt.
+
+C. Menü – Drawer & Tabs
+	1.	src/features/Menu/MenuScreen.tsx
+	•	Verwende vorhandene BurgerButton + MobileDrawer Komponenten.
+	•	Drawer-Einträge (in dieser Reihenfolge):
+	•	Einstellungen
+	•	Profil
+	•	Aufgaben
+	•	Vorschlagen
+	•	Admin (nur wenn isAdmin || localAdmin true)
+	•	Nach Klick schließt der Drawer.
+	•	Entferne etwaige Desktop-Tab-Artefakte (keine Inline-Tabs in schmalen Viewports).
+	2.	Tabs
+	•	src/features/Menu/tabs/SettingsTab.tsx: Sprache + Firebase Status (bereits vorhanden).
+	•	src/features/Menu/tabs/ProfileTab.tsx:
+	•	Wenn eingeloggt: Email + Abmelden.
+	•	Wenn Gast: CTA „Registrieren / Einloggen“ (Navigation zur Auth, kein Inline-Form).
+	•	src/features/Menu/tabs/TasksTab.tsx:
+	•	Oben Category-Chips aus categories.
+	•	Darunter Liste der Aufgaben der gewählten Kategorie:
+	•	Anzeige: t(key); Fallback: Key-String.
+	•	Counter je Kategorie (Badge).
+	•	src/features/Menu/tabs/SuggestTab.tsx:
+	•	Import fix: import { useTaskSuggestions } from '../context/TaskSuggestionsContext'
+	•	Formular: Kategorie-Select (ids aus categories), Textarea, „Senden“.
+	•	Validierung: Trim, mind. 8 Zeichen, nicht leer, keine Dublette (case-insensitive) im Pending-Pool.
+	•	addSuggestion(categoryId, text) → Context → localStorage (z. B. mallex.pendingSuggestions).
+	•	Erfolgsmeldung (lokal, i18n).
+	•	src/features/Menu/tabs/AdminTab.tsx:
+	•	Gated: nur sichtbar, wenn Admin-Flag wahr.
+	•	Listet Pending-Vorschläge aus Context.
+	•	Aktionen:
+	•	Approve: in „approvedTasks“ (localStorage) übernehmen & in einen in-memory Merged-Pool (Context) integrieren, sodass TasksTab sie mit anzeigt.
+	•	Reject: aus Pending entfernen.
+	•	Optional: Notiz-Feld pro Pending (lokal).
+	•	Keine Änderung der Quell-Datei challenges.ts – Merging rein im Context zur Laufzeit.
+
+D. Kontexte & Zustände
+	1.	src/features/Menu/context/TaskSuggestionsContext.tsx (falls noch nicht vorhanden/ergänzen):
+	•	State: pending: Suggestion[], approved: ApprovedTask[], localAdmin: boolean.
+	•	Methoden: addSuggestion, approve, reject, toggleLocalAdmin.
+	•	Persistenz: localStorage Schlüssel:
+	•	mallex.pendingSuggestions
+	•	mallex.approvedTasks
+	•	mallex.localAdmin
+	•	Selektor für Merged Tasks: gibt Map categoryId -> string[] zurück, die challenges.ts + approvedTasks (als freie Texte) kombiniert. Für freie Texte ohne i18n-Key: direkt als Anzeige-String rendern.
+	2.	Stelle sicher, dass TaskSuggestionsProvider oberhalb von MenuScreen gemountet ist (z. B. in main.tsx in der Provider-Kette, neben Players/Auth).
+
+E. UI/UX mobil
+	1.	BurgerButton/MobileDrawer CSS:
+	•	Full-height Drawer, swipe-to-close (optional), große Touch-Zonen (mind. 44px Höhe).
+	•	Schriftgrößen & Spacings mobil optimieren.
+	2.	Header:
+	•	Kein “Gast” Text oben rechts.
+	•	Titel über i18n menu.title.
+	3.	Fehlerfreiheit:
+	•	Keine Konsole-Warnungen (Hooks, “jsx as boolean”, reserved words, JSON trailing commas, HMR Importe).
+	•	Imports relativ statt @/ Alias (vermeidet HMR-Stress).
+
+F. i18n Konsistenz
+	•	TasksTab nutzt nur t(key) für keys; freie Texte (approved) direkt anzeigen.
+	•	Fehlende Keys: sichtbar als Key-String (Fallback), aber kurz in der Konsole mit Kategorie/Key loggen (dev only).
+
+Akzeptanzkriterien:
+	•	Arena zieht Spieler aus Hall, Start → (Spieler → Kategorie → Aufgabe) mit sanften Reveals, ohne Timer/History.
+	•	Einheitliche Kategorien (5), identisch in Arena & Menü.
+	•	TasksTab zeigt je Kategorie alle Aufgaben (i18n-Keys + approved freie Texte).
+	•	Vorschlagen fügt Pending lokal hinzu; Admin kann Approve/Reject; Approve erweitert den sichtbaren Aufgaben-Pool live.
+	•	Drawer-Menü auf Mobile: öffnet/schließt sauber, große Touch-Flächen, keine Überlappungen, keine Desktop-Tabs nötig.
+	•	Kein „Gast“-Badge oben rechts.
+	•	0 Console-Errors/Warnungen beim Navigieren Menu ↔ Arena ↔ Legends.
+	•	Keine Pakete installiert/entfernt; nur statische Code-Änderungen.
+
+Zusatzhinweise:
+	•	Keine Änderungen an Build/Shell; keine neuen Packages.
+	•	Bestehende Komponenten wiederverwenden (BurgerButton, MobileDrawer, vorhandene Tabs).
+	•	Falls SuggestTab noch await add(...) nutzt: auf addSuggestion(...) ändern; Import-Pfad relativ zur Datei (s. oben).

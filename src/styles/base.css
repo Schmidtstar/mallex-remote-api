@@ -3,3 +3,25 @@ html,body,#root{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif}
 a{color:inherit;text-decoration:none}
 input,select,button{font:inherit}
+
+/* Base styles for consistent theming */
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  margin: 0;
+  padding: 0;
+}
+
+/* Responsive utility classes */
+@media (max-width: 767px) {
+  .md\:hidden {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .hidden {
+    display: none !important;
+  }
+}

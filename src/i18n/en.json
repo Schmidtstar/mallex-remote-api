@@ -95,13 +95,14 @@
   "menu": {
     "tabs": {
       "settings": "Settings",
-      "profile": "Profile", 
+      "profile": "Profile",
       "tasks": "Tasks",
       "suggest": "Suggest",
       "admin": "Admin",
+      "leaderboard": "Leaderboard",
       "rules": "Rules",
       "about": "About MALLEX",
-      "ranklist": "Player Ranking"
+      "dev": "Developer"
     },
     "profile": {
       "guest": "Guest",
@@ -124,7 +125,7 @@
       "title": "Admin Area",
       "pending": "Pending Suggestions",
       "approve": "Approve",
-      "reject": "Reject", 
+      "reject": "Reject",
       "note": "Note (optional)",
       "custom": "Custom Tasks",
       "add": "Add",

@@ -143,13 +143,14 @@
   "menu": {
     "tabs": {
       "settings": "Einstellungen",
-      "profile": "Profil", 
+      "profile": "Profil",
       "tasks": "Aufgaben",
       "suggest": "Vorschlagen",
       "admin": "Admin",
+      "leaderboard": "Rangliste",
       "rules": "Spielregeln",
       "about": "Über MALLEX",
-      "ranklist": "Spieler-Rangliste"
+      "dev": "Entwickler"
     },
     "profile": {
       "guest": "Gast",
@@ -172,7 +173,7 @@
       "title": "Adminbereich",
       "pending": "Offene Vorschläge",
       "approve": "Freigeben",
-      "reject": "Ablehnen", 
+      "reject": "Ablehnen",
       "note": "Notiz (optional)",
       "custom": "Eigene Aufgaben",
       "add": "Hinzufügen",

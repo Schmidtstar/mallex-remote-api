@@ -141,6 +141,15 @@
     }
   },
   "menu": {
+    "settings": "Einstellungen",
+    "profile": "Profil",
+    "tasks": "Aufgaben",
+    "suggest": "Vorschlagen",
+    "ranking": "Rangliste",
+    "rules": "Spielregeln",
+    "about": "Über MALLEX",
+    "taskManager": "Aufgaben-Manager",
+    "devManager": "Entwickler-Manager",
     "tabs": {
       "settings": "Einstellungen",
       "profile": "Profil",

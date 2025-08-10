@@ -93,6 +93,15 @@
     "confess": "Confess"
   },
   "menu": {
+    "settings": "Settings",
+    "profile": "Profile",
+    "tasks": "Tasks",
+    "suggest": "Suggest",
+    "ranking": "Leaderboard",
+    "rules": "Rules",
+    "about": "About MALLEX",
+    "taskManager": "Task Manager",
+    "devManager": "Developer Manager",
     "tabs": {
       "settings": "Settings",
       "profile": "Profile",

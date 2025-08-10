@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUI } from '../context/UIContext';
 import { useAuth } from '../context/AuthContext';
 import { useAdmin } from '../context/AdminContext';
-import { menuItems, MenuItem } from '../features/Menu/menuItems';
+import { menuItems, MenuItem } from '../config/menuItems';
 import styles from './AppDrawer.module.css';
 
 export const AppDrawer: React.FC = () => {
@@ -15,11 +15,23 @@ export const AppDrawer: React.FC = () => {
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
 
+  const getUserRole = () => {
+    if (isAdmin) return 'admin';
+    if (user) return 'user';
+    return 'guest';
+  };
+
+  const userRole = getUserRole();
+  
   const filteredMenuItems = menuItems.filter((item: MenuItem) => {
-    if (item.roles.includes('admin') && !isAdmin) {
-      return false;
-    }
-    return true;
+    // If no roles specified, show to everyone
+    if (!item.roles || item.roles.length === 0) return true;
+    
+    // If visible is explicitly set to false, hide item
+    if (item.visible === false) return false;
+    
+    // Check if user role is in allowed roles
+    return item.roles.includes(userRole);
   });
 
   const handleItemClick = (route: string) => {

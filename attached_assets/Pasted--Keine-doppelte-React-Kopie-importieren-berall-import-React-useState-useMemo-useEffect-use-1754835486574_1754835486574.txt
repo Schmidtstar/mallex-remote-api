@@ -1,0 +1,66 @@
+	•	Keine doppelte React-Kopie importieren; überall import React, { useState, useMemo, useEffect, useContext } from 'react' konsistent nutzen (falls benötigt).
+	•	Sicherstellen, dass alle Hooks ausschließlich innerhalb von Function Components oder custom Hooks genutzt werden.
+
+	2.	PlayersContext robust machen
+
+	•	src/context/PlayersContext.tsx:
+	•	createContext mit vollständigem Default-Wert (keine undefined-Zugriffe).
+	•	usePlayers() wirft eine klare Fehlermeldung, wenn der Provider fehlt.
+	•	Persistenz-Strategie:
+	•	Guest (!user || user.isAnonymous): localStorage verwenden; kein Firestore-Zugriff.
+	•	Auth: Firestore nutzen; bei Fehlern unsauberer Auth → stiller Fallback auf localStorage.
+	•	useMemo für das Context-Value verwenden, um Re-Renders zu reduzieren.
+
+	3.	TabLayout finalisieren (JSX & Styles)
+
+	•	src/layouts/TabLayout.tsx:
+	•	Kein Inline-Zugriff wie style={styles.container} (CSS-Module nur via className={styles.container}).
+	•	JSX vollständig schließen (kein hängendes < am Ende).
+	•	Legenden-Tab: nur Icon (🏛️).
+	•	Gast-Badge rechts oben anzeigen, wenn useAuth().isAnonymous === true.
+
+	4.	Halle der Legenden (Spieler-Management)
+
+	•	src/features/Legends/LegendsScreen.tsx:
+	•	Spieler hinzufügen/entfernen über PlayersContext.
+	•	Leerer Zustand: klarer CTA „Beschwöre die Götter“ (Spieler hinzufügen).
+	•	i18n-Keys verwenden; keine Hardcodes.
+
+	5.	Arena (Random Reveal: Spieler → Kategorie → Challenge)
+
+	•	src/features/Arena/ArenaScreen.tsx:
+	•	Start-Button triggert Sequenz: Spieler → Kategorie → Aufgabe mit kurzen Animations-Delays.
+	•	Wenn keine Spieler: leerer Zustand + Link/CTA zur „Halle der Legenden“.
+	•	{name}-Interpolation im Aufgabe-Text (falls verwendet).
+	•	Kein Timer, keine History in der Arena.
+	•	i18n-Keys konsequent.
+
+	6.	Router/Fehlerbild verbessern
+
+	•	src/router.tsx:
+	•	RouterProvider mit future={{ v7_startTransition: true }} (falls noch nicht gesetzt).
+	•	errorElement = globaler ErrorBoundary.
+
+	7.	i18n prüfen
+
+	•	src/i18n/de.json, src/i18n/en.json:
+	•	Alle UI-Strings vorhanden (Arena/Legenden/Buttons/Leere-Zustände).
+	•	Keine neuen Keys ohne Usage.
+
+Akzeptanzkriterien (muss ✔️ sein)
+	•	✔️ Keine „Invalid hook call“/dispatcher.useContext/styles-Fehler mehr.
+	•	✔️ Arena: Start-Sequenz funktioniert (Spieler → Kategorie → Aufgabe) und bricht sinnvoll ab, wenn keine Spieler vorhanden sind (CTA zur Halle der Legenden).
+	•	✔️ Halle der Legenden: Spieler lassen sich persistiert hinzufügen/entfernen (Guest: localStorage; Auth: Firestore, mit Fail-Fallback).
+	•	✔️ Tabs: „Halle der Legenden“ zeigt nur das Icon; Gast-Badge sichtbar bei Anonymous.
+	•	✔️ Keine Hardcoded UI-Strings (i18n).
+	•	✔️ Keine neuen Paket-/Build-Änderungen; nur Code.
+
+Wichtige Regeln
+	•	❌ Keine Shell/Build/Runtime-Befehle ausführen.
+	•	❌ Keine package.json-Änderungen.
+	•	✅ Nach jedem Fix kurzen MD-Report posten: geänderte Datei(en) + 1 Satz Begründung.
+
+Hinweise für den manuellen Test (führt der Nutzer aus)
+	1.	Gast-Flow: App starten → /auth → „Als Gast fortfahren“ → /menu zeigt Badge „Gast“ → „Halle der Legenden“ → Spieler hinzufügen → zurück zur Arena → Start → Sequenz läuft.
+	2.	Leerer Zustand: Alle Spieler löschen → Arena öffnen → CTA zur Halle der Legenden sichtbar.
+	3.	i18n: Sprache DE/EN wechseln → Tabs, Buttons, Leere-Zustände übersetzt.

@@ -1,7 +1,7 @@
 language = "nodejs"
 entrypoint = "index.html"
 
-run = "npm run dev -- --host --port $PORT"
+run = "npm run dev -- --host"
 modules = ["nodejs-20"]
 
 [env]
@@ -29,4 +29,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev -- --host --port $PORT"
+args = "npm run dev -- --host"

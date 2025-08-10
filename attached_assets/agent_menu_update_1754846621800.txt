@@ -1,0 +1,22 @@
+
+# Ziel
+Im Menü soll statt 'menu.title' der Text 'Menü' (Deutsch) bzw. 'Menu' (Englisch) angezeigt werden.
+
+# Schritte
+1. Öffne die Datei `src/i18n/de.json` und passe den Eintrag für `menu.title` an:
+{
+  "menu": {
+    "title": "Menü"
+  }
+}
+
+2. Öffne die Datei `src/i18n/en.json` und passe den Eintrag für `menu.title` an:
+{
+  "menu": {
+    "title": "Menu"
+  }
+}
+
+3. Falls die Schlüssel `menu` oder `title` noch nicht existieren, lege sie neu an.
+
+4. Speichere die Änderungen und starte den Dev-Server neu, damit die Übersetzungen wirksam werden.

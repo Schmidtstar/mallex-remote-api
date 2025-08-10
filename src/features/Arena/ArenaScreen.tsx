@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react'
-import { categories } from './categories'
+import { useCategories } from './categories'
 import { useTranslation } from 'react-i18next'
 import { useSwipe } from '@/hooks/useSwipe'
 
@@ -9,8 +9,9 @@ function pick<T>(arr: T[]): T {
 
 export default function ArenaScreen() {
   const { t } = useTranslation()
+  const categories = useCategories()
   const [catId, setCatId] = useState(categories[0].id)
-  const current = useMemo(() => categories.find(c => c.id === catId)!, [catId])
+  const current = useMemo(() => categories.find(c => c.id === catId)!, [catId, categories])
   const [item, setItem] = useState(() => pick(current.items))
 
   useEffect(() => { setItem(pick(current.items)) }, [current])

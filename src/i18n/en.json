@@ -37,20 +37,52 @@
   },
   "arena": {
     "title": "Arena",
-    "empty": {
-      "description": "No players found. Visit the Hall of Legends to add players.",
-      "cta": "Go to Hall of Legends"
+    "selectPlayer": "Select player:",
+    "selectCategory": "Select category:",
+    "spinWheel": "Spin the wheel",
+    "revealing": {
+      "player": "Revealing selected player...",
+      "category": "Revealing category...",
+      "challenge": "Revealing challenge..."
     },
-    "ready": "{{count}} players ready for battle!",
-    "start": "Begin Battle",
-    "player": "Player",
+    "selectedPlayer": "Selected Player",
     "category": "Category",
     "challenge": "Challenge",
     "newChallenge": "New Challenge",
-    "revealing": {
-      "player": "The chosen warrior is...",
-      "category": "The category is being revealed...",
-      "challenge": "The challenge is..."
+    "fate": {
+      "item1": "Tell us about your most embarrassing moment",
+      "item2": "Name three things you would change about yourself",
+      "item3": "Who was your first love?",
+      "item4": "Describe your ideal first date",
+      "item5": "What is your biggest fear?"
+    },
+    "seduce": {
+      "item1": "Flirt with the person to your left",
+      "item2": "Give someone a compliment about their appearance",
+      "item3": "Describe your dream partner",
+      "item4": "Tell us about your most romantic experience",
+      "item5": "What do you find most attractive in a person?"
+    },
+    "confess": {
+      "item1": "Confess a lie you've told",
+      "item2": "Tell us a secret about yourself",
+      "item3": "What do you regret the most?",
+      "item4": "Name someone you secretly had a crush on",
+      "item5": "What would you like to change about someone?"
+    },
+    "escalate": {
+      "item1": "Kiss the person of your choice",
+      "item2": "Dance seductively for 30 seconds",
+      "item3": "Give someone a shoulder massage",
+      "item4": "Whisper something suggestive in someone's ear",
+      "item5": "Remove an article of clothing"
+    },
+    "shame": {
+      "item1": "Tell us about your biggest failure",
+      "item2": "Name three bad habits you have",
+      "item3": "What's the meanest thing you've ever done?",
+      "item4": "Tell us about a situation where you felt ashamed",
+      "item5": "What would you never admit to?"
     }
   },
   "categories": {

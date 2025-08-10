@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { getFirebase } from '../lib/firebase'
 
@@ -76,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const fb = await getFirebase()
       if (!fb) throw new Error('Firebase nicht konfiguriert')
       if (!fb.auth.currentUser) throw new Error('Kein Benutzer angemeldet')
-      
+
       const { EmailAuthProvider, linkWithCredential } = await import('firebase/auth')
       const credential = EmailAuthProvider.credential(email, password)
       await linkWithCredential(fb.auth.currentUser, credential)
@@ -85,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (e?.code === 'auth/email-already-in-use') errorKey = 'auth.upgrade.error.emailInUse'
       else if (e?.code === 'auth/invalid-email') errorKey = 'auth.upgrade.error.invalidEmail'
       else if (e?.code === 'auth/weak-password') errorKey = 'auth.upgrade.error.weakPassword'
-      
+
       setError(errorKey)
       throw new Error(errorKey)
     }

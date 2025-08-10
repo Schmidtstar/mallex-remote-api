@@ -35,20 +35,52 @@
   },
   "arena": {
     "title": "Arena",
-    "empty": {
-      "description": "Keine Spieler gefunden. Besuche die Halle der Legenden, um Spieler hinzuzufügen.",
-      "cta": "Zur Halle der Legenden"
+    "selectPlayer": "Spieler auswählen:",
+    "selectCategory": "Kategorie auswählen:",
+    "spinWheel": "Glücksrad drehen",
+    "revealing": {
+      "player": "Ausgewählter Spieler wird enthüllt...",
+      "category": "Kategorie wird enthüllt...",
+      "challenge": "Aufgabe wird enthüllt..."
     },
-    "ready": "{{count}} Spieler bereit für den Kampf!",
-    "start": "Schlacht beginnen",
-    "player": "Spieler",
+    "selectedPlayer": "Ausgewählter Spieler",
     "category": "Kategorie",
     "challenge": "Aufgabe",
-    "newChallenge": "Neue Herausforderung",
-    "revealing": {
-      "player": "Der auserwählte Krieger ist...",
-      "category": "Die Kategorie wird enthüllt...",
-      "challenge": "Die Herausforderung lautet..."
+    "newChallenge": "Neue Aufgabe",
+    "fate": {
+      "item1": "Erzähle von deinem peinlichsten Moment",
+      "item2": "Nenne drei Dinge, die du an dir ändern würdest",
+      "item3": "Was war deine erste Liebe?",
+      "item4": "Beschreibe dein ideales erstes Date",
+      "item5": "Was ist deine größte Angst?"
+    },
+    "seduce": {
+      "item1": "Flirte mit der Person links von dir",
+      "item2": "Mache jemandem ein Kompliment über sein Aussehen",
+      "item3": "Beschreibe deinen Traumpartner",
+      "item4": "Erzähle von deinem romantischsten Erlebnis",
+      "item5": "Was findest du am attraktivsten an einer Person?"
+    },
+    "confess": {
+      "item1": "Gestehe eine Lüge, die du erzählt hast",
+      "item2": "Erzähle ein Geheimnis über dich",
+      "item3": "Was bereust du am meisten?",
+      "item4": "Nenne eine Person, in die du heimlich verliebt warst",
+      "item5": "Was würdest du gerne an jemandem ändern?"
+    },
+    "escalate": {
+      "item1": "Küsse die Person deiner Wahl",
+      "item2": "Tanze verführerisch für 30 Sekunden",
+      "item3": "Massiere jemandem die Schultern",
+      "item4": "Flüstere jemandem etwas Anzügliches ins Ohr",
+      "item5": "Ziehe ein Kleidungsstück aus"
+    },
+    "shame": {
+      "item1": "Erzähle von deinem größten Versagen",
+      "item2": "Nenne drei schlechte Gewohnheiten von dir",
+      "item3": "Was ist das Gemeinste, was du je getan hast?",
+      "item4": "Erzähle von einer Situation, wo du dich geschämt hast",
+      "item5": "Was würdest du niemals zugeben?"
     }
   },
   "categories": {

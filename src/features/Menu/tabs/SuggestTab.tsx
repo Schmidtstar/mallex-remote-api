@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { categories } from "@/features/Arena/categories";
-import { useTaskSuggestions } from "@/features/Menu/context/TaskSuggestionsContext";
+import { useTaskSuggestions } from "@/context/TaskSuggestionsContext";
 
 export default function SuggestTab() {
   const { t } = useTranslation();

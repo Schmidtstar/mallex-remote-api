@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories as categoriesData } from '../../Arena/categories'
 import { challenges as challengesData } from '../../Arena/challenges'
-import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
+import { useTaskSuggestions } from '@/context/TaskSuggestionsContext'
 
 export default function TasksTab() {
   const { t } = useTranslation()

@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories as categoriesMap } from '../../Arena/categories'
-import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext'
+import { useTaskSuggestions } from '@/context/TaskSuggestionsContext'
 import { useAuth } from '../../../context/AuthContext'
 
 export default function AdminTab() {

@@ -30,3 +30,6 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev -- --host"
+
+[nix]
+channel = "stable-25_05"

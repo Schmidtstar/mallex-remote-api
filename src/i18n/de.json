@@ -12,7 +12,15 @@
     "email": "E-Mail",
     "password": "Passwort",
     "signOut": "Abmelden",
-    "guest": "Als Gast fortfahren"
+    "guestMode": "Gastmodus",
+    "enterEmail": "E-Mail eingeben",
+    "enterPassword": "Passwort eingeben",
+    "noAccount": "Noch kein Konto? Registrieren",
+    "hasAccount": "Bereits ein Konto? Anmelden"
+  },
+  "actions": {
+    "logout": "Abmelden",
+    "loggingOut": "Abmelden…"
   },
   "arena": {
     "title": "Arena",
@@ -52,7 +60,7 @@
   },
   "tabs": {
     "arena": "Arena",
-    "legends": "Legenden", 
+    "legends": "Legenden",
     "menu": "Menü"
   }
 }

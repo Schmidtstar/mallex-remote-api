@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { useCategories } from './categories'
 import { useTranslation } from 'react-i18next'
-import { useSwipe } from '@/hooks/useSwipe'
+import { useSwipe } from '../../hooks/useSwipe'
 
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]

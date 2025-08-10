@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import BottomNavigation from '@/components/BottomNavigation'
-import { useSwipe } from '@/hooks/useSwipe'
+import BottomNavigation from '../components/BottomNavigation'
+import { useSwipe } from '../hooks/useSwipe'
 
 const tabs = ['/arena','/legends','/menu']
 

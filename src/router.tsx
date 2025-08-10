@@ -1,11 +1,11 @@
 import React from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
-import TabLayout from '@/layouts/TabLayout'
-import ArenaScreen from '@/features/Arena/ArenaScreen'
-import LegendsScreen from '@/features/Legends/LegendsScreen'
-import MenuScreen from '@/features/Menu/MenuScreen'
-import AuthScreen from '@/features/Auth/AuthScreen'
-import { useAuth } from '@/context/AuthContext'
+import TabLayout from './layouts/TabLayout'
+import ArenaScreen from './features/Arena/ArenaScreen'
+import LegendsScreen from './features/Legends/LegendsScreen'
+import MenuScreen from './features/Menu/MenuScreen'
+import AuthScreen from './features/Auth/AuthScreen'
+import { useAuth } from './context/AuthContext'
 
 const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
 
@@ -33,13 +33,6 @@ const routes = [
   }
 ]
 
-// Configure future flags for both router types
-const futureConfig = {
-  future: {
-    v7_startTransition: true
-  }
-}
-
 export default useHash 
-  ? createHashRouter(routes, futureConfig)
-  : createBrowserRouter(routes, futureConfig)
+  ? createHashRouter(routes)
+  : createBrowserRouter(routes)

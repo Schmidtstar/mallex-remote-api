@@ -30,7 +30,7 @@ export default function MenuScreen() {
         </select>
 
         <button onClick={logout} disabled={busy} style={{marginTop:16}}>
-          {busy ? 'Abmelden…' : 'Abmelden'}
+          {busy ? t('actions.loggingOut') : t('actions.logout')}
         </button>
       </div>
     </section>

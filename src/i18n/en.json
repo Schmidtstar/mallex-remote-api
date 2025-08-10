@@ -12,7 +12,15 @@
     "email": "Email",
     "password": "Password",
     "signOut": "Sign Out",
-    "guest": "Continue as Guest"
+    "guestMode": "Guest Mode",
+    "enterEmail": "Enter email",
+    "enterPassword": "Enter password",
+    "noAccount": "No account? Sign up",
+    "hasAccount": "Already have an account? Sign in"
+  },
+  "actions": {
+    "logout": "Logout",
+    "loggingOut": "Logging out…"
   },
   "arena": {
     "title": "Arena",

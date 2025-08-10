@@ -6,7 +6,7 @@ import { useTaskSuggestions } from '../../../context/TaskSuggestionsContext';
 
 export default function SuggestTab() {
   const { t } = useTranslation();
-  const { add } = useTaskSuggestions();
+  const { addSuggestion } = useTaskSuggestions();
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [taskText, setTaskText] = useState('');
   const [showThanks, setShowThanks] = useState(false);
@@ -18,11 +18,7 @@ export default function SuggestTab() {
       return;
     }
 
-    add({
-      categoryId: selectedCategory as any,
-      text: taskText.trim(),
-      createdAt: Date.now(),
-    });
+    await addSuggestion(selectedCategory, taskText.trim());
 
     // Reset form and show thanks
     setSelectedCategory('');

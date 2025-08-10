@@ -118,7 +118,7 @@ export default function MenuScreen() {
           color: 'var(--fg)',
           margin: 0
         }}>
-          {t('menu.title')}
+          {t('menu.title', 'Menü')}
         </h1>
 
         {/* Mobile Burger Button */}

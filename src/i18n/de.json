@@ -1,0 +1,20 @@
+{
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Legenden",
+    "menu": "Menü"
+  },
+  "arena": {
+    "title": "Arena",
+    "new": "Neue Herausforderung",
+    "tip": "Links/Rechts wischen für die nächste Herausforderung"
+  },
+  "legends": {
+    "title": "Legenden & Regeln",
+    "body": "Kurze Regeln & Lore…"
+  },
+  "menu": {
+    "title": "Einstellungen",
+    "language": "Sprache"
+  }
+}

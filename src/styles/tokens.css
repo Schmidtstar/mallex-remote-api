@@ -1,0 +1,9 @@
+:root{
+  --radius: 14px;
+  --space: 12px;
+  --bg: #0c0f14;
+  --fg: #e8ecf1;
+  --glass: rgba(255,255,255,0.06);
+  --stroke: rgba(255,255,255,0.12);
+  --primary: #6bd5ff;
+}

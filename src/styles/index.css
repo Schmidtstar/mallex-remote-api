@@ -1,0 +1,12 @@
+@import './tokens.css';
+@import './base.css';
+
+.app-shell{min-height:100%;display:flex;flex-direction:column}
+.app-content{flex:1; padding:16px; max-width:720px; margin:0 auto}
+.bottom-nav{position:sticky;bottom:0;display:flex;gap:16px;justify-content:space-around;
+  padding:10px 12px;background:var(--glass);backdrop-filter: blur(10px); border-top:1px solid var(--stroke)}
+.card.glass{padding:16px;border-radius:var(--radius);background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--stroke)}
+button{padding:10px 14px;border-radius:10px;border:1px solid var(--stroke);background:transparent;color:var(--fg);cursor:pointer}
+select,input{padding:10px;border-radius:10px;background:transparent;color:var(--fg);border:1px solid var(--stroke)}
+h1{margin:0 0 12px}
+section{padding:8px}

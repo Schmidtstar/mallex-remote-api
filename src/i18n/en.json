@@ -43,11 +43,12 @@
   },
   "arena": {
     "title": "Arena",
-    "selectCategory": "Select Category:",
-    "new": "New Challenge",
-    "tip": "Swipe or tap for new challenge",
-    "enableTimer": "Enable Timer (30s)",
-    "history": "Recent Challenges",
+    "start": "Begin Battle",
+    "noPlayers": "No heroes available!",
+    "callToAction": "Summon the Gods in the Hall of Legends",
+    "playerReveal": "The chosen hero:",
+    "categoryReveal": "The trial:",
+    "challengeReveal": "The task:",
     "fate": {
       "item1": "Anyone with an even birthday drinks 1 sip.",
       "item2": "Roll your fate: draw one more challenge.",
@@ -134,8 +135,12 @@
     "5": "Create a superhero identity and introduce yourself!"
   },
   "legends": {
-    "title": "Legends",
-    "comingSoon": "Coming Soon"
+    "title": "Hall of Legends",
+    "subtitle": "Manage players for epic battles",
+    "addPlayer": "Summon the Gods",
+    "playerName": "Hero's Name",
+    "noPlayers": "No heroes in the hall. Summon the first gods!",
+    "removePlayer": "Banish"
   },
   "tabs": {
     "arena": "Arena",

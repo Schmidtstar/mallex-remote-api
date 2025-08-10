@@ -1,300 +1,346 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react'
-import { useCategories } from './categories'
+
+import React, { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSwipe } from '../../hooks/useSwipe'
+import { usePlayers } from '../../context/PlayersContext'
+import { Link } from 'react-router-dom'
 
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]
-}
+const categories = [
+  { id: 'fate', challenges: [
+    'Alle mit gerader Geburtstagszahl trinken 1 Schluck.',
+    'Würfle dein Schicksal: Ziehe eine zweite Challenge.',
+    'Die Person links von {name} trinkt 2 Schlucke.',
+    '{name} wählt eine Person, die 3 Schlücke trinkt.',
+    'Alle Männer trinken 2 Schlücke, {name} entscheidet.'
+  ]},
+  { id: 'seduce', challenges: [
+    '{name} flüstert jemandem ein Kompliment ins Ohr.',
+    '{name} hält 10 Sekunden lang intensiven Augenkontakt mit einer Person nach Wahl.',
+    '{name} schickt einem Mitspieler ein Herz-Emoji.',
+    '{name} gibt jemandem ein Kompliment über dessen Outfit.',
+    '{name} erzählt von seinem ersten Kuss.'
+  ]},
+  { id: 'confess', challenges: [
+    '{name} gesteht eine peinliche Chat-Autokorrektur.',
+    '{name} beichtet eine schlechte Angewohnheit.',
+    '{name} verrät, wen er zuletzt gestalkt hat.',
+    '{name} erzählt sein peinlichstes Dating-Erlebnis.',
+    '{name} gesteht eine Lüge, die er mal erzählt hat.'
+  ]},
+  { id: 'escalate', challenges: [
+    'Alle trinken 1, {name} trinkt 2.',
+    '{name} wechselt Sitzplatz mit einer Person nach Wahl.',
+    '{name} nimmt die nächste Challenge sofort an – ohne zu lesen.',
+    '{name} bestimmt, wer die nächste Runde zahlt.',
+    '{name} startet einen Trinkspruch.'
+  ]},
+  { id: 'shame', challenges: [
+    '{name} zeigt sein ältestes Foto im Handy (wenn okay) – sonst trinkt 2.',
+    '{name} liest die letzte gesendete Nachricht vor (wenn okay) – sonst trinkt 2.',
+    '{name} trägt für 1 Runde eine lustige Pose.',
+    '{name} imitiert eine berühmte Person für 30 Sekunden.',
+    '{name} macht 10 Liegestütze oder trinkt 3 Schlücke.'
+  ]}
+]
 
-function pickWithoutRepeat<T>(arr: T[], lastPicked: T): T {
-  if (arr.length <= 1) return pick(arr)
-
-  let picked = pick(arr)
-  while (picked === lastPicked) {
-    picked = pick(arr)
-  }
-  return picked
-}
+type GamePhase = 'idle' | 'player' | 'category' | 'challenge'
 
 export default function ArenaScreen() {
   const { t } = useTranslation()
-  const categories = useCategories()
+  const { players } = usePlayers()
+  const [gamePhase, setGamePhase] = useState<GamePhase>('idle')
+  const [currentPlayer, setCurrentPlayer] = useState<string>('')
+  const [currentCategory, setCurrentCategory] = useState<string>('')
+  const [currentChallenge, setCurrentChallenge] = useState<string>('')
 
-  const [catId, setCatId] = useState('fate')
-  const current = useMemo(() => categories.find(c => c.id === catId) || categories[0], [catId, categories])
-  const [item, setItem] = useState(() => pick(current.items))
+  const pickRandom = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
-  // New states for timer and history
-  const [lastChallenge, setLastChallenge] = useState<string>('')
-  const [timerEnabled, setTimerEnabled] = useState<boolean>(false)
-  const [timeLeft, setTimeLeft] = useState<number>(30)
-  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false)
-  const [challengeHistory, setChallengeHistory] = useState<Array<{category: string, challenge: string, timestamp: number}>>([])
+  const startBattle = useCallback(() => {
+    if (players.length === 0) return
 
-  // Load challenge history from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('mallex_challenge_history')
-    if (saved) {
-      try {
-        setChallengeHistory(JSON.parse(saved))
-      } catch (e) {
-        console.warn('Failed to load challenge history:', e)
-      }
-    }
-  }, [])
+    // Reset state
+    setCurrentPlayer('')
+    setCurrentCategory('')
+    setCurrentChallenge('')
+    
+    // Phase 1: Reveal Player
+    setGamePhase('player')
+    setTimeout(() => {
+      const selectedPlayer = pickRandom(players)
+      setCurrentPlayer(selectedPlayer)
+      
+      // Phase 2: Reveal Category
+      setTimeout(() => {
+        setGamePhase('category')
+        setTimeout(() => {
+          const selectedCategory = pickRandom(categories)
+          setCurrentCategory(selectedCategory.id)
+          
+          // Phase 3: Reveal Challenge
+          setTimeout(() => {
+            setGamePhase('challenge')
+            setTimeout(() => {
+              const challenge = pickRandom(selectedCategory.challenges)
+              const interpolatedChallenge = challenge.replace(/\{name\}/g, selectedPlayer)
+              setCurrentChallenge(interpolatedChallenge)
+            }, 300)
+          }, 1000)
+        }, 300)
+      }, 1200)
+    }, 300)
+  }, [players])
 
-  // Timer effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-
-    if (isTimerRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            setIsTimerRunning(false)
-            return 30 // Reset timer
-          }
-          return prev - 1
-        })
-      }, 1000)
-    } else if (timeLeft === 0) {
-      setIsTimerRunning(false) // Stop timer if it reaches 0
-    }
-
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [isTimerRunning, timeLeft])
-
-  const saveToHistory = useCallback((category: string, challenge: string) => {
-    const newEntry = {
-      category,
-      challenge,
-      timestamp: Date.now()
-    }
-
-    const newHistory = [newEntry, ...challengeHistory].slice(0, 5) // Keep only last 5
-    setChallengeHistory(newHistory)
-    localStorage.setItem('mallex_challenge_history', JSON.stringify(newHistory))
-  }, [challengeHistory])
-
-  const generateNewChallenge = () => {
-    if (!catId) return
-
-    const challenges = categories.find(c => c.id === catId)?.items || []
-    if (challenges.length === 0) return
-
-    const newChallenge = pickWithoutRepeat(challenges, lastChallenge)
-    setItem(newChallenge)
-    setLastChallenge(newChallenge)
-
-    // Save to history
-    saveToHistory(catId, newChallenge)
-
-    // Start timer if enabled
-    if (timerEnabled) {
-      setTimeLeft(30)
-      setIsTimerRunning(true)
-    }
+  const resetGame = () => {
+    setGamePhase('idle')
+    setCurrentPlayer('')
+    setCurrentCategory('')
+    setCurrentChallenge('')
   }
 
-  useEffect(() => { setItem(pick(current.items)) }, [current])
-
-  const swipe = useSwipe<HTMLDivElement>({
-    onSwipeLeft: generateNewChallenge,
-    onSwipeRight: generateNewChallenge,
-    stopPropagation: true  // don't bubble to TabLayout
-  })
-
-  return (
-    <section style={styles.container}>
-      <div style={styles.content}>
-        <h1>{t('arena.title')}</h1>
-        <div style={styles.categorySection}>
-          <h3>{t('arena.selectCategory')}</h3>
-          <div style={styles.categoryGrid}>
-            {categories.map(c => (
-              <button
-                key={c.id}
-                onClick={() => setCatId(c.id)}
-                style={{
-                  ...styles.categoryButton,
-                  ...(catId === c.id ? styles.selectedButton : {})
-                }}
-              >
-                {t(`categories.${c.id}`)}
-              </button>
-            ))}
+  if (players.length === 0) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.content}>
+          <h1 style={styles.title}>{t('arena.title')}</h1>
+          
+          <div style={styles.emptyState}>
+            <p style={styles.emptyTitle}>{t('arena.noPlayers')}</p>
+            <Link to="/legends" style={styles.ctaLink}>
+              {t('arena.callToAction')}
+            </Link>
           </div>
         </div>
+      </div>
+    )
+  }
 
-        <div style={styles.timerSection}>
-          <label style={styles.timerToggle}>
-            <input
-              type="checkbox"
-              checked={timerEnabled}
-              onChange={(e) => {
-                setTimerEnabled(e.target.checked)
-                if (!e.target.checked && isTimerRunning) {
-                  setIsTimerRunning(false)
-                  setTimeLeft(30) // Reset timer when disabled
-                }
-              }}
-            />
-            {t('arena.enableTimer')}
-          </label>
+  return (
+    <div style={styles.container}>
+      <div style={styles.content}>
+        <h1 style={styles.title}>{t('arena.title')}</h1>
+        
+        {gamePhase === 'idle' && (
+          <div style={styles.startSection}>
+            <button onClick={startBattle} style={styles.startButton}>
+              {t('arena.start')}
+            </button>
+          </div>
+        )}
 
-          {timerEnabled && (
-            <div style={styles.timerDisplay}>
-              <div style={styles.timerBar}>
-                <div
-                  style={{
-                    ...styles.timerProgress,
-                    width: `${(timeLeft / 30) * 100}%`
-                  }}
-                />
+        {gamePhase !== 'idle' && (
+          <div style={styles.gameArea}>
+            {/* Player Reveal */}
+            <div style={{
+              ...styles.revealCard,
+              ...(gamePhase === 'player' ? styles.revealCardActive : {}),
+              ...(currentPlayer ? styles.revealCardRevealed : {})
+            }}>
+              <h3 style={styles.revealLabel}>{t('arena.playerReveal')}</h3>
+              <div style={styles.revealContent}>
+                {currentPlayer ? (
+                  <span style={styles.playerName}>{currentPlayer}</span>
+                ) : (
+                  <div style={styles.loadingDots}>...</div>
+                )}
               </div>
-              <span style={styles.timerText}>{timeLeft}s</span>
             </div>
-          )}
-        </div>
 
-        <div className="card glass" style={styles.challengeCard} {...swipe}>
-          <p style={{ minHeight: 64, display:'flex', alignItems:'center' }}>{t(item)}</p>
-          <small style={{opacity:.7}}>{t('arena.tip')}</small>
-        </div>
+            {/* Category Reveal */}
+            {gamePhase !== 'player' && (
+              <div style={{
+                ...styles.revealCard,
+                ...(gamePhase === 'category' ? styles.revealCardActive : {}),
+                ...(currentCategory ? styles.revealCardRevealed : {})
+              }}>
+                <h3 style={styles.revealLabel}>{t('arena.categoryReveal')}</h3>
+                <div style={styles.revealContent}>
+                  {currentCategory ? (
+                    <span style={styles.categoryName}>
+                      {t(`categories.${currentCategory}`)}
+                    </span>
+                  ) : (
+                    <div style={styles.loadingDots}>...</div>
+                  )}
+                </div>
+              </div>
+            )}
 
-        <button onClick={generateNewChallenge} style={styles.generateButton}>
-          {t('arena.new')}
-        </button>
+            {/* Challenge Reveal */}
+            {gamePhase === 'challenge' && (
+              <div style={{
+                ...styles.revealCard,
+                ...(currentChallenge ? styles.revealCardRevealed : styles.revealCardActive)
+              }}>
+                <h3 style={styles.revealLabel}>{t('arena.challengeReveal')}</h3>
+                <div style={styles.revealContent}>
+                  {currentChallenge ? (
+                    <p style={styles.challengeText}>{currentChallenge}</p>
+                  ) : (
+                    <div style={styles.loadingDots}>...</div>
+                  )}
+                </div>
+              </div>
+            )}
 
-        {challengeHistory.length > 0 && (
-          <div style={{ marginTop: '2rem', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-            <h3>{t('arena.history')}</h3>
-            <ul style={{ paddingLeft: '1.25rem' }}>
-              {challengeHistory.map((entry, index) => (
-                <li key={index} style={{ color: 'white', opacity: 0.8, marginBottom: '0.5rem' }}>
-                  {entry.category} - {entry.challenge} ({new Date(entry.timestamp).toLocaleTimeString()})
-                </li>
-              ))}
-            </ul>
+            {currentChallenge && (
+              <button onClick={resetGame} style={styles.resetButton}>
+                {t('arena.start')}
+              </button>
+            )}
           </div>
         )}
       </div>
-    </section>
+    </div>
   )
 }
 
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #d4af37 100%)',
     padding: '1rem',
     paddingBottom: '6rem'
   },
   content: {
     maxWidth: '400px',
-    margin: '0 auto'
+    margin: '0 auto',
+    color: 'white'
   },
-  categorySection: {
-    marginBottom: '2rem'
+  title: {
+    textAlign: 'center' as const,
+    marginBottom: '2rem',
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    textShadow: '3px 3px 6px rgba(0,0,0,0.7)',
+    background: 'linear-gradient(45deg, #ffd700, #fff)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text'
   },
-  categoryGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-    gap: '0.5rem',
-    marginTop: '1rem'
+  startSection: {
+    textAlign: 'center' as const,
+    marginTop: '4rem'
   },
-  categoryButton: {
-    padding: '0.75rem',
-    borderRadius: '12px',
-    background: 'rgba(255,255,255,0.1)',
-    backdropFilter: 'blur(10px)',
-    color: 'white',
-    fontSize: '0.9rem',
+  startButton: {
+    padding: '1.5rem 3rem',
+    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
+    color: '#4a148c',
+    border: 'none',
+    borderRadius: '16px',
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    border: '1px solid rgba(255,255,255,0.2)'
+    boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4)',
+    transform: 'scale(1)',
+    ':hover': {
+      transform: 'scale(1.05)',
+      boxShadow: '0 12px 40px rgba(212, 175, 55, 0.6)'
+    }
+  } as React.CSSProperties,
+  gameArea: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '2rem',
+    marginTop: '2rem'
   },
-  selectedButton: {
-    background: 'rgba(255,255,255,0.3)',
-    transform: 'scale(1.05)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
-  },
-  timerSection: {
-    marginBottom: '2rem',
+  revealCard: {
     background: 'rgba(255,255,255,0.1)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '12px',
-    padding: '1rem',
-    border: '1px solid rgba(255,255,255,0.2)'
-  },
-  timerToggle: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    color: 'white',
-    fontSize: '0.9rem',
-    cursor: 'pointer'
-  },
-  timerDisplay: {
-    marginTop: '1rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem'
-  },
-  timerBar: {
-    flex: 1,
-    height: '8px',
-    background: 'rgba(255,255,255,0.2)',
-    borderRadius: '4px',
-    overflow: 'hidden'
-  },
-  timerProgress: {
-    height: '100%',
-    background: 'linear-gradient(90deg, #ff6b6b, #ee5a24)',
-    transition: 'width 1s linear',
-    borderRadius: '4px'
-  },
-  timerText: {
-    color: 'white',
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    minWidth: '30px'
-  },
-  challengeCard: {
-    background: 'rgba(255,255,255,0.15)',
     backdropFilter: 'blur(15px)',
-    borderRadius: '16px',
+    borderRadius: '20px',
     padding: '2rem',
+    border: '2px solid rgba(255,255,255,0.2)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+    transition: 'all 0.8s ease',
+    opacity: 0.3,
+    transform: 'translateY(20px)'
+  },
+  revealCardActive: {
+    opacity: 1,
+    transform: 'translateY(0) scale(1.02)',
+    border: '2px solid rgba(212, 175, 55, 0.5)',
+    animation: 'pulse 1s infinite'
+  },
+  revealCardRevealed: {
+    opacity: 1,
+    transform: 'translateY(0)',
+    border: '2px solid rgba(212, 175, 55, 0.8)',
+    background: 'rgba(255,255,255,0.2)',
+    boxShadow: '0 12px 40px rgba(212, 175, 55, 0.3)'
+  },
+  revealLabel: {
     textAlign: 'center' as const,
-    color: 'white',
-    minHeight: '200px',
+    fontSize: '1.2rem',
+    marginBottom: '1rem',
+    opacity: 0.8,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '2px'
+  },
+  revealContent: {
+    textAlign: 'center' as const,
+    minHeight: '3rem',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '1.1rem',
-    lineHeight: '1.6',
-    border: '1px solid rgba(255,255,255,0.3)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-    transition: 'all 0.3s ease',
-    position: 'relative' as const,
-    overflow: 'hidden'
+    justifyContent: 'center'
   },
-  generateButton: {
-    width: '100%',
-    padding: '1rem',
-    background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-    color: 'white',
+  playerName: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    color: '#ffd700',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+  },
+  categoryName: {
+    fontSize: '1.8rem',
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+  },
+  challengeText: {
+    fontSize: '1.2rem',
+    lineHeight: '1.6',
+    textAlign: 'center' as const,
+    margin: 0
+  },
+  loadingDots: {
+    fontSize: '2rem',
+    color: '#ffd700',
+    animation: 'pulse 1s infinite'
+  },
+  resetButton: {
+    alignSelf: 'center' as const,
+    padding: '1rem 2rem',
+    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
+    color: '#4a148c',
     border: 'none',
     borderRadius: '12px',
-    fontSize: '1rem',
+    fontSize: '1.2rem',
     fontWeight: 'bold',
     cursor: 'pointer',
-    marginTop: '1rem',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 4px 20px rgba(255, 107, 107, 0.3)',
-    backdropFilter: 'blur(10px)'
+    marginTop: '2rem',
+    transition: 'all 0.3s ease'
+  },
+  emptyState: {
+    textAlign: 'center' as const,
+    marginTop: '4rem',
+    padding: '3rem 2rem',
+    background: 'rgba(255,255,255,0.1)',
+    backdropFilter: 'blur(10px)',
+    borderRadius: '20px',
+    border: '2px solid rgba(212, 175, 55, 0.3)'
+  },
+  emptyTitle: {
+    fontSize: '1.5rem',
+    marginBottom: '2rem',
+    fontWeight: 'bold'
+  },
+  ctaLink: {
+    display: 'inline-block',
+    padding: '1rem 2rem',
+    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
+    color: '#4a148c',
+    textDecoration: 'none',
+    borderRadius: '12px',
+    fontSize: '1.1rem',
+    fontWeight: 'bold',
+    transition: 'all 0.3s ease'
   }
 }

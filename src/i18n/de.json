@@ -43,11 +43,12 @@
   },
   "arena": {
     "title": "Arena",
-    "selectCategory": "Kategorie wählen:",
-    "new": "Neue Challenge",
-    "tip": "Swipe oder tippe für neue Challenge",
-    "enableTimer": "Timer aktivieren (30s)",
-    "history": "Letzte Challenges",
+    "start": "Schlacht beginnen",
+    "noPlayers": "Keine Helden verfügbar!",
+    "callToAction": "Beschwöre die Götter in der Halle der Legenden",
+    "playerReveal": "Der auserwählte Held:",
+    "categoryReveal": "Die Prüfung:",
+    "challengeReveal": "Die Aufgabe:",
     "fate": {
       "item1": "Alle mit gerader Geburtstagszahl trinken 1 Schluck.",
       "item2": "Würfle dein Schicksal: Ziehe eine zweite Challenge.",
@@ -134,8 +135,12 @@
     "5": "Erschaffe eine Superhelden-Identität und stelle dich vor!"
   },
   "legends": {
-    "title": "Legenden",
-    "comingSoon": "Bald verfügbar"
+    "title": "Halle der Legenden",
+    "subtitle": "Verwalte die Spieler für epische Schlachten",
+    "addPlayer": "Beschwöre die Götter",
+    "playerName": "Name des Helden",
+    "noPlayers": "Keine Helden in der Halle. Beschwöre die ersten Götter!",
+    "removePlayer": "Verbannen"
   },
   "tabs": {
     "arena": "Arena",

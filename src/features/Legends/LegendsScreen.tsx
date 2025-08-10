@@ -1,38 +1,24 @@
-import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
-interface ChallengeHistoryEntry {
-  category: string
-  challenge: string
-  timestamp: number
-}
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { usePlayers } from '../../context/PlayersContext'
 
 export default function LegendsScreen() {
   const { t } = useTranslation()
-  const [history, setHistory] = useState<ChallengeHistoryEntry[]>([])
+  const { players, addPlayer, removePlayer } = usePlayers()
+  const [newPlayerName, setNewPlayerName] = useState('')
 
-  useEffect(() => {
-    const saved = localStorage.getItem('mallex_challenge_history')
-    if (saved) {
-      try {
-        setHistory(JSON.parse(saved))
-      } catch (e) {
-        console.warn('Failed to load challenge history:', e)
-      }
+  const handleAddPlayer = () => {
+    if (newPlayerName.trim()) {
+      addPlayer(newPlayerName.trim())
+      setNewPlayerName('')
     }
-  }, [])
+  }
 
-  const formatTimeAgo = (timestamp: number) => {
-    const now = Date.now()
-    const diff = now - timestamp
-    const minutes = Math.floor(diff / (1000 * 60))
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-    if (days > 0) return t('legends.timeAgo', { time: `${days} Tag${days > 1 ? 'en' : ''}` })
-    if (hours > 0) return t('legends.timeAgo', { time: `${hours} Stunde${hours > 1 ? 'n' : ''}` })
-    if (minutes > 0) return t('legends.timeAgo', { time: `${minutes} Minute${minutes > 1 ? 'n' : ''}` })
-    return t('legends.timeAgo', { time: 'wenigen Sekunden' })
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddPlayer()
+    }
   }
 
   return (
@@ -41,21 +27,40 @@ export default function LegendsScreen() {
         <h1 style={styles.title}>{t('legends.title')}</h1>
         <p style={styles.subtitle}>{t('legends.subtitle')}</p>
 
-        {history.length === 0 ? (
+        <div style={styles.addPlayerSection}>
+          <input
+            type="text"
+            value={newPlayerName}
+            onChange={(e) => setNewPlayerName(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={t('legends.playerName')}
+            style={styles.playerInput}
+          />
+          <button 
+            onClick={handleAddPlayer}
+            style={styles.addButton}
+            disabled={!newPlayerName.trim()}
+          >
+            {t('legends.addPlayer')}
+          </button>
+        </div>
+
+        {players.length === 0 ? (
           <div style={styles.emptyState}>
-            <p>{t('legends.noHistory')}</p>
+            <p>{t('legends.noPlayers')}</p>
           </div>
         ) : (
-          <div style={styles.historyList}>
-            {history.map((entry, index) => (
-              <div key={index} style={styles.historyCard}>
-                <div style={styles.categoryBadge}>
-                  {t(`categories.${entry.category}`, entry.category)}
-                </div>
-                <p style={styles.challengeText}>{entry.challenge}</p>
-                <span style={styles.timeStamp}>
-                  {formatTimeAgo(entry.timestamp)}
-                </span>
+          <div style={styles.playersList}>
+            {players.map((player, index) => (
+              <div key={index} style={styles.playerCard}>
+                <span style={styles.playerName}>{player}</span>
+                <button
+                  onClick={() => removePlayer(player)}
+                  style={styles.removeButton}
+                  aria-label={t('legends.removePlayer')}
+                >
+                  ⚔️
+                </button>
               </div>
             ))}
           </div>
@@ -68,7 +73,7 @@ export default function LegendsScreen() {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+    background: 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #d4af37 100%)',
     padding: '1rem',
     paddingBottom: '6rem'
   },
@@ -81,14 +86,50 @@ const styles = {
     textAlign: 'center' as const,
     marginBottom: '0.5rem',
     fontSize: '2rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
   },
   subtitle: {
     textAlign: 'center' as const,
     marginBottom: '2rem',
-    opacity: 0.8,
+    opacity: 0.9,
     fontSize: '0.9rem'
   },
+  addPlayerSection: {
+    marginBottom: '2rem',
+    display: 'flex',
+    gap: '1rem'
+  },
+  playerInput: {
+    flex: 1,
+    padding: '0.75rem',
+    borderRadius: '12px',
+    border: '2px solid rgba(212, 175, 55, 0.3)',
+    background: 'rgba(255,255,255,0.1)',
+    backdropFilter: 'blur(10px)',
+    color: 'white',
+    fontSize: '1rem',
+    outline: 'none',
+    '::placeholder': {
+      color: 'rgba(255,255,255,0.6)'
+    }
+  } as React.CSSProperties,
+  addButton: {
+    padding: '0.75rem 1.5rem',
+    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
+    color: '#4a148c',
+    border: 'none',
+    borderRadius: '12px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 20px rgba(212, 175, 55, 0.3)',
+    disabled: {
+      opacity: 0.5,
+      cursor: 'not-allowed'
+    }
+  } as React.CSSProperties,
   emptyState: {
     textAlign: 'center' as const,
     marginTop: '3rem',
@@ -96,43 +137,39 @@ const styles = {
     background: 'rgba(255,255,255,0.1)',
     backdropFilter: 'blur(10px)',
     borderRadius: '16px',
-    border: '1px solid rgba(255,255,255,0.2)'
+    border: '2px solid rgba(212, 175, 55, 0.2)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
   },
-  historyList: {
+  playersList: {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '1rem'
   },
-  historyCard: {
+  playerCard: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     background: 'rgba(255,255,255,0.15)',
     backdropFilter: 'blur(15px)',
     borderRadius: '16px',
-    padding: '1.5rem',
-    border: '1px solid rgba(255,255,255,0.3)',
+    padding: '1rem',
+    border: '2px solid rgba(212, 175, 55, 0.3)',
     boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-    transition: 'all 0.3s ease',
-    position: 'relative' as const
+    transition: 'all 0.3s ease'
   },
-  categoryBadge: {
-    display: 'inline-block',
-    background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-    padding: '0.25rem 0.75rem',
-    borderRadius: '20px',
-    fontSize: '0.8rem',
+  playerName: {
+    fontSize: '1.1rem',
     fontWeight: 'bold',
-    marginBottom: '1rem'
+    flex: 1
   },
-  challengeText: {
-    fontSize: '0.95rem',
-    lineHeight: '1.5',
-    marginBottom: '1rem',
-    opacity: 0.9
-  },
-  timeStamp: {
-    fontSize: '0.8rem',
-    opacity: 0.6,
-    position: 'absolute' as const,
-    bottom: '0.75rem',
-    right: '1rem'
+  removeButton: {
+    background: 'rgba(220, 20, 60, 0.8)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '0.5rem',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    transition: 'all 0.3s ease'
   }
 }

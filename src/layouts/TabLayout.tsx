@@ -41,13 +41,15 @@ export default function TabLayout() {
   })
 
   return (
-    <div {...swipeHandlers} style={styles.container}>
-      <main style={{
-        ...styles.main,
-        opacity: isTransitioning ? 0.7 : 1,
-        transform: isTransitioning ? 'scale(0.98)' : 'scale(1)',
-        transition: 'all 0.15s ease-out'
-      }}>
+    <div {...swipeHandlers} className={styles.container}>
+      <main 
+        className={styles.main}
+        style={{
+          opacity: isTransitioning ? 0.7 : 1,
+          transform: isTransitioning ? 'scale(0.98)' : 'scale(1)',
+          transition: 'all 0.15s ease-out'
+        }}
+      >
         <Outlet />
       </main>
       <BottomNavigation />

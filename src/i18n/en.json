@@ -29,8 +29,7 @@
     "enterEmail": "Enter email",
     "enterPassword": "Enter password",
     "noAccount": "No account? Sign up",
-    "hasAccount": "Already have an account? Sign in",
-    
+    "hasAccount": "Already have an account? Sign in"
   },
   "actions": {
     "logout": "Logout",

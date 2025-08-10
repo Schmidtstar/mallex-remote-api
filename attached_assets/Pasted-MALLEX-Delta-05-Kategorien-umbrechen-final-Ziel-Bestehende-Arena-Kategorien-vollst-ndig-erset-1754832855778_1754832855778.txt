@@ -1,0 +1,88 @@
+MALLEX – Delta 05: Kategorien umbrechen (final)
+
+Ziel
+
+Bestehende Arena-Kategorien vollständig ersetzen durch:
+Schicksal (fate), Verführung (seduce), Beichte (confess), Eskalation (escalate), Schande (shame)
+Alle UI-Texte via i18n, History/Legends bleibt konsistent.
+
+Änderungen (nur Code, keine Shell/Build)
+	1.	Arena-Daten
+	•	src/features/Arena/categories.ts
+	•	Kategorie-Liste auf die fünf neuen Kategorien umstellen.
+	•	Je Kategorie min. 3 Challenges (Platzhalter siehe unten).
+	•	i18n-Keys statt Hardcodes verwenden.
+	2.	i18n
+	•	src/i18n/de.json, src/i18n/en.json
+	•	Neue Keys ergänzen:
+	•	categories.fate, categories.seduce, categories.confess, categories.escalate, categories.shame
+	•	Challenge-Keys pro Kategorie: arena.<cat>.item1..n
+	•	Alte, nicht mehr genutzte Kategorie-Keys nicht löschen (Backward-compat), nur als „unused“ kommentieren.
+	3.	UI/Tab-Auswahl
+	•	src/features/Arena/ArenaScreen.tsx
+	•	Dropdown/Tab-Buttons auf neue Kategorien mappen (Keys aus i18n benutzen).
+	•	Default-Kategorie auf Schicksal (fate) setzen, falls kein State vorhanden.
+	4.	Legends/Historie
+	•	src/features/Legends/LegendsScreen.tsx
+	•	Anzeige der Kategorie-Labels aus i18n (t('categories.<cat>')), kein alter Name aus persisted history.
+	•	Falls alte Kategorie-Namen in localStorage liegen: robustes Mapping (Fallback → „Unbekannt“).
+	5.	Icons/Styles (optional, klein)
+	•	src/layouts/TabLayout.tsx oder src/features/Arena/ArenaScreen.tsx
+	•	(Wenn vorhanden) Icon-Mapping aktualisieren: fate/seduce/confess/escalate/shame.
+
+Platzhalter-Challenges (DE/EN via i18n)
+
+Du kannst die Texte später frei austauschen – sie sind exemplarisch.
+
+	•	fate / Schicksal
+	•	de: „Alle mit gerader Geburtstagszahl trinken 1 Schluck.“
+	•	de: „Würfle dein Schicksal: Ziehe eine zweite Challenge.“
+	•	de: „Die Person links von dir trinkt 2 Schlucke.“
+	•	en: “Anyone with an even birthday drinks 1 sip.”
+“Roll your fate: draw one more challenge.”
+“Person to your left drinks 2 sips.”
+	•	seduce / Verführung
+	•	de: „Flüstere jemandem ein Kompliment ins Ohr.“
+	•	de: „Halte 10 Sekunden lang intensiven Augenkontakt.“
+	•	de: „Schicke einem Mitspieler ein Herz-Emoji.“
+	•	en: “Whisper a compliment.”
+“Hold eye contact for 10 seconds.”
+“Send a heart emoji to a player.”
+	•	confess / Beichte
+	•	de: „Gestehe eine peinliche Chat-Autokorrektur.“
+	•	de: „Beichte eine schlechte Angewohnheit.“
+	•	de: „Wen hast du zuletzt gestalkt?“
+	•	en: “Confess an awkward autocorrect.”
+“Confess a bad habit.”
+“Who did you last stalk online?”
+	•	escalate / Eskalation
+	•	de: „Alle trinken 1, du 2.“
+	•	de: „Wechsle Sitzplatz mit einer Person nach Wahl.“
+	•	de: „Nimm die nächste Challenge sofort an – ohne zu lesen.“
+	•	en: “Everyone drinks 1, you drink 2.”
+“Swap seats with anyone.”
+“Accept the next challenge instantly.”
+	•	shame / Schande
+	•	de: „Zeige dein ältestes Foto im Handy (wenn okay) – sonst trink 2.“
+	•	de: „Lies die letzte gesendete Nachricht vor (wenn okay) – sonst trink 2.“
+	•	de: „Trage für 1 Runde eine lustige Pose.“
+	•	en: “Show your oldest phone photo (if ok) — else drink 2.”
+“Read your last sent message (if ok) — else drink 2.”
+“Hold a silly pose for one round.”
+
+i18n-Key-Schema:
+categories.<cat>, arena.<cat>.item1..itemN
+
+Akzeptanzkriterien
+	•	In der Arena erscheinen genau die fünf neuen Kategorien (Labels aus i18n).
+	•	Je Kategorie mind. 3 Challenges, zufällige Ausgabe funktioniert.
+	•	Legends zeigt Kategorie-Labels über i18n, auch bei alten History-Einträgen keine Errors.
+	•	Keine Hardcoded Texte – alles über i18n-Keys.
+	•	Keine Console-Errors/Warnings durch Umstellung.
+
+Hinweise
+	•	Keine Shell/Build-Befehle ausführen (Base Prompt bleibt gültig).
+	•	Nach Abschluss kurzen Report posten:
+	•	Geänderte Dateien
+	•	Liste der neuen i18n-Keys
+	•	Hinweis, dass ich lokal npm run dev neu starte zum Testen.

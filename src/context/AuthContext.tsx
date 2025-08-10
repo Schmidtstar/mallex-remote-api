@@ -9,10 +9,12 @@ type AuthCtx = {
   loading: boolean
   mode: 'guest' | 'firebase'
   error: string | null
+  isAnonymous: boolean
   signInEmail: (email: string, password: string) => Promise<void>
   signUpEmail: (email: string, password: string) => Promise<void>
   signInGuest: () => Promise<void>
   loginAsGuest: () => Promise<void>
+  upgradeToEmail: (email: string, password: string) => Promise<void>
   signOutAll: () => Promise<void>
 }
 
@@ -68,8 +70,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const upgradeToEmail = useCallback(async (email: string, password: string) => {
+    setError(null)
+    try {
+      const fb = await getFirebase()
+      if (!fb) throw new Error('Firebase nicht konfiguriert')
+      if (!fb.auth.currentUser) throw new Error('Kein Benutzer angemeldet')
+      
+      const { EmailAuthProvider, linkWithCredential } = await import('firebase/auth')
+      const credential = EmailAuthProvider.credential(email, password)
+      await linkWithCredential(fb.auth.currentUser, credential)
+    } catch (e: any) {
+      let errorKey = 'auth.upgrade.error.generic'
+      if (e?.code === 'auth/email-already-in-use') errorKey = 'auth.upgrade.error.emailInUse'
+      else if (e?.code === 'auth/invalid-email') errorKey = 'auth.upgrade.error.invalidEmail'
+      else if (e?.code === 'auth/weak-password') errorKey = 'auth.upgrade.error.weakPassword'
+      
+      setError(errorKey)
+      throw new Error(errorKey)
+    }
+  }, [])
+
   const api = useMemo<AuthCtx>(() => ({
     user, loading, mode: fbMode, error,
+    isAnonymous: user?.isAnonymous ?? false,
     async signInEmail(email, password) {
       setError(null)
       const fb = await getFirebase()
@@ -89,13 +113,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await fb.signInAnonymously(fb.auth)
     },
     loginAsGuest,
+    upgradeToEmail,
     async signOutAll() {
       setError(null)
       const fb = await getFirebase()
       if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
       await fb.signOut(fb.auth)
     }
-  }), [user, loading, fbMode, error, loginAsGuest])
+  }), [user, loading, fbMode, error, loginAsGuest, upgradeToEmail])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

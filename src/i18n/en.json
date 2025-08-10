@@ -19,7 +19,23 @@
     "enterEmail": "Enter email",
     "enterPassword": "Enter password",
     "noAccount": "No account? Sign up",
-    "hasAccount": "Already have an account? Sign in"
+    "hasAccount": "Already have an account? Sign in",
+    "badge": {
+      "guest": "Guest"
+    },
+    "upgrade": {
+      "title": "Account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "success": "Account successfully created!",
+      "error": {
+        "generic": "Error upgrading account",
+        "emailInUse": "Email already in use",
+        "invalidEmail": "Invalid email address",
+        "weakPassword": "Password too weak"
+      }
+    }
   },
   "actions": {
     "logout": "Logout",

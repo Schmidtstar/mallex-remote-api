@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
+import { useAuth } from '../context/AuthContext'
+import { useTranslation } from 'react-i18next'
 import styles from './TabLayout.module.css'
 
 const tabs = ['/arena','/legends','/menu']
@@ -10,6 +12,8 @@ export default function TabLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const { isAnonymous } = useAuth()
+  const { t } = useTranslation()
 
   const currentIndex = tabs.indexOf(location.pathname)
 
@@ -42,6 +46,11 @@ export default function TabLayout() {
 
   return (
     <div {...swipeHandlers} className={styles.container}>
+      {isAnonymous && (
+        <div className={styles.guestBadge}>
+          {t('auth.badge.guest')}
+        </div>
+      )}
       <main 
         className={styles.main}
         style={{

@@ -19,7 +19,23 @@
     "enterEmail": "E-Mail eingeben",
     "enterPassword": "Passwort eingeben",
     "noAccount": "Noch kein Konto? Registrieren",
-    "hasAccount": "Bereits ein Konto? Anmelden"
+    "hasAccount": "Bereits ein Konto? Anmelden",
+    "badge": {
+      "guest": "Gast"
+    },
+    "upgrade": {
+      "title": "Account",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Account erstellen",
+      "success": "Account erfolgreich erstellt!",
+      "error": {
+        "generic": "Fehler beim Account-Upgrade",
+        "emailInUse": "Diese E-Mail wird bereits verwendet",
+        "invalidEmail": "Ungültige E-Mail-Adresse",
+        "weakPassword": "Passwort zu schwach"
+      }
+    }
   },
   "actions": {
     "logout": "Abmelden",

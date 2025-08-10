@@ -11,11 +11,19 @@ type PlayersCtx = {
   savePlayers: () => Promise<void>
 }
 
-const Ctx = createContext<PlayersCtx | null>(null)
+const defaultContext: PlayersCtx = {
+  players: [],
+  addPlayer: () => {},
+  removePlayer: () => {},
+  loadPlayers: async () => {},
+  savePlayers: async () => {}
+}
+
+const Ctx = createContext<PlayersCtx>(defaultContext)
 
 export const usePlayers = () => {
   const c = useContext(Ctx)
-  if (!c) throw new Error('PlayersContext missing')
+  if (!c || c === defaultContext) throw new Error('usePlayers must be used within PlayersProvider')
   return c
 }
 
@@ -25,6 +33,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
 
   const loadPlayers = useCallback(async () => {
     try {
+      // Only use Firestore for authenticated non-anonymous users
       if (mode === 'firebase' && user && !user.isAnonymous) {
         const fb = await getFirebase()
         if (fb) {
@@ -60,6 +69,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
       // Always save to localStorage as fallback
       localStorage.setItem('mallex.players', JSON.stringify(players))
       
+      // Only save to Firestore for authenticated non-anonymous users
       if (mode === 'firebase' && user && !user.isAnonymous) {
         const fb = await getFirebase()
         if (fb) {

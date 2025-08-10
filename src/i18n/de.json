@@ -7,72 +7,44 @@
     "language": "Sprache"
   },
   "auth": {
-    "signIn": "Anmelden",
-    "signUp": "Registrieren",
+    "title": "Willkommen bei MALLEX",
     "email": "E-Mail",
     "password": "Passwort",
-    "signOut": "Abmelden",
-    "guestMode": "Gastmodus",
+    "login": "Anmelden",
+    "register": "Registrieren",
     "guest": "Als Gast fortfahren",
-    "guestErrorAdminRestricted": "Anonymous Sign-In ist in Firebase nicht aktiviert.",
-    "loading": "Laden…",
-    "enterEmail": "E-Mail eingeben",
-    "enterPassword": "Passwort eingeben",
-    "noAccount": "Noch kein Konto? Registrieren",
-    "hasAccount": "Bereits ein Konto? Anmelden",
     "badge": {
       "guest": "Gast"
-    },
-    "upgrade": {
-      "title": "Account",
-      "email": "E-Mail",
-      "password": "Passwort",
-      "submit": "Account erstellen",
-      "success": "Account erfolgreich erstellt!",
-      "error": {
-        "generic": "Fehler beim Account-Upgrade",
-        "emailInUse": "Diese E-Mail wird bereits verwendet",
-        "invalidEmail": "Ungültige E-Mail-Adresse",
-        "weakPassword": "Passwort zu schwach"
-      }
     }
   },
-  "actions": {
-    "logout": "Abmelden",
-    "loggingOut": "Abmelden…"
+  "legends": {
+    "title": "Halle der Legenden",
+    "empty": {
+      "description": "Die Halle ist leer. Zeit, die ersten Götter zu beschwören!",
+      "cta": "Beschwöre die Götter"
+    },
+    "input": {
+      "placeholder": "Name des Spielers"
+    },
+    "add": "Hinzufügen",
+    "remove": "Entfernen"
   },
   "arena": {
     "title": "Arena",
+    "empty": {
+      "description": "Keine Spieler gefunden. Besuche die Halle der Legenden, um Spieler hinzuzufügen.",
+      "cta": "Zur Halle der Legenden"
+    },
+    "ready": "{{count}} Spieler bereit für den Kampf!",
     "start": "Schlacht beginnen",
-    "noPlayers": "Keine Helden verfügbar!",
-    "callToAction": "Beschwöre die Götter in der Halle der Legenden",
-    "playerReveal": "Der auserwählte Held:",
-    "categoryReveal": "Die Prüfung:",
-    "challengeReveal": "Die Aufgabe:",
-    "fate": {
-      "item1": "Alle mit gerader Geburtstagszahl trinken 1 Schluck.",
-      "item2": "Würfle dein Schicksal: Ziehe eine zweite Challenge.",
-      "item3": "Die Person links von dir trinkt 2 Schlucke."
-    },
-    "seduce": {
-      "item1": "Flüstere jemandem ein Kompliment ins Ohr.",
-      "item2": "Halte 10 Sekunden lang intensiven Augenkontakt.",
-      "item3": "Schicke einem Mitspieler ein Herz-Emoji."
-    },
-    "confess": {
-      "item1": "Gestehe eine peinliche Chat-Autokorrektur.",
-      "item2": "Beichte eine schlechte Angewohnheit.",
-      "item3": "Wen hast du zuletzt gestalkt?"
-    },
-    "escalate": {
-      "item1": "Alle trinken 1, du 2.",
-      "item2": "Wechsle Sitzplatz mit einer Person nach Wahl.",
-      "item3": "Nimm die nächste Challenge sofort an – ohne zu lesen."
-    },
-    "shame": {
-      "item1": "Zeige dein ältestes Foto im Handy (wenn okay) – sonst trink 2.",
-      "item2": "Lies die letzte gesendete Nachricht vor (wenn okay) – sonst trink 2.",
-      "item3": "Trage für 1 Runde eine lustige Pose."
+    "player": "Spieler",
+    "category": "Kategorie",
+    "challenge": "Aufgabe",
+    "newChallenge": "Neue Herausforderung",
+    "revealing": {
+      "player": "Der auserwählte Krieger ist...",
+      "category": "Die Kategorie wird enthüllt...",
+      "challenge": "Die Herausforderung lautet..."
     }
   },
   "categories": {

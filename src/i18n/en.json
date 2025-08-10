@@ -7,22 +7,25 @@
     "language": "Language"
   },
   "auth": {
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
+    "title": "Welcome to MALLEX",
     "email": "Email",
     "password": "Password",
+    "login": "Login",
+    "register": "Register",
+    "guest": "Continue as Guest",
+    "badge": {
+      "guest": "Guest"
+    },
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
     "signOut": "Sign Out",
     "guestMode": "Guest Mode",
-    "guest": "Continue as guest",
     "guestErrorAdminRestricted": "Anonymous sign-in is not enabled in Firebase.",
     "loading": "Loading…",
     "enterEmail": "Enter email",
     "enterPassword": "Enter password",
     "noAccount": "No account? Sign up",
     "hasAccount": "Already have an account? Sign in",
-    "badge": {
-      "guest": "Guest"
-    },
     "upgrade": {
       "title": "Account",
       "email": "Email",
@@ -43,36 +46,20 @@
   },
   "arena": {
     "title": "Arena",
+    "empty": {
+      "description": "No players found. Visit the Hall of Legends to add players.",
+      "cta": "Go to Hall of Legends"
+    },
+    "ready": "{{count}} players ready for battle!",
     "start": "Begin Battle",
-    "noPlayers": "No heroes available!",
-    "callToAction": "Summon the Gods in the Hall of Legends",
-    "playerReveal": "The chosen hero:",
-    "categoryReveal": "The trial:",
-    "challengeReveal": "The task:",
-    "fate": {
-      "item1": "Anyone with an even birthday drinks 1 sip.",
-      "item2": "Roll your fate: draw one more challenge.",
-      "item3": "Person to your left drinks 2 sips."
-    },
-    "seduce": {
-      "item1": "Whisper a compliment.",
-      "item2": "Hold eye contact for 10 seconds.",
-      "item3": "Send a heart emoji to a player."
-    },
-    "confess": {
-      "item1": "Confess an awkward autocorrect.",
-      "item2": "Confess a bad habit.",
-      "item3": "Who did you last stalk online?"
-    },
-    "escalate": {
-      "item1": "Everyone drinks 1, you drink 2.",
-      "item2": "Swap seats with anyone.",
-      "item3": "Accept the next challenge instantly."
-    },
-    "shame": {
-      "item1": "Show your oldest phone photo (if ok) — else drink 2.",
-      "item2": "Read your last sent message (if ok) — else drink 2.",
-      "item3": "Hold a silly pose for one round."
+    "player": "Player",
+    "category": "Category",
+    "challenge": "Challenge",
+    "newChallenge": "New Challenge",
+    "revealing": {
+      "player": "The chosen warrior is...",
+      "category": "The category is being revealed...",
+      "challenge": "The challenge is..."
     }
   },
   "categories": {
@@ -136,6 +123,15 @@
   },
   "legends": {
     "title": "Hall of Legends",
+    "empty": {
+      "description": "The hall is empty. Time to summon the first gods!",
+      "cta": "Summon the Gods"
+    },
+    "input": {
+      "placeholder": "Player name"
+    },
+    "add": "Add",
+    "remove": "Remove",
     "subtitle": "Manage players for epic battles",
     "addPlayer": "Summon the Gods",
     "playerName": "Hero's Name",

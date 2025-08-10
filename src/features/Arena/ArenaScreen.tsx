@@ -1,346 +1,198 @@
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { usePlayers } from '../../context/PlayersContext'
 import { Link } from 'react-router-dom'
+import { usePlayers } from '../../context/PlayersContext'
+import { categories } from './categories'
 
-const categories = [
-  { id: 'fate', challenges: [
-    'Alle mit gerader Geburtstagszahl trinken 1 Schluck.',
-    'Würfle dein Schicksal: Ziehe eine zweite Challenge.',
-    'Die Person links von {name} trinkt 2 Schlucke.',
-    '{name} wählt eine Person, die 3 Schlücke trinkt.',
-    'Alle Männer trinken 2 Schlücke, {name} entscheidet.'
-  ]},
-  { id: 'seduce', challenges: [
-    '{name} flüstert jemandem ein Kompliment ins Ohr.',
-    '{name} hält 10 Sekunden lang intensiven Augenkontakt mit einer Person nach Wahl.',
-    '{name} schickt einem Mitspieler ein Herz-Emoji.',
-    '{name} gibt jemandem ein Kompliment über dessen Outfit.',
-    '{name} erzählt von seinem ersten Kuss.'
-  ]},
-  { id: 'confess', challenges: [
-    '{name} gesteht eine peinliche Chat-Autokorrektur.',
-    '{name} beichtet eine schlechte Angewohnheit.',
-    '{name} verrät, wen er zuletzt gestalkt hat.',
-    '{name} erzählt sein peinlichstes Dating-Erlebnis.',
-    '{name} gesteht eine Lüge, die er mal erzählt hat.'
-  ]},
-  { id: 'escalate', challenges: [
-    'Alle trinken 1, {name} trinkt 2.',
-    '{name} wechselt Sitzplatz mit einer Person nach Wahl.',
-    '{name} nimmt die nächste Challenge sofort an – ohne zu lesen.',
-    '{name} bestimmt, wer die nächste Runde zahlt.',
-    '{name} startet einen Trinkspruch.'
-  ]},
-  { id: 'shame', challenges: [
-    '{name} zeigt sein ältestes Foto im Handy (wenn okay) – sonst trinkt 2.',
-    '{name} liest die letzte gesendete Nachricht vor (wenn okay) – sonst trinkt 2.',
-    '{name} trägt für 1 Runde eine lustige Pose.',
-    '{name} imitiert eine berühmte Person für 30 Sekunden.',
-    '{name} macht 10 Liegestütze oder trinkt 3 Schlücke.'
-  ]}
-]
-
-type GamePhase = 'idle' | 'player' | 'category' | 'challenge'
+type RevealState = 'idle' | 'revealing-player' | 'revealing-category' | 'revealing-challenge' | 'complete'
 
 export default function ArenaScreen() {
   const { t } = useTranslation()
   const { players } = usePlayers()
-  const [gamePhase, setGamePhase] = useState<GamePhase>('idle')
-  const [currentPlayer, setCurrentPlayer] = useState<string>('')
-  const [currentCategory, setCurrentCategory] = useState<string>('')
-  const [currentChallenge, setCurrentChallenge] = useState<string>('')
+  const [revealState, setRevealState] = useState<RevealState>('idle')
+  const [selectedPlayer, setSelectedPlayer] = useState<string>('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [selectedChallenge, setSelectedChallenge] = useState<string>('')
 
-  const pickRandom = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
-
-  const startBattle = useCallback(() => {
+  const startReveal = async () => {
     if (players.length === 0) return
-
-    // Reset state
-    setCurrentPlayer('')
-    setCurrentCategory('')
-    setCurrentChallenge('')
     
-    // Phase 1: Reveal Player
-    setGamePhase('player')
+    setRevealState('revealing-player')
+    
+    // Select random player
+    const randomPlayer = players[Math.floor(Math.random() * players.length)]
+    setSelectedPlayer(randomPlayer)
+    
     setTimeout(() => {
-      const selectedPlayer = pickRandom(players)
-      setCurrentPlayer(selectedPlayer)
+      setRevealState('revealing-category')
       
-      // Phase 2: Reveal Category
+      // Select random category
+      const categoryKeys = Object.keys(categories)
+      const randomCategoryKey = categoryKeys[Math.floor(Math.random() * categoryKeys.length)]
+      setSelectedCategory(randomCategoryKey)
+      
       setTimeout(() => {
-        setGamePhase('category')
+        setRevealState('revealing-challenge')
+        
+        // Select random challenge from category
+        const challenges = categories[randomCategoryKey as keyof typeof categories]
+        const randomChallenge = challenges[Math.floor(Math.random() * challenges.length)]
+        setSelectedChallenge(randomChallenge)
+        
         setTimeout(() => {
-          const selectedCategory = pickRandom(categories)
-          setCurrentCategory(selectedCategory.id)
-          
-          // Phase 3: Reveal Challenge
-          setTimeout(() => {
-            setGamePhase('challenge')
-            setTimeout(() => {
-              const challenge = pickRandom(selectedCategory.challenges)
-              const interpolatedChallenge = challenge.replace(/\{name\}/g, selectedPlayer)
-              setCurrentChallenge(interpolatedChallenge)
-            }, 300)
-          }, 1000)
-        }, 300)
-      }, 1200)
-    }, 300)
-  }, [players])
+          setRevealState('complete')
+        }, 800)
+      }, 800)
+    }, 800)
+  }
 
-  const resetGame = () => {
-    setGamePhase('idle')
-    setCurrentPlayer('')
-    setCurrentCategory('')
-    setCurrentChallenge('')
+  const reset = () => {
+    setRevealState('idle')
+    setSelectedPlayer('')
+    setSelectedCategory('')
+    setSelectedChallenge('')
   }
 
   if (players.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.content}>
-          <h1 style={styles.title}>{t('arena.title')}</h1>
-          
-          <div style={styles.emptyState}>
-            <p style={styles.emptyTitle}>{t('arena.noPlayers')}</p>
-            <Link to="/legends" style={styles.ctaLink}>
-              {t('arena.callToAction')}
-            </Link>
-          </div>
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h1>🏛️ {t('arena.title')}</h1>
+        <div style={{ marginTop: '40px' }}>
+          <p style={{ fontSize: '18px', marginBottom: '20px' }}>
+            {t('arena.empty.description')}
+          </p>
+          <Link
+            to="/legends"
+            style={{
+              display: 'inline-block',
+              padding: '15px 30px',
+              fontSize: '16px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px'
+            }}
+          >
+            {t('arena.empty.cta')}
+          </Link>
         </div>
       </div>
     )
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.content}>
-        <h1 style={styles.title}>{t('arena.title')}</h1>
-        
-        {gamePhase === 'idle' && (
-          <div style={styles.startSection}>
-            <button onClick={startBattle} style={styles.startButton}>
+    <div style={{ padding: '20px', textAlign: 'center' }}>
+      <h1>⚔️ {t('arena.title')}</h1>
+      
+      <div style={{ marginTop: '40px', minHeight: '300px' }}>
+        {revealState === 'idle' && (
+          <div>
+            <p style={{ fontSize: '18px', marginBottom: '30px' }}>
+              {t('arena.ready', { count: players.length })}
+            </p>
+            <button
+              onClick={startReveal}
+              style={{
+                padding: '15px 30px',
+                fontSize: '18px',
+                backgroundColor: '#ff6b35',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
               {t('arena.start')}
             </button>
           </div>
         )}
 
-        {gamePhase !== 'idle' && (
-          <div style={styles.gameArea}>
-            {/* Player Reveal */}
-            <div style={{
-              ...styles.revealCard,
-              ...(gamePhase === 'player' ? styles.revealCardActive : {}),
-              ...(currentPlayer ? styles.revealCardRevealed : {})
+        {revealState === 'revealing-player' && (
+          <div>
+            <h2 style={{ fontSize: '24px', marginBottom: '20px' }}>
+              {t('arena.revealing.player')}
+            </h2>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ff6b35' }}>
+              {selectedPlayer}
+            </div>
+          </div>
+        )}
+
+        {(revealState === 'revealing-category' || revealState === 'revealing-challenge' || revealState === 'complete') && (
+          <div>
+            <h2 style={{ fontSize: '20px', marginBottom: '20px' }}>
+              {t('arena.player')}: <span style={{ color: '#ff6b35' }}>{selectedPlayer}</span>
+            </h2>
+            {revealState === 'revealing-category' && (
+              <div>
+                <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>
+                  {t('arena.revealing.category')}
+                </h3>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50' }}>
+                  {t(`categories.${selectedCategory}`)}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {(revealState === 'revealing-challenge' || revealState === 'complete') && (
+          <div style={{ marginTop: '20px' }}>
+            <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>
+              {t('arena.category')}: <span style={{ color: '#4CAF50' }}>{t(`categories.${selectedCategory}`)}</span>
+            </h3>
+            {revealState === 'revealing-challenge' && (
+              <div>
+                <h4 style={{ fontSize: '16px', marginBottom: '10px' }}>
+                  {t('arena.revealing.challenge')}
+                </h4>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#9c27b0' }}>
+                  {selectedChallenge.includes('{name}') 
+                    ? selectedChallenge.replace('{name}', selectedPlayer)
+                    : selectedChallenge
+                  }
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {revealState === 'complete' && (
+          <div style={{ marginTop: '30px' }}>
+            <div style={{ 
+              padding: '20px', 
+              backgroundColor: '#f5f5f5', 
+              borderRadius: '12px',
+              marginBottom: '20px'
             }}>
-              <h3 style={styles.revealLabel}>{t('arena.playerReveal')}</h3>
-              <div style={styles.revealContent}>
-                {currentPlayer ? (
-                  <span style={styles.playerName}>{currentPlayer}</span>
-                ) : (
-                  <div style={styles.loadingDots}>...</div>
-                )}
+              <h4 style={{ fontSize: '16px', marginBottom: '10px' }}>
+                {t('arena.challenge')}:
+              </h4>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#9c27b0' }}>
+                {selectedChallenge.includes('{name}') 
+                  ? selectedChallenge.replace('{name}', selectedPlayer)
+                  : selectedChallenge
+                }
               </div>
             </div>
-
-            {/* Category Reveal */}
-            {gamePhase !== 'player' && (
-              <div style={{
-                ...styles.revealCard,
-                ...(gamePhase === 'category' ? styles.revealCardActive : {}),
-                ...(currentCategory ? styles.revealCardRevealed : {})
-              }}>
-                <h3 style={styles.revealLabel}>{t('arena.categoryReveal')}</h3>
-                <div style={styles.revealContent}>
-                  {currentCategory ? (
-                    <span style={styles.categoryName}>
-                      {t(`categories.${currentCategory}`)}
-                    </span>
-                  ) : (
-                    <div style={styles.loadingDots}>...</div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Challenge Reveal */}
-            {gamePhase === 'challenge' && (
-              <div style={{
-                ...styles.revealCard,
-                ...(currentChallenge ? styles.revealCardRevealed : styles.revealCardActive)
-              }}>
-                <h3 style={styles.revealLabel}>{t('arena.challengeReveal')}</h3>
-                <div style={styles.revealContent}>
-                  {currentChallenge ? (
-                    <p style={styles.challengeText}>{currentChallenge}</p>
-                  ) : (
-                    <div style={styles.loadingDots}>...</div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {currentChallenge && (
-              <button onClick={resetGame} style={styles.resetButton}>
-                {t('arena.start')}
-              </button>
-            )}
+            <button
+              onClick={reset}
+              style={{
+                padding: '12px 25px',
+                fontSize: '16px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              {t('arena.newChallenge')}
+            </button>
           </div>
         )}
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #d4af37 100%)',
-    padding: '1rem',
-    paddingBottom: '6rem'
-  },
-  content: {
-    maxWidth: '400px',
-    margin: '0 auto',
-    color: 'white'
-  },
-  title: {
-    textAlign: 'center' as const,
-    marginBottom: '2rem',
-    fontSize: '2.5rem',
-    fontWeight: 'bold',
-    textShadow: '3px 3px 6px rgba(0,0,0,0.7)',
-    background: 'linear-gradient(45deg, #ffd700, #fff)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text'
-  },
-  startSection: {
-    textAlign: 'center' as const,
-    marginTop: '4rem'
-  },
-  startButton: {
-    padding: '1.5rem 3rem',
-    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
-    color: '#4a148c',
-    border: 'none',
-    borderRadius: '16px',
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4)',
-    transform: 'scale(1)',
-    ':hover': {
-      transform: 'scale(1.05)',
-      boxShadow: '0 12px 40px rgba(212, 175, 55, 0.6)'
-    }
-  } as React.CSSProperties,
-  gameArea: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '2rem',
-    marginTop: '2rem'
-  },
-  revealCard: {
-    background: 'rgba(255,255,255,0.1)',
-    backdropFilter: 'blur(15px)',
-    borderRadius: '20px',
-    padding: '2rem',
-    border: '2px solid rgba(255,255,255,0.2)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-    transition: 'all 0.8s ease',
-    opacity: 0.3,
-    transform: 'translateY(20px)'
-  },
-  revealCardActive: {
-    opacity: 1,
-    transform: 'translateY(0) scale(1.02)',
-    border: '2px solid rgba(212, 175, 55, 0.5)',
-    animation: 'pulse 1s infinite'
-  },
-  revealCardRevealed: {
-    opacity: 1,
-    transform: 'translateY(0)',
-    border: '2px solid rgba(212, 175, 55, 0.8)',
-    background: 'rgba(255,255,255,0.2)',
-    boxShadow: '0 12px 40px rgba(212, 175, 55, 0.3)'
-  },
-  revealLabel: {
-    textAlign: 'center' as const,
-    fontSize: '1.2rem',
-    marginBottom: '1rem',
-    opacity: 0.8,
-    textTransform: 'uppercase' as const,
-    letterSpacing: '2px'
-  },
-  revealContent: {
-    textAlign: 'center' as const,
-    minHeight: '3rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  playerName: {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    color: '#ffd700',
-    textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-  },
-  categoryName: {
-    fontSize: '1.8rem',
-    fontWeight: 'bold',
-    color: '#ff6b6b',
-    textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-  },
-  challengeText: {
-    fontSize: '1.2rem',
-    lineHeight: '1.6',
-    textAlign: 'center' as const,
-    margin: 0
-  },
-  loadingDots: {
-    fontSize: '2rem',
-    color: '#ffd700',
-    animation: 'pulse 1s infinite'
-  },
-  resetButton: {
-    alignSelf: 'center' as const,
-    padding: '1rem 2rem',
-    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
-    color: '#4a148c',
-    border: 'none',
-    borderRadius: '12px',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    marginTop: '2rem',
-    transition: 'all 0.3s ease'
-  },
-  emptyState: {
-    textAlign: 'center' as const,
-    marginTop: '4rem',
-    padding: '3rem 2rem',
-    background: 'rgba(255,255,255,0.1)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '20px',
-    border: '2px solid rgba(212, 175, 55, 0.3)'
-  },
-  emptyTitle: {
-    fontSize: '1.5rem',
-    marginBottom: '2rem',
-    fontWeight: 'bold'
-  },
-  ctaLink: {
-    display: 'inline-block',
-    padding: '1rem 2rem',
-    background: 'linear-gradient(45deg, #d4af37, #ffd700)',
-    color: '#4a148c',
-    textDecoration: 'none',
-    borderRadius: '12px',
-    fontSize: '1.1rem',
-    fontWeight: 'bold',
-    transition: 'all 0.3s ease'
-  }
 }

@@ -12,7 +12,8 @@ export default function TabLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const { isAnonymous } = useAuth()
+  const { user } = useAuth()
+  const isAnonymous = user?.isAnonymous === true
   const { t } = useTranslation()
 
   const currentIndex = tabs.indexOf(location.pathname)

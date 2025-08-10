@@ -13,7 +13,6 @@ export default function TabLayout() {
   const navigate = useNavigate()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const { user } = useAuth()
-  const isAnonymous = user?.isAnonymous === true
   const { t } = useTranslation()
 
   const currentIndex = tabs.indexOf(location.pathname)
@@ -47,11 +46,6 @@ export default function TabLayout() {
 
   return (
     <div {...swipeHandlers} className={styles.container}>
-      {isAnonymous && (
-        <div className={styles.guestBadge}>
-          {t('auth.badge.guest')}
-        </div>
-      )}
       <main 
         className={styles.main}
         style={{

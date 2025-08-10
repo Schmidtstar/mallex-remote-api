@@ -1,4 +1,5 @@
 
+// NO DEFAULT EXPORTS - Only named exports to prevent star export issues
 export interface MenuItem {
   id: string;            // Eindeutiger Bezeichner
   labelKey: string;      // i18n-Key z. B. 'menu.settings'

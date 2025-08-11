@@ -4,6 +4,7 @@ import { TabLayout } from './layouts/TabLayout'
 import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
 import { MenuScreen } from './features/Menu/MenuScreen'
+import { TasksOverviewScreen } from './features/Tasks/TasksOverviewScreen'
 
 import { AuthScreen } from './features/Auth/AuthScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -65,6 +66,11 @@ const routes = [
         path: 'menu',
         element: <MenuScreen />,
         errorElement: <ErrorBoundary><div>Fehler im Menü</div></ErrorBoundary>
+      },
+      {
+        path: 'tasks',
+        element: <TasksOverviewScreen />,
+        errorElement: <ErrorBoundary><div>Fehler in Aufgaben-Übersicht</div></ErrorBoundary>
       }
     ]
   }

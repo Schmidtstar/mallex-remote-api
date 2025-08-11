@@ -10,6 +10,9 @@
     "legends": "Hall of Legends",
     "profile": "Profile",
     "settings": "Settings",
+    "tasks": {
+      "overview": "Tasks Overview"
+    },
     "logout": "Log out"
   },
   "arena": {
@@ -33,3 +36,11 @@
     "guestMode": "Guest Mode"
   }
 }
+
+  "tasks": {
+    "title": "Tasks Overview",
+    "selectCategory": "Select Category",
+    "backToCategories": "Back to Categories",
+    "noTasks": "No tasks available",
+    "categoryTasks": "Tasks for {{category}}"
+  },

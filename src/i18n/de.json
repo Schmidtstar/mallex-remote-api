@@ -143,6 +143,9 @@
     "legends": "Halle der Legenden",
     "profile": "Profil",
     "settings": "Einstellungen",
+    "tasks": {
+      "overview": "Aufgaben-Übersicht"
+    },
     "logout": "Abmelden"
   },
   "categories": {
@@ -234,3 +237,11 @@
     "menu": "Menü"
   }
 }
+
+  "tasks": {
+    "title": "Aufgaben-Übersicht",
+    "selectCategory": "Kategorie auswählen",
+    "backToCategories": "Zurück zu Kategorien",
+    "noTasks": "Keine Aufgaben verfügbar",
+    "categoryTasks": "Aufgaben für {{category}}"
+  },

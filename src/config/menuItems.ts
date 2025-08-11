@@ -1,9 +1,8 @@
-
 export interface MenuItem {
-  key: 'arena' | 'legends' | 'profile' | 'settings'
-  labelKey: string
-  path: string
-  icon?: string
+  key: 'arena' | 'legends' | 'profile' | 'settings' | 'tasks';
+  labelKey: string;           // i18n key
+  path: '/arena' | '/legends' | '/menu?tab=profile' | '/menu?tab=settings' | '/tasks';
+  icon?: string;              // optional, falls genutzt
 }
 
 export interface MenuGroup {
@@ -15,10 +14,11 @@ export const menuGroups: MenuGroup[] = [
   {
     id: 'main',
     items: [
-      { key: 'arena', labelKey: 'menu.arena', path: '/arena', icon: '🏟️' },
+      { key: 'arena',   labelKey: 'menu.arena',   path: '/arena',   icon: '🏟️' },
       { key: 'legends', labelKey: 'menu.legends', path: '/legends', icon: '🏛️' },
       { key: 'profile', labelKey: 'menu.profile', path: '/menu?tab=profile', icon: '👤' },
-      { key: 'settings', labelKey: 'menu.settings', path: '/menu?tab=settings', icon: '⚙️' }
-    ]
-  }
-]
+      { key: 'settings',labelKey: 'menu.settings',path: '/menu?tab=settings', icon: '⚙️' },
+      { key: 'tasks', labelKey: 'menu.tasks.overview', path: '/tasks', icon: '📋' },
+    ] as MenuItem[],
+  },
+];

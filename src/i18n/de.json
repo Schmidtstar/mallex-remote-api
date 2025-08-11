@@ -98,9 +98,7 @@
     "logout": "Abmelden"
   },
   "common": {
-    "loading": "Laden",
-    "adding": "Hinzufügen",
-    "remove": "Entfernen"
+    "loading": "Lädt..."
   },
   "tasks": {
     "overview": {
@@ -112,32 +110,21 @@
       "title": "Aufgabe vorschlagen",
       "category": "Kategorie",
       "text": "Aufgabentext",
-      "placeholder": "Beschreibe deine Aufgabe...",
-      "submit": "Vorschlagen",
-      "success": "Aufgabe erfolgreich vorgeschlagen!"
+      "placeholder": "Beschreibe deine Aufgabe hier...",
+      "submit": "Vorschlag senden",
+      "success": "Vielen Dank für deinen Vorschlag!",
+      "submitting": "Wird gesendet..."
     },
     "admin": {
-      "title": "Aufgaben verwalten",
-      "tabs": {
-        "pending": "Ausstehend",
-        "approved": "Genehmigt",
-        "rejected": "Abgelehnt",
-        "create": "Erstellen"
-      },
-      "actions": {
-        "approve": "Genehmigen",
-        "reject": "Ablehnen",
-        "edit": "Bearbeiten",
-        "save": "Speichern",
-        "cancel": "Abbrechen",
-        "remove": "Entfernen"
-      },
-      "emptyStates": {
-        "pending": "Keine ausstehenden Aufgaben",
-        "approved": "Keine genehmigten Aufgaben",
-        "rejected": "Keine abgelehnten Aufgaben"
-      },
-      "rejectNote": "Ablehnungsgrund (optional)"
+      "title": "Admin-Bereich",
+      "tasks": "Aufgaben verwalten",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "suggestions": {
+        "title": "Vorschläge moderieren",
+        "empty": "Keine ausstehenden Vorschläge",
+        "by": "Von"
+      }
     },
     "create": {
       "title": "Neue Aufgabe erstellen",
@@ -146,7 +133,15 @@
       "placeholder": "Gib den Text der Aufgabe ein...",
       "submit": "Aufgabe erstellen",
       "success": "Aufgabe erfolgreich erstellt!"
-    }
+    },
+    "all": "Alle Kategorien",
+    "empty": "Keine Aufgaben gefunden",
+    "category": "Kategorie",
+    "text": "Aufgabentext",
+    "placeholder": "Beschreibe deine Aufgabe hier...",
+    "submit": "Vorschlag senden",
+    "submitting": "Wird gesendet...",
+    "thanks": "Vielen Dank für deinen Vorschlag!"
   },
   "profile": {
     "birthdate": "Geburtsdatum",

@@ -1,99 +1,88 @@
-
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useTaskSuggestions } from '../../context/TaskSuggestionsContext'
-import { useAuth } from '../../context/AuthContext'
-import { categories } from '../Arena/categories'
-import styles from './SuggestTaskScreen.module.css'
+import React, { useState } from 'react';
+import { createSuggestion } from '@/lib/suggestionsApi';
+import { useAuth } from '@/context/AuthContext';
+import type { CategoryKey } from '@/lib/tasksApi';
+import { useTranslation } from 'react-i18next';
+import { categories } from '../Arena/categories';
+import styles from './SuggestTaskScreen.module.css';
 
 export function SuggestTaskScreen() {
-  const { t } = useTranslation()
-  const { add } = useTaskSuggestions()
-  const { user } = useAuth()
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [taskText, setTaskText] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showThanks, setShowThanks] = useState(false)
+  const { user } = useAuth();
+  const { t } = useTranslation();
+  const [category, setCategory] = useState<CategoryKey>('fate');
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedCategory || !taskText.trim()) return
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.uid || !text.trim()) return;
 
-    setIsSubmitting(true)
+    setBusy(true);
+    setSuccess(false);
     try {
-      const author = user ? { uid: user.uid, email: user.email } : undefined
-      add(selectedCategory, taskText.trim(), author)
-      
-      // Reset form
-      setSelectedCategory('')
-      setTaskText('')
-      setShowThanks(true)
-      
-      // Hide thanks message after 3 seconds
-      setTimeout(() => setShowThanks(false), 3000)
+      await createSuggestion(user.uid, category, text.trim());
+      setText('');
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
-      console.error('Failed to submit suggestion:', error)
+      console.error('Error creating suggestion:', error);
     } finally {
-      setIsSubmitting(false)
+      setBusy(false);
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>{t('suggest.title')}</h1>
-      </div>
+      <h2>{t('menu.suggest')}</h2>
 
-      {showThanks && (
-        <div className={styles.thanksMessage}>
-          {t('suggest.thanks')}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={onSubmit} className={styles.form}>
         <div className={styles.field}>
-          <label htmlFor="category" className={styles.label}>
-            {t('suggest.choose')}
-          </label>
-          <select
+          <label htmlFor="category">{t('tasks.category')}</label>
+          <select 
             id="category"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={category} 
+            onChange={(e) => setCategory(e.target.value as CategoryKey)}
             className={styles.select}
-            required
           >
-            <option value="">{t('suggest.choose')}</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {t(category.labelKey)}
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>
+                {t(cat.labelKey)}
               </option>
             ))}
           </select>
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="taskText" className={styles.label}>
-            {t('suggest.placeholder')}
-          </label>
+          <label htmlFor="text">{t('tasks.text')}</label>
           <textarea
-            id="taskText"
-            value={taskText}
-            onChange={(e) => setTaskText(e.target.value)}
-            placeholder={t('suggest.placeholder')}
+            id="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t('tasks.placeholder')}
             className={styles.textarea}
             rows={4}
-            required
+            maxLength={500}
           />
+          <small className={styles.counter}>
+            {text.length}/500
+          </small>
         </div>
 
-        <button
+        <button 
           type="submit"
-          disabled={isSubmitting || !selectedCategory || !taskText.trim()}
-          className={styles.submitButton}
+          disabled={busy || !text.trim()} 
+          className={styles.submitBtn}
         >
-          {isSubmitting ? t('common.loading', 'Loading...') : t('suggest.submit')}
+          {busy ? t('tasks.submitting') : t('tasks.submit')}
         </button>
+
+        {success && (
+          <div className={styles.success}>
+            {t('tasks.thanks')}
+          </div>
+        )}
       </form>
     </div>
-  )
+  );
 }

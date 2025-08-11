@@ -1,0 +1,52 @@
+MALLEX – Kritische Prüffragen für den Agenten
+
+Navigation & Routing
+	•	Existiert keine /menu-Seite mehr? Öffnet der Tab-Bar-Hamburger ausschließlich den Drawer (kein Route-Push)?
+	•	Schließt sich der Drawer automatisch bei Route-Wechsel (Back/Forward, Link-Klick)?
+	•	Sind die Tabs unten final: 🏟️ → /arena, 🏛️ → /legends, ≡ → openDrawer()?
+
+Drawer-Verhalten (UX)
+	•	Schließt der Drawer bei Klick auf Backdrop und bei ESC?
+	•	Ist Body-Scroll bei geöffnetem Drawer gesperrt und wird korrekt wieder freigegeben?
+	•	Springt der Focus beim Öffnen in den Drawer (A11y), mit role="dialog" & aria-modal="true"?
+
+Menü-Inhalte & Quelle
+	•	Kommen alle Menüpunkte aus einer Quelle (src/config/menuItems.ts) – ohne Duplikate/harte Strings?
+	•	Navigieren alle Items korrekt und schließen danach den Drawer?
+	•	Sind Admin-Only-Items sauber per Flag ausgeblendet, wenn nicht berechtigt?
+
+i18n
+	•	Sind alle Labels (menu.title, menu.tabs.*, tabs.*) als Strings in de.json/en.json hinterlegt (keine Objekte)?
+	•	Wird im Drawer-Titel „Menü“ (bzw. „Menu“) angezeigt, nie menu.title wörtlich?
+
+Arena & Kategorien (Datenfluss)
+	•	Nutzen Arena und Menü/Tasks dieselbe Datenquelle (Kategorien/Challenges), keine Schattenkopien?
+	•	Stimmen die 5 Kategorien exakt: Schicksal, Schande, Verführung, Eskalation, Beichte (DE/EN-Keys konsistent)?
+
+Auth / Gäste / Profil
+	•	Verhält sich Profil-Eintrag abhängig vom Status: Gast → CTA zu Login/Registrierung, User → Logout & Daten?
+	•	Ist Logout im Menü vorhanden und funktional? Gast-Badge nicht mehr in der Top-Bar sichtbar?
+
+Code-Hygiene (Fehlerquellen)
+	•	Gibt es keine export * from-Barrels mehr und keine export default in gemeinsam genutzten Modulen?
+	•	Keine doppelten Exporte (export { router } etc.) und keine toten Importe (AppDrawer, MobileDrawer, BurgerButton, alte MenuScreen-Teile)?
+	•	Sind alle Imports benannt (import { X } from '…') und zeigen direkt auf Dateien (keine unsicheren index.ts-Barrels)?
+
+Performance & HMR
+	•	Startet Vite ohne Overlay-Fehler/Warnungen (insb. „default by star export“)?
+	•	Funktioniert HMR bei Änderungen an Drawer/Menu ohne Full-Reload?
+
+Accessibility & Mobile
+	•	Ist der Hamburger in der Tab-Bar gut touchbar (Hit-Area ≥ 44px) und visuell konsistent mit den anderen Tabs?
+	•	Kontrast/Lesbarkeit im Drawer (Glasoptik) ausreichend? Fokusindikatoren sichtbar?
+
+Error Handling
+	•	Fängt der globale ErrorBoundary auch Fehler innerhalb des Drawers sauber ab (statt White Screen)?
+
+⸻
+
+Bitte liefere als Antwort:
+	1.	Ja/Nein je Punkt inkl. kurzer Begründung (max. 1 Satz).
+	2.	Liste konkreter Dateien/Zeilen, wenn etwas Nein ist, plus Fix-Vorschlag.
+	3.	Einen Mini-Diff (oder Code-Snippets) für kleine Korrekturen.
+	4.	Abschluss: Sanity-Check (Start App → Drawer öffnen/schließen → 2–3 Menüpunkte klicken → keine Console-Errors).

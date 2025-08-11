@@ -1,5 +1,6 @@
 
 import { db } from './firebase'
+import { collection, addDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore'
 
 export type TaskDoc = {
   id?: string
@@ -15,14 +16,6 @@ export async function createTaskApproved(
   input: Pick<TaskDoc, 'category' | 'text'>, 
   createdBy?: string
 ): Promise<void> {
-  const fb = await getFirebase()
-  if (!fb) {
-    throw new Error('Firebase nicht verfügbar')
-  }
-
-  const { getFirestore, collection, addDoc, serverTimestamp } = await import('firebase/firestore')
-  const db = getFirestore(fb.app)
-
   await addDoc(collection(db, 'tasks'), {
     ...input,
     status: 'approved' as const,
@@ -35,15 +28,7 @@ export async function createTaskApproved(
 export async function fetchApprovedTasksByCategory(
   category: TaskDoc['category']
 ): Promise<TaskDoc[]> {
-  const fb = await getFirebase()
-  if (!fb) {
-    return []
-  }
-
   try {
-    const { getFirestore, collection, query, where, getDocs } = await import('firebase/firestore')
-    const db = getFirestore(fb.app)
-
     const q = query(
       collection(db, 'tasks'),
       where('category', '==', category),
@@ -62,15 +47,7 @@ export async function fetchApprovedTasksByCategory(
 }
 
 export async function fetchAllApprovedTasks(): Promise<TaskDoc[]> {
-  const fb = await getFirebase()
-  if (!fb) {
-    return []
-  }
-
   try {
-    const { getFirestore, collection, query, where, getDocs } = await import('firebase/firestore')
-    const db = getFirestore(fb.app)
-
     const q = query(
       collection(db, 'tasks'),
       where('status', '==', 'approved')

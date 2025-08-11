@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 import { db } from '@/lib/firebase'
+import { collection, query, where, getDocs, getFirestore, doc, getDoc } from 'firebase/firestore'
 
 type AdminCtx = {
   isAdmin: boolean
@@ -38,11 +39,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        // Import Firestore
-        const { getFirestore, collection, query, where, getDocs } = await import('firebase/firestore')
-        const firestoreDb = getFirestore(db.app) // Use db.app from the imported db object
-
         // Query admins collection for user's email
+        const firestoreDb = getFirestore(db.app)
         const q = query(
           collection(firestoreDb, 'admins'),
           where('email', '==', user.email)

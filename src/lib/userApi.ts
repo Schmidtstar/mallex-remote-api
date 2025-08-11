@@ -1,15 +1,16 @@
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface UserProfile {
   uid: string;
-  email: string;
+  email?: string;
   displayName?: string;
   birthdate?: string;
   gender?: 'male' | 'female' | 'diverse';
   nationality?: string;
   createdAt: Date;
   updatedAt: Date;
+  lastLoginAt?: Date;
 }
 
 export async function createUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
@@ -38,6 +39,25 @@ export async function updateUserProfile(uid: string, data: Partial<UserProfile>)
     ...data,
     updatedAt: new Date()
   });
+}
+
+export async function ensureUserProfile(uid: string, data: {
+  email?: string;
+  displayName?: string;
+}) {
+  const ref = doc(db, 'users', uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      email: data.email ?? null,
+      displayName: data.displayName ?? null,
+      createdAt: serverTimestamp(),
+      lastLoginAt: serverTimestamp(),
+    });
+  } else {
+    await setDoc(ref, { lastLoginAt: serverTimestamp() }, { merge: true });
+  }
+  return ref;
 }
 
 export const nationalities = [

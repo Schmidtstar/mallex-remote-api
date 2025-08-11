@@ -1,119 +1,133 @@
+
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-import { db } from '@/lib/firebase'
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
+import { addPlayer, removePlayer, listenPlayers, Player } from '@/lib/playersApi'
 
-type Player = {
-  id: string
-  name: string
-  // Add other player properties here if necessary
-}
-
-type PlayersCtx = {
+type PlayersContextType = {
   players: Player[]
-  addPlayer: (name: string) => void
-  removePlayer: (name: string) => void
-  loadPlayers: () => Promise<void>
-  savePlayers: () => Promise<void>
+  addPlayer: (name: string) => Promise<void>
+  removePlayer: (id: string) => Promise<void>
+  mode: 'firebase' | 'localStorage'
+  loading: boolean
 }
 
-const defaultContext: PlayersCtx = {
-  players: [],
-  addPlayer: () => {},
-  removePlayer: () => {},
-  loadPlayers: async () => {},
-  savePlayers: async () => {}
+const PlayersContext = createContext<PlayersContextType | undefined>(undefined)
+
+export function usePlayersContext() {
+  const context = useContext(PlayersContext)
+  if (!context) {
+    throw new Error('usePlayersContext must be used within a PlayersProvider')
+  }
+  return context
 }
 
-const Ctx = createContext<PlayersCtx>(defaultContext)
-
-export const usePlayers = () => {
-  const c = useContext(Ctx)
-  if (!c || c === defaultContext) throw new Error('usePlayers must be used within PlayersProvider')
-  return c
+type PlayersProviderProps = {
+  children: ReactNode
 }
 
-export function PlayersProvider({ children }: { children: ReactNode }) {
+const STORAGE_KEY = 'mallex-players'
+
+export function PlayersProvider({ children }: PlayersProviderProps) {
+  const { user, loading: authLoading } = useAuth()
   const [players, setPlayers] = useState<Player[]>([])
-  const { user, mode } = useAuth()
-  const STORAGE_KEY = 'mallex.players'
+  const [loading, setLoading] = useState(true)
 
-  const loadPlayers = useCallback(async () => {
-    try {
-      if (mode === 'firebase' && user && !user.isAnonymous && user.uid) {
-        // Guard against empty user.uid
-        const playersCollectionRef = collection(db, 'users', user.uid, 'players')
-        const playersSnapshot = await getDocs(playersCollectionRef)
-        const playersData: Player[] = playersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...(doc.data() as Omit<Player, 'id'>)
-        }))
-        setPlayers(playersData)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(playersData))
-      } else {
+  const mode = useMemo(() => {
+    return user && !user.isAnonymous ? 'firebase' : 'localStorage'
+  }, [user])
+
+  // Load players when auth state changes
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined
+
+    const loadPlayers = async () => {
+      if (authLoading) return
+
+      setLoading(true)
+      try {
+        if (mode === 'firebase' && user && user.uid) {
+          // Listen to Firebase players
+          unsubscribe = listenPlayers(user.uid, (playersList) => {
+            setPlayers(playersList)
+            setLoading(false)
+          })
+        } else {
+          // Load from localStorage
+          const saved = localStorage.getItem(STORAGE_KEY)
+          const playersList = saved ? JSON.parse(saved) : []
+          setPlayers(playersList)
+          setLoading(false)
+        }
+      } catch (error) {
+        console.warn('Failed to load players:', error)
         // Fallback to localStorage
         const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved) {
-          setPlayers(JSON.parse(saved))
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load players, using localStorage fallback:', error)
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        setPlayers(JSON.parse(saved))
+        const playersList = saved ? JSON.parse(saved) : []
+        setPlayers(playersList)
+        setLoading(false)
       }
     }
-  }, [user, mode, STORAGE_KEY])
 
-  const savePlayers = useCallback(async () => {
-    try {
-      // Always save to localStorage as fallback
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(players))
-
-      // Only save to Firestore for authenticated non-anonymous users
-      if (mode === 'firebase' && user && !user.isAnonymous && user.uid && players.length > 0) {
-        // Save each player as a separate document
-        for (const player of players) {
-          if (player.id && player.name) {
-            const playerDocRef = doc(db, 'users', user.uid, 'players', player.id)
-            await setDoc(playerDocRef, { name: player.name }, { merge: true })
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to save to Firestore, saved locally:', error)
-    }
-  }, [players, user, mode, STORAGE_KEY])
-
-  const addPlayer = useCallback((name: string) => {
-    if (name.trim() && !players.some(p => p.name.toLowerCase() === name.trim().toLowerCase())) {
-      const newPlayer: Player = { id: Date.now().toString(), name: name.trim() }
-      setPlayers(prev => [...prev, newPlayer])
-    }
-  }, [players])
-
-  const removePlayer = useCallback((name: string) => {
-    setPlayers(prev => prev.filter(p => p.name !== name))
-  }, [])
-
-  useEffect(() => {
     loadPlayers()
-  }, [loadPlayers])
 
-  useEffect(() => {
-    if (players.length > 0) {
-      savePlayers()
+    return () => {
+      if (unsubscribe) {
+        unsubscribe()
+      }
     }
-  }, [players, savePlayers])
+  }, [mode, user, authLoading])
 
-  const api = useMemo<PlayersCtx>(() => ({
+  const handleAddPlayer = useCallback(async (name: string) => {
+    if (!name.trim()) return
+
+    try {
+      if (mode === 'firebase' && user && user.uid) {
+        await addPlayer(user.uid, name.trim())
+        // Firebase listener will update the state
+      } else {
+        // localStorage mode
+        const newPlayer: Player = {
+          id: Date.now().toString(),
+          name: name.trim()
+        }
+        const updatedPlayers = [...players, newPlayer]
+        setPlayers(updatedPlayers)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+      }
+    } catch (error) {
+      console.warn('Failed to add player:', error)
+      throw error
+    }
+  }, [mode, user, players])
+
+  const handleRemovePlayer = useCallback(async (id: string) => {
+    try {
+      if (mode === 'firebase' && user && user.uid) {
+        await removePlayer(user.uid, id)
+        // Firebase listener will update the state
+      } else {
+        // localStorage mode
+        const updatedPlayers = players.filter(p => p.id !== id)
+        setPlayers(updatedPlayers)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+      }
+    } catch (error) {
+      console.warn('Failed to remove player:', error)
+      throw error
+    }
+  }, [mode, user, players])
+
+  const value = useMemo(() => ({
     players,
-    addPlayer,
-    removePlayer,
-    loadPlayers,
-    savePlayers
-  }), [players, addPlayer, removePlayer, loadPlayers, savePlayers])
+    addPlayer: handleAddPlayer,
+    removePlayer: handleRemovePlayer,
+    mode,
+    loading
+  }), [players, handleAddPlayer, handleRemovePlayer, mode, loading])
 
-  return <Ctx.Provider value={api}>{children}</Ctx.Provider>
+  return (
+    <PlayersContext.Provider value={value}>
+      {children}
+    </PlayersContext.Provider>
+  )
 }

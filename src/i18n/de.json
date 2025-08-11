@@ -67,6 +67,24 @@
     "taskManager": "Aufgaben-Manager",
     "devManager": "Entwickler-Manager"
   },
+  "legends": {
+    "title": "Halle der Legenden",
+    "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
+    "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
+    "syncMode": "Spieler werden in deinem Profil gespeichert.",
+    "playerNamePlaceholder": "Spielername eingeben",
+    "addPlayer": "Hinzufügen",
+    "removePlayer": "Spieler entfernen",
+    "playersList": "Spieler",
+    "noPlayers": "Noch keine Spieler hinzugefügt",
+    "addError": "Fehler beim Hinzufügen des Spielers",
+    "removeError": "Fehler beim Entfernen des Spielers"
+  },
+  "common": {
+    "loading": "Laden",
+    "adding": "Hinzufügen",
+    "remove": "Entfernen"
+  },
   "auth": {
     "login": "Anmelden",
     "register": "Registrieren",

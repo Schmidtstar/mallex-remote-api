@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { auth } from '@/lib/firebase'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from 'firebase/auth'
+import {signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, User, signInAnonymously, EmailAuthProvider, linkWithCredential} from 'firebase/auth'
+import { ensureUserProfile } from '@/lib/userApi'
 
 type User = { uid: string; email?: string | null; isAnonymous: boolean } | null
 
@@ -35,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setLoading(true)
-    
+
     // Check if Firebase is properly configured
     if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
       setFbMode('guest')
@@ -45,13 +46,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setFbMode('firebase')
-    const unsub = onAuthStateChanged(auth, (u) => {
-      if (u) setUser({ uid: u.uid, email: u.email, isAnonymous: u.isAnonymous })
-      else setUser(null)
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user && !user.isAnonymous) {
+        try {
+          await ensureUserProfile(user.uid, {
+            email: user.email ?? undefined,
+            displayName: user.displayName ?? undefined,
+          });
+        } catch (error) {
+          console.warn('Failed to ensure user profile:', error);
+        }
+      }
+      setUser(user)
       setLoading(false)
     })
 
-    return () => unsub()
+    return () => unsubscribe()
   }, [])
 
   const loginAsGuest = useCallback(async () => {
@@ -126,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser({ uid: 'guest', isAnonymous: true, email: null })
         return
       }
-      await signOut(auth)
+      await firebaseSignOut(auth)
     },
     async logout() {
       setError(null)
@@ -134,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser({ uid: 'guest', isAnonymous: true, email: null })
         return
       }
-      await signOut(auth)
+      await firebaseSignOut(auth)
     },
     async signOut() {
       setError(null)
@@ -142,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser({ uid: 'guest', isAnonymous: true, email: null })
         return
       }
-      await signOut(auth)
+      await firebaseSignOut(auth)
     }
   }), [user, loading, fbMode, error, loginAsGuest, upgradeToEmail])
 

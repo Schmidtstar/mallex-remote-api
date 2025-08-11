@@ -1,4 +1,3 @@
-
 .container {
   padding: 20px;
   max-width: 600px;
@@ -86,13 +85,8 @@
 }
 
 .logoutButton:hover {
-  background: rgba(255, 59, 48, 0.2);
-  border-color: #ff3b30;
-}
-
-.logoutButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  background: #e53e3e;
+  transform: translateY(-2px);
 }
 
 .guestInfo {
@@ -113,4 +107,162 @@
 .settingsSection p {
   color: var(--fg);
   margin: 0;
+}
+
+.profileData {
+  margin-bottom: 20px;
+}
+
+.age {
+  color: #666;
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+
+.editButton {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.editButton:hover {
+  background: #357abd;
+  transform: translateY(-2px);
+}
+
+.editForm {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 15px 0;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 8px 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.2);
+}
+
+.genderGroup {
+  margin: 15px 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.genderButton {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.genderButton:hover {
+  border-color: #4a90e2;
+  background: #f0f7ff;
+}
+
+.genderButton.active {
+  border-color: #4a90e2;
+  background: #4a90e2;
+  color: white;
+}
+
+.select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 8px 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.2);
+}
+
+.saveButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.success {
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.error {
+  color: #dc3545;
+  font-weight: bold;
+  margin-top: 10px;
 }

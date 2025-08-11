@@ -36,7 +36,14 @@
     "registerPrompt": "Don't have an account?",
     "loginPrompt": "Already registered?",
     "loading": "Loading...",
-    "guestMode": "Guest Mode"
+    "guestMode": "Guest Mode",
+    "loginButton": "Login",
+    "registerButton": "Register",
+    "switchToRegister": "No account? Register",
+    "switchToLogin": "Already have an account? Login",
+    "anonymousLogin": "Continue as Guest",
+    "logout": "Logout",
+    "displayName": "Name"
   },
   "tasks": {
     "overview": "Tasks Overview",
@@ -53,6 +60,50 @@
       "success": "Task approved and added to pool",
       "error": "Please enter a meaningful task (min. 5 characters)",
       "creating": "Creating task..."
+    },
+    "overview": {
+      "title": "Tasks Overview",
+      "category": "Category",
+      "emptyState": "No tasks found in this category."
+    },
+    "suggest": {
+      "title": "Suggest Task",
+      "category": "Category",
+      "text": "Task text",
+      "placeholder": "Describe your task...",
+      "submit": "Suggest",
+      "success": "Task successfully suggested!"
+    },
+    "admin": {
+      "title": "Manage Tasks",
+      "tabs": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "create": "Create"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "edit": "Edit",
+        "save": "Save",
+        "cancel": "Cancel",
+        "remove": "Remove"
+      },
+      "emptyStates": {
+        "pending": "No pending tasks",
+        "approved": "No approved tasks",
+        "rejected": "No rejected tasks"
+      },
+      "rejectNote": "Rejection reason (optional)"
+    },
+    "create": {
+      "title": "Create New Task",
+      "category": "Choose Category",
+      "text": "Task text",
+      "placeholder": "Enter the task text...",
+      "submit": "Create Task",
+      "success": "Task successfully created!"
     }
   },
   "suggest": {
@@ -75,5 +126,19 @@
       "save": "Save"
     },
     "note": "Note (optional)"
+  },
+  "profile": {
+    "birthdate": "Date of Birth",
+    "gender": "Gender",
+    "gender.male": "Male",
+    "gender.female": "Female",
+    "gender.diverse": "Diverse",
+    "nationality": "Nationality",
+    "age": "Age",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "updateSuccess": "Profile successfully updated!",
+    "birthdatePlaceholder": "01.01.1985"
   }
 }

@@ -68,12 +68,17 @@
     "devManager": "Entwickler-Manager"
   },
   "auth": {
-    "signIn": "Anmelden",
-    "signUp": "Registrieren",
+    "login": "Anmelden",
+    "register": "Registrieren",
     "email": "E-Mail",
     "password": "Passwort",
-    "signOut": "Abmelden",
-    "guest": "Als Gast fortfahren"
+    "displayName": "Name",
+    "loginButton": "Anmelden",
+    "registerButton": "Registrieren",
+    "switchToRegister": "Noch kein Konto? Registrieren",
+    "switchToLogin": "Bereits ein Konto? Anmelden",
+    "anonymousLogin": "Als Gast fortfahren",
+    "logout": "Abmelden"
   },
   "legends": {
     "title": "Halle der Legenden",
@@ -241,21 +246,64 @@
     "menu": "Menü"
   },
   "tasks": {
-    "overview": "Aufgaben-Übersicht",
-    "suggest": "Aufgabe vorschlagen",
-    "adminPanel": "Admin-Bereich",
-    "noTasks": "Keine Aufgaben verfügbar",
-    "totalTasks": "Gesamt verfügbare Aufgaben",
+    "overview": {
+      "title": "Aufgaben-Übersicht",
+      "category": "Kategorie",
+      "emptyState": "Keine Aufgaben in dieser Kategorie gefunden."
+    },
+    "suggest": {
+      "title": "Aufgabe vorschlagen",
+      "category": "Kategorie",
+      "text": "Aufgabentext",
+      "placeholder": "Beschreibe deine Aufgabe...",
+      "submit": "Vorschlagen",
+      "success": "Aufgabe erfolgreich vorgeschlagen!"
+    },
+    "admin": {
+      "title": "Aufgaben verwalten",
+      "tabs": {
+        "pending": "Ausstehend",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "create": "Erstellen"
+      },
+      "actions": {
+        "approve": "Genehmigen",
+        "reject": "Ablehnen",
+        "edit": "Bearbeiten",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "remove": "Entfernen"
+      },
+      "emptyStates": {
+        "pending": "Keine ausstehenden Aufgaben",
+        "approved": "Keine genehmigten Aufgaben",
+        "rejected": "Keine abgelehnten Aufgaben"
+      },
+      "rejectNote": "Ablehnungsgrund (optional)"
+    },
     "create": {
-      "title": "Aufgabe erstellen",
-      "submit": "Freigeben",
-      "placeholder": "Formuliere die Aufgabe...",
-      "categoryLabel": "Kategorie",
-      "textLabel": "Aufgabentext",
-      "success": "Aufgabe freigegeben und zum Pool hinzugefügt",
-      "error": "Bitte eine aussagekräftige Aufgabe eingeben (min. 5 Zeichen)",
-      "creating": "Erstelle Aufgabe..."
+      "title": "Neue Aufgabe erstellen",
+      "category": "Kategorie wählen",
+      "text": "Aufgabentext",
+      "placeholder": "Gib den Text der Aufgabe ein...",
+      "submit": "Aufgabe erstellen",
+      "success": "Aufgabe erfolgreich erstellt!"
     }
+  },
+  "profile": {
+    "birthdate": "Geburtsdatum",
+    "gender": "Geschlecht",
+    "gender.male": "Männlich",
+    "gender.female": "Weiblich",
+    "gender.diverse": "Divers",
+    "nationality": "Nationalität",
+    "age": "Alter",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "updateSuccess": "Profil erfolgreich aktualisiert!",
+    "birthdatePlaceholder": "01.01.1985"
   },
   "suggest": {
     "title": "Aufgabe vorschlagen",

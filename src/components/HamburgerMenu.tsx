@@ -1,22 +1,9 @@
-
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAdmin } from '../context/AdminContext'
+import { menuGroups, type MenuItem, type MenuGroup } from '../config/menuItems'
 import styles from './HamburgerMenu.module.css'
-
-// Types
-export interface MenuItem {
-  key: string
-  icon: string
-  path?: string
-  action?: () => void
-  adminOnly?: boolean
-}
-
-export interface MenuGroup {
-  items: MenuItem[]
-}
 
 interface HamburgerMenuProps {
   isOpen: boolean
@@ -27,46 +14,6 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { isAdmin } = useAdmin()
-  
-  // Hardcoded fallback menu structure
-  const fallbackMenuGroups: MenuGroup[] = [
-    {
-      items: [
-        { key: 'settings', icon: '⚙️', path: '/settings' },
-        { key: 'profile', icon: '👤', path: '/profile' },
-      ]
-    },
-    {
-      items: [
-        { key: 'tasks', icon: '📋', path: '/tasks' },
-        { key: 'suggest', icon: '💡', path: '/suggest' },
-        { key: 'leaderboard', icon: '🏆', path: '/leaderboard' },
-      ]
-    },
-    {
-      items: [
-        { key: 'rules', icon: '📜', path: '/rules' },
-        { key: 'about', icon: 'ℹ️', path: '/about' },
-      ]
-    },
-    {
-      items: [
-        { key: 'taskManager', icon: '🔧', path: '/admin/tasks', adminOnly: true },
-        { key: 'devManager', icon: '👨‍💻', path: '/admin/dev', adminOnly: true },
-      ]
-    }
-  ]
-
-  // Try to import, fall back to hardcoded version
-  let menuGroups = fallbackMenuGroups
-  try {
-    const menuConfig = require('../config/menuItems')
-    if (menuConfig.menuGroups && Array.isArray(menuConfig.menuGroups)) {
-      menuGroups = menuConfig.menuGroups
-    }
-  } catch (error) {
-    console.warn('Could not load menu config, using fallback:', error)
-  }
 
   const handleItemClick = (path?: string, action?: () => void) => {
     if (action) {
@@ -94,7 +41,7 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
             ✕
           </button>
         </div>
-        
+
         <div className={styles.content}>
           {menuGroups && menuGroups.map((group, groupIndex) => (
             <div key={groupIndex} className={styles.menuGroup}>

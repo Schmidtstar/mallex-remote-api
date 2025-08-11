@@ -1,6 +1,5 @@
-
 import React from 'react'
-import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
+import { createHashRouter, createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { TabLayout } from './layouts/TabLayout'
 import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
@@ -19,6 +18,20 @@ function withAuth(element: React.ReactNode) {
     return <>{element}</>
   }
   return <Guard />
+}
+
+const ProtectedRoutes = () => {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+  }
+
+  return (
+    <TabLayout>
+      <Outlet />
+    </TabLayout>
+  )
 }
 
 const routes = [

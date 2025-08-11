@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { useAdmin } from '../../context/AdminContext'
 import { useTaskSuggestions } from '../../context/TaskSuggestionsContext'
 import { ProfileTab } from './tabs/ProfileTab'
@@ -13,6 +14,14 @@ export function MenuScreen() {
   const { isAdmin } = useAdmin();
   const { localAdmin } = useTaskSuggestions();
   const [activeTab, setActiveTab] = useState<'settings' | 'profile' | 'tasks' | 'suggest' | 'admin' | 'leaderboard' | 'rules' | 'about' | 'dev'>('settings')
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['settings', 'profile', 'tasks', 'suggest', 'admin', 'leaderboard', 'rules', 'about', 'dev'].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+    }
+  }, [searchParams]);
 
   const menuTabs = [
     { id: 'settings', label: t('menu.tabs.settings'), icon: '⚙️' },
@@ -25,6 +34,11 @@ export function MenuScreen() {
     { id: 'about', label: t('menu.tabs.about'), icon: 'ℹ️' },
     ...(localAdmin ? [{ id: 'dev', label: t('menu.tabs.dev'), icon: '🔧' }] : [])
   ]
+
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId as any);
+    setSearchParams({ tab: tabId });
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -77,7 +91,7 @@ export function MenuScreen() {
         {menuTabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabClick(tab.id)}
             style={{ 
               background: 'none',
               border: 'none',

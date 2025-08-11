@@ -4,6 +4,7 @@ import { BottomNavigation } from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
+import { HamburgerMenu } from '../components/HamburgerMenu'
 
 export function TabLayout() {
   const location = useLocation()
@@ -87,23 +88,7 @@ export function TabLayout() {
         ))}
 
         {/* Menu Button */}
-        <button
-          onClick={() => navigate('/menu')}
-          aria-label={t('navigation.menu')}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: location.pathname === '/menu' ? 'var(--primary)' : 'var(--fg)',
-            cursor: 'pointer',
-            padding: '12px 16px',
-            fontSize: '24px',
-            borderRadius: 'var(--radius)',
-            transition: 'all 0.2s ease',
-            opacity: location.pathname === '/menu' ? 1 : 0.7
-          }}
-        >
-          ☰
-        </button>
+        <HamburgerMenu />
       </div>
     </div>
   )

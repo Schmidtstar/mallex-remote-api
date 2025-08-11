@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
 import { db } from '@/lib/firebase'
-import { collection, getDocs, doc, setDoc, getFirestore } from 'firebase/firestore'
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 
 type Player = {
   id: string
@@ -40,9 +40,9 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
 
   const loadPlayers = useCallback(async () => {
     try {
-      if (mode === 'firebase' && user && !user.isAnonymous) {
-        const firestore = getFirestore(db.app)
-        const playersCollectionRef = collection(firestore, 'users', user.uid, 'data', 'players')
+      if (mode === 'firebase' && user && !user.isAnonymous && user.uid) {
+        // Guard against empty user.uid
+        const playersCollectionRef = collection(db, 'users', user.uid, 'players')
         const playersSnapshot = await getDocs(playersCollectionRef)
         const playersData: Player[] = playersSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -72,10 +72,14 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(players))
 
       // Only save to Firestore for authenticated non-anonymous users
-      if (mode === 'firebase' && user && !user.isAnonymous) {
-        const firestore = getFirestore(db.app)
-        const playerDocRef = doc(firestore, 'users', user.uid, 'data', 'players')
-        await setDoc(playerDocRef, { players })
+      if (mode === 'firebase' && user && !user.isAnonymous && user.uid && players.length > 0) {
+        // Save each player as a separate document
+        for (const player of players) {
+          if (player.id && player.name) {
+            const playerDocRef = doc(db, 'users', user.uid, 'players', player.id)
+            await setDoc(playerDocRef, { name: player.name }, { merge: true })
+          }
+        }
       }
     } catch (error) {
       console.warn('Failed to save to Firestore, saved locally:', error)

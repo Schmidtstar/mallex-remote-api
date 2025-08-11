@@ -57,37 +57,23 @@
     "shame": "Schande"
   },
   "menu": {
-    "title": "Menü",
-    "arena": "Arena",
-    "legends": "Legends",
-    "auth": "Anmelden",
-    "language": "Sprache",
-    "logout": "Abmelden",
-    "register": "Registrieren",
-    "accountActions": "Konto-Aktionen",
-    "guestActions": "Gast-Aktionen",
-    "open": "Menü öffnen",
-    "close": "Menü schließen",
-    "profile": "Profil",
     "settings": "Einstellungen",
+    "profile": "Profil", 
     "tasks": "Aufgaben",
     "suggest": "Vorschlagen",
-    "ranking": "Rangliste",
-    "rules": "Regeln",
-    "about": "Über uns",
+    "leaderboard": "Rangliste",
+    "rules": "Spielregeln",
+    "about": "Über MALLEX",
     "taskManager": "Aufgaben-Manager",
-    "devManager": "Entwickler-Tools"
+    "devManager": "Entwickler-Manager"
   },
   "auth": {
-    "title": "Willkommen bei MALLEX",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
     "email": "E-Mail",
     "password": "Passwort",
-    "login": "Anmelden",
-    "register": "Registrieren",
-    "guest": "Als Gast fortfahren",
-    "badge": {
-      "guest": "Gast"
-    }
+    "signOut": "Abmelden",
+    "guest": "Als Gast fortfahren"
   },
   "legends": {
     "title": "Halle der Legenden",
@@ -156,7 +142,9 @@
     "profile": "Profil",
     "tasks": "Aufgaben",
     "suggest": "Vorschlagen",
-    "ranking": "Rangliste",
+    "admin": "Admin",
+    "leaderboard": "Rangliste",
+    "rank": "Rangliste",
     "rules": "Spielregeln",
     "about": "Über MALLEX",
     "taskManager": "Aufgaben-Manager",
@@ -287,5 +275,10 @@
       "panel": "Admin Panel",
       "badge": "Admin"
     }
+  },
+  "nav": {
+    "arena": "Arena",
+    "legends": "Legenden",
+    "menu": "Menü"
   }
 }

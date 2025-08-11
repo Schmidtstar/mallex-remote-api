@@ -1,245 +1,26 @@
 {
   "menu": {
-    "title": "Menu",
-    "arena": "Arena",
-    "legends": "Legends",
-    "auth": "Sign In",
-    "language": "Language",
-    "logout": "Log out",
-    "register": "Register",
-    "accountActions": "Account Actions",
-    "guestActions": "Guest Actions",
-    "open": "Open menu",
-    "close": "Close menu",
-    "profile": "Profile",
-    "settings": "Settings",
-    "tasks": "Tasks",
-    "suggest": "Suggest",
-    "ranking": "Ranking",
-    "rules": "Rules",
-    "about": "About",
-    "taskManager": "Task Manager",
-    "devManager": "Dev Manager"
-  },
-  "auth": {
-    "title": "Welcome to MALLEX",
-    "email": "Email",
-    "password": "Password",
-    "login": "Login",
-    "register": "Register",
-    "guest": "Continue as Guest",
-    "badge": {
-      "guest": "Guest"
-    },
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "signOut": "Sign Out",
-    "guestMode": "Guest Mode",
-    "guestErrorAdminRestricted": "Anonymous sign-in is not enabled in Firebase.",
-    "loading": "Loading…",
-    "enterEmail": "Enter email",
-    "enterPassword": "Enter password",
-    "noAccount": "No account? Sign up",
-    "hasAccount": "Already have an account? Sign in"
-  },
-  "actions": {
-    "logout": "Logout",
-    "loggingOut": "Logging out…"
-  },
-  "arena": {
-    "title": "Arena",
-    "selectPlayer": "Select player:",
-    "selectCategory": "Select category:",
-    "spinWheel": "Spin the wheel",
-    "revealing": {
-      "player": "Revealing selected player...",
-      "category": "Revealing category...",
-      "challenge": "Revealing challenge..."
-    },
-    "selectedPlayer": "Selected Player",
-    "category": "Category",
-    "challenge": "Challenge",
-    "newChallenge": "New Challenge",
-    "fate": {
-      "item1": "Choose a person to drink 2 sips",
-      "item2": "Everyone wearing red drinks 1 sip",
-      "item3": "The person to your right drinks 3 sips",
-      "item4": "All men drink 2 sips",
-      "item5": "The youngest person drinks 1 sip"
-    },
-    "seduce": {
-      "item1": "Flirt for 30 seconds with the person to your left",
-      "item2": "Give someone a seductive compliment",
-      "item3": "Massage someone's shoulders",
-      "item4": "Whisper something suggestive in someone's ear",
-      "item5": "Take off a piece of clothing"
-    },
-    "confess": {
-      "item1": "Confess a crush from your past",
-      "item2": "Tell your most embarrassing dating story",
-      "item3": "Admit a lie you've told",
-      "item4": "Reveal your biggest dream",
-      "item5": "Confess a fear nobody knows about"
-    },
-    "escalate": {
-      "item1": "Drink 3 sips or do 10 push-ups",
-      "item2": "Kiss someone or drink 5 sips",
-      "item3": "Dance for 1 minute or finish your drink",
-      "item4": "Tell an embarrassing secret or drink 4 sips",
-      "item5": "Do a dare or leave the game for 5 minutes"
-    },
-    "shame": {
-      "item1": "Tell us about your biggest failure",
-      "item2": "Name three bad habits of yours",
-      "item3": "What's the meanest thing you've ever done?",
-      "item4": "Tell about a situation where you felt ashamed",
-      "item5": "What would you never admit?"
-    }
-  },
-  "categories": {
-    "fate": "Fate",
-    "shame": "Shame",
-    "seduce": "Seduce",
-    "escalate": "Escalate",
-    "confess": "Confess"
-  },
-  "menu": {
     "settings": "Settings",
     "profile": "Profile",
     "tasks": "Tasks",
     "suggest": "Suggest",
-    "ranking": "Leaderboard",
-    "rules": "Rules",
+    "leaderboard": "Leaderboard",
+    "rules": "Game Rules",
     "about": "About MALLEX",
     "taskManager": "Task Manager",
-    "devManager": "Developer Manager",
-    "tabs": {
-      "settings": "Settings",
-      "profile": "Profile",
-      "tasks": "Tasks",
-      "suggest": "Suggest",
-      "admin": "Admin",
-      "leaderboard": "Leaderboard",
-      "rank": "Leaderboard",
-      "rules": "Rules",
-      "about": "About MALLEX",
-      "dev": "Developer"
-    },
-    "profile": {
-      "guest": "Guest",
-      "loginCta": "Sign Up / Login",
-      "logout": "Logout",
-      "admin": "Admin"
-    },
-    "tasks": {
-      "title": "Tasks",
-      "count": "{count} Tasks"
-    },
-    "suggest": {
-      "title": "Suggest Task",
-      "choose": "Choose Category",
-      "placeholder": "Formulate your task...",
-      "submit": "Submit",
-      "thanks": "Thank you! Your task will be reviewed."
-    },
-    "admin": {
-      "title": "Admin Area",
-      "pending": "Pending Suggestions",
-      "approve": "Approve",
-      "reject": "Reject",
-      "note": "Note (optional)",
-      "custom": "Custom Tasks",
-      "add": "Add",
-      "edit": "Edit",
-      "delete": "Delete",
-      "hide": "Hide",
-      "unhide": "Show",
-      "localBadge": "Local Admin Mode"
-    }
+    "devManager": "Developer Manager"
   },
-  "fate": {
-    "item1": "Choose a person to drink 2 sips.",
-    "item2": "Everyone wearing red drinks 1 sip.",
-    "item3": "The person to your right drinks 3 sips.",
-    "item4": "All men drink 2 sips.",
-    "item5": "The youngest person drinks 1 sip."
-  },
-  "truth": {
-    "item1": "Tell us about your most embarrassing moment.",
-    "item2": "Who was your first big love?",
-    "item3": "What bad habit do you have?",
-    "item4": "What's your biggest secret?",
-    "item5": "Who among us is the most attractive?"
-  },
-  "dare": {
-    "item1": "Dance for 30 seconds without music.",
-    "item2": "Imitate a famous person.",
-    "item3": "Do 10 push-ups.",
-    "item4": "Sing a song out loud.",
-    "item5": "Exchange a piece of clothing with someone else."
-  },
-  "funny": {
-    "1": "Imitate an animal of your choice for 30 seconds!",
-    "2": "Tell a joke, but backwards!",
-    "3": "Sing 'Happy Birthday' in the style of an opera singer!",
-    "4": "Describe the last meal you ate as if it were the best dish in the world!",
-    "5": "Have a dialogue between your two hands!"
-  },
-  "mythology": {
-    "1": "Embody Zeus and thunder a mighty command with your voice!",
-    "2": "Tell an epic story of the last battle like Odin!",
-    "3": "Perform a ritual dance as an Egyptian Pharaoh!",
-    "4": "Speak like a wise Greek philosopher about the meaning of life!",
-    "5": "Create a song about the elements as a Nordic shaman!"
-  },
-  "sports": {
-    "1": "Do 10 push-ups in slow motion!",
-    "2": "Imitate a goal celebration like a football world champion!",
-    "3": "Do 30 seconds of shadow boxing against an invisible opponent!",
-    "4": "Perform an Olympic victory ceremony for yourself!",
-    "5": "Explain a complicated sports rule as if you were a TV commentator!"
-  },
-  "creativity": {
-    "1": "Invent a new word and explain its meaning!",
-    "2": "Draw your dream house in the air with your eyes closed!",
-    "3": "Spontaneously compose a 30-second song about your day!",
-    "4": "Invent a new greeting for aliens!",
-    "5": "Create a superhero identity and introduce yourself!"
-  },
-  "legends": {
-    "title": "Hall of Legends",
-    "empty": {
-      "description": "The hall is empty. Time to summon the first gods!",
-      "cta": "Summon the Gods"
-    },
-    "input": {
-      "placeholder": "Player name"
-    },
-    "add": "Add",
-    "remove": "Remove",
-    "subtitle": "Manage players for epic battles",
-    "addPlayer": "Summon the Gods",
-    "playerName": "Hero's Name",
-    "noPlayers": "No heroes in the hall. Summon the first gods!",
-    "removePlayer": "Banish"
-  },
-  "tabs": {
+  "nav": {
     "arena": "Arena",
     "legends": "Legends",
     "menu": "Menu"
   },
-  "navigation": {
-    "arena": "Arena",
-    "legends": "Legends",
-    "menu": "Menu",
-    "profile": "Profile",
-    "settings": "Settings",
-    "suggest": "Suggest",
-    "close": "Close",
-    "admin": {
-      "tasks": "Admin Tasks",
-      "panel": "Admin Panel",
-      "badge": "Admin"
-    }
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "signOut": "Sign Out",
+    "guest": "Continue as Guest"
   }
 }

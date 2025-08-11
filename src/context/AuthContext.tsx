@@ -26,24 +26,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       try {
         if (user) {
-          // Profil automatisch anlegen/aktualisieren
-          await ensureUserProfile(user.uid, {
-            email: user.email ?? undefined,
-            displayName: user.displayName ?? undefined,
-          });
-
-          // Admin-Status prüfen
-          const isAdmin = await isEmailAdmin(user.email);
-          setAdmin(isAdmin);
           setUser(user);
+          
+          // Versuche Profil und Admin-Status zu laden, aber lass es nicht die App crashen
+          try {
+            await ensureUserProfile(user.uid, {
+              email: user.email ?? undefined,
+              displayName: user.displayName ?? undefined,
+            });
+          } catch (profileError) {
+            console.warn('Could not ensure user profile (offline?):', profileError);
+          }
+
+          try {
+            const isAdmin = await isEmailAdmin(user.email);
+            setAdmin(isAdmin);
+          } catch (adminError) {
+            console.warn('Could not check admin status (offline?):', adminError);
+            setAdmin(false);
+          }
         } else {
           setAdmin(false);
           setUser(null);
         }
       } catch (error) {
         console.error('Error in auth state change:', error);
-        setAdmin(false);
-        setUser(null);
+        // Bei Firebase-Verbindungsproblemen: trotzdem weitermachen
+        if (error?.code === 'unavailable') {
+          console.warn('Firebase offline, setting user to null');
+          setUser(null);
+          setAdmin(false);
+        } else {
+          setAdmin(false);
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }

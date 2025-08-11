@@ -15,6 +15,19 @@
   --hover: rgba(0, 0, 0, 0.05);
   --active: rgba(0, 0, 0, 0.1);
 
+  /* Basis-Farben */
+  --color-primary: #4A90E2;
+  --color-primary-rgb: 74, 144, 226;
+  --color-primary-hover: #357ABD;
+  --color-secondary: #6C757D;
+  --color-accent: #FFD700;
+  --color-success: #28A745;
+  --color-danger: #DC3545;
+  --color-warning: #FFC107;
+  --color-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-surface: rgba(255, 255, 255, 0.1);
+  --color-border: rgba(255, 255, 255, 0.2);
+
   /* Layout */
   --radius: 12px;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

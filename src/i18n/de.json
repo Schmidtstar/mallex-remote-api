@@ -242,5 +242,26 @@
     "backToCategories": "Zurück zu Kategorien",
     "noTasks": "Keine Aufgaben verfügbar",
     "categoryTasks": "Aufgaben für {{category}}"
+  },
+  "suggest": {
+    "title": "Aufgabe vorschlagen",
+    "choose": "Kategorie wählen",
+    "placeholder": "Formuliere deine Aufgabe...",
+    "submit": "Senden",
+    "thanks": "Danke! Deine Aufgabe wird geprüft."
+  },
+  "adminTasks": {
+    "title": "Adminbereich",
+    "pending": "Offene Vorschläge",
+    "approved": "Freigegeben",
+    "rejected": "Abgelehnt",
+    "actions": {
+      "approve": "Freigeben",
+      "reject": "Ablehnen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "save": "Speichern"
+    },
+    "note": "Notiz (optional)"
   }
 }

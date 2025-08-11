@@ -41,5 +41,26 @@
     "backToCategories": "Back to Categories",
     "noTasks": "No tasks available",
     "categoryTasks": "Tasks for {{category}}"
+  },
+  "suggest": {
+    "title": "Suggest Task",
+    "choose": "Choose Category",
+    "placeholder": "Formulate your task...",
+    "submit": "Submit",
+    "thanks": "Thank you! Your task will be reviewed."
+  },
+  "adminTasks": {
+    "title": "Admin Area",
+    "pending": "Pending Suggestions",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save"
+    },
+    "note": "Note (optional)"
   }
 }

@@ -7,7 +7,18 @@ type AdminCtx = {
 
 const AdminContext = createContext<AdminCtx>({ isAdmin: false })
 
-export const useAdmin = () => useContext(AdminContext)
+export function useAdmin() {
+  const context = useContext(AdminContext)
+  if (!context) {
+    throw new Error('useAdmin must be used within an AdminProvider')
+  }
+  return context
+}
+
+export function useIsAdmin() {
+  const { isAdmin } = useAdmin()
+  return isAdmin
+}
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()

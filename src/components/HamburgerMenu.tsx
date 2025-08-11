@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { menuGroups } from '../config/menuItems'
+import { useIsAdmin } from '../context/AdminContext'
 import styles from './HamburgerMenu.module.css'
 
 interface HamburgerMenuProps {
@@ -12,6 +13,11 @@ interface HamburgerMenuProps {
 export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const isAdmin = useIsAdmin()
+
+  const visibleMenuItems = menuGroups[0].items.filter(item =>
+    !item.adminOnly || isAdmin
+  )
 
   // ESC key handler and body scroll lock
   useEffect(() => {
@@ -58,7 +64,7 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
 
         <div className={styles.content}>
           <div className={styles.menuGroup}>
-            {menuGroups[0].items.map((item) => (
+            {visibleMenuItems.map((item) => (
               <button
                 key={item.key}
                 className={styles.menuItem}

@@ -5,6 +5,8 @@ import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
 import { MenuScreen } from './features/Menu/MenuScreen'
 import { TasksOverviewScreen } from './features/Tasks/TasksOverviewScreen'
+import { SuggestTaskScreen } from './features/Tasks/SuggestTaskScreen'
+import { AdminTasksScreen } from './features/Tasks/AdminTasksScreen'
 
 import { AuthScreen } from './features/Auth/AuthScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -71,6 +73,16 @@ const routes = [
         path: 'tasks',
         element: <TasksOverviewScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Aufgaben-Übersicht</div></ErrorBoundary>
+      },
+      {
+        path: 'tasks/suggest',
+        element: <SuggestTaskScreen />,
+        errorElement: <ErrorBoundary><div>Fehler beim Vorschlagen</div></ErrorBoundary>
+      },
+      {
+        path: 'admin/tasks',
+        element: <AdminTasksScreen />,
+        errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>
       },
       {
         path: 'profile',

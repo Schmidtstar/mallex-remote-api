@@ -3,6 +3,7 @@ export interface MenuItem {
   labelKey: string;           // i18n key
   path: '/arena' | '/legends' | '/menu?tab=profile' | '/menu?tab=settings' | '/tasks';
   icon?: string;              // optional, falls genutzt
+  adminOnly?: boolean;
 }
 
 export interface MenuGroup {

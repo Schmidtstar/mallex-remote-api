@@ -1,145 +1,112 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { challenges } from '../features/Arena/challenges'
 
-export interface Suggestion {
+export type SuggestionStatus = 'pending' | 'approved' | 'rejected' | 'edited'
+
+export interface TaskSuggestion {
   id: string
   categoryId: string
   text: string
-  timestamp: number
-}
-
-export interface ApprovedTask {
-  id: string
-  categoryId: string
-  text: string
-  timestamp: number
+  status: SuggestionStatus
+  note?: string
+  author?: { uid?: string; email?: string | null }
+  createdAt: number
+  updatedAt: number
 }
 
 interface TaskSuggestionsContextType {
-  pending: Suggestion[]
-  approved: ApprovedTask[]
-  localAdmin: boolean
-  addSuggestion: (categoryId: string, text: string) => boolean
-  approve: (suggestionId: string) => void
-  reject: (suggestionId: string) => void
-  toggleLocalAdmin: () => void
-  getMergedTasks: (categoryId: string) => string[]
+  items: TaskSuggestion[]
+  add: (categoryId: string, text: string, author?: { uid?: string; email?: string | null }) => void
+  approve: (id: string) => void
+  reject: (id: string, note?: string) => void
+  edit: (id: string, patch: Partial<Pick<TaskSuggestion, 'text' | 'categoryId' | 'note'>>) => void
+  remove: (id: string) => void
+  clear: () => void
 }
 
-const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | undefined>(undefined)
+const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | null>(null)
+
+const STORAGE_KEY = 'taskSuggestions'
 
 export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
-  const [pending, setPending] = useState<Suggestion[]>([])
-  const [approved, setApproved] = useState<ApprovedTask[]>([])
-  const [localAdmin, setLocalAdmin] = useState(false)
+  const [items, setItems] = useState<TaskSuggestion[]>([])
 
   // Load from localStorage on mount
   useEffect(() => {
-    const storedPending = localStorage.getItem('mallex.pendingSuggestions')
-    const storedApproved = localStorage.getItem('mallex.approvedTasks')
-    const storedLocalAdmin = localStorage.getItem('mallex.localAdmin')
-
-    if (storedPending) {
-      try {
-        setPending(JSON.parse(storedPending))
-      } catch (e) {
-        console.error('Failed to parse pending suggestions:', e)
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        setItems(JSON.parse(stored))
       }
+    } catch (error) {
+      console.error('Failed to load task suggestions:', error)
     }
-
-    if (storedApproved) {
-      try {
-        setApproved(JSON.parse(storedApproved))
-      } catch (e) {
-        console.error('Failed to parse approved tasks:', e)
-      }
-    }
-
-    setLocalAdmin(storedLocalAdmin === 'true')
   }, [])
 
-  // Save to localStorage when state changes
+  // Save to localStorage when items change
   useEffect(() => {
-    localStorage.setItem('mallex.pendingSuggestions', JSON.stringify(pending))
-  }, [pending])
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    } catch (error) {
+      console.error('Failed to save task suggestions:', error)
+    }
+  }, [items])
 
-  useEffect(() => {
-    localStorage.setItem('mallex.approvedTasks', JSON.stringify(approved))
-  }, [approved])
-
-  useEffect(() => {
-    localStorage.setItem('mallex.localAdmin', String(localAdmin))
-  }, [localAdmin])
-
-  const addSuggestion = (categoryId: string, text: string): boolean => {
-    const trimmedText = text.trim()
-
-    if (trimmedText.length < 8) return false
-
-    // Check for duplicates (case-insensitive)
-    const isDuplicate = pending.some(s => 
-      s.categoryId === categoryId && 
-      s.text.toLowerCase() === trimmedText.toLowerCase()
-    )
-
-    if (isDuplicate) return false
-
-    const newSuggestion: Suggestion = {
-      id: Date.now().toString(),
+  const add = (categoryId: string, text: string, author?: { uid?: string; email?: string | null }) => {
+    const newSuggestion: TaskSuggestion = {
+      id: `suggestion_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       categoryId,
-      text: trimmedText,
-      timestamp: Date.now()
+      text,
+      status: 'pending',
+      author,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     }
-
-    setPending(prev => [...prev, newSuggestion])
-    return true
+    setItems(prev => [...prev, newSuggestion])
   }
 
-  const approve = (suggestionId: string) => {
-    const suggestion = pending.find(s => s.id === suggestionId)
-    if (!suggestion) return
-
-    const approvedTask: ApprovedTask = {
-      id: suggestion.id,
-      categoryId: suggestion.categoryId,
-      text: suggestion.text,
-      timestamp: Date.now()
-    }
-
-    setApproved(prev => [...prev, approvedTask])
-    setPending(prev => prev.filter(s => s.id !== suggestionId))
+  const approve = (id: string) => {
+    setItems(prev => prev.map(item => 
+      item.id === id 
+        ? { ...item, status: 'approved' as SuggestionStatus, updatedAt: Date.now() }
+        : item
+    ))
   }
 
-  const reject = (suggestionId: string) => {
-    setPending(prev => prev.filter(s => s.id !== suggestionId))
+  const reject = (id: string, note?: string) => {
+    setItems(prev => prev.map(item => 
+      item.id === id 
+        ? { ...item, status: 'rejected' as SuggestionStatus, note, updatedAt: Date.now() }
+        : item
+    ))
   }
 
-  const toggleLocalAdmin = () => {
-    setLocalAdmin(prev => !prev)
+  const edit = (id: string, patch: Partial<Pick<TaskSuggestion, 'text' | 'categoryId' | 'note'>>) => {
+    setItems(prev => prev.map(item => 
+      item.id === id 
+        ? { ...item, ...patch, status: 'edited' as SuggestionStatus, updatedAt: Date.now() }
+        : item
+    ))
   }
 
-  const getMergedTasks = (categoryId: string): string[] => {
-    const baseTasks = challenges[categoryId] || []
-    const approvedTexts = approved
-      .filter(task => task.categoryId === categoryId)
-      .map(task => task.text)
-
-    return [...baseTasks, ...approvedTexts]
+  const remove = (id: string) => {
+    setItems(prev => prev.filter(item => item.id !== id))
   }
 
-  const value: TaskSuggestionsContextType = {
-    pending,
-    approved,
-    localAdmin,
-    addSuggestion,
-    approve,
-    reject,
-    toggleLocalAdmin,
-    getMergedTasks
+  const clear = () => {
+    setItems([])
   }
 
   return (
-    <TaskSuggestionsContext.Provider value={value}>
+    <TaskSuggestionsContext.Provider value={{
+      items,
+      add,
+      approve,
+      reject,
+      edit,
+      remove,
+      clear
+    }}>
       {children}
     </TaskSuggestionsContext.Provider>
   )

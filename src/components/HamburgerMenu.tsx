@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useAdmin } from '../context/AdminContext'
 import { useTaskSuggestions } from '../context/TaskSuggestionsContext'
@@ -10,6 +10,7 @@ import styles from './HamburgerMenu.module.css'
 export function HamburgerMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, logout } = useAuth()
   const { isAdmin } = useAdmin()
   const { localAdmin } = useTaskSuggestions()
@@ -18,60 +19,85 @@ export function HamburgerMenu() {
   const toggleMenu = () => setIsOpen(!isOpen)
   const closeMenu = () => setIsOpen(false)
 
+  // ESC key handler
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeMenu()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen])
+
+  // Close drawer on route change
+  useEffect(() => {
+    closeMenu()
+  }, [location.pathname])
+
   const menuItems = [
     { 
       key: 'settings', 
       label: t('menu.tabs.settings'), 
       icon: '⚙️',
-      action: () => console.log('Settings clicked')
+      action: () => alert('Settings - To be implemented')
     },
     { 
       key: 'profile', 
       label: t('menu.tabs.profile'), 
       icon: '👤',
-      action: () => console.log('Profile clicked')
+      action: () => {
+        if (user) {
+          alert('Profile - To be implemented')
+        } else {
+          navigate('/auth')
+        }
+      }
     },
     { 
       key: 'tasks', 
       label: t('menu.tabs.tasks'), 
       icon: '✅',
-      action: () => console.log('Tasks clicked')
+      action: () => alert('Tasks - To be implemented')
     },
     { 
       key: 'suggest', 
       label: t('menu.tabs.suggest'), 
       icon: '💡',
-      action: () => console.log('Suggest clicked')
+      action: () => alert('Suggest - To be implemented')
     },
     ...(isAdmin ? [{ 
       key: 'admin', 
       label: t('menu.tabs.admin'), 
       icon: '🛠️',
-      action: () => console.log('Admin clicked')
+      action: () => alert('Admin - To be implemented')
     }] : []),
     { 
       key: 'leaderboard', 
       label: t('menu.tabs.leaderboard'), 
       icon: '🏆',
-      action: () => console.log('Leaderboard clicked')
+      action: () => alert('Leaderboard - To be implemented')
     },
     { 
       key: 'rules', 
       label: t('menu.tabs.rules'), 
       icon: '📋',
-      action: () => console.log('Rules clicked')
+      action: () => alert('Rules - To be implemented')
     },
     { 
       key: 'about', 
       label: t('menu.tabs.about'), 
       icon: 'ℹ️',
-      action: () => console.log('About clicked')
+      action: () => alert('About - To be implemented')
     },
     ...(localAdmin ? [{ 
       key: 'dev', 
       label: t('menu.tabs.dev'), 
       icon: '🔧',
-      action: () => console.log('Dev clicked')
+      action: () => alert('Dev - To be implemented')
     }] : [])
   ]
 
@@ -93,9 +119,14 @@ export function HamburgerMenu() {
       {isOpen && (
         <>
           <div className={styles.overlay} onClick={closeMenu} />
-          <div className={styles.drawer}>
+          <div 
+            className={styles.drawer}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="drawer-title"
+          >
             <div className={styles.header}>
-              <h2>{t('menu.title')}</h2>
+              <h2 id="drawer-title">{t('menu.title')}</h2>
               <button onClick={closeMenu} className={styles.closeButton}>
                 ✕
               </button>

@@ -13,6 +13,8 @@
     "tasks": {
       "overview": "Tasks Overview"
     },
+    "suggest": "Suggest Task",
+    "admin": "Admin Tasks",
     "logout": "Log out"
   },
   "arena": {

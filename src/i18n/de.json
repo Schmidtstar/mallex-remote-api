@@ -146,6 +146,8 @@
     "tasks": {
       "overview": "Aufgaben-Übersicht"
     },
+    "suggest": "Aufgabe vorschlagen",
+    "admin": "Admin Aufgaben",
     "logout": "Abmelden"
   },
   "categories": {

@@ -65,7 +65,18 @@
     "logout": "Abmelden",
     "register": "Registrieren",
     "accountActions": "Konto-Aktionen",
-    "guestActions": "Gast-Aktionen"
+    "guestActions": "Gast-Aktionen",
+    "open": "Menü öffnen",
+    "close": "Menü schließen",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "tasks": "Aufgaben",
+    "suggest": "Vorschlagen",
+    "ranking": "Rangliste",
+    "rules": "Regeln",
+    "about": "Über uns",
+    "taskManager": "Aufgaben-Manager",
+    "devManager": "Entwickler-Tools"
   },
   "auth": {
     "title": "Willkommen bei MALLEX",

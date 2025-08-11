@@ -1,9 +1,11 @@
+
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./HamburgerMenu.module.css";
 // zentrale Menü-Konfiguration (bereits vorhanden)
 import { menuItems } from "../config/menuItems";
+import type { MenuItem } from "../config/menuItems";
 
 export default function HamburgerMenu({
   isOpen,
@@ -27,11 +29,14 @@ export default function HamburgerMenu({
     const originalOverflow = document.body.style.overflow;
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.body.classList.add("drawer-open");
     } else {
       document.body.style.overflow = originalOverflow || "";
+      document.body.classList.remove("drawer-open");
     }
     return () => {
       document.body.style.overflow = originalOverflow || "";
+      document.body.classList.remove("drawer-open");
     };
   }, [isOpen]);
 
@@ -51,7 +56,9 @@ export default function HamburgerMenu({
     const last = focusables[focusables.length - 1];
 
     // Öffnen → Fokus auf ersten Fokusziel
-    (first || drawer).focus();
+    setTimeout(() => {
+      (first || drawer).focus();
+    }, 100);
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -75,7 +82,9 @@ export default function HamburgerMenu({
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       // Fokus zurück zum Trigger
-      previouslyFocusedRef.current?.focus?.();
+      setTimeout(() => {
+        previouslyFocusedRef.current?.focus?.();
+      }, 100);
     };
   }, [isOpen, onClose]);
 
@@ -86,9 +95,13 @@ export default function HamburgerMenu({
   }, [location.pathname]);
 
   const handleNavigate = useCallback(
-    (to: string | undefined, action?: () => void) => {
-      if (action) action(); // z.B. Logout
-      if (to) navigate(to);
+    (item: MenuItem) => {
+      if (item.onClick) {
+        item.onClick();
+      }
+      if (item.to) {
+        navigate(item.to);
+      }
       onClose();
     },
     [navigate, onClose]
@@ -129,29 +142,35 @@ export default function HamburgerMenu({
         </div>
 
         <nav className={styles.nav} aria-label={t("menu.title") ?? "Menu"}>
-          {menuItems.map((group) => (
-            <div key={group.key} className={styles.group}>
-              {group.items.map((item) => {
-                // gating (z. B. admin/guest) kann bereits in menuItems berechnet sein
-                if (item.hidden) return null;
+          {Array.isArray(menuItems) && menuItems.map((group) => {
+            const items = Array.isArray(group?.items) ? group.items : [];
+            
+            if (items.length === 0) return null;
 
-                return (
-                  <button
-                    key={item.key}
-                    className={styles.item}
-                    onClick={() => handleNavigate(item.to, item.onClick)}
-                  >
-                    <span className={styles.icon} aria-hidden="true">
-                      {item.icon ?? "•"}
-                    </span>
-                    <span className={styles.label}>
-                      {t(item.labelKey) ?? item.fallbackLabel ?? item.key}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+            return (
+              <div key={group.key} className={styles.group}>
+                {items.map((item) => {
+                  // Skip hidden items
+                  if (item.hidden) return null;
+
+                  return (
+                    <button
+                      key={item.key}
+                      className={styles.item}
+                      onClick={() => handleNavigate(item)}
+                    >
+                      <span className={styles.icon} aria-hidden="true">
+                        {item.icon ?? "•"}
+                      </span>
+                      <span className={styles.label}>
+                        {t(item.labelKey) ?? item.fallbackLabel ?? item.key}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
         </nav>
       </div>
     </div>

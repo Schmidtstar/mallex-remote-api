@@ -1,29 +1,111 @@
 
 // NO DEFAULT EXPORTS - Only named exports to prevent star export issues
 export interface MenuItem {
-  id: string;            // Eindeutiger Bezeichner
-  labelKey: string;      // i18n-Key z. B. 'menu.settings'
-  icon?: string;         // Optional: Icon-Name oder Emoji
-  route?: string;        // Navigationspfad, z. B. '/settings'
-  roles?: string[];      // Sichtbar für bestimmte Rollen ['user', 'admin']
-  visible?: boolean;     // Optional: Sichtbarkeit steuern
+  key: string;
+  labelKey: string;
+  fallbackLabel?: string;
+  to?: string;
+  onClick?: () => void;
+  icon?: string;
+  hidden?: boolean;
 }
 
-export const menuItems: MenuItem[] = [
-  // Main navigation items
-  { id: 'arena', labelKey: 'navigation.arena', icon: '🏟️', route: '/arena', roles: ['user', 'admin'] },
-  { id: 'legends', labelKey: 'navigation.legends', icon: '👑', route: '/legends', roles: ['user', 'admin'] },
-  
-  // Menu items
-  { id: 'profile', labelKey: 'menu.profile', icon: '👤', route: '/menu', roles: ['user', 'admin'] },
-  { id: 'settings', labelKey: 'menu.settings', icon: '⚙️', route: '/menu?tab=settings', roles: ['user', 'admin'] },
-  { id: 'tasks', labelKey: 'menu.tasks', icon: '✅', route: '/menu?tab=tasks', roles: ['user', 'admin'] },
-  { id: 'suggest', labelKey: 'menu.suggest', icon: '💡', route: '/menu?tab=suggest', roles: ['user', 'admin'] },
-  { id: 'ranking', labelKey: 'menu.ranking', icon: '🏆', route: '/menu?tab=leaderboard', roles: ['user', 'admin'] },
-  { id: 'rules', labelKey: 'menu.rules', icon: '📜', route: '/menu?tab=rules', roles: ['user', 'admin'] },
-  { id: 'about', labelKey: 'menu.about', icon: 'ℹ️', route: '/menu?tab=about', roles: ['user', 'admin'] },
-  
-  // Admin items
-  { id: 'taskManager', labelKey: 'menu.taskManager', icon: '🛠️', route: '/menu?tab=admin', roles: ['admin'] },
-  { id: 'devManager', labelKey: 'menu.devManager', icon: '💻', route: '/menu?tab=dev', roles: ['admin'] }
+export interface MenuGroup {
+  key: string;
+  items: MenuItem[];
+}
+
+export const menuItems: MenuGroup[] = [
+  {
+    key: "main",
+    items: [
+      { 
+        key: "arena", 
+        labelKey: "navigation.arena", 
+        fallbackLabel: "Arena",
+        to: "/arena", 
+        icon: "🏟️" 
+      },
+      { 
+        key: "legends", 
+        labelKey: "navigation.legends", 
+        fallbackLabel: "Legends",
+        to: "/legends", 
+        icon: "👑" 
+      },
+      { 
+        key: "profile", 
+        labelKey: "menu.profile", 
+        fallbackLabel: "Profile",
+        to: "/menu", 
+        icon: "👤" 
+      },
+      { 
+        key: "settings", 
+        labelKey: "menu.settings", 
+        fallbackLabel: "Settings",
+        to: "/menu?tab=settings", 
+        icon: "⚙️" 
+      },
+      { 
+        key: "tasks", 
+        labelKey: "menu.tasks", 
+        fallbackLabel: "Tasks",
+        to: "/menu?tab=tasks", 
+        icon: "✅" 
+      },
+      { 
+        key: "suggest", 
+        labelKey: "menu.suggest", 
+        fallbackLabel: "Suggest",
+        to: "/menu?tab=suggest", 
+        icon: "💡" 
+      },
+      { 
+        key: "ranking", 
+        labelKey: "menu.ranking", 
+        fallbackLabel: "Ranking",
+        to: "/menu?tab=leaderboard", 
+        icon: "🏆" 
+      }
+    ]
+  },
+  {
+    key: "info",
+    items: [
+      { 
+        key: "rules", 
+        labelKey: "menu.rules", 
+        fallbackLabel: "Rules",
+        to: "/menu?tab=rules", 
+        icon: "📜" 
+      },
+      { 
+        key: "about", 
+        labelKey: "menu.about", 
+        fallbackLabel: "About",
+        to: "/menu?tab=about", 
+        icon: "ℹ️" 
+      }
+    ]
+  },
+  {
+    key: "admin",
+    items: [
+      { 
+        key: "taskManager", 
+        labelKey: "menu.taskManager", 
+        fallbackLabel: "Task Manager",
+        to: "/menu?tab=admin", 
+        icon: "🛠️" 
+      },
+      { 
+        key: "devManager", 
+        labelKey: "menu.devManager", 
+        fallbackLabel: "Dev Manager",
+        to: "/menu?tab=dev", 
+        icon: "💻" 
+      }
+    ]
+  }
 ];

@@ -8,7 +8,18 @@
     "logout": "Log out",
     "register": "Register",
     "accountActions": "Account Actions",
-    "guestActions": "Guest Actions"
+    "guestActions": "Guest Actions",
+    "open": "Open menu",
+    "close": "Close menu",
+    "profile": "Profile",
+    "settings": "Settings",
+    "tasks": "Tasks",
+    "suggest": "Suggest",
+    "ranking": "Ranking",
+    "rules": "Rules",
+    "about": "About",
+    "taskManager": "Task Manager",
+    "devManager": "Dev Manager"
   },
   "auth": {
     "title": "Welcome to MALLEX",

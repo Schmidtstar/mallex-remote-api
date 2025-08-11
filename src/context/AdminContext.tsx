@@ -1,7 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
-import { getFirebase } from '../lib/firebase'
+import { db } from '@/lib/firebase'
 
 type AdminCtx = {
   isAdmin: boolean
@@ -39,21 +38,13 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const fb = await getFirebase()
-        if (!fb) {
-          // Fallback: Check if email matches jp-s97@web.de when Firebase is not available
-          setIsAdmin(user.email.toLowerCase() === 'jp-s97@web.de')
-          setLoading(false)
-          return
-        }
-
         // Import Firestore
         const { getFirestore, collection, query, where, getDocs } = await import('firebase/firestore')
-        const db = getFirestore(fb.app)
+        const firestoreDb = getFirestore(db.app) // Use db.app from the imported db object
 
         // Query admins collection for user's email
         const q = query(
-          collection(db, 'admins'),
+          collection(firestoreDb, 'admins'),
           where('email', '==', user.email)
         )
 

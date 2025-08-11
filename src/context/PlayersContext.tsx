@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-import { getFirebase } from '../lib/firebase'
+import { db } from '@/lib/firebase'
 
 type PlayersCtx = {
   players: string[]
@@ -34,7 +34,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
     try {
       // Only use Firestore for authenticated non-anonymous users
       if (mode === 'firebase' && user && !user.isAnonymous) {
-        const fb = await getFirebase()
+        const fb = await db() // Use db() directly
         if (fb) {
           const { getFirestore, doc, getDoc } = await import('firebase/firestore')
           const firestore = getFirestore(fb.app)
@@ -70,7 +70,7 @@ export function PlayersProvider({ children }: { children: ReactNode }) {
 
       // Only save to Firestore for authenticated non-anonymous users
       if (mode === 'firebase' && user && !user.isAnonymous) {
-        const fb = await getFirebase()
+        const fb = await db() // Use db() directly
         if (fb) {
           const { getFirestore, doc, setDoc } = await import('firebase/firestore')
           const firestore = getFirestore(fb.app)

@@ -1,5 +1,5 @@
 
-import { getFirebase } from './firebase'
+import { db } from './firebase'
 
 export type TaskDoc = {
   id?: string

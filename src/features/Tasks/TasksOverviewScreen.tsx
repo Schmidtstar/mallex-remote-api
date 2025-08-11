@@ -90,7 +90,7 @@ export function TasksOverviewScreen() {
               category: t(selectedCategoryData.labelKey)
             })}
           </h2>
-          
+
           <div className={styles.statsCard}>
             <div className={styles.stat}>
               <div className={styles.statNumber}>

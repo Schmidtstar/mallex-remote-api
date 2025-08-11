@@ -1,4 +1,3 @@
-
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -26,7 +25,7 @@ export async function createUserProfile(uid: string, data: Partial<UserProfile>)
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   const userRef = doc(db, 'users', uid);
   const userSnap = await getDoc(userRef);
-  
+
   if (userSnap.exists()) {
     return userSnap.data() as UserProfile;
   }

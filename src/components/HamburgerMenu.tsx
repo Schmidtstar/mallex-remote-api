@@ -3,7 +3,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAdmin } from '../context/AdminContext'
-import { menuGroups, type MenuItem, type MenuGroup } from '../config/menuItems'
+import { menuGroups as importedMenuGroups, type MenuItem, type MenuGroup } from '../config/menuItems'
 import styles from './HamburgerMenu.module.css'
 
 interface HamburgerMenuProps {
@@ -15,6 +15,9 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { isAdmin } = useAdmin()
+  
+  // Fallback if menuGroups is undefined
+  const menuGroups = importedMenuGroups || []
 
   const handleItemClick = (path?: string, action?: () => void) => {
     if (action) {
@@ -44,7 +47,7 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
         </div>
         
         <div className={styles.content}>
-          {menuGroups && menuGroups.map((group, groupIndex) => (
+          {menuGroups.map((group, groupIndex) => (
             <div key={groupIndex} className={styles.menuGroup}>
               {group.items
                 .filter(item => !item.adminOnly || isAdmin)

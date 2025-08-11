@@ -113,7 +113,7 @@ export function TabLayout() {
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
         anchorLabel={t('menu.open') ?? 'Open menu'}
-      </div>
+      />
     </div>
   )
 }

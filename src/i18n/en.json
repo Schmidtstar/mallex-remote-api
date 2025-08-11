@@ -14,7 +14,8 @@
       "overview": "Tasks Overview"
     },
     "suggest": "Suggest Task",
-    "admin": "Admin Tasks",
+    "adminTasks": "Admin Tasks",
+    "adminCreate": "Create Task",
     "logout": "Log out"
   },
   "arena": {
@@ -38,11 +39,21 @@
     "guestMode": "Guest Mode"
   },
   "tasks": {
-    "title": "Tasks Overview",
-    "selectCategory": "Select Category",
-    "backToCategories": "Back to Categories",
+    "overview": "Tasks Overview",
+    "suggest": "Suggest Task",
+    "adminPanel": "Admin Panel",
     "noTasks": "No tasks available",
-    "categoryTasks": "Tasks for {{category}}"
+    "totalTasks": "Total available tasks",
+    "create": {
+      "title": "Create Task",
+      "submit": "Approve",
+      "placeholder": "Formulate the task...",
+      "categoryLabel": "Category",
+      "textLabel": "Task text",
+      "success": "Task approved and added to pool",
+      "error": "Please enter a meaningful task (min. 5 characters)",
+      "creating": "Creating task..."
+    }
   },
   "suggest": {
     "title": "Suggest Task",

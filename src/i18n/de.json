@@ -148,7 +148,9 @@
     },
     "suggest": "Aufgabe vorschlagen",
     "admin": "Admin Aufgaben",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "adminTasks": "Admin Aufgaben",
+    "adminCreate": "Aufgabe erstellen"
   },
   "categories": {
     "fate": "Schicksal",
@@ -239,11 +241,21 @@
     "menu": "Menü"
   },
   "tasks": {
-    "title": "Aufgaben-Übersicht",
-    "selectCategory": "Kategorie auswählen",
-    "backToCategories": "Zurück zu Kategorien",
+    "overview": "Aufgaben-Übersicht",
+    "suggest": "Aufgabe vorschlagen",
+    "adminPanel": "Admin-Bereich",
     "noTasks": "Keine Aufgaben verfügbar",
-    "categoryTasks": "Aufgaben für {{category}}"
+    "totalTasks": "Gesamt verfügbare Aufgaben",
+    "create": {
+      "title": "Aufgabe erstellen",
+      "submit": "Freigeben",
+      "placeholder": "Formuliere die Aufgabe...",
+      "categoryLabel": "Kategorie",
+      "textLabel": "Aufgabentext",
+      "success": "Aufgabe freigegeben und zum Pool hinzugefügt",
+      "error": "Bitte eine aussagekräftige Aufgabe eingeben (min. 5 Zeichen)",
+      "creating": "Erstelle Aufgabe..."
+    }
   },
   "suggest": {
     "title": "Aufgabe vorschlagen",

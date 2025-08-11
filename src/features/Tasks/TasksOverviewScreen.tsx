@@ -1,13 +1,40 @@
-
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories } from '../Arena/categories'
 import { challenges } from '../Arena/challenges'
 import styles from './TasksOverviewScreen.module.css'
+import { fetchApprovedTasksByCategory } from '../services/tasksApiService' // Assuming this import
 
 export function TasksOverviewScreen() {
   const { t } = useTranslation()
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState(categories[0].id)
+  const [firestoreTasks, setFirestoreTasks] = useState<string[]>([])
+  const [loadingTasks, setLoadingTasks] = useState(false)
+
+  const loadFirestoreTasks = async (category: string) => {
+    setLoadingTasks(true)
+    try {
+      const tasks = await fetchApprovedTasksByCategory(category as any)
+      setFirestoreTasks(tasks.map(task => task.text))
+    } catch (error) {
+      console.error('Error loading Firestore tasks:', error)
+      setFirestoreTasks([])
+    } finally {
+      setLoadingTasks(false)
+    }
+  }
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId)
+    loadFirestoreTasks(categoryId)
+  }
+
+  useEffect(() => {
+    loadFirestoreTasks(selectedCategory)
+  }, [])
+
+  const staticTasks = challenges[selectedCategory] || []
+  const allTasks = [...staticTasks, ...firestoreTasks]
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId)
@@ -36,13 +63,12 @@ export function TasksOverviewScreen() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                onClick={() => handleCategorySelect(category.id)}
-                className={styles.categoryCard}
-                aria-label={t(category.labelKey)}
+                onClick={() => handleCategoryChange(category.id)}
+                className={`${styles.categoryButton} ${
+                  selectedCategory === category.id ? styles.active : ''
+                }`}
               >
-                <span className={styles.categoryLabel}>
-                  {t(category.labelKey)}
-                </span>
+                {t(category.labelKey)}
               </button>
             ))}
           </div>
@@ -50,7 +76,7 @@ export function TasksOverviewScreen() {
       ) : (
         <div className={styles.content}>
           <div className={styles.backButtonContainer}>
-            <button 
+            <button
               onClick={handleBackToCategories}
               className={styles.backButton}
               aria-label={t('tasks.backToCategories')}
@@ -58,25 +84,40 @@ export function TasksOverviewScreen() {
               ← {t('tasks.backToCategories')}
             </button>
           </div>
-          
+
           <h2 className={styles.subtitle}>
-            {selectedCategoryData && t('tasks.categoryTasks', { 
-              category: t(selectedCategoryData.labelKey) 
+            {selectedCategoryData && t('tasks.categoryTasks', {
+              category: t(selectedCategoryData.labelKey)
             })}
           </h2>
           
+          <div className={styles.statsCard}>
+            <div className={styles.stat}>
+              <div className={styles.statNumber}>
+                {loadingTasks ? '...' : allTasks.length}
+              </div>
+              <div className={styles.statLabel}>{t('tasks.totalTasks')}</div>
+            </div>
+          </div>
+
           <div className={styles.tasksList}>
-            {getTasksForCategory(selectedCategory).map((taskKey, index) => (
-              <div key={index} className={styles.taskCard}>
-                <p className={styles.taskText}>
-                  {t(taskKey, taskKey)}
-                </p>
+            {loadingTasks ? (
+              <div className={styles.emptyState}>
+                <p>Lade Aufgaben...</p>
               </div>
-            ))}
-            {getTasksForCategory(selectedCategory).length === 0 && (
-              <div className={styles.noTasks}>
-                {t('tasks.noTasks')}
+            ) : allTasks.length === 0 ? (
+              <div className={styles.emptyState}>
+                <p>{t('tasks.noTasks')}</p>
               </div>
+            ) : (
+              allTasks.map((task, index) => (
+                <div key={index} className={styles.taskCard}>
+                  <div className={styles.taskNumber}>{index + 1}</div>
+                  <div className={styles.taskText}>
+                    {staticTasks.includes(task) ? t(task) : task}
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>

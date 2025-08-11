@@ -36,6 +36,7 @@ export function MenuScreen() {
     nationality: ''
   })
   const [message, setMessage] = useState('')
+  const [profileLoading, setProfileLoading] = useState(false)
 
   // Load user profile
   useEffect(() => {
@@ -71,7 +72,7 @@ export function MenuScreen() {
       return
     }
 
-    setLoading(true)
+    setProfileLoading(true)
     setMessage('')
 
     try {
@@ -89,7 +90,7 @@ export function MenuScreen() {
       setMessage('Fehler beim Speichern des Profils')
       console.error('Error updating profile:', error)
     } finally {
-      setLoading(false)
+      setProfileLoading(false)
     }
   }
 
@@ -216,9 +217,9 @@ export function MenuScreen() {
                           <button
                             onClick={handleEditSave}
                             className={styles.saveButton}
-                            disabled={loading}
+                            disabled={profileLoading}
                           >
-                            {loading ? '...' : t('profile.save')}
+                            {profileLoading ? '...' : t('profile.save')}
                           </button>
                           <button
                             onClick={() => {

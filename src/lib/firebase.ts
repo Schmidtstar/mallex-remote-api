@@ -1,7 +1,22 @@
-
 import { readFirebaseEnv, hasAuthEnv } from '@/utils/env'
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
 
-let auth: import('firebase/auth').Auth | null = null
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
+}
+
+export const app = initializeApp(firebaseConfig)
+export const auth = getAuth(app)
+export const db = getFirestore(app)
+
+let authInstance: import('firebase/auth').Auth | null = null
 
 export async function getFirebase(): Promise<{
   app: any
@@ -23,7 +38,7 @@ export async function getFirebase(): Promise<{
     await Promise.all([import('firebase/app'), import('firebase/auth')])
 
   const app = initializeApp(cfg as any)
-  auth = getAuth(app)
+  authInstance = getAuth(app)
 
   let analytics: any
   if (cfg.measurementId) {
@@ -33,7 +48,7 @@ export async function getFirebase(): Promise<{
     } catch {/* optional */}
   }
 
-  return { app, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, analytics }
+  return { app, auth: authInstance, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, analytics }
 }
 
-export { auth }
+export { authInstance as auth }

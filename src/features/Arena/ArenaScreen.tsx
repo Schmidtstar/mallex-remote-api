@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories } from './categories'
 import { challenges } from './challenges'
-import { fetchApprovedTasks } from '../../lib/tasksApi'
+import { listApprovedTasks } from '../../lib/tasksApi'
 import { useSwipe } from '../../hooks/useSwipe'
 import styles from '../../layouts/TabLayout.module.css'
 
@@ -17,8 +17,7 @@ export function ArenaScreen() {
   const loadFirestoreTasks = async (category: string) => {
     setLoadingTasks(true)
     try {
-      const allTasks = await fetchApprovedTasks()
-      const categoryTasks = allTasks.filter(task => task.category === category)
+      const categoryTasks = await listApprovedTasks(category as any)
       setFirestoreTasks(categoryTasks.map(task => task.text))
     } catch (error) {
       console.error('Error loading Firestore tasks:', error)

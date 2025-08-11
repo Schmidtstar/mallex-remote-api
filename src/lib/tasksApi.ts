@@ -42,3 +42,6 @@ export async function getTask(id: string): Promise<Task | null> {
   const snap = await getDoc(doc(db, col.tasks, id));
   return snap.exists() ? { id: snap.id, ...(snap.data() as Task) } : null;
 }
+
+// Alias for consistency
+export const fetchApprovedTasks = listApprovedTasks;

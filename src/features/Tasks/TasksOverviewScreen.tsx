@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { listApprovedTasks, type Task, type CategoryKey } from '@/lib/tasksApi';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +18,7 @@ export function TasksOverviewScreen() {
   return (
     <div className={styles.container}>
       <h2>{t('menu.tasks')}</h2>
-      
+
       <div className={styles.filterBar}>
         <select 
           value={category || ''} 

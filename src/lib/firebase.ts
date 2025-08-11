@@ -11,6 +11,30 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Debug: Log der Config
+console.log('Firebase Config:', {
+  hasApiKey: !!firebaseConfig.apiKey,
+  hasAuthDomain: !!firebaseConfig.authDomain,
+  hasProjectId: !!firebaseConfig.projectId,
+  hasAppId: !!firebaseConfig.appId
+});
+
+// Prüfe ob alle nötigen Config-Werte vorhanden sind
+const hasRequiredConfig = firebaseConfig.apiKey && 
+                         firebaseConfig.authDomain && 
+                         firebaseConfig.projectId && 
+                         firebaseConfig.appId;
+
+if (!hasRequiredConfig) {
+  console.error('Firebase config is incomplete! Check your environment variables.');
+  console.log('Missing values:', {
+    apiKey: !firebaseConfig.apiKey ? 'MISSING' : 'OK',
+    authDomain: !firebaseConfig.authDomain ? 'MISSING' : 'OK', 
+    projectId: !firebaseConfig.projectId ? 'MISSING' : 'OK',
+    appId: !firebaseConfig.appId ? 'MISSING' : 'OK'
+  });
+}
+
 // Einmalige Initialisierung (HMR-sicher)
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 

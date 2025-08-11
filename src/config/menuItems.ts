@@ -1,32 +1,39 @@
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../context/AuthContext'
+import { useIsAdmin } from '../context/AdminContext'
+
 export interface MenuItem {
-  key: 'arena' | 'legends' | 'profile' | 'settings' | 'tasks' | 'suggestTask' | 'adminTasks' | 'adminSuggestions';
-  labelKey: string;
-  path?: string;
-  icon?: string;
-  adminOnly?: boolean;
-  authRequired?: boolean;
-  action?: () => void;
+  key: string
+  labelKey: string
+  path: string
+  requiresAuth?: boolean
+  adminOnly?: boolean
 }
 
-export interface MenuGroup {
-  id: string
-  items: MenuItem[]
-}
-
+// Static menu items for components that need them directly
 export const menuItems: MenuItem[] = [
-  { key: 'arena', labelKey: 'menu.arena', path: '/arena', icon: '🏟️', authRequired: true },
-  { key: 'legends', labelKey: 'menu.legends', path: '/legends', icon: '🏛️', authRequired: true },
-  { key: 'tasks', labelKey: 'menu.tasks.overview', path: '/tasks', icon: '📋', authRequired: true },
-  { key: 'suggestTask', labelKey: 'menu.tasks.suggest', path: '/tasks/suggest', icon: '📝', authRequired: true },
-  { key: 'adminTasks', labelKey: 'menu.admin.tasks', path: '/admin/tasks', icon: '⚡', adminOnly: true, authRequired: true },
-  { key: 'adminSuggestions', labelKey: 'menu.admin.suggestions', path: '/admin/suggestions', icon: '📊', adminOnly: true, authRequired: true },
-  { key: 'profile', labelKey: 'menu.profile', path: '/menu?tab=profile', icon: '👤', authRequired: true },
-  { key: 'settings', labelKey: 'menu.settings', path: '/menu?tab=settings', icon: '⚙️', authRequired: true },
-];
+  { key: 'arena', labelKey: 'menu.arena', path: '/arena' },
+  { key: 'tasks', labelKey: 'menu.tasks', path: '/tasks' },
+  { key: 'suggest', labelKey: 'menu.suggest', path: '/suggest', requiresAuth: true },
+  { key: 'legends', labelKey: 'menu.legends', path: '/legends' },
+  { key: 'profile', labelKey: 'menu.profile', path: '/profile', requiresAuth: true },
+  { key: 'admin-tasks', labelKey: 'menu.adminTasks', path: '/admin/tasks', requiresAuth: true, adminOnly: true },
+  { key: 'admin-suggestions', labelKey: 'menu.adminSuggestions', path: '/admin/suggestions', requiresAuth: true, adminOnly: true },
+]
 
-export const menuGroups: MenuGroup[] = [
-  {
-    id: 'main',
-    items: menuItems,
-  },
-];
+export const useMenuItems = () => {
+  const { t } = useTranslation()
+  const { isAuthenticated } = useAuth()
+  const isAdmin = useIsAdmin()
+
+  return menuItems
+    .filter(item => {
+      if (item.requiresAuth && !isAuthenticated) return false
+      if (item.adminOnly && !isAdmin) return false
+      return true
+    })
+    .map(item => ({
+      ...item,
+      label: t(item.labelKey)
+    }))
+}

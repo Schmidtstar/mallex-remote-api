@@ -45,3 +45,12 @@ export async function getTask(id: string): Promise<Task | null> {
 
 // Alias for consistency
 export const fetchApprovedTasks = listApprovedTasks;
+export const fetchApprovedTasksByCategory = listApprovedTasks;
+
+export async function createTaskApproved(task: Omit<Task, 'id'|'createdAt'|'status'>) {
+  return addDoc(collection(db, col.tasks), { 
+    ...task, 
+    status: 'approved' as TaskStatus, 
+    createdAt: serverTimestamp() 
+  });
+}

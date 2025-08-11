@@ -1,6 +1,4 @@
 
-import { useTranslation } from 'react-i18next'
-
 export interface MenuItem {
   key: string
   icon: string

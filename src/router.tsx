@@ -71,6 +71,16 @@ const routes = [
         path: 'tasks',
         element: <TasksOverviewScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Aufgaben-Übersicht</div></ErrorBoundary>
+      },
+      {
+        path: 'profile',
+        element: <Navigate to="/menu?tab=profile" replace />,
+        errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
+      },
+      {
+        path: 'settings',
+        element: <Navigate to="/menu?tab=settings" replace />,
+        errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
       }
     ]
   }

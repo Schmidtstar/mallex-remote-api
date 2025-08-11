@@ -34,13 +34,12 @@
     "loginPrompt": "Already registered?",
     "loading": "Loading...",
     "guestMode": "Guest Mode"
-  }
-}
-
+  },
   "tasks": {
     "title": "Tasks Overview",
     "selectCategory": "Select Category",
     "backToCategories": "Back to Categories",
     "noTasks": "No tasks available",
     "categoryTasks": "Tasks for {{category}}"
-  },
+  }
+}

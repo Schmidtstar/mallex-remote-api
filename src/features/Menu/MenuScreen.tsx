@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -8,12 +7,20 @@ import styles from './MenuScreen.module.css'
 export function MenuScreen() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation()
-  const { user, logout, loading } = useAuth()
-  
+  const { user, signOut, loading } = useAuth()
+
   const currentTab = searchParams.get('tab') || 'profile'
 
   const handleTabChange = (tab: string) => {
     setSearchParams({ tab })
+  }
+
+  const handleLogout = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
   }
 
   return (
@@ -48,7 +55,7 @@ export function MenuScreen() {
                   <p><strong>Status:</strong> {user.isAnonymous ? t('auth.guestMode') : 'Registriert'}</p>
                 </div>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   disabled={loading}
                   className={styles.logoutButton}
                   aria-label={t('menu.logout')}

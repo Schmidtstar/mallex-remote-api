@@ -235,13 +235,12 @@
     "arena": "Arena",
     "legends": "Legenden",
     "menu": "Menü"
-  }
-}
-
+  },
   "tasks": {
     "title": "Aufgaben-Übersicht",
     "selectCategory": "Kategorie auswählen",
     "backToCategories": "Zurück zu Kategorien",
     "noTasks": "Keine Aufgaben verfügbar",
     "categoryTasks": "Aufgaben für {{category}}"
-  },
+  }
+}

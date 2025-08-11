@@ -1,12 +1,5 @@
 
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { menuGroups } from '../config/menuItems'
-import { useAdmin } from '../context/AdminContext'
-import styles from './HamburgerMenu.module.css'
-
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAdmin } from '../context/AdminContext'
@@ -70,52 +63,6 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
             </div>
           ))}
         </nav>
-      </div>
-    </div>
-  )
-}
-
-  return (
-    <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div className={`${styles.drawer} ${isOpen ? styles.open : ''}`}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>MALLEX</h2>
-          <button 
-            className={styles.closeButton} 
-            onClick={onClose}
-            aria-label="Menü schließen"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <div className={styles.content}>
-          {menuGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className={styles.menuGroup}>
-              {group.items
-                .filter(item => !item.adminOnly || isAdmin)
-                .map(item => (
-                  <div
-                    key={item.key}
-                    className={styles.menuItem}
-                    onClick={() => handleItemClick(item.path, item.action)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        handleItemClick(item.path, item.action)
-                      }
-                    }}
-                  >
-                    <span className={styles.menuIcon}>{item.icon}</span>
-                    <span className={styles.menuText}>
-                      {t(`menu.${item.key}`)}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   )

@@ -3,7 +3,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAdmin } from '../context/AdminContext'
-import { menuGroups } from '../config/menuItems'
+import { menuGroups, type MenuItem, type MenuGroup } from '../config/menuItems'
 import styles from './HamburgerMenu.module.css'
 
 interface HamburgerMenuProps {
@@ -35,17 +35,17 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
 
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div className={styles.menu}>
+      <div className={styles.drawer}>
         <div className={styles.header}>
-          <h2>MALLEX</h2>
+          <h2 className={styles.title}>MALLEX</h2>
           <button className={styles.closeButton} onClick={onClose}>
             ✕
           </button>
         </div>
         
-        <nav className={styles.nav}>
-          {menuGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className={styles.group}>
+        <div className={styles.content}>
+          {menuGroups && menuGroups.map((group, groupIndex) => (
+            <div key={groupIndex} className={styles.menuGroup}>
               {group.items
                 .filter(item => !item.adminOnly || isAdmin)
                 .map((item) => (
@@ -62,7 +62,7 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
                 ))}
             </div>
           ))}
-        </nav>
+        </div>
       </div>
     </div>
   )

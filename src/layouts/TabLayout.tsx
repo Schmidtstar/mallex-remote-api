@@ -4,13 +4,14 @@ import { BottomNavigation } from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
-import { HamburgerMenu } from '../components/HamburgerMenu'
+import HamburgerMenu from '../components/HamburgerMenu'
 
 export function TabLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { t } = useTranslation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const tabs = [
     { path: '/arena', label: '🏟️', ariaLabel: t('tabs.arena') },
@@ -88,7 +89,30 @@ export function TabLayout() {
         ))}
 
         {/* Menu Button */}
-        <HamburgerMenu />
+        <button
+          onClick={() => setIsMenuOpen(true)}
+          aria-label={t('menu.open') ?? 'Open menu'}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--fg)',
+            cursor: 'pointer',
+            padding: '12px 16px',
+            fontSize: '24px',
+            borderRadius: 'var(--radius)',
+            transition: 'all 0.2s ease',
+            opacity: 0.7
+          }}
+        >
+          ≡
+        </button>
+      </div>
+
+      {/* Hamburger Menu Drawer */}
+      <HamburgerMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        anchorLabel={t('menu.open') ?? 'Open menu'}
       </div>
     </div>
   )

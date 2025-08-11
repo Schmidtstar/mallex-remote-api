@@ -3,14 +3,17 @@ import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
 import { useTaskSuggestions, TaskSuggestion, SuggestionStatus } from '../../context/TaskSuggestionsContext'
 import { useIsAdmin } from '../../context/AdminContext'
+import { useAuth } from '../../context/AuthContext'
 import { categories } from '../Arena/categories'
+import { createTaskApproved } from '../../lib/tasksApi'
 import styles from './AdminTasksScreen.module.css'
 
 export function AdminTasksScreen() {
   const { t } = useTranslation()
   const isAdmin = useIsAdmin()
+  const { user } = useAuth()
   const { items, approve, reject, edit, remove } = useTaskSuggestions()
-  const [activeTab, setActiveTab] = useState<SuggestionStatus>('pending')
+  const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create'>('pending')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
@@ -61,16 +64,10 @@ export function AdminTasksScreen() {
 
     setCreating(true)
     try {
-      // Assuming createTaskApproved is imported and available
-      // await createTaskApproved(
-      //   { category: newTaskCategory, text: newTaskText.trim() },
-      //   user?.email ?? user?.uid // Assuming user context is available
-      // )
-
-      // Mocking the creation for now as the actual API call might not be fully set up in this context
-      console.log('Creating task:', { category: newTaskCategory, text: newTaskText.trim() });
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-
+      await createTaskApproved(
+        { category: newTaskCategory, text: newTaskText.trim() },
+        user?.email ?? user?.uid
+      )
 
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
@@ -126,7 +123,7 @@ export function AdminTasksScreen() {
       </div>
 
       <div className={styles.content}>
-        {activeTab === 'pending' || activeTab === 'approved' || activeTab === 'rejected' ? (
+        {(activeTab === 'pending' || activeTab === 'approved' || activeTab === 'rejected') && (
           <>
             {filteredItems.length === 0 ? (
               <div className={styles.emptyState}>

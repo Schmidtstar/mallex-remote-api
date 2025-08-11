@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { categories } from '../Arena/categories'
 import { challenges } from '../Arena/challenges'
 import styles from './TasksOverviewScreen.module.css'
-import { fetchApprovedTasksByCategory } from '../services/tasksApiService' // Assuming this import
+import { fetchApprovedTasksByCategory } from '../../lib/tasksApi'
 
 export function TasksOverviewScreen() {
   const { t } = useTranslation()

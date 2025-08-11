@@ -73,19 +73,6 @@ export async function ensureUserProfile(uid: string, data: {
   return ref;
 }
 
-export async function updateUserProfile(uid: string, patch: {
-  birthDate?: string | null;
-  gender?: 'male'|'female'|'diverse'|null;
-  nationality?: string | null;
-  displayName?: string | null;
-}) {
-  const ref = doc(db, 'users', uid);
-  await updateDoc(ref, {
-    ...patch
-  });
-  return ref;
-}
-
 export const nationalities = [
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
   'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina',

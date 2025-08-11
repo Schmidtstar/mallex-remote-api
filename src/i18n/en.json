@@ -1,26 +1,35 @@
 {
-  "menu": {
-    "settings": "Settings",
-    "profile": "Profile",
-    "tasks": "Tasks",
-    "suggest": "Suggest",
-    "leaderboard": "Leaderboard",
-    "rules": "Game Rules",
-    "about": "About MALLEX",
-    "taskManager": "Task Manager",
-    "devManager": "Developer Manager"
-  },
-  "nav": {
+  "tabs": {
     "arena": "Arena",
     "legends": "Legends",
     "menu": "Menu"
   },
+  "menu": {
+    "title": "Menu",
+    "arena": "Arena",
+    "legends": "Hall of Legends",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "arena": {
+    "title": "Arena",
+    "swipeHint": "← Swipe for Navigation →"
+  },
+  "legends": {
+    "title": "Hall of Legends",
+    "comingSoon": "Coming soon..."
+  },
   "auth": {
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
+    "title": "Authentication",
     "email": "Email",
     "password": "Password",
-    "signOut": "Sign Out",
-    "guest": "Continue as Guest"
+    "login": "Login",
+    "register": "Register",
+    "loginAsGuest": "Continue as Guest",
+    "registerPrompt": "Don't have an account?",
+    "loginPrompt": "Already registered?",
+    "loading": "Loading...",
+    "guestMode": "Guest Mode"
   }
 }

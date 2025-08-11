@@ -58,7 +58,7 @@
   },
   "menu": {
     "settings": "Einstellungen",
-    "profile": "Profil", 
+    "profile": "Profil",
     "tasks": "Aufgaben",
     "suggest": "Vorschlagen",
     "leaderboard": "Rangliste",
@@ -138,60 +138,12 @@
     }
   },
   "menu": {
-    "settings": "Einstellungen",
+    "title": "Menü",
+    "arena": "Arena",
+    "legends": "Halle der Legenden",
     "profile": "Profil",
-    "tasks": "Aufgaben",
-    "suggest": "Vorschlagen",
-    "admin": "Admin",
-    "leaderboard": "Rangliste",
-    "rank": "Rangliste",
-    "rules": "Spielregeln",
-    "about": "Über MALLEX",
-    "taskManager": "Aufgaben-Manager",
-    "devManager": "Entwickler-Manager",
-    "tabs": {
-      "settings": "Einstellungen",
-      "profile": "Profil",
-      "tasks": "Aufgaben",
-      "suggest": "Vorschlagen",
-      "admin": "Admin",
-      "leaderboard": "Rangliste",
-      "rank": "Rangliste",
-      "rules": "Spielregeln",
-      "about": "Über MALLEX",
-      "dev": "Entwickler"
-    },
-    "profile": {
-      "guest": "Gast",
-      "loginCta": "Registrieren / Einloggen",
-      "logout": "Abmelden",
-      "admin": "Admin"
-    },
-    "tasks": {
-      "title": "Aufgaben",
-      "count": "{count} Aufgaben"
-    },
-    "suggest": {
-      "title": "Aufgabe vorschlagen",
-      "choose": "Kategorie wählen",
-      "placeholder": "Formuliere deine Aufgabe...",
-      "submit": "Senden",
-      "thanks": "Danke! Deine Aufgabe wird geprüft."
-    },
-    "admin": {
-      "title": "Adminbereich",
-      "pending": "Offene Vorschläge",
-      "approve": "Freigeben",
-      "reject": "Ablehnen",
-      "note": "Notiz (optional)",
-      "custom": "Eigene Aufgaben",
-      "add": "Hinzufügen",
-      "edit": "Bearbeiten",
-      "delete": "Löschen",
-      "hide": "Ausblenden",
-      "unhide": "Einblenden",
-      "localBadge": "Lokaler Admin-Modus"
-    }
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
   },
   "categories": {
     "fate": "Schicksal",

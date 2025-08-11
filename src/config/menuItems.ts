@@ -1,58 +1,24 @@
 
 export interface MenuItem {
-  key: string
-  icon: string
-  path?: string
-  action?: () => void
-  adminOnly?: boolean
-  authRequired?: boolean
+  key: 'arena' | 'legends' | 'profile' | 'settings'
+  labelKey: string
+  path: string
+  icon?: string
 }
 
 export interface MenuGroup {
+  id: string
   items: MenuItem[]
 }
 
 export const menuGroups: MenuGroup[] = [
-  // Navigation
   {
+    id: 'main',
     items: [
-      {
-        key: 'arena',
-        icon: '⚔️',
-        path: '/arena'
-      },
-      {
-        key: 'legends',
-        icon: '🏆',
-        path: '/legends'
-      }
-    ]
-  },
-  // User Area
-  {
-    items: [
-      {
-        key: 'profile',
-        icon: '👤',
-        path: '/profile',
-        authRequired: true
-      },
-      {
-        key: 'settings',
-        icon: '⚙️',
-        path: '/settings'
-      }
-    ]
-  },
-  // Admin Area
-  {
-    items: [
-      {
-        key: 'admin',
-        icon: '🔧',
-        path: '/admin',
-        adminOnly: true
-      }
+      { key: 'arena', labelKey: 'menu.arena', path: '/arena', icon: '🏟️' },
+      { key: 'legends', labelKey: 'menu.legends', path: '/legends', icon: '🏛️' },
+      { key: 'profile', labelKey: 'menu.profile', path: '/menu?tab=profile', icon: '👤' },
+      { key: 'settings', labelKey: 'menu.settings', path: '/menu?tab=settings', icon: '⚙️' }
     ]
   }
 ]

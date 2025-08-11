@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { useAdmin } from '../context/AdminContext'
-import { useAuth } from '../context/AuthContext'
-import { menuGroups, type MenuItem, type MenuGroup } from '../config/menuItems'
+import { menuGroups } from '../config/menuItems'
 import styles from './HamburgerMenu.module.css'
 
 interface HamburgerMenuProps {
@@ -14,8 +12,6 @@ interface HamburgerMenuProps {
 export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { isAdmin } = useAdmin()
-  const { user, logout } = useAuth()
 
   // ESC key handler and body scroll lock
   useEffect(() => {
@@ -37,12 +33,8 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
     }
   }, [isOpen, onClose])
 
-  const handleItemClick = (path?: string, action?: () => void) => {
-    if (action) {
-      action()
-    } else if (path) {
-      navigate(path)
-    }
+  const handleItemClick = (path: string) => {
+    navigate(path)
     onClose()
   }
 
@@ -65,46 +57,21 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
         </div>
 
         <div className={styles.content}>
-          {menuGroups && menuGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className={styles.menuGroup}>
-              {group && group.items && group.items
-                .filter(item => {
-                  if (item.adminOnly && !isAdmin) return false
-                  if (item.authRequired && !user) return false
-                  return true
-                })
-                .map((item) => (
-                  <button
-                    key={item.key}
-                    className={styles.menuItem}
-                    onClick={() => handleItemClick(item.path, item.action)}
-                  >
-                    <span className={styles.icon}>{item.icon}</span>
-                    <span className={styles.label}>
-                      {t(`menu.${item.key}`)}
-                    </span>
-                  </button>
-                ))}
-            </div>
-          ))}
-          
-          {/* Logout Button (wenn angemeldet) */}
-          {user && (
-            <div className={styles.menuGroup}>
+          <div className={styles.menuGroup}>
+            {menuGroups[0].items.map((item) => (
               <button
-                className={`${styles.menuItem} ${styles.logoutItem}`}
-                onClick={() => {
-                  logout()
-                  onClose()
-                }}
+                key={item.key}
+                className={styles.menuItem}
+                onClick={() => handleItemClick(item.path)}
+                aria-label={t(item.labelKey)}
               >
-                <span className={styles.icon}>🚪</span>
+                <span className={styles.icon}>{item.icon}</span>
                 <span className={styles.label}>
-                  {t('menu.logout')}
+                  {t(item.labelKey)}
                 </span>
               </button>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       </div>
     </div>

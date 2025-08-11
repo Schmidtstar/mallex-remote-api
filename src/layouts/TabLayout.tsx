@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { BottomNavigation } from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { HamburgerMenu } from '../components/HamburgerMenu'
+import styles from './TabLayout.module.css'
 
 export function TabLayout() {
   const location = useLocation()
@@ -45,6 +46,8 @@ export function TabLayout() {
     }
   })
 
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [showMenu, setShowMenu] = useState(false)
 
 
   return (
@@ -91,31 +94,24 @@ export function TabLayout() {
         ))}
 
         {/* Hamburger Menu Button */}
-        <button
-          onClick={() => setIsMenuOpen(true)}
-          aria-label={t('menu.open') ?? 'Open menu'}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--fg)',
-            cursor: 'pointer',
-            padding: '12px 16px',
-            fontSize: '24px',
-            borderRadius: 'var(--radius)',
-            transition: 'all 0.2s ease',
-            opacity: 0.7,
-            minWidth: '44px',
-            minHeight: '44px'
-          }}
+        <button 
+          ref={triggerRef}
+          className={`${styles.tabButton} ${showMenu ? styles.active : ''}`}
+          onClick={() => setShowMenu(true)}
+          aria-label={t('tabs.menu')}
+          aria-expanded={showMenu}
+          aria-controls="hamburger-menu"
         >
-          ≡
+          <span className={styles.tabIcon}>≡</span>
+          <span className={styles.tabLabel}>{t('tabs.menu')}</span>
         </button>
       </div>
 
       {/* Hamburger Menu Drawer */}
-      <HamburgerMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
+      <HamburgerMenu 
+        open={showMenu} 
+        onClose={() => setShowMenu(false)} 
+        triggerRef={triggerRef}
       />
     </div>
   )

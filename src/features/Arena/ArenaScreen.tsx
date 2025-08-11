@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { categories } from './categories'
 import { challenges } from './challenges'
-import { fetchApprovedTasksByCategory } from '../../lib/tasksApi'
+import { listApprovedTasks } from '../../lib/tasksApi'
 import { useSwipe } from '../../hooks/useSwipe'
 import styles from '../../layouts/TabLayout.module.css'
 

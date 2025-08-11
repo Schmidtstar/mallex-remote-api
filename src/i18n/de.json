@@ -63,12 +63,17 @@
   },
   "menu": {
     "title": "Menü",
+    "close": "Schließen",
     "profile": "Profil",
     "settings": "Einstellungen",
-    "tasks": "Aufgaben-Übersicht",
-    "suggest": "Aufgabe vorschlagen",
+    "logout": "Abmelden",
     "admin": "Admin",
-    "logout": "Abmelden"
+    "sections": {
+      "game": "Spiel",
+      "tasks": "Aufgaben",
+      "admin": "Administration",
+      "account": "Konto"
+    }
   },
   "legends": {
     "title": "Halle der Legenden",

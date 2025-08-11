@@ -1,84 +1,201 @@
-import React, { useEffect } from 'react'
+
+import React, { useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { menuGroups } from '../config/menuItems'
-import { useAdmin } from '../context/AdminContext'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useIsAdmin } from '../context/AdminContext'
+import { menuItems } from '../config/menuItems'
+import { trapFocus } from '../lib/a11y'
 import styles from './HamburgerMenu.module.css'
 
 interface HamburgerMenuProps {
-  isOpen: boolean
+  open: boolean
   onClose: () => void
+  triggerRef?: React.RefObject<HTMLButtonElement>
 }
 
-export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
+export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { isAdmin, loading: adminLoading } = useAdmin()
+  const location = useLocation()
+  const { user, logout } = useAuth()
+  const isAdmin = useIsAdmin()
+  const drawerRef = useRef<HTMLDivElement>(null)
 
-  const visibleMenuItems = menuGroups[0].items.filter(item =>
-    !item.adminOnly || isAdmin
-  )
-
-  // ESC key handler and body scroll lock
+  // Auto-close on route change
   useEffect(() => {
-    if (!isOpen) return
+    onClose()
+  }, [location.pathname, onClose])
 
-    const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
+  // Focus management and body scroll lock
+  useEffect(() => {
+    if (open) {
+      const first = drawerRef.current?.querySelector<HTMLElement>('button, a, [tabindex="0"]')
+      first?.focus()
+      
+      const prevOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      
+      return () => {
+        document.body.style.overflow = prevOverflow
       }
     }
+  }, [open])
 
-    // Lock body scroll
-    document.body.style.overflow = 'hidden'
-    document.addEventListener('keydown', handleEscKey)
-
-    return () => {
-      document.body.style.overflow = 'unset'
-      document.removeEventListener('keydown', handleEscKey)
+  // Return focus to trigger when closing
+  useEffect(() => {
+    if (!open && triggerRef?.current) {
+      triggerRef.current.focus()
     }
-  }, [isOpen, onClose])
+  }, [open, triggerRef])
 
-  const handleItemClick = (path: string) => {
-    navigate(path)
-    onClose()
-  }
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose()
+    }
+    if (e.key === 'Tab') {
+      trapFocus(e, drawerRef.current)
+    }
+  }, [onClose])
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
+  const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose()
     }
   }
 
-  if (!isOpen) return null
+  const handleItemClick = (item: any) => {
+    if (item.action) {
+      item.action()
+    } else if (item.path) {
+      navigate(item.path)
+    }
+    onClose()
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/auth')
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+    onClose()
+  }
+
+  if (!open) return null
+
+  const visibleItems = menuItems.filter(item => {
+    if (item.adminOnly && !isAdmin) return false
+    if (item.authRequired && !user) return false
+    return true
+  })
 
   return (
-    <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div className={styles.drawer}>
+    <div 
+      className={styles.backdrop} 
+      onClick={handleBackdropClick}
+      role="presentation"
+    >
+      <div
+        ref={drawerRef}
+        className={styles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="menuTitle"
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+      >
         <div className={styles.header}>
-          <h2 className={styles.title}>MALLEX</h2>
-          <button className={styles.closeButton} onClick={onClose}>
-            ✕
+          <h2 id="menuTitle" className={styles.title}>
+            {t('menu.title')}
+          </h2>
+          <button
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label={t('menu.close')}
+          >
+            ×
           </button>
         </div>
 
-        <div className={styles.content}>
-          <div className={styles.menuGroup}>
-            {visibleMenuItems.map((item) => (
-              <button
-                key={item.key}
-                className={styles.menuItem}
-                onClick={() => handleItemClick(item.path)}
-                aria-label={t(item.labelKey)}
-              >
-                <span className={styles.icon}>{item.icon}</span>
-                <span className={styles.label}>
-                  {t(item.labelKey)}
-                </span>
-              </button>
-            ))}
+        <nav className={styles.nav} role="navigation">
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>{t('menu.sections.game')}</h3>
+            {visibleItems
+              .filter(item => ['arena', 'legends'].includes(item.key))
+              .map(item => (
+                <button
+                  key={item.key}
+                  className={styles.itemBtn}
+                  onClick={() => handleItemClick(item)}
+                >
+                  <span className={styles.itemIcon}>{item.icon}</span>
+                  <span className={styles.itemLabel}>{t(item.labelKey)}</span>
+                </button>
+              ))}
           </div>
-        </div>
+
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>{t('menu.sections.tasks')}</h3>
+            {visibleItems
+              .filter(item => ['tasks', 'suggestTask'].includes(item.key))
+              .map(item => (
+                <button
+                  key={item.key}
+                  className={styles.itemBtn}
+                  onClick={() => handleItemClick(item)}
+                >
+                  <span className={styles.itemIcon}>{item.icon}</span>
+                  <span className={styles.itemLabel}>{t(item.labelKey)}</span>
+                </button>
+              ))}
+          </div>
+
+          {isAdmin && (
+            <div className={styles.section}>
+              <h3 className={styles.sectionTitle}>{t('menu.sections.admin')}</h3>
+              {visibleItems
+                .filter(item => item.adminOnly)
+                .map(item => (
+                  <button
+                    key={item.key}
+                    className={styles.itemBtn}
+                    onClick={() => handleItemClick(item)}
+                  >
+                    <span className={styles.itemIcon}>{item.icon}</span>
+                    <span className={styles.itemLabel}>{t(item.labelKey)}</span>
+                  </button>
+                ))}
+            </div>
+          )}
+
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>{t('menu.sections.account')}</h3>
+            {visibleItems
+              .filter(item => ['profile', 'settings'].includes(item.key))
+              .map(item => (
+                <button
+                  key={item.key}
+                  className={styles.itemBtn}
+                  onClick={() => handleItemClick(item)}
+                >
+                  <span className={styles.itemIcon}>{item.icon}</span>
+                  <span className={styles.itemLabel}>{t(item.labelKey)}</span>
+                </button>
+              ))}
+
+            {user && (
+              <button
+                className={`${styles.itemBtn} ${styles.logoutBtn}`}
+                onClick={handleLogout}
+              >
+                <span className={styles.itemIcon}>🚪</span>
+                <span className={styles.itemLabel}>{t('menu.logout')}</span>
+              </button>
+            )}
+          </div>
+        </nav>
       </div>
     </div>
   )

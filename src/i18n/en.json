@@ -63,12 +63,17 @@
   },
   "menu": {
     "title": "Menu",
+    "close": "Close",
     "profile": "Profile",
     "settings": "Settings",
-    "tasks": "Tasks Overview",
-    "suggest": "Suggest Task",
+    "logout": "Logout",
     "admin": "Admin",
-    "logout": "Logout"
+    "sections": {
+      "game": "Game",
+      "tasks": "Tasks",
+      "admin": "Administration",
+      "account": "Account"
+    }
   },
   "legends": {
     "title": "Hall of Legends",

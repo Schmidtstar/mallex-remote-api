@@ -6,6 +6,13 @@ import { menuGroups } from '../config/menuItems'
 import { useAdmin } from '../context/AdminContext'
 import styles from './HamburgerMenu.module.css'
 
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { useAdmin } from '../context/AdminContext'
+import { menuGroups } from '../config/menuItems'
+import styles from './HamburgerMenu.module.css'
+
 interface HamburgerMenuProps {
   isOpen: boolean
   onClose: () => void
@@ -32,6 +39,41 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
   }
 
   if (!isOpen) return null
+
+  return (
+    <div className={styles.overlay} onClick={handleOverlayClick}>
+      <div className={styles.menu}>
+        <div className={styles.header}>
+          <h2>MALLEX</h2>
+          <button className={styles.closeButton} onClick={onClose}>
+            ✕
+          </button>
+        </div>
+        
+        <nav className={styles.nav}>
+          {menuGroups.map((group, groupIndex) => (
+            <div key={groupIndex} className={styles.group}>
+              {group.items
+                .filter(item => !item.adminOnly || isAdmin)
+                .map((item) => (
+                  <button
+                    key={item.key}
+                    className={styles.menuItem}
+                    onClick={() => handleItemClick(item.path, item.action)}
+                  >
+                    <span className={styles.icon}>{item.icon}</span>
+                    <span className={styles.label}>
+                      {t(`menu.${item.key}`)}
+                    </span>
+                  </button>
+                ))}
+            </div>
+          ))}
+        </nav>
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>

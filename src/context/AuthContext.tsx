@@ -15,6 +15,8 @@ type AuthCtx = {
   loginAsGuest: () => Promise<void>
   upgradeToEmail: (email: string, password: string) => Promise<void>
   signOutAll: () => Promise<void>
+  logout: () => Promise<void>
+  signOut: () => Promise<void>
 }
 
 const Ctx = createContext<AuthCtx | null>(null)
@@ -114,6 +116,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loginAsGuest,
     upgradeToEmail,
     async signOutAll() {
+      setError(null)
+      const fb = await getFirebase()
+      if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
+      await fb.signOut(fb.auth)
+    },
+    async logout() {
+      setError(null)
+      const fb = await getFirebase()
+      if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
+      await fb.signOut(fb.auth)
+    },
+    async signOut() {
       setError(null)
       const fb = await getFirebase()
       if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import styles from './MenuScreen.module.css'
@@ -7,7 +7,8 @@ import styles from './MenuScreen.module.css'
 export function MenuScreen() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation()
-  const { user, signOut, loading } = useAuth()
+  const { user, logout, loading } = useAuth()
+  const navigate = useNavigate()
 
   const currentTab = searchParams.get('tab') || 'profile'
 
@@ -17,7 +18,8 @@ export function MenuScreen() {
 
   const handleLogout = async () => {
     try {
-      await signOut()
+      await logout()
+      navigate('/auth', { replace: true })
     } catch (error) {
       console.error('Logout failed:', error)
     }

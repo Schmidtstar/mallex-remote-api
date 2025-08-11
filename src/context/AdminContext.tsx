@@ -1,11 +1,14 @@
-import React, { createContext, useContext, useMemo, ReactNode } from 'react'
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
+import { getFirebase } from '../lib/firebase'
 
 type AdminCtx = {
   isAdmin: boolean
+  loading: boolean
 }
 
-const AdminContext = createContext<AdminCtx>({ isAdmin: false })
+const AdminContext = createContext<AdminCtx>({ isAdmin: false, loading: true })
 
 export function useAdmin() {
   const context = useContext(AdminContext)
@@ -22,18 +25,54 @@ export function useIsAdmin() {
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const isAdmin = useMemo(() => {
-    const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS ?? '')
-      .split(',')
-      .map(s => s.trim().toLowerCase())
-      .filter(Boolean)
+  useEffect(() => {
+    async function checkAdminStatus() {
+      setLoading(true)
+      setIsAdmin(false)
 
-    return !!(user?.email && adminEmails.includes(user.email.toLowerCase()))
+      if (!user?.email) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const fb = await getFirebase()
+        if (!fb) {
+          // Fallback: Check if email matches jp-s97@web.de when Firebase is not available
+          setIsAdmin(user.email.toLowerCase() === 'jp-s97@web.de')
+          setLoading(false)
+          return
+        }
+
+        // Import Firestore
+        const { getFirestore, collection, query, where, getDocs } = await import('firebase/firestore')
+        const db = getFirestore(fb.app)
+
+        // Query admins collection for user's email
+        const q = query(
+          collection(db, 'admins'),
+          where('email', '==', user.email)
+        )
+
+        const querySnapshot = await getDocs(q)
+        setIsAdmin(!querySnapshot.empty)
+      } catch (error) {
+        console.error('Error checking admin status:', error)
+        // Fallback: Check if email matches jp-s97@web.de on error
+        setIsAdmin(user.email.toLowerCase() === 'jp-s97@web.de')
+      }
+
+      setLoading(false)
+    }
+
+    checkAdminStatus()
   }, [user?.email])
 
   return (
-    <AdminContext.Provider value={{ isAdmin }}>
+    <AdminContext.Provider value={{ isAdmin, loading }}>
       {children}
     </AdminContext.Provider>
   )

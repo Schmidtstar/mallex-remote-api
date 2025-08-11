@@ -3,117 +3,6 @@
     "title": "Arena",
     "selectPlayer": "Spieler auswählen:",
     "selectCategory": "Kategorie auswählen:",
-    "spinWheel": "Rad drehen",
-    "revealing": {
-      "player": "Ausgewählter Spieler wird enthüllt...",
-      "category": "Kategorie wird enthüllt...",
-      "challenge": "Aufgabe wird enthüllt..."
-    },
-    "selectedPlayer": "Ausgewählter Spieler",
-    "category": "Kategorie",
-    "challenge": "Aufgabe",
-    "newChallenge": "Neue Aufgabe",
-    "fate": {
-      "item1": "Erzähl uns von deinem peinlichsten Moment",
-      "item2": "Nenne drei Dinge, die du an dir ändern würdest",
-      "item3": "Wer war deine erste große Liebe?",
-      "item4": "Beschreibe dein ideales erstes Date",
-      "item5": "Was ist deine größte Angst?"
-    },
-    "seduce": {
-      "item1": "Flirte mit der Person zu deiner Linken",
-      "item2": "Mache jemandem ein Kompliment über sein Aussehen",
-      "item3": "Beschreibe deinen Traumpartner",
-      "item4": "Erzähl uns von deiner romantischsten Erfahrung",
-      "item5": "Was findest du am attraktivsten an einer Person?"
-    },
-    "confess": {
-      "item1": "Gestehe eine Lüge, die du erzählt hast",
-      "item2": "Verrate uns ein Geheimnis über dich",
-      "item3": "Was bereust du am meisten?",
-      "item4": "Nenne jemanden, in den du heimlich verliebt warst",
-      "item5": "Was würdest du gerne an jemandem ändern?"
-    },
-    "escalate": {
-      "item1": "Küsse die Person deiner Wahl",
-      "item2": "Tanze 30 Sekunden lang verführerisch",
-      "item3": "Gib jemandem eine Schultermassage",
-      "item4": "Flüstere jemandem etwas Anzügliches ins Ohr",
-      "item5": "Zieh ein Kleidungsstück aus"
-    },
-    "shame": {
-      "item1": "Erzähl uns von deinem größten Versagen",
-      "item2": "Nenne drei schlechte Angewohnheiten, die du hast",
-      "item3": "Was ist das Gemeinste, was du je getan hast?",
-      "item4": "Erzähl uns von einer Situation, in der du dich geschämt hast",
-      "item5": "Was würdest du niemals zugeben?"
-    }
-  },
-  "categories": {
-    "fate": "Schicksal",
-    "seduce": "Verführung",
-    "confess": "Beichte",
-    "escalate": "Eskalation",
-    "shame": "Schande"
-  },
-  "menu": {
-    "settings": "Einstellungen",
-    "profile": "Profil",
-    "tasks": "Aufgaben",
-    "suggest": "Vorschlagen",
-    "leaderboard": "Rangliste",
-    "rules": "Spielregeln",
-    "about": "Über MALLEX",
-    "taskManager": "Aufgaben-Manager",
-    "devManager": "Entwickler-Manager"
-  },
-  "legends": {
-    "title": "Halle der Legenden",
-    "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
-    "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
-    "syncMode": "Spieler werden in deinem Profil gespeichert.",
-    "playerNamePlaceholder": "Spielername eingeben",
-    "addPlayer": "Hinzufügen",
-    "removePlayer": "Spieler entfernen",
-    "playersList": "Spieler",
-    "noPlayers": "Noch keine Spieler hinzugefügt",
-    "addError": "Fehler beim Hinzufügen des Spielers",
-    "removeError": "Fehler beim Entfernen des Spielers"
-  },
-  "common": {
-    "loading": "Laden",
-    "adding": "Hinzufügen",
-    "remove": "Entfernen"
-  },
-  "auth": {
-    "login": "Anmelden",
-    "register": "Registrieren",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "displayName": "Name",
-    "loginButton": "Anmelden",
-    "registerButton": "Registrieren",
-    "switchToRegister": "Noch kein Konto? Registrieren",
-    "switchToLogin": "Bereits ein Konto? Anmelden",
-    "anonymousLogin": "Als Gast fortfahren",
-    "logout": "Abmelden"
-  },
-  "legends": {
-    "title": "Halle der Legenden",
-    "empty": {
-      "description": "Die Halle ist leer. Zeit, die ersten Götter zu beschwören!",
-      "cta": "Beschwöre die Götter"
-    },
-    "input": {
-      "placeholder": "Name des Spielers"
-    },
-    "add": "Hinzufügen",
-    "remove": "Entfernen"
-  },
-  "arena": {
-    "title": "Arena",
-    "selectPlayer": "Spieler auswählen:",
-    "selectCategory": "Kategorie auswählen:",
     "spinWheel": "Glücksrad drehen",
     "revealing": {
       "player": "Ausgewählter Spieler wird enthüllt...",
@@ -127,7 +16,7 @@
     "fate": {
       "item1": "Erzähle von deinem peinlichsten Moment",
       "item2": "Nenne drei Dinge, die du an dir ändern würdest",
-      "item3": "Was war deine erste Liebe?",
+      "item3": "Was war deine erste große Liebe?",
       "item4": "Beschreibe dein ideales erstes Date",
       "item5": "Was ist deine größte Angst?"
     },
@@ -160,21 +49,6 @@
       "item5": "Was würdest du niemals zugeben?"
     }
   },
-  "menu": {
-    "title": "Menü",
-    "arena": "Arena",
-    "legends": "Halle der Legenden",
-    "profile": "Profil",
-    "settings": "Einstellungen",
-    "tasks": {
-      "overview": "Aufgaben-Übersicht"
-    },
-    "suggest": "Aufgabe vorschlagen",
-    "admin": "Admin Aufgaben",
-    "logout": "Abmelden",
-    "adminTasks": "Admin Aufgaben",
-    "adminCreate": "Aufgabe erstellen"
-  },
   "categories": {
     "fate": "Schicksal",
     "shame": "Scham",
@@ -182,86 +56,51 @@
     "escalate": "Eskalation",
     "confess": "Geständnis"
   },
-  "fate": {
-    "item1": "Wähle eine Person, die 2 Schluck trinkt.",
-    "item2": "Alle mit roten Kleidungsstücken trinken 1 Schluck.",
-    "item3": "Die Person links von dir trinkt 3 Schlücke.",
-    "item4": "Alle Männer trinken 2 Schlücke.",
-    "item5": "Die jüngste Person trinkt 1 Schluck."
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Halle der Legenden",
+    "menu": "Menü"
   },
-  "truth": {
-    "item1": "Erzähle von deinem peinlichsten Moment.",
-    "item2": "Was war deine erste große Liebe?",
-    "item3": "Welche schlechte Angewohnheit hast du?",
-    "item4": "Was ist dein größtes Geheimnis?",
-    "item5": "Wer von uns ist am attraktivsten?"
-  },
-  "dare": {
-    "item1": "Tanze 30 Sekunden ohne Musik.",
-    "item2": "Imitiere eine berühmte Person.",
-    "item3": "Mache 10 Liegestütze.",
-    "item4": "Singe ein Lied laut vor.",
-    "item5": "Tausche ein Kleidungsstück mit jemand anderem."
-  },
-  "funny": {
-    "1": "Imitiere 30 Sekunden lang ein Tier deiner Wahl!",
-    "2": "Erzähle einen Witz, aber rückwärts!",
-    "3": "Singe das Lied 'Happy Birthday' im Stil eines Opern-Sängers!",
-    "4": "Beschreibe das letzte Essen, das du gegessen hast, als wäre es das beste Gericht der Welt!",
-    "5": "Führe einen Dialog zwischen deinen beiden Händen!"
-  },
-  "mythology": {
-    "1": "Verkörpere Zeus und donnere mit mächtiger Stimme einen Befehl!",
-    "2": "Erzähle wie Odin eine epische Geschichte vom letzten Kampf!",
-    "3": "Führe als ägyptischer Pharao einen rituellen Tanz auf!",
-    "4": "Sprich wie ein weiser griechischer Philosoph über die Bedeutung des Lebens!",
-    "5": "Erschaffe als nordischer Schamane ein Lied über die Elemente!"
-  },
-  "sports": {
-    "1": "Führe 10 Liegestütze in Zeitlupe aus!",
-    "2": "Imitiere einen Torjubel wie ein Fußball-Weltmeister!",
-    "3": "Mache 30 Sekunden Schattenboxen gegen einen unsichtbaren Gegner!",
-    "4": "Führe eine olympische Siegerehrung für dich selbst durch!",
-    "5": "Erkläre eine komplizierte Sportregel, als wärst du TV-Kommentator!"
-  },
-  "creativity": {
-    "1": "Erfinde ein neues Wort und erkläre seine Bedeutung!",
-    "2": "Zeichne mit geschlossenen Augen dein Traumhaus in die Luft!",
-    "3": "Komponiere spontan einen 30-Sekunden-Song über deinen Tag!",
-    "4": "Erfinde eine neue Begrüßung für Außerirdische!",
-    "5": "Erschaffe eine Superhelden-Identität und stelle dich vor!"
+  "menu": {
+    "title": "Menü",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "tasks": "Aufgaben-Übersicht",
+    "suggest": "Aufgabe vorschlagen",
+    "admin": "Admin",
+    "logout": "Abmelden"
   },
   "legends": {
     "title": "Halle der Legenden",
     "subtitle": "Verwalte die Spieler für epische Schlachten",
+    "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
+    "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
+    "syncMode": "Spieler werden in deinem Profil gespeichert.",
+    "playerNamePlaceholder": "Name des Helden",
     "addPlayer": "Beschwöre die Götter",
-    "playerName": "Name des Helden",
+    "removePlayer": "Verbannen",
     "noPlayers": "Keine Helden in der Halle. Beschwöre die ersten Götter!",
-    "removePlayer": "Verbannen"
+    "addError": "Fehler beim Hinzufügen des Spielers",
+    "removeError": "Fehler beim Entfernen des Spielers"
   },
-  "tabs": {
-    "arena": "Arena",
-    "legends": "Legenden",
-    "menu": "Menü"
+  "auth": {
+    "title": "Willkommen bei MALLEX",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "displayName": "Name",
+    "loginButton": "Anmelden",
+    "registerButton": "Registrieren",
+    "switchToRegister": "Noch kein Konto? Registrieren",
+    "switchToLogin": "Bereits ein Konto? Anmelden",
+    "anonymousLogin": "Als Gast fortfahren",
+    "logout": "Abmelden"
   },
-  "navigation": {
-    "arena": "Arena",
-    "legends": "Legenden",
-    "menu": "Menü",
-    "profile": "Profil",
-    "settings": "Einstellungen",
-    "suggest": "Vorschlagen",
-    "close": "Schließen",
-    "admin": {
-      "tasks": "Admin Aufgaben",
-      "panel": "Admin Panel",
-      "badge": "Admin"
-    }
-  },
-  "nav": {
-    "arena": "Arena",
-    "legends": "Legenden",
-    "menu": "Menü"
+  "common": {
+    "loading": "Laden",
+    "adding": "Hinzufügen",
+    "remove": "Entfernen"
   },
   "tasks": {
     "overview": {
@@ -312,9 +151,6 @@
   "profile": {
     "birthdate": "Geburtsdatum",
     "gender": "Geschlecht",
-    "gender.male": "Männlich",
-    "gender.female": "Weiblich",
-    "gender.diverse": "Divers",
     "nationality": "Nationalität",
     "age": "Alter",
     "edit": "Bearbeiten",
@@ -323,25 +159,13 @@
     "updateSuccess": "Profil erfolgreich aktualisiert!",
     "birthdatePlaceholder": "01.01.1985"
   },
-  "suggest": {
-    "title": "Aufgabe vorschlagen",
-    "choose": "Kategorie wählen",
-    "placeholder": "Formuliere deine Aufgabe...",
-    "submit": "Senden",
-    "thanks": "Danke! Deine Aufgabe wird geprüft."
-  },
-  "adminTasks": {
-    "title": "Adminbereich",
-    "pending": "Offene Vorschläge",
-    "approved": "Freigegeben",
-    "rejected": "Abgelehnt",
-    "actions": {
-      "approve": "Freigeben",
-      "reject": "Ablehnen",
-      "edit": "Bearbeiten",
-      "delete": "Löschen",
-      "save": "Speichern"
-    },
-    "note": "Notiz (optional)"
+  "navigation": {
+    "arena": "Arena",
+    "legends": "Legenden",
+    "menu": "Menü",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "suggest": "Vorschlagen",
+    "close": "Schließen"
   }
 }

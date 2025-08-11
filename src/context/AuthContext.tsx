@@ -1,160 +1,97 @@
-import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
-import { auth } from '@/lib/firebase'
-import {signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, User, signInAnonymously, EmailAuthProvider, linkWithCredential} from 'firebase/auth'
-import { ensureUserProfile } from '@/lib/userApi'
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, updateProfile, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { ensureUserProfile } from '@/lib/userApi';
+import { isEmailAdmin } from '@/lib/adminApi';
 
-type User = { uid: string; email?: string | null; isAnonymous: boolean } | null
-
-type AuthCtx = {
-  user: User
-  loading: boolean
-  mode: 'guest' | 'firebase'
-  error: string | null
-  isAnonymous: boolean
-  signInEmail: (email: string, password: string) => Promise<void>
-  signUpEmail: (email: string, password: string) => Promise<void>
-  signInGuest: () => Promise<void>
-  loginAsGuest: () => Promise<void>
-  upgradeToEmail: (email: string, password: string) => Promise<void>
-  signOutAll: () => Promise<void>
-  logout: () => Promise<void>
-  signOut: () => Promise<void>
+interface AuthContextType {
+  user: User | null;
+  admin: boolean | 'loading';
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, displayName: string) => Promise<void>;
+  loginAnonymously: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-const Ctx = createContext<AuthCtx | null>(null)
-export const useAuth = () => {
-  const c = useContext(Ctx)
-  if (!c) throw new Error('AuthContext missing')
-  return c
-}
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [fbMode, setFbMode] = useState<'guest' | 'firebase'>('guest')
+  const [user, setUser] = useState<User | null>(null);
+  const [admin, setAdmin] = useState<boolean | 'loading'>('loading');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true)
-
-    // Check if Firebase is properly configured
-    if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-      setFbMode('guest')
-      setUser({ uid: 'guest', isAnonymous: true, email: null })
-      setLoading(false)
-      return
-    }
-
-    setFbMode('firebase')
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user && !user.isAnonymous) {
-        try {
+      setLoading(true);
+      try {
+        if (user) {
+          // Profil automatisch anlegen/aktualisieren
           await ensureUserProfile(user.uid, {
             email: user.email ?? undefined,
             displayName: user.displayName ?? undefined,
           });
-        } catch (error) {
-          console.warn('Failed to ensure user profile:', error);
+
+          // Admin-Status prüfen
+          const isAdmin = await isEmailAdmin(user.email);
+          setAdmin(isAdmin);
+          setUser(user);
+        } else {
+          setAdmin(false);
+          setUser(null);
         }
+      } catch (error) {
+        console.error('Error in auth state change:', error);
+        setAdmin(false);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setUser(user)
-      setLoading(false)
-    })
+    });
 
-    return () => unsubscribe()
-  }, [])
+    return () => unsubscribe();
+  }, []);
 
-  const loginAsGuest = useCallback(async () => {
-    setError(null)
-    try {
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        // Fallback für lokalen Gastmodus
-        setUser({ uid: 'guest', isAnonymous: true, email: null })
-        return
-      }
-      await signInAnonymously(auth)
-    } catch (e: any) {
-      if (e?.code === 'auth/admin-restricted-operation') {
-        setError('Anonymous Sign-In ist in Firebase nicht aktiviert. Bitte im Firebase-Auth-Panel aktivieren.')
-      } else {
-        setError(e?.message ?? 'Guest login failed')
-      }
+  const login = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const register = async (email: string, password: string, displayName: string) => {
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    if (credential.user && displayName) {
+      await updateProfile(credential.user, { displayName });
     }
-  }, [])
+  };
 
-  const upgradeToEmail = useCallback(async (email: string, password: string) => {
-    setError(null)
-    try {
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        throw new Error('Firebase nicht konfiguriert')
-      }
-      if (!auth.currentUser) throw new Error('Kein Benutzer angemeldet')
+  const loginAnonymously = async () => {
+    await signInAnonymously(auth);
+  };
 
-      const credential = EmailAuthProvider.credential(email, password)
-      await linkWithCredential(auth.currentUser, credential)
-    } catch (e: any) {
-      let errorKey = 'auth.upgrade.error.generic'
-      if (e?.code === 'auth/email-already-in-use') errorKey = 'auth.upgrade.error.emailInUse'
-      else if (e?.code === 'auth/invalid-email') errorKey = 'auth.upgrade.error.invalidEmail'
-      else if (e?.code === 'auth/weak-password') errorKey = 'auth.upgrade.error.weakPassword'
+  const logout = async () => {
+    await signOut(auth);
+  };
 
-      setError(errorKey)
-      throw new Error(errorKey)
-    }
-  }, [])
+  const value: AuthContextType = {
+    user,
+    admin,
+    loading,
+    login,
+    register,
+    loginAnonymously,
+    logout
+  };
 
-  const api = useMemo<AuthCtx>(() => ({
-    user, loading, mode: fbMode, error,
-    isAnonymous: user?.isAnonymous ?? false,
-    async signInEmail(email, password) {
-      setError(null)
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        throw new Error('Firebase nicht konfiguriert')
-      }
-      await signInWithEmailAndPassword(auth, email, password)
-    },
-    async signUpEmail(email, password) {
-      setError(null)
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        throw new Error('Firebase nicht konfiguriert')
-      }
-      await createUserWithEmailAndPassword(auth, email, password)
-    },
-    async signInGuest() {
-      setError(null)
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        setUser({ uid: 'guest', isAnonymous: true, email: null })
-        return
-      }
-      await signInAnonymously(auth)
-    },
-    loginAsGuest,
-    upgradeToEmail,
-    async signOutAll() {
-      setError(null)
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        setUser({ uid: 'guest', isAnonymous: true, email: null })
-        return
-      }
-      await firebaseSignOut(auth)
-    },
-    async logout() {
-      setError(null)
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        setUser({ uid: 'guest', isAnonymous: true, email: null })
-        return
-      }
-      await firebaseSignOut(auth)
-    },
-    async signOut() {
-      setError(null)
-      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
-        setUser({ uid: 'guest', isAnonymous: true, email: null })
-        return
-      }
-      await firebaseSignOut(auth)
-    }
-  }), [user, loading, fbMode, error, loginAsGuest, upgradeToEmail])
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
 
-  return <Ctx.Provider value={api}>{children}</Ctx.Provider>
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }

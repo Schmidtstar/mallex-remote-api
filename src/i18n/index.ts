@@ -10,4 +10,13 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false }
 })
 
+export function safeT(key: string, options?: any): string {
+  const v = i18n.t(key, options);
+  if (typeof v !== 'string') {
+    console.warn(`[i18n] Key "${key}" returned non-string`, v);
+    return String(v ?? key);
+  }
+  return v;
+}
+
 export { i18n }

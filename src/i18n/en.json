@@ -1,66 +1,109 @@
+
 {
+  "arena": {
+    "title": "Arena",
+    "selectPlayer": "Select Player:",
+    "selectCategory": "Select Category:",
+    "spinWheel": "Spin Wheel",
+    "revealing": {
+      "player": "Selected player is being revealed...",
+      "category": "Category is being revealed...",
+      "challenge": "Challenge is being revealed..."
+    },
+    "selectedPlayer": "Selected Player",
+    "category": "Category",
+    "challenge": "Challenge",
+    "newChallenge": "New Challenge",
+    "fate": {
+      "item1": "Tell us about your most embarrassing moment",
+      "item2": "Name three things you would change about yourself",
+      "item3": "Who was your first great love?",
+      "item4": "Describe your ideal first date",
+      "item5": "What is your biggest fear?"
+    },
+    "seduce": {
+      "item1": "Flirt with the person to your left",
+      "item2": "Compliment someone on their appearance",
+      "item3": "Describe your dream partner",
+      "item4": "Tell us about your most romantic experience",
+      "item5": "What do you find most attractive in a person?"
+    },
+    "confess": {
+      "item1": "Confess a lie you have told",
+      "item2": "Tell us a secret about yourself",
+      "item3": "What do you regret most?",
+      "item4": "Name someone you were secretly in love with",
+      "item5": "What would you like to change about someone?"
+    },
+    "escalate": {
+      "item1": "Kiss the person of your choice",
+      "item2": "Dance seductively for 30 seconds",
+      "item3": "Give someone a shoulder massage",
+      "item4": "Whisper something suggestive in someone's ear",
+      "item5": "Remove an item of clothing"
+    },
+    "shame": {
+      "item1": "Tell us about your biggest failure",
+      "item2": "Name three bad habits you have",
+      "item3": "What's the meanest thing you've ever done?",
+      "item4": "Tell us about a situation where you felt ashamed",
+      "item5": "What would you never admit?"
+    }
+  },
+  "categories": {
+    "fate": "Fate",
+    "shame": "Shame",
+    "seduce": "Seduce",
+    "escalate": "Escalate",
+    "confess": "Confess"
+  },
   "tabs": {
     "arena": "Arena",
-    "legends": "Legends",
+    "legends": "Hall of Legends",
     "menu": "Menu"
   },
   "menu": {
     "title": "Menu",
-    "arena": "Arena",
-    "legends": "Hall of Legends",
     "profile": "Profile",
     "settings": "Settings",
-    "tasks": {
-      "overview": "Tasks Overview"
-    },
+    "tasks": "Tasks Overview",
     "suggest": "Suggest Task",
-    "adminTasks": "Admin Tasks",
-    "adminCreate": "Create Task",
-    "logout": "Log out"
-  },
-  "arena": {
-    "title": "Arena",
-    "swipeHint": "← Swipe for Navigation →"
+    "admin": "Admin",
+    "logout": "Logout"
   },
   "legends": {
     "title": "Hall of Legends",
-    "comingSoon": "Coming soon..."
+    "subtitle": "Manage players for epic battles",
+    "loginRequired": "Log in to save your players.",
+    "guestMode": "Guest mode: Players are only stored locally.",
+    "syncMode": "Players are saved in your profile.",
+    "playerNamePlaceholder": "Hero's name",
+    "addPlayer": "Summon the Gods",
+    "removePlayer": "Banish",
+    "noPlayers": "No heroes in the hall. Summon the first gods!",
+    "addError": "Error adding player",
+    "removeError": "Error removing player"
   },
   "auth": {
-    "title": "Authentication",
-    "email": "Email",
-    "password": "Password",
+    "title": "Welcome to MALLEX",
     "login": "Login",
     "register": "Register",
-    "loginAsGuest": "Continue as Guest",
-    "registerPrompt": "Don't have an account?",
-    "loginPrompt": "Already registered?",
-    "loading": "Loading...",
-    "guestMode": "Guest Mode",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Name",
     "loginButton": "Login",
     "registerButton": "Register",
-    "switchToRegister": "No account? Register",
+    "switchToRegister": "No account yet? Register",
     "switchToLogin": "Already have an account? Login",
     "anonymousLogin": "Continue as Guest",
-    "logout": "Logout",
-    "displayName": "Name"
+    "logout": "Logout"
+  },
+  "common": {
+    "loading": "Loading",
+    "adding": "Adding",
+    "remove": "Remove"
   },
   "tasks": {
-    "overview": "Tasks Overview",
-    "suggest": "Suggest Task",
-    "adminPanel": "Admin Panel",
-    "noTasks": "No tasks available",
-    "totalTasks": "Total available tasks",
-    "create": {
-      "title": "Create Task",
-      "submit": "Approve",
-      "placeholder": "Formulate the task...",
-      "categoryLabel": "Category",
-      "textLabel": "Task text",
-      "success": "Task approved and added to pool",
-      "error": "Please enter a meaningful task (min. 5 characters)",
-      "creating": "Creating task..."
-    },
     "overview": {
       "title": "Tasks Overview",
       "category": "Category",
@@ -106,48 +149,24 @@
       "success": "Task successfully created!"
     }
   },
-  "suggest": {
-    "title": "Suggest Task",
-    "choose": "Choose Category",
-    "placeholder": "Formulate your task...",
-    "submit": "Submit",
-    "thanks": "Thank you! Your task will be reviewed."
-  },
-  "adminTasks": {
-    "title": "Admin Area",
-    "pending": "Pending Suggestions",
-    "approved": "Approved",
-    "rejected": "Rejected",
-    "actions": {
-      "approve": "Approve",
-      "reject": "Reject",
-      "edit": "Edit",
-      "delete": "Delete",
-      "save": "Save"
-    },
-    "note": "Note (optional)"
-  },
   "profile": {
-    "title": "Profile",
-    "name": "Name",
-    "age": "Age",
+    "birthdate": "Birth Date",
     "gender": "Gender",
     "nationality": "Nationality",
+    "age": "Age",
     "edit": "Edit",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "updateSuccess": "Profile successfully updated!",
+    "birthdatePlaceholder": "01/01/1985"
   },
-  "auth": {
-    "loginTitle": "Sign in",
-    "email": "Email",
-    "password": "Password",
-    "login": "Sign in",
-    "registerLink": "No account yet? Register",
-    "guestButton": "Continue as guest",
-    "loggingIn": "Signing in…",
-    "error": "Sign-in failed",
-    "invalidCredentials": "Email or password is incorrect.",
-    "required": "Required",
-    "emailInvalid": "Please enter a valid email."
+  "navigation": {
+    "arena": "Arena",
+    "legends": "Legends",
+    "menu": "Menu",
+    "profile": "Profile",
+    "settings": "Settings",
+    "suggest": "Suggest",
+    "close": "Close"
   }
 }

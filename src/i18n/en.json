@@ -128,17 +128,26 @@
     "note": "Note (optional)"
   },
   "profile": {
-    "birthdate": "Date of Birth",
-    "gender": "Gender",
-    "gender.male": "Male",
-    "gender.female": "Female",
-    "gender.diverse": "Diverse",
-    "nationality": "Nationality",
+    "title": "Profile",
+    "name": "Name",
     "age": "Age",
+    "gender": "Gender",
+    "nationality": "Nationality",
     "edit": "Edit",
     "save": "Save",
-    "cancel": "Cancel",
-    "updateSuccess": "Profile successfully updated!",
-    "birthdatePlaceholder": "01.01.1985"
+    "cancel": "Cancel"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "login": "Sign in",
+    "registerLink": "No account yet? Register",
+    "guestButton": "Continue as guest",
+    "loggingIn": "Signing in…",
+    "error": "Sign-in failed",
+    "invalidCredentials": "Email or password is incorrect.",
+    "required": "Required",
+    "emailInvalid": "Please enter a valid email."
   }
 }

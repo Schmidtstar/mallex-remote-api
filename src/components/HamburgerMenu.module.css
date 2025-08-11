@@ -3,108 +3,129 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
   backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
 .drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: min(350px, 85vw);
-  background: var(--glass);
-  backdrop-filter: blur(20px);
+  width: 280px;
+  height: 100%;
+  background: var(--bg);
   border-left: 1px solid var(--stroke);
   display: flex;
   flex-direction: column;
-  z-index: 1001;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
+  animation: slideIn 0.3s ease-out;
 }
 
-.drawer.open {
-  transform: translateX(0);
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--stroke);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--stroke);
 }
 
 .title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--fg);
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--primary);
   margin: 0;
 }
 
 .closeButton {
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 1.5rem;
   color: var(--fg);
+  font-size: 20px;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 8px;
   border-radius: var(--radius);
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .closeButton:hover {
-  background: var(--hover);
+  background: var(--glass);
 }
 
 .content {
   flex: 1;
-  padding: 1rem;
+  padding: 20px;
   overflow-y: auto;
 }
 
 .menuGroup {
-  margin-bottom: 1.5rem;
+  margin-bottom: 16px;
 }
 
 .menuItem {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 8px;
   background: var(--glass);
   border: 1px solid var(--stroke);
   border-radius: var(--radius);
   color: var(--fg);
   text-decoration: none;
-  font-size: 1rem;
-  transition: all 0.2s ease;
   cursor: pointer;
+  transition: all 0.2s ease;
   backdrop-filter: blur(10px);
+  min-height: 44px;
+  font-size: 16px;
 }
 
 .menuItem:hover {
-  background: var(--hover);
+  background: var(--glass-hover);
+  border-color: var(--primary);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.menuItem:active {
-  transform: translateY(0);
-  background: var(--active);
+.menuItem:last-child {
+  margin-bottom: 0;
 }
 
-.menuIcon {
-  font-size: 1.25rem;
-  width: 1.5rem;
-  text-align: center;
+.icon {
+  margin-right: 12px;
+  font-size: 18px;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.menuText {
+.label {
   flex: 1;
-  font-weight: 500;
+  text-align: left;
+}
+
+.logoutItem {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
+}
+
+.logoutItem:hover {
+  background: rgba(255, 59, 48, 0.2);
+  border-color: #ff3b30;
 }

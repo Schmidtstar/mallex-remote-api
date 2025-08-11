@@ -81,14 +81,16 @@ export function TabLayout() {
               fontSize: '24px',
               borderRadius: 'var(--radius)',
               transition: 'all 0.2s ease',
-              opacity: getCurrentTab() === index ? 1 : 0.7
+              opacity: getCurrentTab() === index ? 1 : 0.7,
+              minWidth: '44px',
+              minHeight: '44px'
             }}
           >
             {tab.label}
           </button>
         ))}
 
-        {/* Menu Button */}
+        {/* Hamburger Menu Button */}
         <button
           onClick={() => setIsMenuOpen(true)}
           aria-label={t('menu.open') ?? 'Open menu'}
@@ -101,7 +103,9 @@ export function TabLayout() {
             fontSize: '24px',
             borderRadius: 'var(--radius)',
             transition: 'all 0.2s ease',
-            opacity: 0.7
+            opacity: 0.7,
+            minWidth: '44px',
+            minHeight: '44px'
           }}
         >
           ≡

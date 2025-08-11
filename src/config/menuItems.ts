@@ -5,6 +5,7 @@ export interface MenuItem {
   path?: string
   action?: () => void
   adminOnly?: boolean
+  authRequired?: boolean
 }
 
 export interface MenuGroup {
@@ -12,6 +13,7 @@ export interface MenuGroup {
 }
 
 export const menuGroups: MenuGroup[] = [
+  // Navigation
   {
     items: [
       {
@@ -23,17 +25,28 @@ export const menuGroups: MenuGroup[] = [
         key: 'legends',
         icon: '🏆',
         path: '/legends'
-      },
+      }
+    ]
+  },
+  // User Area
+  {
+    items: [
       {
         key: 'profile',
         icon: '👤',
-        path: '/profile'
+        path: '/profile',
+        authRequired: true
       },
       {
         key: 'settings',
         icon: '⚙️',
         path: '/settings'
-      },
+      }
+    ]
+  },
+  // Admin Area
+  {
+    items: [
       {
         key: 'admin',
         icon: '🔧',

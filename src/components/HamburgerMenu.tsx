@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAdmin } from '../context/AdminContext'
+import { useAuth } from '../context/AuthContext'
 import { menuGroups, type MenuItem, type MenuGroup } from '../config/menuItems'
 import styles from './HamburgerMenu.module.css'
 
@@ -14,6 +15,27 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { isAdmin } = useAdmin()
+  const { user, logout } = useAuth()
+
+  // ESC key handler and body scroll lock
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    // Lock body scroll
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleEscKey)
+
+    return () => {
+      document.body.style.overflow = 'unset'
+      document.removeEventListener('keydown', handleEscKey)
+    }
+  }, [isOpen, onClose])
 
   const handleItemClick = (path?: string, action?: () => void) => {
     if (action) {
@@ -46,7 +68,11 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
           {menuGroups && menuGroups.map((group, groupIndex) => (
             <div key={groupIndex} className={styles.menuGroup}>
               {group && group.items && group.items
-                .filter(item => !item.adminOnly || isAdmin)
+                .filter(item => {
+                  if (item.adminOnly && !isAdmin) return false
+                  if (item.authRequired && !user) return false
+                  return true
+                })
                 .map((item) => (
                   <button
                     key={item.key}
@@ -61,6 +87,24 @@ export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
                 ))}
             </div>
           ))}
+          
+          {/* Logout Button (wenn angemeldet) */}
+          {user && (
+            <div className={styles.menuGroup}>
+              <button
+                className={`${styles.menuItem} ${styles.logoutItem}`}
+                onClick={() => {
+                  logout()
+                  onClose()
+                }}
+              >
+                <span className={styles.icon}>🚪</span>
+                <span className={styles.label}>
+                  {t('menu.logout')}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
-import { getFirebase } from '../lib/firebase'
+import { auth } from '@/lib/firebase'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged, EmailAuthProvider, linkWithCredential } from 'firebase/auth'
 
 type User = { uid: string; email?: string | null; isAnonymous: boolean } | null
 
@@ -33,35 +34,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [fbMode, setFbMode] = useState<'guest' | 'firebase'>('guest')
 
   useEffect(() => {
-    let unsub = () => {}
     setLoading(true)
-    getFirebase().then((fb) => {
-      if (!fb) {
-        setFbMode('guest')
-        setUser({ uid: 'guest', isAnonymous: true, email: null })
-        setLoading(false)
-        return
-      }
-      setFbMode('firebase')
-      unsub = fb.onAuthStateChanged(fb.auth, (u) => {
-        if (u) setUser({ uid: u.uid, email: u.email, isAnonymous: u.isAnonymous })
-        else setUser(null)
-        setLoading(false)
-      })
+    
+    // Check if Firebase is properly configured
+    if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+      setFbMode('guest')
+      setUser({ uid: 'guest', isAnonymous: true, email: null })
+      setLoading(false)
+      return
+    }
+
+    setFbMode('firebase')
+    const unsub = onAuthStateChanged(auth, (u) => {
+      if (u) setUser({ uid: u.uid, email: u.email, isAnonymous: u.isAnonymous })
+      else setUser(null)
+      setLoading(false)
     })
+
     return () => unsub()
   }, [])
 
   const loginAsGuest = useCallback(async () => {
     setError(null)
     try {
-      const fb = await getFirebase()
-      if (!fb) {
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
         // Fallback für lokalen Gastmodus
         setUser({ uid: 'guest', isAnonymous: true, email: null })
         return
       }
-      await fb.signInAnonymously(fb.auth)
+      await signInAnonymously(auth)
     } catch (e: any) {
       if (e?.code === 'auth/admin-restricted-operation') {
         setError('Anonymous Sign-In ist in Firebase nicht aktiviert. Bitte im Firebase-Auth-Panel aktivieren.')
@@ -74,13 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const upgradeToEmail = useCallback(async (email: string, password: string) => {
     setError(null)
     try {
-      const fb = await getFirebase()
-      if (!fb) throw new Error('Firebase nicht konfiguriert')
-      if (!fb.auth.currentUser) throw new Error('Kein Benutzer angemeldet')
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        throw new Error('Firebase nicht konfiguriert')
+      }
+      if (!auth.currentUser) throw new Error('Kein Benutzer angemeldet')
 
-      const { EmailAuthProvider, linkWithCredential } = await import('firebase/auth')
       const credential = EmailAuthProvider.credential(email, password)
-      await linkWithCredential(fb.auth.currentUser, credential)
+      await linkWithCredential(auth.currentUser, credential)
     } catch (e: any) {
       let errorKey = 'auth.upgrade.error.generic'
       if (e?.code === 'auth/email-already-in-use') errorKey = 'auth.upgrade.error.emailInUse'
@@ -97,41 +98,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAnonymous: user?.isAnonymous ?? false,
     async signInEmail(email, password) {
       setError(null)
-      const fb = await getFirebase()
-      if (!fb) throw new Error('Firebase nicht konfiguriert')
-      await fb.signInWithEmailAndPassword(fb.auth, email, password)
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        throw new Error('Firebase nicht konfiguriert')
+      }
+      await signInWithEmailAndPassword(auth, email, password)
     },
     async signUpEmail(email, password) {
       setError(null)
-      const fb = await getFirebase()
-      if (!fb) throw new Error('Firebase nicht konfiguriert')
-      await fb.createUserWithEmailAndPassword(fb.auth, email, password)
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        throw new Error('Firebase nicht konfiguriert')
+      }
+      await createUserWithEmailAndPassword(auth, email, password)
     },
     async signInGuest() {
       setError(null)
-      const fb = await getFirebase()
-      if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
-      await fb.signInAnonymously(fb.auth)
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        setUser({ uid: 'guest', isAnonymous: true, email: null })
+        return
+      }
+      await signInAnonymously(auth)
     },
     loginAsGuest,
     upgradeToEmail,
     async signOutAll() {
       setError(null)
-      const fb = await getFirebase()
-      if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
-      await fb.signOut(fb.auth)
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        setUser({ uid: 'guest', isAnonymous: true, email: null })
+        return
+      }
+      await signOut(auth)
     },
     async logout() {
       setError(null)
-      const fb = await getFirebase()
-      if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
-      await fb.signOut(fb.auth)
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        setUser({ uid: 'guest', isAnonymous: true, email: null })
+        return
+      }
+      await signOut(auth)
     },
     async signOut() {
       setError(null)
-      const fb = await getFirebase()
-      if (!fb) { setUser({ uid: 'guest', isAnonymous: true, email: null }); return }
-      await fb.signOut(fb.auth)
+      if (!import.meta.env.VITE_FIREBASE_API_KEY || !import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        setUser({ uid: 'guest', isAnonymous: true, email: null })
+        return
+      }
+      await signOut(auth)
     }
   }), [user, loading, fbMode, error, loginAsGuest, upgradeToEmail])
 

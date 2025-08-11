@@ -3,7 +3,7 @@ import { createHashRouter, createBrowserRouter, Navigate, Outlet } from 'react-r
 import { TabLayout } from './layouts/TabLayout'
 import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
-import { MenuScreen } from './features/Menu/MenuScreen'
+
 import { AuthScreen } from './features/Auth/AuthScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { useAuth } from './context/AuthContext'
@@ -60,11 +60,7 @@ const routes = [
         element: <LegendsScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Legenden</div></ErrorBoundary>
       },
-      {
-        path: 'menu',
-        element: <MenuScreen />,
-        errorElement: <ErrorBoundary><div>Fehler im Menü</div></ErrorBoundary>
-      }
+      
     ]
   }
 ]

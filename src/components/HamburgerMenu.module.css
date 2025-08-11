@@ -1,22 +1,21 @@
 
 .hamburgerButton {
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 1.5rem;
   color: var(--fg);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  fontSize: 24px;
+  borderRadius: var(--radius);
   transition: all 0.2s ease;
+  opacity: 0.7;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
 }
 
 .hamburgerButton:hover {
-  background: var(--glass);
+  opacity: 1;
 }
 
 .overlay {

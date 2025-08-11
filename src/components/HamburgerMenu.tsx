@@ -23,55 +23,55 @@ export function HamburgerMenu() {
       key: 'settings', 
       label: t('menu.tabs.settings'), 
       icon: '⚙️',
-      action: () => navigate('/menu?tab=settings')
+      action: () => console.log('Settings clicked')
     },
     { 
       key: 'profile', 
       label: t('menu.tabs.profile'), 
       icon: '👤',
-      action: () => navigate('/menu?tab=profile')
+      action: () => console.log('Profile clicked')
     },
     { 
       key: 'tasks', 
       label: t('menu.tabs.tasks'), 
       icon: '✅',
-      action: () => navigate('/menu?tab=tasks')
+      action: () => console.log('Tasks clicked')
     },
     { 
       key: 'suggest', 
       label: t('menu.tabs.suggest'), 
       icon: '💡',
-      action: () => navigate('/menu?tab=suggest')
+      action: () => console.log('Suggest clicked')
     },
     ...(isAdmin ? [{ 
       key: 'admin', 
       label: t('menu.tabs.admin'), 
       icon: '🛠️',
-      action: () => navigate('/menu?tab=admin')
+      action: () => console.log('Admin clicked')
     }] : []),
     { 
       key: 'leaderboard', 
       label: t('menu.tabs.leaderboard'), 
       icon: '🏆',
-      action: () => navigate('/menu?tab=leaderboard')
+      action: () => console.log('Leaderboard clicked')
     },
     { 
       key: 'rules', 
       label: t('menu.tabs.rules'), 
       icon: '📋',
-      action: () => navigate('/menu?tab=rules')
+      action: () => console.log('Rules clicked')
     },
     { 
       key: 'about', 
       label: t('menu.tabs.about'), 
       icon: 'ℹ️',
-      action: () => navigate('/menu?tab=about')
+      action: () => console.log('About clicked')
     },
     ...(localAdmin ? [{ 
       key: 'dev', 
       label: t('menu.tabs.dev'), 
       icon: '🔧',
-      action: () => navigate('/menu?tab=dev')
+      action: () => console.log('Dev clicked')
     }] : [])
   ]
 

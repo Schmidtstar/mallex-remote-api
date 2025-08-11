@@ -30,6 +30,14 @@ export function TabLayout() {
     navigate(tabs[newValue].path)
   }
 
+  const openMenu = useCallback(() => {
+    setIsMenuOpen(true)
+  }, [])
+
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false)
+  }, [])
+
   // Swipe navigation
   useSwipe({
     onSwipeLeft: () => {
@@ -47,7 +55,6 @@ export function TabLayout() {
   })
 
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const [showMenu, setShowMenu] = useState(false)
 
 
   return (
@@ -96,10 +103,10 @@ export function TabLayout() {
         {/* Hamburger Menu Button */}
         <button 
           ref={triggerRef}
-          className={`${styles.tabButton} ${showMenu ? styles.active : ''}`}
-          onClick={() => setShowMenu(true)}
+          className={`${styles.tabButton} ${isMenuOpen ? styles.active : ''}`}
+          onClick={openMenu}
           aria-label={t('tabs.menu')}
-          aria-expanded={showMenu}
+          aria-expanded={isMenuOpen}
           aria-controls="hamburger-menu"
         >
           <span className={styles.tabIcon}>≡</span>
@@ -109,8 +116,8 @@ export function TabLayout() {
 
       {/* Hamburger Menu Drawer */}
       <HamburgerMenu 
-        open={showMenu} 
-        onClose={() => setShowMenu(false)} 
+        open={isMenuOpen} 
+        onClose={closeMenu} 
         triggerRef={triggerRef}
       />
     </div>

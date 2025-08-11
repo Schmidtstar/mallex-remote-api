@@ -21,11 +21,22 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
   const { user, logout } = useAuth()
   const isAdmin = useIsAdmin()
   const drawerRef = useRef<HTMLDivElement>(null)
+  const lastOpenAtRef = useRef<number>(0)
 
-  // Auto-close on route change
+  // Set timestamp when drawer opens
   useEffect(() => {
+    if (open) {
+      lastOpenAtRef.current = Date.now()
+    }
+  }, [open])
+
+  // Auto-close on route change with grace period
+  useEffect(() => {
+    if (!open) return
+    const msSinceOpen = Date.now() - lastOpenAtRef.current
+    if (msSinceOpen < 400) return // Grace period to prevent immediate close
     onClose()
-  }, [location.pathname, onClose])
+  }, [location.pathname, open, onClose])
 
   // Focus management and body scroll lock
   useEffect(() => {

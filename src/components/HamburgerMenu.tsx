@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useAdmin } from '../context/AdminContext'
@@ -15,9 +15,26 @@ export function HamburgerMenu() {
   const { isAdmin } = useAdmin()
   const { localAdmin } = useTaskSuggestions()
   const { t, i18n } = useTranslation()
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
-  const toggleMenu = () => setIsOpen(!isOpen)
-  const closeMenu = () => setIsOpen(false)
+  const toggleMenu = () => {
+    setIsOpen(!isOpen)
+    if (!isOpen) {
+      // Focus will be set to drawer in useEffect
+      setTimeout(() => {
+        drawerRef.current?.focus()
+      }, 100)
+    }
+  }
+  
+  const closeMenu = () => {
+    setIsOpen(false)
+    // Return focus to trigger button
+    setTimeout(() => {
+      triggerRef.current?.focus()
+    }, 100)
+  }
 
   // ESC key handler
   useEffect(() => {
@@ -38,12 +55,25 @@ export function HamburgerMenu() {
     closeMenu()
   }, [location.pathname])
 
+  // Lock body scroll when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = 'unset'
+      }
+    }
+  }, [isOpen])
+
   const menuItems = [
     { 
       key: 'settings', 
       label: t('menu.tabs.settings'), 
       icon: '⚙️',
-      action: () => alert('Settings - To be implemented')
+      action: () => {
+        // Navigate to settings page or show settings modal
+        console.log('Navigate to settings')
+      }
     },
     { 
       key: 'profile', 
@@ -51,7 +81,8 @@ export function HamburgerMenu() {
       icon: '👤',
       action: () => {
         if (user) {
-          alert('Profile - To be implemented')
+          // Navigate to profile page
+          console.log('Navigate to profile')
         } else {
           navigate('/auth')
         }
@@ -61,43 +92,64 @@ export function HamburgerMenu() {
       key: 'tasks', 
       label: t('menu.tabs.tasks'), 
       icon: '✅',
-      action: () => alert('Tasks - To be implemented')
+      action: () => {
+        // Navigate to tasks page
+        console.log('Navigate to tasks')
+      }
     },
     { 
       key: 'suggest', 
       label: t('menu.tabs.suggest'), 
       icon: '💡',
-      action: () => alert('Suggest - To be implemented')
+      action: () => {
+        // Navigate to suggestions page
+        console.log('Navigate to suggest')
+      }
     },
     ...(isAdmin ? [{ 
       key: 'admin', 
       label: t('menu.tabs.admin'), 
       icon: '🛠️',
-      action: () => alert('Admin - To be implemented')
+      action: () => {
+        // Navigate to admin page
+        console.log('Navigate to admin')
+      }
     }] : []),
     { 
       key: 'leaderboard', 
       label: t('menu.tabs.leaderboard'), 
       icon: '🏆',
-      action: () => alert('Leaderboard - To be implemented')
+      action: () => {
+        // Navigate to leaderboard page
+        console.log('Navigate to leaderboard')
+      }
     },
     { 
       key: 'rules', 
       label: t('menu.tabs.rules'), 
       icon: '📋',
-      action: () => alert('Rules - To be implemented')
+      action: () => {
+        // Navigate to rules page
+        console.log('Navigate to rules')
+      }
     },
     { 
       key: 'about', 
       label: t('menu.tabs.about'), 
       icon: 'ℹ️',
-      action: () => alert('About - To be implemented')
+      action: () => {
+        // Navigate to about page
+        console.log('Navigate to about')
+      }
     },
     ...(localAdmin ? [{ 
       key: 'dev', 
       label: t('menu.tabs.dev'), 
       icon: '🔧',
-      action: () => alert('Dev - To be implemented')
+      action: () => {
+        // Navigate to dev tools
+        console.log('Navigate to dev')
+      }
     }] : [])
   ]
 
@@ -109,6 +161,7 @@ export function HamburgerMenu() {
   return (
     <>
       <button 
+        ref={triggerRef}
         onClick={toggleMenu}
         className={styles.hamburgerButton}
         aria-label="Menu"
@@ -120,10 +173,12 @@ export function HamburgerMenu() {
         <>
           <div className={styles.overlay} onClick={closeMenu} />
           <div 
+            ref={drawerRef}
             className={styles.drawer}
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
+            tabIndex={-1}
           >
             <div className={styles.header}>
               <h2 id="drawer-title">{t('menu.title')}</h2>

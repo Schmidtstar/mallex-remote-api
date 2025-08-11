@@ -44,6 +44,9 @@ export async function updateUserProfile(uid: string, data: Partial<UserProfile>)
 export async function ensureUserProfile(uid: string, data: {
   email?: string;
   displayName?: string;
+  birthDate?: string | null;    // ISO YYYY-MM-DD
+  gender?: 'male'|'female'|'diverse'|null;
+  nationality?: string | null;  // ISO country code
 }) {
   const ref = doc(db, 'users', uid);
   const snap = await getDoc(ref);
@@ -51,12 +54,35 @@ export async function ensureUserProfile(uid: string, data: {
     await setDoc(ref, {
       email: data.email ?? null,
       displayName: data.displayName ?? null,
+      birthDate: data.birthDate ?? null,
+      gender: data.gender ?? null,
+      nationality: data.nationality ?? null,
       createdAt: serverTimestamp(),
       lastLoginAt: serverTimestamp(),
     });
   } else {
-    await setDoc(ref, { lastLoginAt: serverTimestamp() }, { merge: true });
+    await setDoc(ref, {
+      lastLoginAt: serverTimestamp(),
+      // merge optional Felder nur wenn übergeben
+      ...(data.birthDate !== undefined ? { birthDate: data.birthDate } : {}),
+      ...(data.gender !== undefined ? { gender: data.gender } : {}),
+      ...(data.nationality !== undefined ? { nationality: data.nationality } : {}),
+      ...(data.displayName !== undefined ? { displayName: data.displayName } : {}),
+    }, { merge: true });
   }
+  return ref;
+}
+
+export async function updateUserProfile(uid: string, patch: {
+  birthDate?: string | null;
+  gender?: 'male'|'female'|'diverse'|null;
+  nationality?: string | null;
+  displayName?: string | null;
+}) {
+  const ref = doc(db, 'users', uid);
+  await updateDoc(ref, {
+    ...patch
+  });
   return ref;
 }
 

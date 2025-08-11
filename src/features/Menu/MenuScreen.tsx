@@ -1,98 +1,117 @@
-import React, { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { useAuth } from '../../context/AuthContext'
-import { getUserProfile, updateUserProfile, nationalities, UserProfile } from '../../lib/userApi'
-import { calculateAge, isValidDate } from '../../utils/dateUtils'
-import styles from './MenuScreen.module.css'
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { getUserProfile, updateUserProfile, nationalities, UserProfile } from '../../lib/userApi';
+import { calculateAge, isValidDate } from '../../utils/dateUtils';
+import styles from './MenuScreen.module.css';
+
+// Define UserProfile interface - This was duplicated multiple times in the changes, consolidating to one definition.
+interface UserProfile {
+  email: string | null;
+  displayName: string | null;
+  birthDate: string | null;  // Changed to match API
+  gender: 'male'|'female'|'diverse'|null;
+  nationality: string | null;
+}
 
 export function MenuScreen() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const { t } = useTranslation()
-  const { user, logout, loading } = useAuth()
-  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const { user, logout, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const currentTab = searchParams.get('tab') || 'profile'
+  const currentTab = searchParams.get('tab') || 'profile';
 
   const handleTabChange = (tab: string) => {
-    setSearchParams({ tab })
-  }
+    setSearchParams({ tab });
+  };
 
   const handleLogout = async () => {
     try {
-      await logout()
-      navigate('/auth', { replace: true })
+      await logout();
+      navigate('/auth', { replace: true });
     } catch (error) {
-      console.error('Logout failed:', error)
+      console.error('Logout failed:', error);
     }
-  }
+  };
 
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  // Update edit form state - also duplicated, consolidating.
   const [editForm, setEditForm] = useState({
     displayName: '',
-    birthdate: '',
-    gender: '' as 'male' | 'female' | 'diverse' | '',
+    birthDate: '',
+    gender: '' as 'male'|'female'|'diverse'|'',
     nationality: ''
-  })
-  const [message, setMessage] = useState('')
-  const [profileLoading, setProfileLoading] = useState(false)
+  });
+  const [message, setMessage] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
 
   // Load user profile
   useEffect(() => {
     if (user && !user.isAnonymous) {
-      loadUserProfile()
+      loadUserProfile();
     }
-  }, [user])
+  }, [user]);
 
   const loadUserProfile = async () => {
-    if (!user || user.isAnonymous) return
+    if (!user || user.isAnonymous) return;
 
     try {
-      const profile = await getUserProfile(user.uid)
-      setUserProfile(profile)
-      if (profile) {
-        setEditForm({
-          displayName: profile.displayName || '',
-          birthdate: profile.birthdate || '',
-          gender: profile.gender || '',
-          nationality: profile.nationality || ''
-        })
-      }
+      const profile = await getUserProfile(user.uid);
+      // Update profile loading logic - consolidated duplicated sections.
+      setUserProfile({
+        email: profile?.email || null,
+        displayName: profile?.displayName || null,
+        birthDate: profile?.birthDate || null,
+        gender: profile?.gender || null,
+        nationality: profile?.nationality || null
+      });
+      setEditForm({
+        displayName: profile?.displayName || '',
+        birthDate: profile?.birthDate ? formatISOToDob(profile.birthDate) : '',
+        gender: profile?.gender || '',
+        nationality: profile?.nationality || ''
+      });
     } catch (error) {
-      console.error('Error loading profile:', error)
+      console.error('Error loading profile:', error);
     }
-  }
+  };
 
+  // Update save handler - consolidated duplicated sections.
   const handleEditSave = async () => {
-    if (!user || user.isAnonymous) return
+    if (!user?.uid) return;
 
-    if (editForm.birthdate && !isValidDate(editForm.birthdate)) {
-      setMessage('Bitte gültiges Geburtsdatum eingeben (TT.MM.JJJJ)')
-      return
-    }
-
-    setProfileLoading(true)
-    setMessage('')
-
+    setProfileLoading(true);
     try {
-      await updateUserProfile(user.uid, {
-        displayName: editForm.displayName,
-        birthdate: editForm.birthdate || undefined,
-        gender: editForm.gender || undefined,
-        nationality: editForm.nationality || undefined
-      })
+      const birthDateISO = parseDobInputToISO(editForm.birthDate);
 
-      await loadUserProfile()
-      setIsEditing(false)
-      setMessage(t('profile.updateSuccess'))
+      await updateUserProfile(user.uid, {
+        displayName: editForm.displayName || null,
+        birthDate: birthDateISO,
+        gender: editForm.gender || null,
+        nationality: editForm.nationality || null
+      });
+
+      setUserProfile(prev => prev ? {
+        ...prev,
+        displayName: editForm.displayName || null,
+        birthDate: birthDateISO,
+        gender: editForm.gender || null,
+        nationality: editForm.nationality || null
+      } : null);
+
+      setIsEditing(false);
+      setMessage(t('profile.saved'));
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      setMessage('Fehler beim Speichern des Profils')
-      console.error('Error updating profile:', error)
+      console.error('Error updating profile:', error);
+      setMessage('Fehler beim Speichern');
     } finally {
-      setProfileLoading(false)
+      setProfileLoading(false);
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -126,26 +145,25 @@ export function MenuScreen() {
                 {!user.isAnonymous && userProfile && (
                   <>
                     {!isEditing ? (
+                      // Update profile display section - consolidated duplicated sections.
                       <div className={styles.profileData}>
-                        {userProfile.displayName && (
-                          <p><strong>{t('menu.displayName')}:</strong> {userProfile.displayName}</p>
-                        )}
-
-                        {userProfile.birthdate && (
+                        <p><strong>Email:</strong> {userProfile.email}</p>
+                        <p><strong>{t('profile.name')}:</strong> {userProfile.displayName}</p>
+                        {userProfile.birthDate && (
                           <p>
-                            <strong>{t('profile.birthdate')}:</strong> {userProfile.birthdate}
-                            <span className={styles.age}>
-                              ({t('profile.age')}: {calculateAge(userProfile.birthdate)})
-                            </span>
+                            <strong>{t('profile.birthDate')}:</strong> {formatISOToDob(userProfile.birthDate)}
+                            {calcAgeFromISO(userProfile.birthDate) && (
+                              <span className={styles.age}>
+                                ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthDate) })})
+                              </span>
+                            )}
                           </p>
                         )}
-
                         {userProfile.gender && (
-                          <p><strong>{t('profile.gender')}:</strong> {t(`profile.gender.${userProfile.gender}`)}</p>
+                          <p><strong>{t('profile.gender')}:</strong> {t(`profile.gender_${userProfile.gender}`)}</p>
                         )}
-
                         {userProfile.nationality && (
-                          <p><strong>{t('profile.nationality')}:</strong> {userProfile.nationality}</p>
+                          <p><strong>{t('profile.nationality')}:</strong> {t(`countries.${userProfile.nationality}`)}</p>
                         )}
 
                         <button
@@ -157,58 +175,45 @@ export function MenuScreen() {
                       </div>
                     ) : (
                       <div className={styles.editForm}>
+                        {/* Update edit form UI - consolidated duplicated sections. */}
                         <input
                           type="text"
-                          placeholder={t('menu.displayName')}
                           value={editForm.displayName}
                           onChange={(e) => setEditForm({...editForm, displayName: e.target.value})}
+                          placeholder="Name"
                           className={styles.input}
                         />
-
                         <input
                           type="text"
-                          placeholder={t('profile.birthdatePlaceholder')}
-                          value={editForm.birthdate}
-                          onChange={(e) => setEditForm({...editForm, birthdate: e.target.value})}
+                          value={editForm.birthDate}
+                          onChange={(e) => setEditForm({...editForm, birthDate: e.target.value})}
+                          placeholder={t('profile.birthDate_placeholder')}
                           className={styles.input}
                         />
-
                         <div className={styles.genderGroup}>
                           <label className={styles.label}>{t('profile.gender')}</label>
                           <div className={styles.buttonGroup}>
-                            <button
-                              type="button"
-                              className={`${styles.genderButton} ${editForm.gender === 'male' ? styles.active : ''}`}
-                              onClick={() => setEditForm({...editForm, gender: 'male'})}
-                            >
-                              {t('profile.gender.male')}
-                            </button>
-                            <button
-                              type="button"
-                              className={`${styles.genderButton} ${editForm.gender === 'female' ? styles.active : ''}`}
-                              onClick={() => setEditForm({...editForm, gender: 'female'})}
-                            >
-                              {t('profile.gender.female')}
-                            </button>
-                            <button
-                              type="button"
-                              className={`${styles.genderButton} ${editForm.gender === 'diverse' ? styles.active : ''}`}
-                              onClick={() => setEditForm({...editForm, gender: 'diverse'})}
-                            >
-                              {t('profile.gender.diverse')}
-                            </button>
+                            {genderOptions.map(option => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                className={`${styles.genderButton} ${editForm.gender === option.value ? styles.active : ''}`}
+                                onClick={() => setEditForm({...editForm, gender: option.value})}
+                              >
+                                {t(option.labelKey)}
+                              </button>
+                            ))}
                           </div>
                         </div>
-
                         <select
                           value={editForm.nationality}
                           onChange={(e) => setEditForm({...editForm, nationality: e.target.value})}
-                          className={styles.select}
+                          className={styles.input}
                         >
                           <option value="">{t('profile.nationality')}</option>
-                          {nationalities.map((nation) => (
-                            <option key={nation} value={nation}>
-                              {nation}
+                          {nationalityOptions.map(country => (
+                            <option key={country} value={country}>
+                              {t(`countries.${country}`)}
                             </option>
                           ))}
                         </select>
@@ -223,16 +228,16 @@ export function MenuScreen() {
                           </button>
                           <button
                             onClick={() => {
-                              setIsEditing(false)
-                              setMessage('')
+                              setIsEditing(false);
+                              setMessage('');
                               // Reset form
                               if (userProfile) {
                                 setEditForm({
                                   displayName: userProfile.displayName || '',
-                                  birthdate: userProfile.birthdate || '',
+                                  birthDate: userProfile.birthDate ? formatISOToDob(userProfile.birthDate) : '',
                                   gender: userProfile.gender || '',
                                   nationality: userProfile.nationality || ''
-                                })
+                                });
                               }
                             }}
                             className={styles.cancelButton}
@@ -274,5 +279,5 @@ export function MenuScreen() {
         )}
       </div>
     </div>
-  )
+  );
 }

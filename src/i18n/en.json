@@ -62,31 +62,28 @@
     "menu": "Menu"
   },
   "menu": {
-    "title": "Menu",
-    "close": "Close",
+    "arena": "Arena",
+    "tasks": "Tasks",
+    "legends": "Legends",
     "profile": "Profile",
-    "settings": "Settings",
-    "logout": "Logout",
-    "admin": "Admin",
-    "sections": {
-      "game": "Game",
-      "tasks": "Tasks",
-      "admin": "Administration",
-      "account": "Account"
-    }
+    "adminTasks": "Admin: Tasks",
+    "adminSuggestions": "Admin: Suggestions",
+    "suggest": "Suggest Task"
   },
-  "legends": {
-    "title": "Hall of Legends",
-    "subtitle": "Manage players for epic battles",
-    "loginRequired": "Log in to save your players.",
-    "guestMode": "Guest mode: Players are only stored locally.",
-    "syncMode": "Players are saved in your profile.",
-    "playerNamePlaceholder": "Hero's name",
-    "addPlayer": "Summon the Gods",
-    "removePlayer": "Banish",
-    "noPlayers": "No heroes in the hall. Summon the first gods!",
-    "addError": "Error adding player",
-    "removeError": "Error removing player"
+  "profile": {
+    "title": "Profile",
+    "birthDate": "Date of Birth",
+    "birthDate_placeholder": "DD.MM.YYYY",
+    "gender": "Gender",
+    "gender_male": "Male",
+    "gender_female": "Female",
+    "gender_diverse": "Diverse",
+    "nationality": "Nationality",
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "ageYears": "{{count}} years"
   },
   "auth": {
     "title": "Welcome to MALLEX",
@@ -100,7 +97,8 @@
     "switchToRegister": "No account yet? Register",
     "switchToLogin": "Already have an account? Login",
     "anonymousLogin": "Continue as Guest",
-    "logout": "Logout"
+    "logout": "Logout",
+    "additionalInfo": "Additional info (optional)"
   },
   "common": {
     "loading": "Loading",
@@ -172,5 +170,16 @@
     "settings": "Settings",
     "suggest": "Suggest",
     "close": "Close"
+  },
+  "countries": {
+    "DE": "Germany",
+    "AT": "Austria",
+    "CH": "Switzerland",
+    "US": "United States",
+    "GB": "United Kingdom",
+    "FR": "France",
+    "ES": "Spain",
+    "IT": "Italy",
+    "TR": "Türkiye"
   }
 }

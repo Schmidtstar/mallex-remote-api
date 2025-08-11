@@ -1,10 +1,12 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useNavigate } from 'react-router-dom'
 import styles from './AuthScreen.module.css'
+import { parseDobInputToISO } from '../../lib/date';
+import { genderOptions, nationalityOptions } from '../../lib/options';
+import { ensureUserProfile } from '../../lib/userApi';
 
 export function AuthScreen() {
   const { t } = useTranslation()
@@ -12,6 +14,10 @@ export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [displayName, setDisplayName] = useState('');
+  const [dobInput, setDobInput] = useState('');
+  const [gender, setGender] = useState<'male'|'female'|'diverse'|''>('');
+  const [nationality, setNationality] = useState<string>('');
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -19,17 +25,45 @@ export function AuthScreen() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    
+
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password)
       } else {
-        await createUserWithEmailAndPassword(auth, email, password)
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        if (userCredential.user) {
+          // Save additional profile fields
+          await ensureUserProfile(userCredential.user.uid, {
+            email: userCredential.user.email ?? undefined,
+            displayName: userCredential.user.displayName ?? undefined,
+            birthDate: parseDobInputToISO(dobInput) ?? null,
+            gender: gender || null,
+            nationality: nationality || null,
+          });
+          // setMessage(t('auth.signUp.success')); // It seems this message is not used in the UI
+          navigate('/arena');
+        }
       }
-      navigate('/arena')
+      // If login is successful, navigate to arena
+      if (isLogin) {
+        navigate('/arena');
+      }
     } catch (err: any) {
       console.error('Auth error:', err)
-      setError(t('auth.invalidCredentials'))
+      // Provide a more specific error message based on the error code
+      switch (err.code) {
+        case 'auth/invalid-credential':
+          setError(t('auth.invalidCredentials'));
+          break;
+        case 'auth/email-already-in-use':
+          setError(t('auth.emailAlreadyInUse'));
+          break;
+        case 'auth/weak-password':
+          setError(t('auth.weakPassword'));
+          break;
+        default:
+          setError(t('auth.error')); // Generic error message
+      }
     } finally {
       setLoading(false)
     }
@@ -50,9 +84,9 @@ export function AuthScreen() {
 
   return (
     <div className={styles.authWrap}>
-      <div className={styles.authCard} role="region" aria-label={t('auth.loginTitle')}>
+      <div className={styles.authCard} role="region" aria-label={isLogin ? t('auth.loginTitle') : t('auth.registerTitle')}>
         <h1 className={styles.authTitle}>
-          {isLogin ? t('auth.loginTitle') : 'Registrieren'}
+          {isLogin ? t('auth.loginTitle') : t('auth.registerTitle')}
         </h1>
 
         <form onSubmit={handleSubmit} className={styles.authForm} noValidate>
@@ -83,23 +117,82 @@ export function AuthScreen() {
             />
           </div>
 
+          {!isLogin && (
+            <>
+              <div className={styles.field}>
+                <label htmlFor="displayName">{t('auth.displayName')}</label>
+                <input
+                  id="displayName"
+                  type="text"
+                  autoComplete="name"
+                  placeholder={t('auth.displayName')}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className={styles.input}
+                  maxLength={50}
+                />
+              </div>
+
+              <div className={styles.additionalInfo}>
+                <h3>{t('auth.additionalInfo')}</h3>
+
+                <input
+                  type="text"
+                  placeholder={t('profile.birthDate_placeholder')}
+                  value={dobInput}
+                  onChange={(e) => setDobInput(e.target.value)}
+                  className={styles.input}
+                />
+
+                <div className={styles.genderGroup}>
+                  <label className={styles.label}>{t('profile.gender')}</label>
+                  <div className={styles.buttonGroup}>
+                    {genderOptions.map(option => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`${styles.genderButton} ${gender === option.value ? styles.active : ''}`}
+                        onClick={() => setGender(option.value)}
+                      >
+                        {t(option.labelKey)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <select
+                  value={nationality}
+                  onChange={(e) => setNationality(e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="">{t('profile.nationality')}</option>
+                  {nationalityOptions.map(country => (
+                    <option key={country} value={country}>
+                      {t(`countries.${country}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
           {error && <p className={styles.authError} role="alert">{error}</p>}
 
           <button className={styles.btnPrimary} type="submit" disabled={loading}>
-            {loading ? t('auth.loggingIn') : t('auth.login')}
+            {loading ? (isLogin ? t('auth.loggingIn') : t('auth.registering')) : (isLogin ? t('auth.login') : t('auth.register'))}
           </button>
         </form>
 
         <div className={styles.authActions}>
-          <button 
-            className={styles.btnGhost} 
+          <button
+            className={styles.btnGhost}
             type="button"
             onClick={() => setIsLogin(!isLogin)}
           >
-            {isLogin ? t('auth.registerLink') : 'Schon ein Konto? Einloggen'}
+            {isLogin ? t('auth.registerLink') : t('auth.loginLink')}
           </button>
-          <button 
-            className={styles.btnGhost} 
+          <button
+            className={styles.btnGhost}
             type="button"
             onClick={handleGuestLogin}
             disabled={loading}

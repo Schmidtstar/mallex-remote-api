@@ -62,18 +62,13 @@
     "menu": "Menü"
   },
   "menu": {
-    "title": "Menü",
-    "close": "Schließen",
+    "arena": "Arena",
+    "tasks": "Aufgaben",
+    "legends": "Legenden",
     "profile": "Profil",
-    "settings": "Einstellungen",
-    "logout": "Abmelden",
-    "admin": "Admin",
-    "sections": {
-      "game": "Spiel",
-      "tasks": "Aufgaben",
-      "admin": "Administration",
-      "account": "Konto"
-    }
+    "adminTasks": "Admin: Aufgaben",
+    "adminSuggestions": "Admin: Vorschläge",
+    "suggest": "Aufgabe vorschlagen"
   },
   "legends": {
     "title": "Halle der Legenden",
@@ -100,7 +95,8 @@
     "switchToRegister": "Noch kein Konto? Registrieren",
     "switchToLogin": "Bereits ein Konto? Anmelden",
     "anonymousLogin": "Als Gast fortfahren",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "additionalInfo": "Zusätzliche Angaben (optional)"
   },
   "common": {
     "loading": "Lädt..."
@@ -149,15 +145,19 @@
     "thanks": "Vielen Dank für deinen Vorschlag!"
   },
   "profile": {
-    "birthdate": "Geburtsdatum",
+    "title": "Profil",
+    "birthDate": "Geburtsdatum",
+    "birthDate_placeholder": "TT.MM.JJJJ",
     "gender": "Geschlecht",
+    "gender_male": "Männlich",
+    "gender_female": "Weiblich",
+    "gender_diverse": "Divers",
     "nationality": "Nationalität",
-    "age": "Alter",
-    "edit": "Bearbeiten",
     "save": "Speichern",
+    "saved": "Gespeichert",
     "cancel": "Abbrechen",
-    "updateSuccess": "Profil erfolgreich aktualisiert!",
-    "birthdatePlaceholder": "01.01.1985"
+    "edit": "Bearbeiten",
+    "ageYears": "{{count}} Jahre"
   },
   "navigation": {
     "arena": "Arena",
@@ -167,5 +167,16 @@
     "settings": "Einstellungen",
     "suggest": "Vorschlagen",
     "close": "Schließen"
+  },
+  "countries": {
+    "DE": "Deutschland",
+    "AT": "Österreich",
+    "CH": "Schweiz",
+    "US": "Vereinigte Staaten",
+    "GB": "Vereinigtes Königreich",
+    "FR": "Frankreich",
+    "ES": "Spanien",
+    "IT": "Italien",
+    "TR": "Türkei"
   }
 }

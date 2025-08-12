@@ -6,7 +6,7 @@ import { db } from '../../lib/firebase'
 import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import { categories } from '../Arena/categories'
-import { createTaskApproved } from '../../lib/tasksApi'
+import { createTaskApproved, listApprovedTasks, type Task } from '../../lib/tasksApi'
 import styles from './AdminTasksScreen.module.css'
 
 export type SuggestionStatus = 'pending' | 'approved' | 'rejected'
@@ -28,8 +28,9 @@ export function AdminTasksScreen() {
   const { user } = useAuth()
   const isAdmin = useIsAdmin()
   const [items, setItems] = useState<TaskSuggestion[]>([])
+  const [directTasks, setDirectTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create'>('pending')
+  const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create' | 'direct'>('pending')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
@@ -90,6 +91,16 @@ export function AdminTasksScreen() {
 
         setItems(suggestions)
         console.log('📦 localStorage suggestions loaded:', suggestions.length)
+
+        // Load direct tasks from Firebase
+        try {
+          const tasks = await listApprovedTasks()
+          setDirectTasks(tasks)
+          console.log('✅ Direct tasks loaded:', tasks.length)
+        } catch (error) {
+          console.error('❌ Failed to load direct tasks:', error)
+          setDirectTasks([])
+        }
 
         // 🚀 MIGRATE TO FIREBASE: Upload approved tasks to Firebase
         if (suggestions.length > 0 && isAdmin) {
@@ -343,6 +354,10 @@ export function AdminTasksScreen() {
 
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
+      
+      // Reload direct tasks to show the new task
+      const tasks = await listApprovedTasks()
+      setDirectTasks(tasks)
 
       setTimeout(() => setCreateSuccess(''), 3000)
     } catch (error) {
@@ -386,8 +401,12 @@ export function AdminTasksScreen() {
     if (!confirm('Task wirklich löschen?')) return;
 
     try {
-      await deleteDoc(doc(db, 'taskSuggestions', taskId)); // Use deleteDoc for taskSuggestions
-      await loadApprovedTasks(); // Reload tasks
+      await deleteDoc(doc(db, 'tasks', taskId)); // Delete from tasks collection
+      
+      // Reload direct tasks
+      const tasks = await listApprovedTasks()
+      setDirectTasks(tasks)
+      console.log('✅ Direct task deleted and reloaded')
     } catch (error) {
       console.error('Error deleting task:', error);
     }
@@ -439,6 +458,12 @@ export function AdminTasksScreen() {
             onClick={() => setActiveTab('rejected')}
           >
             {t('adminTasks.rejected')} ({items.filter(item => item.status === 'rejected').length})
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'direct' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('direct')}
+          >
+            Direkte Tasks ({directTasks.length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'create' ? styles.tabActive : ''}`}
@@ -574,6 +599,46 @@ export function AdminTasksScreen() {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'direct' && (
+          <div className={styles.directTasksList}>
+            {directTasks.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h3>Keine direkten Tasks vorhanden</h3>
+                <p>Direkt erstellte Tasks werden hier angezeigt.</p>
+              </div>
+            ) : (
+              <div className={styles.itemsList}>
+                {directTasks.map((task) => (
+                  <div key={task.id} className={styles.item}>
+                    <div className={styles.itemHeader}>
+                      <span className={styles.category}>
+                        {getCategoryLabel(task.category)}
+                      </span>
+                      <span className={styles.date}>
+                        {task.createdAt ? new Date(task.createdAt.toDate()).toLocaleDateString() : 'Unbekannt'}
+                      </span>
+                    </div>
+                    <div className={styles.itemContent}>
+                      <p className={styles.text}>{task.text}</p>
+                    </div>
+                    <div className={styles.author}>
+                      Erstellt von: {task.createdBy || 'System'}
+                    </div>
+                    <div className={styles.actions}>
+                      <button
+                        onClick={() => handleDeleteTask(task.id!)}
+                        className={styles.deleteButton}
+                      >
+                        🗑️ Löschen
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {activeTab === 'create' && (

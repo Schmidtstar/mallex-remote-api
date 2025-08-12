@@ -1,4 +1,3 @@
-
 .backdrop {
   position: fixed;
   inset: 0;
@@ -26,7 +25,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: var(--space-5);
+  gap: var(--space-3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
@@ -93,7 +93,8 @@
   gap: 12px;
   width: 100%;
   text-align: left;
-  padding: 12px 16px;
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-2) 0;
   background: none;
   border: none;
   color: rgba(255, 255, 255, 0.9);
@@ -148,13 +149,13 @@
   .drawer {
     width: 100vw;
   }
-  
+
   .itemBtn {
     padding: 14px 20px;
     font-size: 16px;
     min-height: 48px;
   }
-  
+
   .itemIcon {
     font-size: 20px;
     width: 24px;
@@ -166,7 +167,7 @@
   .drawer {
     border-left: 2px solid white;
   }
-  
+
   .itemBtn:focus-visible {
     outline: 3px solid white;
   }
@@ -177,7 +178,7 @@
   .itemBtn {
     transition: none;
   }
-  
+
   .closeBtn {
     transition: none;
   }

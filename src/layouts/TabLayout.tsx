@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { BottomNavigation } from '../components/BottomNavigation'
+import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
@@ -68,51 +68,7 @@ export function TabLayout() {
       </main>
 
       {/* Bottom Navigation */}
-      <div style={{
-        display: 'flex',
-        background: 'var(--glass)',
-        backdropFilter: 'blur(10px)',
-        borderTop: '1px solid var(--stroke)',
-        padding: '8px',
-        justifyContent: 'space-around',
-        alignItems: 'center'
-      }}>
-        {tabs.map((tab, index) => (
-          <button
-            key={tab.path}
-            onClick={() => handleTabChange(index)}
-            aria-label={tab.ariaLabel}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: getCurrentTab() === index ? 'var(--primary)' : 'var(--fg)',
-              cursor: 'pointer',
-              padding: '12px 16px',
-              fontSize: '24px',
-              borderRadius: 'var(--radius)',
-              transition: 'all 0.2s ease',
-              opacity: getCurrentTab() === index ? 1 : 0.7,
-              minWidth: '44px',
-              minHeight: '44px'
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-
-        {/* Hamburger Menu Button */}
-        <button 
-          ref={triggerRef}
-          className={`${styles.tabButton} ${isMenuOpen ? styles.active : ''}`}
-          onClick={openMenu}
-          aria-label={t('tabs.menu')}
-          aria-expanded={isMenuOpen}
-          aria-controls="hamburger-menu"
-        >
-          <span className={styles.tabIcon}>≡</span>
-          <span className={styles.tabLabel}>{t('tabs.menu')}</span>
-        </button>
-      </div>
+      <BottomNavigation openMenu={openMenu} />
 
       {/* Hamburger Menu Drawer */}
       <HamburgerMenu 

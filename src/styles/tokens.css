@@ -1,4 +1,16 @@
 :root {
+  /* Spacing System */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-8: 24px;
+  --space-10: 32px;
+  --space-12: 40px;
+  --space-16: 48px;
+
   /* Colors */
   --primary: #007AFF;
   --secondary: #5AC8FA;

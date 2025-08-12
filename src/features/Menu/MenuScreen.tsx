@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { getUserProfile, updateUserProfile, nationalities } from '../../lib/userApi';
+import { getUserProfile, updateUserProfile } from '../../lib/userApi';
 import { calculateAge, isValidDate } from '../../utils/dateUtils';
+import { nationalityOptions } from '../../lib/options';
 import styles from './MenuScreen.module.css';
 
 interface UserProfile {

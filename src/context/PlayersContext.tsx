@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-import { addPlayer, removePlayer, listenPlayers, Player } from '@/lib/playersApi'
+import { addPlayer, removePlayer, listenPlayers, Player } from '@/deprecated/playersApi'
 
 type PlayersContextType = {
   players: Player[]

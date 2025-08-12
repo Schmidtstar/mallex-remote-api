@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createSuggestion } from '@/lib/suggestionsApi';
+import { createSuggestion } from '@/deprecated/suggestionsApi';
 import { useAuth } from '@/context/AuthContext';
 import type { CategoryKey } from '@/lib/tasksApi';
 import { useTranslation } from 'react-i18next';

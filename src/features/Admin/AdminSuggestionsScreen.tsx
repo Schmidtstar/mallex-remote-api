@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { listSuggestionsForAdmin, moderateSuggestion, promoteApprovedSuggestionToTask, type Suggestion } from '@/lib/suggestionsApi';
+import { listSuggestionsForAdmin, moderateSuggestion, promoteApprovedSuggestionToTask, type Suggestion } from '@/deprecated/suggestionsApi';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import styles from './AdminSuggestionsScreen.module.css';

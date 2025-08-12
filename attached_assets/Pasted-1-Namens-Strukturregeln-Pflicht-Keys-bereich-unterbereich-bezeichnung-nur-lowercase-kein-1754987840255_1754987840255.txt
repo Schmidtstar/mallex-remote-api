@@ -1,0 +1,84 @@
+1) Namens- & Strukturregeln (Pflicht)
+	•	Keys: bereich.unterbereich.bezeichnung (nur lowercase, keine Leerzeichen, . als Trenner).
+	•	Bereiche (Top‑Level): common, nav, menu, arena, legends, tasks, auth, profile, admin, errors.
+	•	Texte:
+	•	Titel/Kopfzeilen: kurze Substantiv-Phrasen, keine Punkte am Ende.
+	•	Buttons: Imperativ („Anmelden“, „Neue Aufgabe“).
+	•	Platzhalter: knapp, aussagekräftig („Name des Helden“).
+	•	Keine Duplikate (ein Key = eine Bedeutung).
+Beispiel: statt menu.title und menu.menuTitle nur menu.title.
+	•	Englisch parallel pflegen (jede DE‑Ergänzung sofort auch EN).
+	•	Fallback: Wenn ein Key fehlt, niemals den Key anzeigen. Nutze euren Helper (safeT) in allen zentralen Stellen.
+
+2) Kanon der benötigten Keys (Minimal‑Set v1)
+
+Ergänzt diese Keys in src/i18n/de.json und en.json.
+(Du kannst sie 1:1 übernehmen – deckt die Screens aus deinen Bildern ab.)
+
+nav
+	•	nav.arena: „Arena“ / “Arena”
+	•	nav.legends: „Legenden“ / “Legends”
+	•	nav.menu: „Menü“ / “Menu”
+	•	nav.tasks: „Aufgaben“ / “Tasks”
+	•	nav.suggestTask: „Aufgabe vorschlagen“ / “Suggest task”
+
+menu
+	•	menu.title: „Menü“ / “Menu”
+	•	menu.sections.game: „Spiel“ / “Game”
+	•	menu.sections.tasks: „Aufgaben“ / “Tasks”
+	•	menu.sections.account: „Konto“ / “Account”
+	•	menu.settings: „Einstellungen“ / “Settings”
+	•	menu.profile: „Profil“ / “Profile”
+	•	menu.logout: „Abmelden“ / “Log out`
+
+auth
+	•	auth.loginTitle: „Anmelden“ / “Sign in”
+	•	auth.email: „E‑Mail“ / “Email”
+	•	auth.password: „Passwort“ / “Password”
+	•	auth.loginButton: „Anmelden“ / “Sign in”
+	•	auth.registerLink: „Konto erstellen“ / “Create account”
+	•	auth.guestButton: „Als Gast fortfahren“ / “Continue as guest`
+	•	auth.errors.invalid: „Ungültige Anmeldedaten.“ / “Invalid credentials.”
+
+arena
+	•	arena.title: „MALLEX Arena“ / “MALLEX Arena”
+	•	arena.selectCategory: „Wähle eine Kategorie“ / “Choose a category”
+	•	arena.selectPlayer: „Wähle „Neue Aufgabe“ um zu beginnen“ / “Choose ‘New task’ to start”
+	•	arena.newTask: „Neue Aufgabe“ / “New task”
+	•	Kategorienchips (falls angezeigt):
+arena.categories.fate (Schicksal) / shame (Schande) / seduction (Verführung) / escalation (Eskalation) / confession (Geständnis)
+
+legends
+	•	legends.title: „Halle der Legenden“ / “Hall of Legends”
+	•	legends.playersList: „Spieler werden in deinem Profil gespeichert.“ / “Players are saved in your profile.”
+	•	legends.addPlaceholder: „Name des Helden“ / “Name of the hero”
+	•	legends.addButton: „Beschwöre die Götter“ / “Summon the gods”
+
+tasks
+	•	tasks.title: „Aufgaben“ / “Tasks”
+	•	tasks.overview: „Aufgaben‑Übersicht“ / “Tasks overview”
+	•	tasks.suggest.title: „Aufgabe vorschlagen“ / “Suggest a task”
+	•	tasks.suggest.placeholder: „Deine Aufgabe…“ / “Your task…”
+	•	tasks.suggest.submit: „Senden“ / “Submit”
+	•	tasks.admin.title: „Aufgabenverwaltung“ / “Task admin”
+	•	tasks.admin.approve: „Annehmen“ / “Approve”
+	•	tasks.admin.reject: „Ablehnen“ / “Reject”
+
+profile
+	•	profile.title: „Profil“ / “Profile”
+	•	profile.displayName: „Anzeigename“ / “Display name”
+	•	profile.birthdate: „Geburtsdatum“ / “Date of birth”
+	•	profile.gender: „Geschlecht“ / “Gender”
+	•	profile.nationality: „Nationalität“ / “Nationality”
+	•	profile.save: „Speichern“ / “Save”
+	•	profile.ageYears: „{{count}} Jahre“ / “{{count}} years”
+
+common
+	•	common.loading: „Laden…“ / “Loading…”
+	•	common.error: „Fehler“ / “Error”
+	•	common.cancel: „Abbrechen“ / “Cancel”
+	•	common.ok: „OK“ / “OK”
+
+3) Code‑Vorgaben (damit nie wieder Keys im UI stehen)
+	•	Immer safeT() nutzen, wo Titel/Labels zentral gerendert werden (z. B. Tab‑Titel, Drawer‑Labels).
+	•	Für direkte Komponentennutzung:

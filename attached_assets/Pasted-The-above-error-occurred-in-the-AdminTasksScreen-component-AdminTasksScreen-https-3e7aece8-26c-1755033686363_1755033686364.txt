@@ -1,0 +1,42 @@
+The above error occurred in the <AdminTasksScreen> component:
+
+AdminTasksScreen@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/features/Tasks/AdminTasksScreen.tsx:30:31
+RenderedRoute@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:5644:33
+RenderErrorBoundary@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:5602:10
+Outlet@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:6313:25
+RequireAdmin@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/routes/guards/RequireAdmin.tsx:23:36
+RenderedRoute@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:5644:33
+RenderErrorBoundary@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:5602:10
+Outlet@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:6313:25
+main
+div
+TabLayout@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/layouts/TabLayout.tsx:26:31
+Guard@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/router.tsx:36:38
+RenderedRoute@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:5644:33
+RenderErrorBoundary@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:5602:10
+DataRoutes@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:6241:23
+Router@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:6325:17
+RouterProvider@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js:6067:18
+RouterProvider2
+TaskSuggestionsProvider@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/context/TaskSuggestionsContext.tsx:23:5
+PlayersProvider@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/context/PlayersContext.tsx:32:6
+AdminProvider@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/context/AdminContext.tsx:36:6
+AuthProvider@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/src/context/AuthContext.tsx:24:5
+
+React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary.
+React Router caught the following error during render 
+ReferenceError {}
+ 
+Object {componentStack: "↵AdminTasksScreen@https://3e7aece8-26ca-41d1-a2ed-3a42f83abcd5-00-1g4yrsass6ddt.riker.replit.dev/s…"}
+
+
+Fehler im Adminbereich
+
+🏟️
+Arena
+
+🏛️
+Legenden
+
+≡
+Menü

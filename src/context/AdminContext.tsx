@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 import { db } from '@/lib/firebase'
-import { collection, query, where, getDocs, getFirestore, doc, getDoc } from 'firebase/firestore'
+import { getFirestore, doc, getDoc } from 'firebase/firestore'
 
 type AdminCtx = {
   isAdmin: boolean

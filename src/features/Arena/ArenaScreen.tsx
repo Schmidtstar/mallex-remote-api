@@ -8,7 +8,7 @@ import { usePlayersContext } from '../../context/PlayersContext'
 import { useSwipe } from '../../hooks/useSwipe'
 import styles from '../../layouts/TabLayout.module.css'
 
-type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action'
+type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 
 export function ArenaScreen() {
   const { t } = useTranslation()
@@ -22,6 +22,10 @@ export function ArenaScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [selectedPlayer, setSelectedPlayer] = useState<string>('')
   const [currentTask, setCurrentTask] = useState<string>('')
+  
+  // Drinking Game Data
+  const [drinkingSips, setDrinkingSips] = useState<number>(0)
+  const [taskResult, setTaskResult] = useState<'success' | 'failed' | ''>('')
   
   // Task Data
   const [firestoreTasks, setFirestoreTasks] = useState<{[key: string]: string[]}>({})
@@ -95,6 +99,29 @@ export function ArenaScreen() {
     setGameState('waiting-action')
   }
 
+  const generateRandomSips = () => {
+    return Math.floor(Math.random() * 5) + 1; // 1-5 Schlücke
+  }
+
+  const handleTaskSuccess = () => {
+    const sips = generateRandomSips()
+    setDrinkingSips(sips)
+    setTaskResult('success')
+    setGameState('drinking-result')
+  }
+
+  const handleTaskFailed = () => {
+    const sips = generateRandomSips()
+    setDrinkingSips(sips)
+    setTaskResult('failed')
+    setGameState('drinking-result')
+  }
+
+  const handleTaskSkipped = () => {
+    // Bei übersprungenen Aufgaben direkt zur nächsten Runde
+    nextRound()
+  }
+
   const nextRound = () => {
     const category = getRandomCategory()
     const player = getRandomPlayer()
@@ -105,6 +132,10 @@ export function ArenaScreen() {
     setCurrentTask(task)
     setCurrentRound(prev => prev + 1)
     setGameState('playing')
+    
+    // Reset drinking game state
+    setDrinkingSips(0)
+    setTaskResult('')
   }
 
   const endGame = () => {
@@ -113,6 +144,8 @@ export function ArenaScreen() {
     setSelectedCategory('')
     setSelectedPlayer('')
     setCurrentTask('')
+    setDrinkingSips(0)
+    setTaskResult('')
   }
 
   const renderGameContent = () => {
@@ -293,7 +326,7 @@ export function ArenaScreen() {
               margin: '0 auto'
             }}>
               <button
-                onClick={nextRound}
+                onClick={handleTaskSuccess}
                 style={{
                   padding: '15px 25px',
                   fontSize: '1.1rem',
@@ -308,7 +341,7 @@ export function ArenaScreen() {
               </button>
               
               <button
-                onClick={nextRound}
+                onClick={handleTaskFailed}
                 style={{
                   padding: '15px 25px',
                   fontSize: '1.1rem',
@@ -323,7 +356,7 @@ export function ArenaScreen() {
               </button>
               
               <button
-                onClick={nextRound}
+                onClick={handleTaskSkipped}
                 style={{
                   padding: '15px 25px',
                   fontSize: '1.1rem',
@@ -348,6 +381,101 @@ export function ArenaScreen() {
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
                   marginTop: '10px'
+                }}
+              >
+                Spiel beenden
+              </button>
+            </div>
+          </div>
+        )
+
+      case 'drinking-result':
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              background: 'var(--primary)', 
+              color: 'var(--bg)', 
+              padding: '10px 20px', 
+              borderRadius: 'var(--radius)',
+              marginBottom: '2rem',
+              display: 'inline-block'
+            }}>
+              Runde {currentRound} - Trinkspiel! 🍺
+            </div>
+
+            <div style={{
+              background: taskResult === 'success' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
+              padding: '30px',
+              borderRadius: 'var(--radius)',
+              marginBottom: '2rem',
+              border: `2px solid ${taskResult === 'success' ? '#4CAF50' : '#F44336'}`
+            }}>
+              <div style={{ fontSize: '4rem', marginBottom: '10px' }}>
+                {taskResult === 'success' ? '🎉' : '💔'}
+              </div>
+              
+              <h2 style={{ 
+                color: taskResult === 'success' ? '#4CAF50' : '#F44336',
+                marginBottom: '20px',
+                fontSize: '1.5rem'
+              }}>
+                {taskResult === 'success' ? 'Aufgabe erfüllt!' : 'Aufgabe gescheitert!'}
+              </h2>
+              
+              <div style={{
+                background: taskResult === 'success' ? '#4CAF50' : '#F44336',
+                color: 'white',
+                padding: '20px',
+                borderRadius: 'var(--radius)',
+                fontSize: '1.3rem',
+                fontWeight: 'bold'
+              }}>
+                <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🥃</div>
+                <div>
+                  {drinkingSips} {drinkingSips === 1 ? 'Schluck' : 'Schlücke'}
+                </div>
+              </div>
+
+              <p style={{ 
+                marginTop: '20px', 
+                fontSize: '1.2rem',
+                color: taskResult === 'success' ? '#4CAF50' : '#F44336',
+                fontWeight: '600'
+              }}>
+                {taskResult === 'success' 
+                  ? `${selectedPlayer} darf ${drinkingSips} ${drinkingSips === 1 ? 'Schluck' : 'Schlücke'} verteilen!` 
+                  : `${selectedPlayer} muss ${drinkingSips} ${drinkingSips === 1 ? 'Schluck' : 'Schlücke'} trinken!`
+                }
+              </p>
+            </div>
+
+            <button
+              onClick={nextRound}
+              style={{
+                padding: '20px 40px',
+                fontSize: '1.3rem',
+                background: 'var(--primary)',
+                color: 'var(--bg)',
+                border: 'none',
+                borderRadius: 'var(--radius)',
+                cursor: 'pointer',
+                marginBottom: '1rem'
+              }}
+            >
+              Nächste Runde! 🎮
+            </button>
+
+            <div>
+              <button
+                onClick={endGame}
+                style={{
+                  padding: '10px 20px',
+                  fontSize: '0.9rem',
+                  background: 'transparent',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--text-secondary)',
+                  borderRadius: 'var(--radius)',
+                  cursor: 'pointer'
                 }}
               >
                 Spiel beenden

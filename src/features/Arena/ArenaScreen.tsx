@@ -158,53 +158,163 @@ export function ArenaScreen() {
       case 'idle':
         return (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏛️</div>
-            <h2 style={{ 
-              color: 'var(--ancient-gold)', 
+            <div style={{ 
+              fontSize: '6rem', 
               marginBottom: '1rem',
+              textShadow: '0 0 30px rgba(218, 165, 32, 0.8)',
+              animation: 'pulse 2s infinite'
+            }}>
+              ⚡🏛️⚡
+            </div>
+            <h1 style={{ 
+              color: 'var(--ancient-gold)', 
+              marginBottom: '2rem',
               background: 'var(--gradient-gold)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
+              backgroundClip: 'text',
+              fontSize: '2.5rem',
+              fontWeight: 'bold',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
             }}>
-              ⚔️ Bereit für die Olympischen Trinkspiele? ⚔️
-            </h2>
-            <div style={{
-              background: 'var(--glass-background)',
-              backdropFilter: 'var(--glass-blur)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: 'var(--radius)',
-              padding: '2rem',
+              ⚔️ MALLEX ARENA ⚔️
+            </h1>
+            <h2 style={{ 
+              color: 'var(--olympic-flame)', 
               marginBottom: '2rem',
-              position: 'relative'
+              fontSize: '1.8rem',
+              fontStyle: 'italic',
+              textShadow: '1px 1px 3px rgba(255,107,53,0.7)'
             }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏺</div>
-              <p style={{ fontSize: '1.2rem', color: 'var(--ancient-marble)' }}>
-                {players.length > 0 
-                  ? `🏆 ${players.length} Helden bereit für den Wettkampf!` 
-                  : '⚠️ Keine Legenden verfügbar. Besuche die Halle der Legenden!'
-                }
-              </p>
+              🔥 DIE OLYMPISCHEN TRINKSPIELE DER ANTIKE 🔥
+            </h2>
+            
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(218,165,32,0.2), rgba(205,127,50,0.1))',
+              backdropFilter: 'var(--glass-blur)',
+              border: '2px solid var(--ancient-gold)',
+              borderRadius: 'var(--radius)',
+              padding: '2.5rem',
+              marginBottom: '2rem',
+              position: 'relative',
+              boxShadow: '0 10px 30px rgba(218,165,32,0.3)',
+              overflow: 'hidden'
+            }}>
+              <div style={{ 
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                fontSize: '1.5rem',
+                opacity: 0.7
+              }}>
+                🌿 ⚱️ 🌿
+              </div>
+              
+              <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🏺</div>
+              
+              <div style={{
+                background: 'var(--glass-background)',
+                padding: '1.5rem',
+                borderRadius: 'var(--radius)',
+                border: '1px solid rgba(218,165,32,0.3)'
+              }}>
+                <h3 style={{ 
+                  color: 'var(--olympic-victory)', 
+                  marginBottom: '1rem',
+                  fontSize: '1.4rem'
+                }}>
+                  ⚡ GLADIATOREN-STATUS ⚡
+                </h3>
+                <p style={{ 
+                  fontSize: '1.3rem', 
+                  color: 'var(--ancient-marble)',
+                  fontWeight: 'bold'
+                }}>
+                  {players.length > 0 
+                    ? `🏆 ${players.length} LEGENDÄRE HELDEN BEREIT FÜR DIE ARENA!` 
+                    : '💀 KEINE KÄMPFER VERFÜGBAR! BESUCHE DIE HALLE DER LEGENDEN!'
+                  }
+                </p>
+              </div>
+              
+              <div style={{ 
+                position: 'absolute',
+                bottom: '10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: '1.5rem',
+                opacity: 0.7
+              }}>
+                ⚔️ 🛡️ ⚔️
+              </div>
             </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{ 
+                color: 'var(--ancient-wine)', 
+                fontSize: '1.2rem',
+                marginBottom: '1rem',
+                fontStyle: 'italic'
+              }}>
+                "Bei den Göttern des Olymps..."
+              </div>
+            </div>
+
             <button
               onClick={startGame}
               disabled={loadingTasks || players.length === 0}
               style={{
-                padding: '20px 40px',
-                fontSize: '1.5rem',
-                background: players.length === 0 ? 'var(--ancient-stone)' : 'var(--gradient-gold)',
-                color: 'var(--ancient-night)',
-                border: `2px solid ${players.length === 0 ? 'var(--ancient-stone)' : 'var(--ancient-gold)'}`,
+                padding: '25px 50px',
+                fontSize: '1.8rem',
+                background: players.length === 0 
+                  ? 'linear-gradient(135deg, var(--ancient-stone), #6B6B6B)' 
+                  : 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
+                color: players.length === 0 ? 'var(--ancient-marble)' : 'var(--ancient-night)',
+                border: `3px solid ${players.length === 0 ? 'var(--ancient-stone)' : 'var(--olympic-victory)'}`,
                 borderRadius: 'var(--radius)',
                 cursor: players.length === 0 ? 'not-allowed' : 'pointer',
                 opacity: players.length === 0 ? 0.6 : 1,
                 fontWeight: 'bold',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
-                boxShadow: players.length > 0 ? 'var(--shadow-gold)' : 'none'
+                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                boxShadow: players.length > 0 
+                  ? '0 10px 25px rgba(255,107,53,0.5), inset 0 2px 10px rgba(255,215,0,0.3)' 
+                  : 'none',
+                transition: 'all 0.3s ease',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }}
+              onMouseEnter={(e) => {
+                if (players.length > 0) {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 15px 35px rgba(255,107,53,0.7), inset 0 2px 10px rgba(255,215,0,0.4)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (players.length > 0) {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 10px 25px rgba(255,107,53,0.5), inset 0 2px 10px rgba(255,215,0,0.3)';
+                }
               }}
             >
-              {loadingTasks ? '⏳ Lade olympische Herausforderungen...' : '🎮 Wettkampf beginnen!'}
+              {loadingTasks 
+                ? '⏳ DIE GÖTTER BEREITEN DIE PRÜFUNGEN VOR...' 
+                : players.length === 0 
+                  ? '💀 KEINE KÄMPFER BEREIT'
+                  : '🎯 IN DIE ARENA! FÜR RUHM UND EHRE!'
+              }
             </button>
+            
+            {players.length > 0 && (
+              <div style={{
+                marginTop: '1.5rem',
+                color: 'var(--ancient-bronze)',
+                fontSize: '1rem',
+                fontStyle: 'italic'
+              }}>
+                ⚡ Mögen die Götter mit euch sein... ⚡
+              </div>
+            )}
           </div>
         )
 
@@ -212,52 +322,177 @@ export function ArenaScreen() {
         return (
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              background: 'var(--primary)', 
-              color: 'var(--bg)', 
-              padding: '10px 20px', 
+              background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
+              color: 'var(--ancient-night)', 
+              padding: '15px 30px', 
               borderRadius: 'var(--radius)',
               marginBottom: '2rem',
-              display: 'inline-block'
+              display: 'inline-block',
+              border: '2px solid var(--olympic-victory)',
+              boxShadow: '0 5px 20px rgba(255,107,53,0.5)',
+              fontWeight: 'bold',
+              fontSize: '1.2rem',
+              textTransform: 'uppercase'
             }}>
-              Runde {currentRound}
+              ⚔️ RUNDE {currentRound} - ARENA DER GÖTTER ⚔️
             </div>
-            
-            <h2 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>
-              {t(`arena.categories.${selectedCategory}`)}
-            </h2>
             
             <div style={{
-              background: 'rgba(var(--primary-rgb), 0.1)',
-              padding: '20px',
+              background: 'linear-gradient(135deg, rgba(255,107,53,0.3), rgba(218,165,32,0.2))',
+              padding: '2rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem'
+              marginBottom: '2rem',
+              border: '2px solid var(--ancient-gold)',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <h3 style={{ marginBottom: '10px', fontSize: '1.3rem' }}>
-                🎯 {selectedPlayer} ist dran!
-              </h3>
+              <div style={{ 
+                position: 'absolute',
+                top: '10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: '2rem',
+                opacity: 0.6
+              }}>
+                🏛️
+              </div>
+              
+              <h2 style={{ 
+                color: 'var(--olympic-victory)', 
+                marginBottom: '2rem',
+                fontSize: '2rem',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.7)'
+              }}>
+                🎭 {t(`arena.categories.${selectedCategory}`).toUpperCase()} 🎭
+              </h2>
+              
+              <div style={{
+                background: 'var(--glass-background)',
+                backdropFilter: 'var(--glass-blur)',
+                padding: '2rem',
+                borderRadius: 'var(--radius)',
+                border: '1px solid rgba(255,215,0,0.3)',
+                marginBottom: '1.5rem'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+                <h3 style={{ 
+                  marginBottom: '15px', 
+                  fontSize: '1.8rem',
+                  color: 'var(--ancient-gold)',
+                  fontWeight: 'bold'
+                }}>
+                  🎯 {selectedPlayer.toUpperCase()} BETRITT DIE ARENA! 🎯
+                </h3>
+                <div style={{ 
+                  color: 'var(--ancient-wine)', 
+                  fontSize: '1.1rem',
+                  fontStyle: 'italic'
+                }}>
+                  "Das Schicksal wird über dich richten..."
+                </div>
+              </div>
             </div>
 
-            <div className={styles.challengeCard}>
-              <p className={styles.challengeText} style={{ opacity: 0.3 }}>
-                ***
-              </p>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,26,46,0.9))',
+              padding: '3rem 2rem',
+              borderRadius: 'var(--radius)',
+              marginBottom: '2rem',
+              border: '3px solid var(--ancient-bronze)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.7), inset 0 0 50px rgba(139,125,107,0.2)',
+              position: 'relative'
+            }}>
+              <div style={{ 
+                position: 'absolute',
+                top: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'var(--ancient-night)',
+                padding: '5px 15px',
+                borderRadius: '20px',
+                border: '2px solid var(--ancient-bronze)'
+              }}>
+                <span style={{ color: 'var(--ancient-bronze)', fontSize: '0.9rem' }}>
+                  🔮 ORAKEL DER HERAUSFORDERUNG 🔮
+                </span>
+              </div>
+              
+              <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.8 }}>📜</div>
+              
+              <div style={{
+                background: 'rgba(139,125,107,0.3)',
+                padding: '2rem',
+                borderRadius: 'var(--radius)',
+                border: '2px dashed var(--ancient-stone)',
+                minHeight: '80px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <p style={{ 
+                  fontSize: '2rem',
+                  color: 'var(--ancient-stone)',
+                  opacity: 0.5,
+                  fontFamily: 'monospace',
+                  letterSpacing: '3px'
+                }}>
+                  ? ? ? ? ?
+                </p>
+              </div>
+              
+              <div style={{
+                marginTop: '1.5rem',
+                color: 'var(--ancient-bronze)',
+                fontSize: '1.1rem',
+                fontStyle: 'italic'
+              }}>
+                Die Götter haben gesprochen... wage es zu enthüllen?
+              </div>
             </div>
 
             <button
               onClick={revealTask}
               style={{
-                padding: '16px 32px',
-                fontSize: '1.2rem',
-                background: 'var(--primary)',
-                color: 'var(--bg)',
-                border: 'none',
+                padding: '20px 40px',
+                fontSize: '1.4rem',
+                background: 'linear-gradient(135deg, var(--ancient-wine), #8B0000)',
+                color: 'var(--ancient-marble)',
+                border: '3px solid var(--olympic-flame)',
                 borderRadius: 'var(--radius)',
                 cursor: 'pointer',
-                marginTop: '1rem'
+                marginTop: '1rem',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                boxShadow: '0 8px 25px rgba(114,47,55,0.6)',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'scale(1.05)';
+                e.target.style.boxShadow = '0 12px 35px rgba(114,47,55,0.8)';
+                e.target.style.background = 'linear-gradient(135deg, #8B0000, var(--olympic-flame))';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 8px 25px rgba(114,47,55,0.6)';
+                e.target.style.background = 'linear-gradient(135deg, var(--ancient-wine), #8B0000)';
               }}
             >
-              Aufgabe aufdecken
+              <span style={{ position: 'relative', zIndex: 1 }}>
+                ⚡ SCHICKSAL ENTHÜLLEN ⚡
+              </span>
             </button>
+            
+            <div style={{
+              marginTop: '2rem',
+              color: 'var(--ancient-stone)',
+              fontSize: '0.9rem',
+              fontStyle: 'italic'
+            }}>
+              🔥 Nur die Mutigen werden belohnt... oder verflucht 🔥
+            </div>
           </div>
         )
 
@@ -314,104 +549,237 @@ export function ArenaScreen() {
         return (
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              background: 'var(--primary)', 
-              color: 'var(--bg)', 
-              padding: '10px 20px', 
+              background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
+              color: 'var(--ancient-night)', 
+              padding: '15px 30px', 
               borderRadius: 'var(--radius)',
               marginBottom: '2rem',
-              display: 'inline-block'
+              display: 'inline-block',
+              border: '2px solid var(--olympic-victory)',
+              boxShadow: '0 5px 20px rgba(255,107,53,0.5)',
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+              textTransform: 'uppercase'
             }}>
-              Runde {currentRound} - {t(`arena.categories.${selectedCategory}`)}
+              ⚔️ RUNDE {currentRound} - {t(`arena.categories.${selectedCategory}`).toUpperCase()} ⚔️
             </div>
             
             <div style={{
-              background: 'rgba(var(--primary-rgb), 0.1)',
-              padding: '20px',
+              background: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(218,165,32,0.1))',
+              padding: '2rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem'
+              marginBottom: '2rem',
+              border: '2px solid var(--ancient-gold)',
+              position: 'relative'
             }}>
-              <h3 style={{ marginBottom: '10px', fontSize: '1.3rem' }}>
-                🎯 {selectedPlayer}
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+              <h3 style={{ 
+                marginBottom: '10px', 
+                fontSize: '1.6rem',
+                color: 'var(--olympic-victory)',
+                fontWeight: 'bold',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
+              }}>
+                🏛️ {selectedPlayer.toUpperCase()} KÄMPFT IN DER ARENA! 🏛️
               </h3>
+              <div style={{ 
+                color: 'var(--ancient-wine)', 
+                fontSize: '1rem',
+                fontStyle: 'italic'
+              }}>
+                "Die Götter beobachten jeden Schritt..."
+              </div>
             </div>
 
-            <div className={styles.challengeCard}>
-              <p className={`${styles.challengeText} ${styles.revealed}`} style={{ fontSize: '0.9rem', opacity: 0.8 }}>
-                {currentTask}
-              </p>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(218,165,32,0.3), rgba(255,215,0,0.2))',
+              padding: '2.5rem',
+              borderRadius: 'var(--radius)',
+              marginBottom: '2.5rem',
+              border: '3px solid var(--olympic-victory)',
+              boxShadow: '0 15px 40px rgba(218,165,32,0.4)',
+              position: 'relative'
+            }}>
+              <div style={{ 
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                fontSize: '1.5rem',
+                opacity: 0.6
+              }}>
+                🌿 ⚱️ 🏺 ⚱️ 🌿
+              </div>
+              
+              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>📜</div>
+              
+              <div style={{
+                background: 'var(--glass-background)',
+                backdropFilter: 'var(--glass-blur)',
+                padding: '2rem',
+                borderRadius: 'var(--radius)',
+                border: '2px solid rgba(255,215,0,0.5)',
+                minHeight: '100px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <p style={{ 
+                  fontSize: '1.3rem',
+                  color: 'var(--ancient-marble)',
+                  fontWeight: '600',
+                  lineHeight: '1.6',
+                  textAlign: 'center'
+                }}>
+                  {currentTask}
+                </p>
+              </div>
+              
+              <div style={{
+                marginTop: '1.5rem',
+                color: 'var(--olympic-flame)',
+                fontSize: '1.1rem',
+                fontStyle: 'italic',
+                fontWeight: 'bold'
+              }}>
+                🔥 Die Prüfung ist vollbracht! Das Urteil der Götter erwartet dich! 🔥
+              </div>
             </div>
 
-            <h3 style={{ margin: '2rem 0 1rem', color: 'var(--primary)' }}>
-              Wie ist es gelaufen?
-            </h3>
+            <h2 style={{ 
+              margin: '2rem 0 2rem',
+              color: 'var(--ancient-gold)',
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.7)',
+              textTransform: 'uppercase'
+            }}>
+              ⚖️ GÖTTLICHES URTEIL ⚖️
+            </h2>
 
             <div style={{ 
               display: 'flex', 
               flexDirection: 'column', 
-              gap: '15px',
-              maxWidth: '300px',
+              gap: '20px',
+              maxWidth: '400px',
               margin: '0 auto'
             }}>
               <button
                 onClick={handleTaskSuccess}
                 style={{
-                  padding: '15px 25px',
-                  fontSize: '1.1rem',
-                  background: '#4CAF50',
+                  padding: '20px 30px',
+                  fontSize: '1.3rem',
+                  background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
                   color: 'white',
-                  border: 'none',
+                  border: '3px solid #388E3C',
                   borderRadius: 'var(--radius)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 8px 25px rgba(76,175,80,0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 12px 35px rgba(76,175,80,0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 8px 25px rgba(76,175,80,0.4)';
                 }}
               >
-                ✅ Aufgabe erfüllt
+                🏆 TRIUMPH! AUFGABE GEMEISTERT! 🏆
               </button>
               
               <button
                 onClick={handleTaskFailed}
                 style={{
-                  padding: '15px 25px',
-                  fontSize: '1.1rem',
-                  background: '#F44336',
+                  padding: '20px 30px',
+                  fontSize: '1.3rem',
+                  background: 'linear-gradient(135deg, #F44336, #C62828)',
                   color: 'white',
-                  border: 'none',
+                  border: '3px solid #D32F2F',
                   borderRadius: 'var(--radius)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 8px 25px rgba(244,67,54,0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 12px 35px rgba(244,67,54,0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 8px 25px rgba(244,67,54,0.4)';
                 }}
               >
-                ❌ Aufgabe gescheitert
+                💀 NIEDERLAGE! AUFGABE GESCHEITERT! 💀
               </button>
               
               <button
                 onClick={handleTaskSkipped}
                 style={{
-                  padding: '15px 25px',
-                  fontSize: '1.1rem',
-                  background: '#FF9800',
+                  padding: '18px 28px',
+                  fontSize: '1.2rem',
+                  background: 'linear-gradient(135deg, #FF9800, #F57C00)',
                   color: 'white',
-                  border: 'none',
+                  border: '3px solid #FF8F00',
                   borderRadius: 'var(--radius)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 6px 20px rgba(255,152,0,0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 10px 30px rgba(255,152,0,0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(255,152,0,0.4)';
                 }}
               >
-                ⏭️ Aufgabe übersprungen
+                ⏭️ VERWEIGERUNG - NÄCHSTE PRÜFUNG! ⏭️
               </button>
               
               <button
                 onClick={endGame}
                 style={{
-                  padding: '10px 20px',
-                  fontSize: '0.9rem',
+                  padding: '15px 25px',
+                  fontSize: '1rem',
                   background: 'transparent',
-                  color: 'var(--text-secondary)',
-                  border: '1px solid var(--text-secondary)',
+                  color: 'var(--ancient-stone)',
+                  border: '2px solid var(--ancient-stone)',
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  marginTop: '10px'
+                  marginTop: '20px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'var(--ancient-stone)';
+                  e.target.style.color = 'var(--ancient-night)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = 'var(--ancient-stone)';
                 }}
               >
-                Spiel beenden
+                💀 ARENA VERLASSEN 💀
               </button>
+            </div>
+            
+            <div style={{
+              marginTop: '2rem',
+              color: 'var(--ancient-bronze)',
+              fontSize: '1rem',
+              fontStyle: 'italic'
+            }}>
+              ⚡ "Wähle weise, denn die Götter vergessen nichts..." ⚡
             </div>
           </div>
         )

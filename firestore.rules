@@ -13,9 +13,10 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Admin collection - only admins can read/write
+    // Admin collection - users can read their own admin doc, no writes allowed
     match /admins/{uid} {
-      allow read, write: if admin();
+      allow read: if (signedIn() && request.auth.uid == uid) || admin();
+      allow write: if false;
     }
 
     // Suggestions collection

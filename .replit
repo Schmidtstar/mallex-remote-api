@@ -11,7 +11,8 @@ VITE_HASH_ROUTER = "1"
 ignoredPackages = ["nodejs-22"]
 
 [deployment]
-run = ["npm", "run", "dev", "--", "--host", "--port", "$PORT"]
+build = ["npm", "run", "build"]
+run = ["npm", "run", "preview", "--", "--port", "$PORT"]
 deploymentTarget = "autoscale"
 ignorePorts = false
 

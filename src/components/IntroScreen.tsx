@@ -10,32 +10,55 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
   const [stage, setStage] = useState(0)
   
   useEffect(() => {
-    const timer1 = setTimeout(() => setStage(1), 500)
-    const timer2 = setTimeout(() => setStage(2), 1500)
-    const timer3 = setTimeout(() => setStage(3), 2500)
-    const timer4 = setTimeout(() => onComplete(), 4500)
+    const timer1 = setTimeout(() => setStage(1), 800)
+    const timer2 = setTimeout(() => setStage(2), 2200)
+    const timer3 = setTimeout(() => setStage(3), 3500)
+    const timer4 = setTimeout(() => setStage(4), 4800)
+    const timer5 = setTimeout(() => onComplete(), 6500)
     
     return () => {
       clearTimeout(timer1)
       clearTimeout(timer2)
       clearTimeout(timer3)
       clearTimeout(timer4)
+      clearTimeout(timer5)
     }
   }, [onComplete])
   
   return (
     <div className={styles.intro}>
-      <div className={styles.background}>
-        <div className={styles.particles}></div>
-        <div className={styles.columns}>
-          <div className={styles.column}></div>
-          <div className={styles.column}></div>
-          <div className={styles.column}></div>
+      {/* Kolosseum Hintergrund */}
+      <div className={styles.colosseumBackground}>
+        <div className={styles.arena}></div>
+        <div className={styles.arches}>
+          <div className={styles.arch}></div>
+          <div className={styles.arch}></div>
+          <div className={styles.arch}></div>
+          <div className={styles.arch}></div>
+          <div className={styles.arch}></div>
+        </div>
+        <div className={styles.crowd}>
+          <div className={styles.crowdSection}></div>
+          <div className={styles.crowdSection}></div>
+          <div className={styles.crowdSection}></div>
         </div>
       </div>
       
+      {/* Partikel und Atmosphäre */}
+      <div className={styles.atmosphere}>
+        <div className={styles.torchFlames}></div>
+        <div className={styles.goldDust}></div>
+        <div className={styles.wine}></div>
+      </div>
+      
       <div className={styles.content}>
-        <div className={`${styles.title} ${stage >= 1 ? styles.visible : ''}`}>
+        {/* Gladiator Helm Animation */}
+        <div className={`${styles.helmet} ${stage >= 1 ? styles.visible : ''}`}>
+          ⚔️
+        </div>
+        
+        {/* Haupttitel */}
+        <div className={`${styles.title} ${stage >= 2 ? styles.visible : ''}`}>
           <span className={styles.letter}>M</span>
           <span className={styles.letter}>A</span>
           <span className={styles.letter}>L</span>
@@ -44,13 +67,35 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
           <span className={styles.letter}>X</span>
         </div>
         
-        <div className={`${styles.subtitle} ${stage >= 2 ? styles.visible : ''}`}>
-          Die Olympischen Trinkspiele
+        {/* Untertitel mit Saufspiel-Bezug */}
+        <div className={`${styles.subtitle} ${stage >= 3 ? styles.visible : ''}`}>
+          <div className={styles.drinkingCup}>🍷</div>
+          DIE OLYMPISCHEN SAUFSPIELE
+          <div className={styles.drinkingCup}>🍺</div>
         </div>
         
-        <div className={`${styles.tagline} ${stage >= 3 ? styles.visible : ''}`}>
-          Ehre • Mut • Rausch
+        {/* Gladiator Slogan */}
+        <div className={`${styles.tagline} ${stage >= 4 ? styles.visible : ''}`}>
+          <div className={styles.gladiatorQuote}>
+            "Mögen die Spiele beginnen!"
+          </div>
+          <div className={styles.attributes}>
+            💪 MUT • 🍻 RAUSCH • 🏆 EHRE
+          </div>
         </div>
+        
+        {/* Arena Tor öffnet sich */}
+        <div className={`${styles.arenaGate} ${stage >= 4 ? styles.opening : ''}`}>
+          <div className={styles.gateLeft}></div>
+          <div className={styles.gateRight}></div>
+        </div>
+      </div>
+      
+      {/* Crowd Cheering Sound Effect Indicator */}
+      <div className={`${styles.crowdCheer} ${stage >= 3 ? styles.active : ''}`}>
+        <span>🎺</span>
+        <span>📯</span>
+        <span>🥁</span>
       </div>
     </div>
   )

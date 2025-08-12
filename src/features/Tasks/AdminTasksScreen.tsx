@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
@@ -21,6 +20,7 @@ interface TaskSuggestion {
   status: SuggestionStatus
   author?: { email?: string; uid?: string }
   note?: string
+  hidden?: boolean // Added for toggleHide functionality
 }
 
 export function AdminTasksScreen() {
@@ -44,7 +44,7 @@ export function AdminTasksScreen() {
   // Admin-specific data loading with Firebase fallback
   useEffect(() => {
     if (!isAdmin || !user?.uid) return
-    
+
     const loadSuggestions = async () => {
       setLoading(true)
       try {
@@ -53,7 +53,7 @@ export function AdminTasksScreen() {
           try {
             const querySnapshot = await getDocs(collection(db, 'taskSuggestions'))
             const firebaseSuggestions: TaskSuggestion[] = []
-            
+
             querySnapshot.forEach((doc) => {
               const data = doc.data()
               firebaseSuggestions.push({
@@ -64,10 +64,11 @@ export function AdminTasksScreen() {
                 createdAt: data.createdAt || new Date(),
                 status: data.status || 'pending',
                 author: data.author,
-                note: data.note
+                note: data.note,
+                hidden: data.hidden || false // Initialize hidden property
               })
             })
-            
+
             // Only use Firebase data if it has suggestions
             if (firebaseSuggestions.length > 0) {
               setItems(firebaseSuggestions)
@@ -80,11 +81,11 @@ export function AdminTasksScreen() {
             console.warn('Firebase load failed, using localStorage fallback:', firebaseError?.code)
           }
         }
-        
+
         // Fallback to localStorage with demo data
         const saved = localStorage.getItem('mallex_admin_suggestions')
         let suggestions = saved ? JSON.parse(saved) : []
-        
+
         // Add comprehensive demo suggestions if none exist
         if (suggestions.length === 0) {
           suggestions = [
@@ -96,7 +97,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 120),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schicksal-2',
@@ -105,7 +107,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 115),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schicksal-3',
@@ -114,7 +117,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 110),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schicksal-4',
@@ -123,7 +127,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 105),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schicksal-5',
@@ -132,7 +137,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 100),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
 
             // === SCHANDE (5 Aufgaben) ===
@@ -143,7 +149,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 95),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schande-2',
@@ -152,7 +159,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 90),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schande-3',
@@ -161,7 +169,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 85),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schande-4',
@@ -170,7 +179,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 80),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'schande-5',
@@ -179,7 +189,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 75),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
 
             // === VERFÜHRUNG (5 Aufgaben) ===
@@ -190,7 +201,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 70),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'verfuehrung-2',
@@ -199,7 +211,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 65),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'verfuehrung-3',
@@ -208,7 +221,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 60),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'verfuehrung-4',
@@ -217,7 +231,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 55),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'verfuehrung-5',
@@ -226,7 +241,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 50),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
 
             // === ESKALATION (5 Aufgaben) ===
@@ -237,7 +253,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 45),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'eskalation-2',
@@ -246,7 +263,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 40),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'eskalation-3',
@@ -255,7 +273,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 35),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'eskalation-4',
@@ -264,7 +283,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 30),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'eskalation-5',
@@ -273,7 +293,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 25),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
 
             // === BEICHTE (5 Aufgaben) ===
@@ -284,7 +305,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 20),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'beichte-2',
@@ -293,7 +315,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 15),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'beichte-3',
@@ -302,7 +325,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 10),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'beichte-4',
@@ -311,7 +335,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 5),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
             {
               id: 'beichte-5',
@@ -320,7 +345,8 @@ export function AdminTasksScreen() {
               authorId: 'system',
               createdAt: new Date(Date.now() - 1000 * 60 * 2),
               status: 'approved',
-              author: { email: 'system@mallex.de', uid: 'system' }
+              author: { email: 'system@mallex.de', uid: 'system' },
+              hidden: false
             },
 
             // === PENDING SUGGESTIONS (User-generated) ===
@@ -331,16 +357,18 @@ export function AdminTasksScreen() {
               authorId: 'demo-user-1',
               createdAt: new Date(Date.now() - 1000 * 60 * 30),
               status: 'pending',
-              author: { email: 'user1@example.com', uid: 'demo-user-1' }
+              author: { email: 'user1@example.com', uid: 'demo-user-1' },
+              hidden: false
             },
             {
-              id: 'demo-pending-2', 
+              id: 'demo-pending-2',
               text: 'Massiere jemandem 30 Sekunden lang die Schultern.',
               categoryId: 'verfuehrung',
               authorId: 'demo-user-2',
               createdAt: new Date(Date.now() - 1000 * 60 * 15),
               status: 'pending',
-              author: { email: 'user2@example.com', uid: 'demo-user-2' }
+              author: { email: 'user2@example.com', uid: 'demo-user-2' },
+              hidden: false
             },
 
             // === REJECTED SUGGESTIONS ===
@@ -352,16 +380,17 @@ export function AdminTasksScreen() {
               createdAt: new Date(Date.now() - 1000 * 60 * 90),
               status: 'rejected',
               note: 'Zu extrem für die meisten Spielrunden',
-              author: { email: 'user7@example.com', uid: 'demo-user-7' }
+              author: { email: 'user7@example.com', uid: 'demo-user-7' },
+              hidden: false
             }
           ]
           localStorage.setItem('mallex_admin_suggestions', JSON.stringify(suggestions))
           console.log('🎭 Demo suggestions created')
         }
-        
+
         setItems(suggestions)
         console.log('📦 localStorage suggestions loaded:', suggestions.length)
-        
+
       } catch (error) {
         console.error('Admin suggestions load failed:', error)
         setItems([])
@@ -397,9 +426,9 @@ export function AdminTasksScreen() {
           console.warn('Firebase approval failed, using localStorage:', firebaseError?.code)
         }
       }
-      
+
       // Always update local state
-      const updated = items.map(item => 
+      const updated = items.map(item =>
         item.id === id ? { ...item, status: 'approved' as SuggestionStatus } : item
       )
       setItems(updated)
@@ -409,32 +438,35 @@ export function AdminTasksScreen() {
     }
   }
 
-  const reject = async (id: string, note?: string) => {
+  const reject = async (id: string) => {
+    const note = rejectNote[id] || ''
     try {
-      // Try Firebase first if admin
-      if (isAdmin) {
-        try {
-          await updateDoc(doc(db, 'taskSuggestions', id), {
-            status: 'rejected',
-            rejectedAt: serverTimestamp(),
-            rejectedBy: user?.uid,
-            note: note || ''
-          })
-          console.log('✅ Firebase rejection successful')
-        } catch (firebaseError: any) {
-          console.warn('Firebase rejection failed, using localStorage:', firebaseError?.code)
-        }
-      }
-      
-      // Always update local state
-      const updated = items.map(item => 
+      // Firebase rejection first
+      await updateDoc(doc(db, 'taskSuggestions', id), {
+        status: 'rejected',
+        rejectedAt: serverTimestamp(),
+        rejectedBy: user?.uid,
+        note
+      })
+      console.log('🔥 Firebase rejection successful for:', id)
+
+      const updated = items.map(item =>
         item.id === id ? { ...item, status: 'rejected' as SuggestionStatus, note } : item
       )
       setItems(updated)
       localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
       setRejectNote(prev => ({ ...prev, [id]: '' }))
-    } catch (error) {
-      console.error('Reject failed:', error)
+
+    } catch (error: any) {
+      console.error('🚫 Firebase rejection failed:', error?.code)
+
+      // localStorage fallback
+      const updated = items.map(item =>
+        item.id === id ? { ...item, status: 'rejected' as SuggestionStatus, note } : item
+      )
+      setItems(updated)
+      localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
+      setRejectNote(prev => ({ ...prev, [id]: '' }))
     }
   }
 
@@ -453,9 +485,9 @@ export function AdminTasksScreen() {
           console.warn('Firebase edit failed, using localStorage:', firebaseError?.code)
         }
       }
-      
+
       // Always update local state
-      const updated = items.map(item => 
+      const updated = items.map(item =>
         item.id === id ? { ...item, ...updates } : item
       )
       setItems(updated)
@@ -485,9 +517,9 @@ export function AdminTasksScreen() {
           console.warn('Firebase hide/show failed, using localStorage:', firebaseError?.code)
         }
       }
-      
+
       // Always update local state
-      const updated = items.map(item => 
+      const updated = items.map(item =>
         item.id === id ? { ...item, hidden } : item
       )
       setItems(updated)
@@ -508,7 +540,7 @@ export function AdminTasksScreen() {
           console.warn('Firebase deletion failed, using localStorage:', firebaseError?.code)
         }
       }
-      
+
       // Always update local state
       const updated = items.filter(item => item.id !== id)
       setItems(updated)
@@ -537,8 +569,7 @@ export function AdminTasksScreen() {
   }
 
   const handleReject = (id: string) => {
-    const note = rejectNote[id] || ''
-    reject(id, note)
+    reject(id).catch(error => console.error("Error in handleReject:", error))
   }
 
   const handleCreateTask = async () => {
@@ -574,31 +605,31 @@ export function AdminTasksScreen() {
       <div className={styles.header}>
         <h1 className={styles.title}>{t('adminTasks.title')}</h1>
         <div className={styles.adminInfo}>
-          👤 User: {user?.email || user?.uid} | 
+          👤 User: {user?.email || user?.uid} |
           🔧 Admin: {isAdmin ? '✅' : '❌'} |
           📦 Suggestions: {items.length}
         </div>
 
         <div className={styles.tabs}>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'pending' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('pending')}
           >
             {t('adminTasks.pending')} ({items.filter(item => item.status === 'pending').length})
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'approved' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('approved')}
           >
             {t('adminTasks.approved')} ({items.filter(item => item.status === 'approved').length})
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'rejected' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('rejected')}
           >
             {t('adminTasks.rejected')} ({items.filter(item => item.status === 'rejected').length})
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'create' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('create')}
           >
@@ -738,8 +769,8 @@ export function AdminTasksScreen() {
           <div className={styles.createTaskForm}>
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('tasks.create.categoryLabel')}</label>
-              <select 
-                value={newTaskCategory} 
+              <select
+                value={newTaskCategory}
                 onChange={(e) => setNewTaskCategory(e.target.value as any)}
                 className={styles.select}
               >
@@ -753,7 +784,7 @@ export function AdminTasksScreen() {
 
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('tasks.create.textLabel')}</label>
-              <textarea 
+              <textarea
                 value={newTaskText}
                 onChange={(e) => setNewTaskText(e.target.value)}
                 placeholder={t('tasks.create.placeholder')}
@@ -771,7 +802,7 @@ export function AdminTasksScreen() {
               <div className={styles.success}>{createSuccess}</div>
             )}
 
-            <button 
+            <button
               onClick={handleCreateTask}
               disabled={creating || newTaskText.trim().length < 5}
               className={styles.createButton}

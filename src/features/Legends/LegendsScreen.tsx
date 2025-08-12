@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlayersContext } from '@/context/PlayersContext'
 import { useAuth } from '@/context/AuthContext'
+import styles from './LegendsScreen.module.css'
 
 export function LegendsScreen() {
   const { t } = useTranslation()
@@ -13,7 +13,7 @@ export function LegendsScreen() {
 
   const handleAddPlayer = async () => {
     if (!newPlayerName.trim() || isAdding) return
-    
+
     setIsAdding(true)
     try {
       await addPlayer(newPlayerName.trim())
@@ -42,43 +42,26 @@ export function LegendsScreen() {
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div className={styles.loadingContainer}>
         {t('common.loading')}...
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>{t('legends.title')}</h1>
-      
+    <div className={styles.container}>
+      <h1 className={styles.title}>{t('legends.title')}</h1>
+
       {!user ? (
-        <div style={{ 
-          background: '#f0f0f0', 
-          padding: '15px', 
-          borderRadius: '8px', 
-          marginBottom: '20px' 
-        }}>
+        <div className={styles.messageBoxInfo}>
           <p>{t('legends.loginRequired') || 'Melde dich an, um deine Spieler zu speichern.'}</p>
         </div>
       ) : user.isAnonymous ? (
-        <div style={{ 
-          background: '#fff3cd', 
-          padding: '15px', 
-          borderRadius: '8px', 
-          marginBottom: '20px',
-          border: '1px solid #ffeaa7'
-        }}>
+        <div className={styles.messageBoxWarning}>
           <p>{t('legends.guestMode') || 'Gast-Modus: Spieler werden nur lokal gespeichert.'}</p>
         </div>
       ) : (
-        <div style={{ 
-          background: '#d4edda', 
-          padding: '15px', 
-          borderRadius: '8px', 
-          marginBottom: '20px',
-          border: '1px solid #c3e6cb'
-        }}>
+        <div className={styles.messageBoxSuccess}>
           <p>
             {t('legends.syncMode') || 'Spieler werden in deinem Profil gespeichert.'} 
             {mode === 'firebase' ? ' ✓' : ' (localStorage fallback)'}
@@ -86,35 +69,20 @@ export function LegendsScreen() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: '30px' }}>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <form onSubmit={handleSubmit} className={styles.addPlayerForm}>
+        <div className={styles.addPlayerInputGroup}>
           <input
             type="text"
             value={newPlayerName}
             onChange={(e) => setNewPlayerName(e.target.value)}
             placeholder={t('legends.playerNamePlaceholder') || 'Spielername eingeben'}
-            style={{
-              flex: 1,
-              padding: '12px',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              fontSize: '16px'
-            }}
+            className={styles.inputField}
             disabled={isAdding}
           />
           <button
             type="submit"
             disabled={!newPlayerName.trim() || isAdding}
-            style={{
-              padding: '12px 20px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '16px',
-              cursor: isAdding ? 'not-allowed' : 'pointer',
-              opacity: (!newPlayerName.trim() || isAdding) ? 0.6 : 1
-            }}
+            className={styles.addButton}
           >
             {isAdding ? t('common.adding') || 'Hinzufügen...' : t('legends.addPlayer') || 'Hinzufügen'}
           </button>
@@ -122,49 +90,24 @@ export function LegendsScreen() {
       </form>
 
       {players.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          color: '#666', 
-          fontStyle: 'italic',
-          padding: '40px 0'
-        }}>
+        <div className={styles.noPlayersMessage}>
           {t('legends.noPlayers') || 'Noch keine Spieler hinzugefügt'}
         </div>
       ) : (
         <div>
-          <h2>{t('legends.playersList') || 'Spieler'} ({players.length})</h2>
-          <div style={{ 
-            display: 'grid', 
-            gap: '10px',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))'
-          }}>
+          <h2 className={styles.playersListTitle}>{t('legends.playersList') || 'Spieler'} ({players.length})</h2>
+          <div className={styles.playersGrid}>
             {players.map((player) => (
               <div
                 key={player.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '12px 16px',
-                  backgroundColor: '#f8f9fa',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '8px'
-                }}
+                className={styles.playerItem}
               >
-                <span style={{ fontSize: '16px', fontWeight: '500' }}>
+                <span className={styles.playerName}>
                   {player.name}
                 </span>
                 <button
                   onClick={() => handleRemovePlayer(player.id)}
-                  style={{
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '6px 12px',
-                    fontSize: '14px',
-                    cursor: 'pointer'
-                  }}
+                  className={styles.removeButton}
                   title={t('legends.removePlayer') || 'Spieler entfernen'}
                 >
                   {t('common.remove') || 'Entfernen'}

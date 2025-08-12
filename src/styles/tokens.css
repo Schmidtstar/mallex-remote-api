@@ -1,58 +1,46 @@
+/* Design Tokens */
 :root {
-  /* Spacing System */
+  /* Spacing */
   --space-1: 2px;
   --space-2: 4px;
   --space-3: 8px;
   --space-4: 12px;
   --space-5: 16px;
   --space-6: 20px;
-  --space-8: 24px;
-  --space-10: 32px;
-  --space-12: 40px;
-  --space-16: 48px;
+  --space-7: 24px;
+  --space-8: 32px;
 
   /* Colors */
-  --primary: #007AFF;
-  --secondary: #5AC8FA;
-  --success: #34C759;
-  --warning: #FF9500;
-  --error: #FF3B30;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-border: rgba(0, 0, 0, 0.1);
 
-  /* Light mode */
-  --bg: #FFFFFF;
-  --fg: #000000;
-  --muted: #8E8E93;
-  --stroke: #C6C6C8;
-  --glass: rgba(255, 255, 255, 0.8);
-  --hover: rgba(0, 0, 0, 0.05);
-  --active: rgba(0, 0, 0, 0.1);
+  /* Glassmorphism */
+  --glass-background: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(12px);
 
-  /* Basis-Farben */
-  --color-primary: #4A90E2;
-  --color-primary-rgb: 74, 144, 226;
-  --color-primary-hover: #357ABD;
-  --color-secondary: #6C757D;
-  --color-accent: #FFD700;
-  --color-success: #28A745;
-  --color-danger: #DC3545;
-  --color-warning: #FFC107;
-  --color-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --color-surface: rgba(255, 255, 255, 0.1);
-  --color-border: rgba(255, 255, 255, 0.2);
+  /* Interactive states */
+  --hover-background: rgba(0, 0, 0, 0.04);
+  --active-background: rgba(0, 0, 0, 0.08);
+  --focus-ring: 0 0 0 2px rgba(59, 130, 246, 0.5);
 
-  /* Layout */
-  --radius: 12px;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+  /* Touch targets */
+  --touch-target-min: 48px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --fg: #FFFFFF;
-    --muted: #8E8E93;
-    --stroke: #38383A;
-    --glass: rgba(0, 0, 0, 0.8);
-    --hover: rgba(255, 255, 255, 0.05);
-    --active: rgba(255, 255, 255, 0.1);
-  }
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-modal: 1001;
+  --z-toast: 1002;
 }

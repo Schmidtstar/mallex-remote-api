@@ -97,7 +97,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
 
   const visibleItems = menuItems.filter(item => {
     if (item.adminOnly && !isAdmin) return false
-    if (item.authRequired && !user) return false
+    if (item.requiresAuth && !user) return false
     return true
   })
 

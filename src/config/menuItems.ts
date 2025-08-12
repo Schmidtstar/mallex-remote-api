@@ -1,4 +1,3 @@
-
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import type { ReactNode } from 'react'
@@ -34,38 +33,21 @@ export const menuItems: MenuItem[] = [
     path: '/tasks',
     labelKey: 'nav.tasks',
     icon: '📋',
-    requiresAuth: true,
-    authRequired: true
+    requiresAuth: true
   },
   {
     key: 'suggestTask',
-    path: '/tasks/suggest',
-    labelKey: 'nav.suggest',
+    path: '/suggest-task',
+    labelKey: 'nav.suggestTask',
     icon: '💡',
-    requiresAuth: true,
-    authRequired: true
-  },
-  {
-    key: 'adminTasks',
-    path: '/admin/tasks',
-    labelKey: 'nav.adminTasks',
-    icon: '⚙️',
-    adminOnly: true
-  },
-  {
-    key: 'adminSuggestions',
-    path: '/admin/suggestions',
-    labelKey: 'nav.adminSuggestions',
-    icon: '📝',
-    adminOnly: true
+    requiresAuth: false
   },
   {
     key: 'profile',
     path: '/profile',
     labelKey: 'nav.profile',
     icon: '👤',
-    requiresAuth: true,
-    authRequired: true
+    requiresAuth: true
   },
   {
     key: 'settings',
@@ -73,5 +55,13 @@ export const menuItems: MenuItem[] = [
     labelKey: 'nav.settings',
     icon: '⚙️',
     requiresAuth: false
+  },
+  {
+    key: 'admin',
+    path: '/admin',
+    labelKey: 'nav.admin',
+    icon: '🔧',
+    requiresAuth: true,
+    adminOnly: true
   }
 ]

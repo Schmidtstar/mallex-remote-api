@@ -86,13 +86,13 @@ export function TasksOverviewScreen() {
           >
             Alle Kategorien
           </button>
-          {Object.keys(categories).map((cat) => (
+          {categories.map((cat) => (
             <button
-              key={cat}
-              className={`${styles.categoryButton} ${category === cat ? styles.active : ''}`}
-              onClick={() => handleCategoryFilter(cat as CategoryKey)}
+              key={cat.id}
+              className={`${styles.categoryButton} ${category === cat.id ? styles.active : ''}`}
+              onClick={() => handleCategoryFilter(cat.id as CategoryKey)}
             >
-              {getCategoryLabel(cat)}
+              {getCategoryLabel(cat.id)}
             </button>
           ))}
         </div>

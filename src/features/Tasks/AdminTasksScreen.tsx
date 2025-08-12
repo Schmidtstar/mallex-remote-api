@@ -68,9 +68,14 @@ export function AdminTasksScreen() {
               })
             })
             
-            setItems(firebaseSuggestions)
-            console.log('✅ Firebase suggestions loaded:', firebaseSuggestions.length)
-            return
+            // Only use Firebase data if it has suggestions
+            if (firebaseSuggestions.length > 0) {
+              setItems(firebaseSuggestions)
+              console.log('✅ Firebase suggestions loaded:', firebaseSuggestions.length)
+              return
+            } else {
+              console.log('🔄 Firebase empty, falling back to localStorage with demo data')
+            }
           } catch (firebaseError: any) {
             console.warn('Firebase load failed, using localStorage fallback:', firebaseError?.code)
           }

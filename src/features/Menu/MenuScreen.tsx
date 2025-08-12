@@ -117,8 +117,8 @@ export function MenuScreen() {
       await updateUserProfile(user.uid, {
         displayName: editForm.displayName || null,
         birthDate: birthDateISO,
-        gender: editForm.gender || null,
-        nationality: editForm.nationality || null
+        gender: editForm.gender || undefined,
+        nationality: editForm.nationality || undefined
       });
 
       setUserProfile(prev => prev ? {

@@ -400,9 +400,18 @@ export function AdminTasksScreen() {
           let successful = 0
           for (const task of approvedTasks) {
             try {
+              // Map German category IDs to English ones for Arena compatibility
+              const categoryMapping: Record<string, string> = {
+                'schicksal': 'fate',
+                'schande': 'shame', 
+                'verfuehrung': 'seduce',
+                'eskalation': 'escalate',
+                'beichte': 'confess'
+              }
+              
               const docRef = await addDoc(collection(db, 'tasks'), {
                 text: task.text,
-                category: task.categoryId, // Arena API expects 'category' not 'categoryId'  
+                category: categoryMapping[task.categoryId] || task.categoryId, // Map to English category
                 status: 'approved',
                 createdBy: task.authorId || 'system',
                 createdAt: serverTimestamp(),

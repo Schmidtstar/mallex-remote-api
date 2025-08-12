@@ -11,7 +11,7 @@ import styles from './MenuScreen.module.css';
 interface UserProfile {
   email: string | null;
   displayName: string | null;
-  birthDate: string | null;
+  birthdate: string | null;
   gender: 'male'|'female'|'diverse'|null;
   nationality: string | null;
 }
@@ -92,13 +92,13 @@ export function MenuScreen() {
       setUserProfile({
         email: profile?.email || user.email || null,
         displayName: profile?.displayName || null,
-        birthDate: profile?.birthDate || null,
+        birthdate: profile?.birthdate || null,
         gender: profile?.gender || null,
         nationality: profile?.nationality || null
       });
       setEditForm({
         displayName: profile?.displayName || '',
-        birthDate: profile?.birthDate ? formatISOToDob(profile.birthDate) : '',
+        birthDate: profile?.birthdate ? formatISOToDob(profile.birthdate) : '',
         gender: profile?.gender || '',
         nationality: profile?.nationality || ''
       });
@@ -124,7 +124,7 @@ export function MenuScreen() {
       setUserProfile(prev => prev ? {
         ...prev,
         displayName: editForm.displayName || null,
-        birthDate: birthDateISO,
+        birthdate: birthDateISO,
         gender: editForm.gender || null,
         nationality: editForm.nationality || null
       } : null);
@@ -146,7 +146,7 @@ export function MenuScreen() {
     if (userProfile) {
       setEditForm({
         displayName: userProfile.displayName || '',
-        birthDate: userProfile.birthDate ? formatISOToDob(userProfile.birthDate) : '',
+        birthDate: userProfile.birthdate ? formatISOToDob(userProfile.birthdate) : '',
         gender: userProfile.gender || '',
         nationality: userProfile.nationality || ''
       });
@@ -187,12 +187,12 @@ export function MenuScreen() {
                     {!isEditing ? (
                       <div className={styles.profileData}>
                         <p><strong>{t('profile.displayName')}:</strong> {userProfile.displayName || '-'}</p>
-                        {userProfile.birthDate && (
+                        {userProfile.birthdate && (
                           <p>
-                            <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthDate)}
-                            {calcAgeFromISO(userProfile.birthDate) && (
+                            <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthdate)}
+                            {calcAgeFromISO(userProfile.birthdate) && (
                               <span className={styles.age}>
-                                ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthDate) })})
+                                ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthdate) || 0 })})
                               </span>
                             )}
                           </p>

@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next'
-import { useAuth } from '../context/AuthContext'
 import type { ReactNode } from 'react'
 
 export type MenuItem = {

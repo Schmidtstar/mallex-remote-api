@@ -399,13 +399,12 @@ export function AdminTasksScreen() {
           // Migration with proper error handling
           const migrationPromises = approvedTasks.map(async (task) => {
             try {
-              const docRef = await addDoc(collection(db, 'taskSuggestions'), {
+              const docRef = await addDoc(collection(db, 'tasks'), {
                 text: task.text,
-                categoryId: task.categoryId,
-                authorId: task.authorId || 'system',
-                createdAt: serverTimestamp(),
+                category: task.categoryId, // Arena API expects 'category' not 'categoryId'
                 status: 'approved',
-                author: task.author || { email: 'system@mallex.de', uid: 'system' },
+                createdBy: task.authorId || 'system',
+                createdAt: serverTimestamp(),
                 hidden: task.hidden || false,
                 migratedFromLocalStorage: true
               })

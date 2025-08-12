@@ -12,7 +12,10 @@ export function TasksOverviewScreen() {
 
   useEffect(() => {
     setLoading(true);
-    listApprovedTasks(category).then(setItems).finally(() => setLoading(false));
+    listApprovedTasks(category)
+      .then(tasks => tasks.filter(task => !task.hidden)) // Filter ausgeblendete Aufgaben
+      .then(setItems)
+      .finally(() => setLoading(false));
   }, [category]);
 
   return (

@@ -121,6 +121,22 @@
       "reject": "Ablehnen",
       "pending": "Ausstehende Vorschläge",
       "noSuggestions": "Keine ausstehenden Vorschläge"
+    },
+    "adminTasks": {
+      "title": "Admin: Aufgaben-Moderation",
+      "pending": "Wartend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "note": "Grund der Ablehnung",
+      "actions": {
+        "approve": "Freigeben",
+        "reject": "Ablehnen",
+        "edit": "Bearbeiten",
+        "delete": "Entfernen",
+        "save": "Speichern",
+        "hide": "Ausblenden",
+        "show": "Einblenden"
+      }
     }
   },
   "profile": {

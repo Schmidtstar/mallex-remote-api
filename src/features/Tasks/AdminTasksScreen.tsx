@@ -83,69 +83,268 @@ export function AdminTasksScreen() {
         // Add comprehensive demo suggestions if none exist
         if (suggestions.length === 0) {
           suggestions = [
-            // Pending suggestions
+            // === SCHICKSAL (5 Aufgaben) ===
+            {
+              id: 'schicksal-1',
+              text: 'Erzähle von deinem ersten Kuss und wie du dich dabei gefühlt hast.',
+              categoryId: 'schicksal',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 120),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schicksal-2',
+              text: 'Beschreibe deinen größten Traum und was du dafür opfern würdest.',
+              categoryId: 'schicksal',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 115),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schicksal-3',
+              text: 'Erzähle von einem Moment, der dein Leben für immer verändert hat.',
+              categoryId: 'schicksal',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 110),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schicksal-4',
+              text: 'Offenbare deine tiefste Angst vor der Zukunft.',
+              categoryId: 'schicksal',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 105),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schicksal-5',
+              text: 'Erzähle von einer Person, die du verloren hast und immer noch vermisst.',
+              categoryId: 'schicksal',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 100),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+
+            // === SCHANDE (5 Aufgaben) ===
+            {
+              id: 'schande-1',
+              text: 'Gestehe das Peinlichste, was dir je in der Öffentlichkeit passiert ist.',
+              categoryId: 'schande',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 95),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schande-2',
+              text: 'Erzähle von deiner schlimmsten schlechten Angewohnheit.',
+              categoryId: 'schande',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 90),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schande-3',
+              text: 'Beschreibe das Dümmste, was du jemals aus Liebe getan hast.',
+              categoryId: 'schande',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 85),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schande-4',
+              text: 'Erzähle von einem Moment, in dem du jemanden zutiefst enttäuscht hast.',
+              categoryId: 'schande',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 80),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'schande-5',
+              text: 'Gestehe eine Lüge, die du bis heute nicht korrigiert hast.',
+              categoryId: 'schande',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 75),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+
+            // === VERFÜHRUNG (5 Aufgaben) ===
+            {
+              id: 'verfuehrung-1',
+              text: 'Flüstere der Person links von dir etwas Verführerisches ins Ohr.',
+              categoryId: 'verfuehrung',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 70),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'verfuehrung-2',
+              text: 'Erzähle von deiner wildesten romantischen Fantasie.',
+              categoryId: 'verfuehrung',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 65),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'verfuehrung-3',
+              text: 'Gib jemandem in der Runde ein sinnliches Kompliment.',
+              categoryId: 'verfuehrung',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'verfuehrung-4',
+              text: 'Beschreibe, wie du jemanden verführen würdest, ohne Worte zu benutzen.',
+              categoryId: 'verfuehrung',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 55),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'verfuehrung-5',
+              text: 'Küsse jemanden sanft auf die Hand und schaue dabei tief in die Augen.',
+              categoryId: 'verfuehrung',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 50),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+
+            // === ESKALATION (5 Aufgaben) ===
+            {
+              id: 'eskalation-1',
+              text: 'Wage etwas völlig Verrücktes, was du noch nie zuvor getan hast.',
+              categoryId: 'eskalation',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 45),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'eskalation-2',
+              text: 'Fordere jemanden zu einem absurden Duell heraus (z.B. Starren, Armdrücken).',
+              categoryId: 'eskalation',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 40),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'eskalation-3',
+              text: 'Tausche für den Rest des Spiels alle Getränke mit der Person gegenüber.',
+              categoryId: 'eskalation',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 35),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'eskalation-4',
+              text: 'Mache 3 Runden um den Tisch und erzähle dabei eine Geschichte rückwärts.',
+              categoryId: 'eskalation',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 30),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'eskalation-5',
+              text: 'Bestimme eine neue Spielregel, die alle für die nächsten 10 Minuten befolgen müssen.',
+              categoryId: 'eskalation',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 25),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+
+            // === BEICHTE (5 Aufgaben) ===
+            {
+              id: 'beichte-1',
+              text: 'Gestehe dein dunkelstes Geheimnis, das niemand über dich weiß.',
+              categoryId: 'beichte',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 20),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'beichte-2',
+              text: 'Offenbare, was du an dir selbst am meisten hasst.',
+              categoryId: 'beichte',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 15),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'beichte-3',
+              text: 'Erzähle von einem Moment, in dem du jemanden zutiefst verraten hast.',
+              categoryId: 'beichte',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 10),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'beichte-4',
+              text: 'Gestehe eine Sünde, für die du dich immer noch schämst.',
+              categoryId: 'beichte',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 5),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+            {
+              id: 'beichte-5',
+              text: 'Offenbare, wen du in dieser Runde heimlich bewunderst und warum.',
+              categoryId: 'beichte',
+              authorId: 'system',
+              createdAt: new Date(Date.now() - 1000 * 60 * 2),
+              status: 'approved',
+              author: { email: 'system@mallex.de', uid: 'system' }
+            },
+
+            // === PENDING SUGGESTIONS (User-generated) ===
             {
               id: 'demo-pending-1',
-              text: 'Trinke einen Schluck und erzähle eine peinliche Geschichte aus deiner Kindheit.',
+              text: 'Trinke einen Schluck und erzähle eine Geschichte aus deiner Schulzeit.',
               categoryId: 'schande',
               authorId: 'demo-user-1',
-              createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
+              createdAt: new Date(Date.now() - 1000 * 60 * 30),
               status: 'pending',
               author: { email: 'user1@example.com', uid: 'demo-user-1' }
             },
             {
               id: 'demo-pending-2', 
-              text: 'Küsse die Person zu deiner Rechten auf die Stirn.',
+              text: 'Massiere jemandem 30 Sekunden lang die Schultern.',
               categoryId: 'verfuehrung',
               authorId: 'demo-user-2',
-              createdAt: new Date(Date.now() - 1000 * 60 * 15), // 15 min ago
+              createdAt: new Date(Date.now() - 1000 * 60 * 15),
               status: 'pending',
               author: { email: 'user2@example.com', uid: 'demo-user-2' }
             },
-            {
-              id: 'demo-pending-3',
-              text: 'Erzähle der Gruppe von deinem letzten Alptraum.',
-              categoryId: 'beichte',
-              authorId: 'demo-user-3',
-              createdAt: new Date(Date.now() - 1000 * 60 * 5), // 5 min ago
-              status: 'pending',
-              author: { email: 'user3@example.com', uid: 'demo-user-3' }
-            },
-            {
-              id: 'demo-pending-4',
-              text: 'Mache 10 Liegestütze oder trinke zwei Schlücke.',
-              categoryId: 'schicksal',
-              authorId: 'demo-user-4',
-              createdAt: new Date(Date.now() - 1000 * 60 * 2), // 2 min ago
-              status: 'pending',
-              author: { email: 'user4@example.com', uid: 'demo-user-4' }
-            },
-            // Approved suggestions
-            {
-              id: 'demo-approved-1',
-              text: 'Gestehe deine größte Schwäche vor der Gruppe.',
-              categoryId: 'beichte',
-              authorId: 'demo-user-5',
-              createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-              status: 'approved',
-              author: { email: 'user5@example.com', uid: 'demo-user-5' }
-            },
-            {
-              id: 'demo-approved-2',
-              text: 'Tausche für eine Runde die Plätze mit der Person gegenüber.',
-              categoryId: 'eskalation',
-              authorId: 'demo-user-6',
-              createdAt: new Date(Date.now() - 1000 * 60 * 45), // 45 min ago
-              status: 'approved',
-              author: { email: 'user6@example.com', uid: 'demo-user-6' }
-            },
-            // Rejected suggestions
+
+            // === REJECTED SUGGESTIONS ===
             {
               id: 'demo-rejected-1',
               text: 'Springe nackt in den Pool.',
               categoryId: 'eskalation',
               authorId: 'demo-user-7',
-              createdAt: new Date(Date.now() - 1000 * 60 * 90), // 1.5 hours ago
+              createdAt: new Date(Date.now() - 1000 * 60 * 90),
               status: 'rejected',
               note: 'Zu extrem für die meisten Spielrunden',
               author: { email: 'user7@example.com', uid: 'demo-user-7' }
@@ -258,6 +457,38 @@ export function AdminTasksScreen() {
       localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
     } catch (error) {
       console.error('Edit failed:', error)
+    }
+  }
+
+  const toggleHide = async (id: string) => {
+    try {
+      const item = items.find(i => i.id === id)
+      if (!item) return
+
+      const hidden = !item.hidden
+
+      // Try Firebase first if admin
+      if (isAdmin) {
+        try {
+          await updateDoc(doc(db, 'taskSuggestions', id), {
+            hidden,
+            hiddenAt: hidden ? serverTimestamp() : null,
+            hiddenBy: hidden ? user?.uid : null
+          })
+          console.log('✅ Firebase hide/show successful')
+        } catch (firebaseError: any) {
+          console.warn('Firebase hide/show failed, using localStorage:', firebaseError?.code)
+        }
+      }
+      
+      // Always update local state
+      const updated = items.map(item => 
+        item.id === id ? { ...item, hidden } : item
+      )
+      setItems(updated)
+      localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
+    } catch (error) {
+      console.error('Hide/show failed:', error)
     }
   }
 
@@ -448,7 +679,7 @@ export function AdminTasksScreen() {
                             onClick={() => approve(item.id)}
                             className={styles.approveButton}
                           >
-                            {t('adminTasks.actions.approve')}
+                            ✅ {t('adminTasks.actions.approve')}
                           </button>
                           <div className={styles.rejectSection}>
                             <input
@@ -462,24 +693,33 @@ export function AdminTasksScreen() {
                               onClick={() => handleReject(item.id)}
                               className={styles.rejectButton}
                             >
-                              {t('adminTasks.actions.reject')}
+                              ❌ {t('adminTasks.actions.reject')}
                             </button>
                           </div>
                         </>
+                      )}
+
+                      {item.status === 'approved' && (
+                        <button
+                          onClick={() => toggleHide(item.id)}
+                          className={item.hidden ? styles.showButton : styles.hideButton}
+                        >
+                          {item.hidden ? '👁️ Einblenden' : '🙈 Ausblenden'}
+                        </button>
                       )}
 
                       <button
                         onClick={() => handleEdit(item)}
                         className={styles.editButton}
                       >
-                        {t('adminTasks.actions.edit')}
+                        ✏️ {t('adminTasks.actions.edit')}
                       </button>
 
                       <button
                         onClick={() => remove(item.id)}
                         className={styles.deleteButton}
                       >
-                        {t('adminTasks.actions.delete')}
+                        🗑️ {t('adminTasks.actions.delete')}
                       </button>
                     </div>
                   </div>

@@ -121,6 +121,21 @@
       "reject": "Reject",
       "pending": "Pending Suggestions",
       "noSuggestions": "No pending suggestions"
+    },
+  "adminTasks": {
+    "title": "Admin: Task Moderation",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected", 
+    "note": "Rejection reason",
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "edit": "Edit",
+      "delete": "Remove",
+      "save": "Save",
+      "hide": "Hide",
+      "show": "Show"
     }
   },
   "profile": {

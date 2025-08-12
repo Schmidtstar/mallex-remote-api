@@ -17,6 +17,18 @@ export interface Task {
   hidden?: boolean;
 }
 
+export interface TaskSuggestion {
+  id: string;
+  text: string;
+  categoryId: string;
+  authorId: string;
+  createdAt: any;
+  status: 'pending' | 'approved' | 'rejected';
+  author?: { email?: string; uid?: string };
+  note?: string;
+  hidden?: boolean;
+}
+
 export async function listApprovedTasks(category?: CategoryKey): Promise<Task[]> {
   const base = collection(db, col.tasks);
   const q = category

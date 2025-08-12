@@ -1,59 +1,63 @@
-rules_version = '2';
 
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function: Check if user is admin (UID-based)
+
+    /* Helpers */
+    function signedIn() { return request.auth != null; }
+    function owner(uid) { return signedIn() && request.auth.uid == uid; }
     function admin() {
-      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return signedIn() &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
-    // Helper function: Check if user is signed in
-    function signedIn() {
-      return request.auth != null;
+    /* Admin-Whitelist (UID-basiert) */
+    match /admins/{uid} {
+      // eigenes Admin-Dokument lesen dürfen (sonst permission-denied-Loop)
+      allow read: if (signedIn() && request.auth.uid == uid) || admin();
+      allow write: if false; // niemals vom Client schreiben
     }
 
-    // Players collection - users can manage their own players
+    /* Nutzerprofil */
+    match /users/{uid} {
+      allow read, create, update: if owner(uid);
+    }
+
+    /* Spielerverwaltung (Legenden) */
     match /players/{playerId} {
       allow read, write: if signedIn() && request.auth.uid == resource.data.userId;
       allow create: if signedIn() && request.auth.uid == request.resource.data.userId;
     }
 
-    // Admin-only collection  
-    match /admins/{adminId} {
-      allow read, write: if false; // Only backend can manage admins
-    }
+    /* Vorschläge der Nutzer (Moderation durch Admins) */
+    match /suggestions/{sid} {
+      allow create: if signedIn()
+        && request.resource.data.category in [
+          'schicksal','schande','verfuehrung','eskalation','beichte'
+        ]
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.createdBy == request.auth.uid;
 
-    // Suggestions collection
-    match /suggestions/{suggestionId} {
-      // Read: Admin can read all, users can read only their own
+      // Admins sehen alle, sonst nur eigene
       allow read: if admin() || (signedIn() && resource.data.createdBy == request.auth.uid);
 
-      // Create: Signed-in users can create with valid categories
-      allow create: if signedIn()
-        && request.auth.uid == request.resource.data.createdBy
-        && request.resource.data.category in ['schicksal', 'schande', 'verfuehrung', 'eskalation', 'beichte']
-        && request.resource.data.status == 'pending';
-
-      // Update/Delete: Only admins (for moderation)
+      // Moderieren nur Admins
       allow update, delete: if admin();
     }
 
-    // Tasks collection
-    match /tasks/{taskId} {
-      // Read: Everyone can read tasks
-      allow read: if true;
-
-      // Create/Update/Delete: Only admins
-      allow create, update, delete: if admin();
+    /* Globale Aufgaben (Task-Pool) */
+    match /tasks/{tid} {
+      allow read: if signedIn();
+      allow create, update, delete: if admin()
+        && request.resource.data.category in [
+          'schicksal','schande','verfuehrung','eskalation','beichte'
+        ]
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0;
     }
 
-    // Users collection
-    match /users/{userId} {
-      // Read/Write: Only the user themselves
-      allow read, write: if signedIn() && request.auth.uid == userId;
-    }
-
-    // Default: Deny everything else
+    /* Alles andere verboten */
     match /{document=**} {
       allow read, write: if false;
     }

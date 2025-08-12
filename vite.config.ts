@@ -13,5 +13,14 @@ export default defineConfig({
     hmr: { clientPort: 443 },
     allowedHosts: true
   },
-  preview: { host: true, port: 4173 }
+  preview: { 
+    host: true, 
+    port: Number(process.env.PORT) || 4173,
+    strictPort: false 
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser'
+  }
 })

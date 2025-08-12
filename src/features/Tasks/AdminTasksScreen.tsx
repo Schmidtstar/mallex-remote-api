@@ -396,12 +396,13 @@ export function AdminTasksScreen() {
           const approvedTasks = suggestions.filter(s => s.status === 'approved')
           console.log('🔄 Migrating', approvedTasks.length, 'approved tasks to Firebase...')
 
-          // Migration with proper error handling
-          const migrationPromises = approvedTasks.map(async (task) => {
+          // Sequential migration to avoid overwhelming Firebase
+          let successful = 0
+          for (const task of approvedTasks) {
             try {
               const docRef = await addDoc(collection(db, 'tasks'), {
                 text: task.text,
-                category: task.categoryId, // Arena API expects 'category' not 'categoryId'
+                category: task.categoryId, // Arena API expects 'category' not 'categoryId'  
                 status: 'approved',
                 createdBy: task.authorId || 'system',
                 createdAt: serverTimestamp(),
@@ -409,24 +410,16 @@ export function AdminTasksScreen() {
                 migratedFromLocalStorage: true
               })
               console.log('✅ Migrated task:', task.text.substring(0, 50) + '...', docRef.id)
-              return { success: true, task: task.id }
-            } catch (error) {
-              console.warn('⚠️ Migration failed for task:', task.id, error)
-              return { success: false, task: task.id, error }
+              successful++
+            } catch (error: any) {
+              console.error('⚠️ Migration failed for task:', task.id, error?.code || error?.message)
             }
-          })
+          }
 
-          try {
-            const results = await Promise.allSettled(migrationPromises)
-            const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length
-            console.log(`🎉 Migration completed! ${successful}/${approvedTasks.length} tasks migrated to Firebase.`)
-
-            if (successful === approvedTasks.length) {
-              console.log('🗑️ All tasks migrated successfully. LocalStorage can be cleared.')
-              // localStorage.removeItem('mallex_admin_suggestions')
-            }
-          } catch (migrationError) {
-            console.error('🚫 Migration batch failed:', migrationError)
+          console.log(`🎉 Migration completed! ${successful}/${approvedTasks.length} tasks migrated to Firebase.`)
+          
+          if (successful > 0) {
+            console.log('🔄 Reloading Arena to show new tasks...')
           }
         }
 

@@ -76,9 +76,45 @@ export function AdminTasksScreen() {
           }
         }
         
-        // Fallback to localStorage
+        // Fallback to localStorage with demo data
         const saved = localStorage.getItem('mallex_admin_suggestions')
-        const suggestions = saved ? JSON.parse(saved) : []
+        let suggestions = saved ? JSON.parse(saved) : []
+        
+        // Add demo suggestions if none exist
+        if (suggestions.length === 0) {
+          suggestions = [
+            {
+              id: 'demo-1',
+              text: 'Trinke einen Schluck und erzähle eine peinliche Geschichte aus deiner Kindheit.',
+              categoryId: 'schande',
+              authorId: 'demo-user',
+              createdAt: new Date(),
+              status: 'pending',
+              author: { email: 'demo@example.com' }
+            },
+            {
+              id: 'demo-2', 
+              text: 'Küsse die Person zu deiner Rechten auf die Stirn.',
+              categoryId: 'verfuehrung',
+              authorId: 'demo-user',
+              createdAt: new Date(),
+              status: 'pending',
+              author: { email: 'demo2@example.com' }
+            },
+            {
+              id: 'demo-3',
+              text: 'Gestehe deine größte Schwäche vor der Gruppe.',
+              categoryId: 'beichte',
+              authorId: 'demo-user',
+              createdAt: new Date(),
+              status: 'approved',
+              author: { email: 'demo3@example.com' }
+            }
+          ]
+          localStorage.setItem('mallex_admin_suggestions', JSON.stringify(suggestions))
+          console.log('🎭 Demo suggestions created')
+        }
+        
         setItems(suggestions)
         console.log('📦 localStorage suggestions loaded:', suggestions.length)
         
@@ -101,9 +137,24 @@ export function AdminTasksScreen() {
     return <Navigate to="/arena" replace />
   }
 
-  // Admin actions - localStorage only
+  // Admin actions with comprehensive error handling
   const approve = async (id: string) => {
     try {
+      // Try Firebase first if admin
+      if (isAdmin) {
+        try {
+          await updateDoc(doc(db, 'taskSuggestions', id), {
+            status: 'approved',
+            approvedAt: serverTimestamp(),
+            approvedBy: user?.uid
+          })
+          console.log('✅ Firebase approval successful')
+        } catch (firebaseError: any) {
+          console.warn('Firebase approval failed, using localStorage:', firebaseError?.code)
+        }
+      }
+      
+      // Always update local state
       const updated = items.map(item => 
         item.id === id ? { ...item, status: 'approved' as SuggestionStatus } : item
       )
@@ -116,6 +167,22 @@ export function AdminTasksScreen() {
 
   const reject = async (id: string, note?: string) => {
     try {
+      // Try Firebase first if admin
+      if (isAdmin) {
+        try {
+          await updateDoc(doc(db, 'taskSuggestions', id), {
+            status: 'rejected',
+            rejectedAt: serverTimestamp(),
+            rejectedBy: user?.uid,
+            note: note || ''
+          })
+          console.log('✅ Firebase rejection successful')
+        } catch (firebaseError: any) {
+          console.warn('Firebase rejection failed, using localStorage:', firebaseError?.code)
+        }
+      }
+      
+      // Always update local state
       const updated = items.map(item => 
         item.id === id ? { ...item, status: 'rejected' as SuggestionStatus, note } : item
       )
@@ -129,6 +196,21 @@ export function AdminTasksScreen() {
 
   const edit = async (id: string, updates: { text: string }) => {
     try {
+      // Try Firebase first if admin
+      if (isAdmin) {
+        try {
+          await updateDoc(doc(db, 'taskSuggestions', id), {
+            text: updates.text,
+            editedAt: serverTimestamp(),
+            editedBy: user?.uid
+          })
+          console.log('✅ Firebase edit successful')
+        } catch (firebaseError: any) {
+          console.warn('Firebase edit failed, using localStorage:', firebaseError?.code)
+        }
+      }
+      
+      // Always update local state
       const updated = items.map(item => 
         item.id === id ? { ...item, ...updates } : item
       )
@@ -141,6 +223,17 @@ export function AdminTasksScreen() {
 
   const remove = async (id: string) => {
     try {
+      // Try Firebase first if admin
+      if (isAdmin) {
+        try {
+          await deleteDoc(doc(db, 'taskSuggestions', id))
+          console.log('✅ Firebase deletion successful')
+        } catch (firebaseError: any) {
+          console.warn('Firebase deletion failed, using localStorage:', firebaseError?.code)
+        }
+      }
+      
+      // Always update local state
       const updated = items.filter(item => item.id !== id)
       setItems(updated)
       localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
@@ -204,6 +297,11 @@ export function AdminTasksScreen() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>{t('adminTasks.title')}</h1>
+        <div className={styles.adminInfo}>
+          👤 User: {user?.email || user?.uid} | 
+          🔧 Admin: {isAdmin ? '✅' : '❌'} |
+          📦 Suggestions: {items.length}
+        </div>
 
         <div className={styles.tabs}>
           <button 

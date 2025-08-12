@@ -20,10 +20,14 @@ export interface Task {
 export async function listApprovedTasks(category?: CategoryKey): Promise<Task[]> {
   const base = collection(db, col.tasks);
   const q = category
-    ? query(base, where('status', '==', 'approved'), where('hidden', '!=', true), where('category', '==', category), orderBy('category'))
-    : query(base, where('status', '==', 'approved'), where('hidden', '!=', true));
+    ? query(base, where('status', '==', 'approved'), where('category', '==', category))
+    : query(base, where('status', '==', 'approved'));
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...(d.data() as Task) }));
+  
+  // Filter hidden tasks client-side until index is ready
+  return snap.docs
+    .map(d => ({ id: d.id, ...(d.data() as Task) }))
+    .filter(task => !task.hidden);
 }
 
 export async function createTask(task: Omit<Task, 'id'|'createdAt'>) {

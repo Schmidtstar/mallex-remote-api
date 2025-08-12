@@ -46,6 +46,41 @@
       "verfuehrung": "Seduction", 
       "eskalation": "Escalation",
       "beichte": "Confession"
+    },
+    "fate": {
+      "item1": "Tell about your first kiss",
+      "item2": "Describe your most embarrassing moment",
+      "item3": "What is your biggest dream?",
+      "item4": "What secret have you never revealed?",
+      "item5": "What would you change if you could turn back time?"
+    },
+    "shame": {
+      "item1": "Admit what shames you the most",
+      "item2": "Tell about a moment when you failed",
+      "item3": "Confess your worst habit",
+      "item4": "What's the dumbest thing you've ever done?",
+      "item5": "What are you most ashamed of?"
+    },
+    "seduce": {
+      "item1": "Whisper something seductive in someone's ear",
+      "item2": "Give someone a sensual compliment",
+      "item3": "Tell about your wildest fantasy",
+      "item4": "Describe your perfect date",
+      "item5": "What do you do to seduce someone?"
+    },
+    "escalate": {
+      "item1": "Dare to do something you've never done",
+      "item2": "Challenge someone to a duel",
+      "item3": "Do something completely crazy",
+      "item4": "Make everyone laugh - whatever it takes",
+      "item5": "Cross one of your boundaries"
+    },
+    "confess": {
+      "item1": "Confess your deepest fear",
+      "item2": "Admit who you're secretly in love with",
+      "item3": "Tell your darkest secret",
+      "item4": "Admit what you really think about someone",
+      "item5": "Confess your biggest mistake"
     }
   },
   "legends": {

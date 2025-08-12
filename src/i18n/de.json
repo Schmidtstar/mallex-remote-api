@@ -46,6 +46,41 @@
       "verfuehrung": "Verführung",
       "eskalation": "Eskalation",
       "beichte": "Geständnis"
+    },
+    "fate": {
+      "item1": "Erzähle von deinem ersten Kuss",
+      "item2": "Beschreibe dein peinlichstes Erlebnis",
+      "item3": "Was ist dein größter Traum?",
+      "item4": "Welches Geheimnis hast du nie preisgegeben?",
+      "item5": "Was würdest du ändern, wenn du die Zeit zurückdrehen könntest?"
+    },
+    "shame": {
+      "item1": "Gib zu, was dich am meisten beschämt",
+      "item2": "Erzähle von einem Moment, in dem du versagt hast",
+      "item3": "Bekenne deine schlechteste Angewohnheit",
+      "item4": "Was ist das Dümmste, was du je getan hast?",
+      "item5": "Wofür schämst du dich am meisten?"
+    },
+    "seduce": {
+      "item1": "Flüstere jemandem etwas Verführerisches ins Ohr",
+      "item2": "Mache jemandem ein sinnliches Kompliment",
+      "item3": "Erzähle von deiner wildesten Fantasie",
+      "item4": "Beschreibe dein perfektes Rendezvous",
+      "item5": "Was machst du, um jemanden zu verführen?"
+    },
+    "escalate": {
+      "item1": "Wage etwas, was du noch nie getan hast",
+      "item2": "Fordere jemanden zu einem Duell heraus",
+      "item3": "Mache etwas völlig Verrücktes",
+      "item4": "Bringe alle zum Lachen - koste es, was es wolle",
+      "item5": "Überschreite eine deiner Grenzen"
+    },
+    "confess": {
+      "item1": "Gestehe deine tiefste Angst",
+      "item2": "Bekenne, in wen du heimlich verliebt bist",
+      "item3": "Erzähle dein dunkelsten Geheimnis",
+      "item4": "Gib zu, was du wirklich von jemandem denkst",
+      "item5": "Bekenne deinen größten Fehler"
     }
   },
   "legends": {

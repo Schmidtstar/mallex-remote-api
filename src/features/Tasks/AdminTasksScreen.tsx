@@ -5,7 +5,8 @@ import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc, addDoc
 import { db } from '../../lib/firebase'
 import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
-import { categories } from '../Arena/categories'
+import { categories, type CategoryKey } from '../Arena/categories'
+import { challenges } from '../Arena/challenges'
 import { createTaskApproved, listApprovedTasks, type Task } from '../../lib/tasksApi'
 import styles from './AdminTasksScreen.module.css'
 

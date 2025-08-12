@@ -1,8 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
-import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { HamburgerMenu } from '../components/HamburgerMenu'
 import styles from './TabLayout.module.css'
@@ -10,7 +9,6 @@ import styles from './TabLayout.module.css'
 export function TabLayout() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
   const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 

@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   admin: boolean | 'loading';
   loading: boolean;
+  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   loginAnonymously: () => Promise<void>;
@@ -95,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           console.error('Error in auth state change:', error);
           // Bei Firebase-Verbindungsproblemen: in Gastmodus wechseln
-          if (error?.code === 'unavailable') {
+          if ((error as any)?.code === 'unavailable') {
             console.warn('🟡 Firebase became unavailable - switching to guest mode');
             setUser(null);
             setAdmin(false);
@@ -135,6 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     admin,
     loading,
+    isAuthenticated: !!user,
     login,
     register,
     loginAnonymously,

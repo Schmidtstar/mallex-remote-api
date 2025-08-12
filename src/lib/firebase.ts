@@ -37,7 +37,6 @@ setPersistence(auth, browserLocalPersistence).catch((e) =>
 // Firestore mit Auto-Long-Polling (replit/proxy-freundlich)
 export const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: true,
-  useFetchStreams: false, // hilft in restriktiven Proxys/Safari
 });
 
 // keine Default-Exporte → vermeidet Barrel-/Star-Export-Probleme

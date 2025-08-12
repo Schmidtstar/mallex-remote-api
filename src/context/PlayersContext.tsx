@@ -32,7 +32,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
 
-  const mode = useMemo(() => {
+  const mode = useMemo((): 'firebase' | 'localStorage' => {
     return user && !user.isAnonymous ? 'firebase' : 'localStorage'
   }, [user])
 

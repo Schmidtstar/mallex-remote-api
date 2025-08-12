@@ -23,19 +23,58 @@ export function LeaderboardScreen() {
   async function loadLeaderboard() {
     try {
       setLoading(true)
-      const playersRef = collection(db, 'players')
-      const q = query(playersRef, orderBy('arenaPoints', 'desc'), limit(50))
-      const snapshot = await getDocs(q)
+      
+      // Load players from Firebase if available
+      let playersData: Player[] = []
+      
+      try {
+        const playersRef = collection(db, 'players')
+        const q = query(playersRef, orderBy('arenaPoints', 'desc'), limit(50))
+        const snapshot = await getDocs(q)
 
-      const playersData: Player[] = []
-      snapshot.forEach((doc, index) => {
-        const data = doc.data()
-        playersData.push({
-          id: doc.id,
-          name: data.name || data.displayName || 'Unbekannter Spieler',
-          arenaPoints: data.arenaPoints || 0,
-          rank: index + 1
+        snapshot.forEach((doc) => {
+          const data = doc.data()
+          playersData.push({
+            id: doc.id,
+            name: data.name || data.displayName || 'Unbekannter Spieler',
+            arenaPoints: data.arenaPoints || 0,
+            rank: 0 // Will be set later
+          })
         })
+      } catch (firebaseError) {
+        console.warn('Firebase nicht verfügbar, lade lokale Legenden:', firebaseError)
+      }
+
+      // Also load legends from localStorage (they should appear with 0 points if not in Firebase)
+      try {
+        const localLegends = localStorage.getItem('mallex-players')
+        if (localLegends) {
+          const legends = JSON.parse(localLegends)
+          legends.forEach((legend: any) => {
+            // Check if this legend is already in the players data
+            const existingPlayer = playersData.find(p => 
+              p.name.toLowerCase() === legend.name.toLowerCase()
+            )
+            
+            if (!existingPlayer) {
+              // Add legend with 0 arena points
+              playersData.push({
+                id: legend.id,
+                name: legend.name,
+                arenaPoints: 0,
+                rank: 0 // Will be set later
+              })
+            }
+          })
+        }
+      } catch (localError) {
+        console.warn('Fehler beim Laden der lokalen Legenden:', localError)
+      }
+
+      // Sort by arena points (descending) and assign ranks
+      playersData.sort((a, b) => b.arenaPoints - a.arenaPoints)
+      playersData.forEach((player, index) => {
+        player.rank = index + 1
       })
 
       setPlayers(playersData)

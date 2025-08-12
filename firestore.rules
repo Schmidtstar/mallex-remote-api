@@ -24,8 +24,8 @@ service cloud.firestore {
 
     /* Spielerverwaltung (Legenden – Top-Level) */
     match /players/{playerId} {
-      // Lesen: nur Besitzer
-      allow read: if signedIn() && request.auth.uid == resource.data.userId;
+      // Lesen: alle eingeloggten User (für Rangliste/Leaderboard)
+      allow read: if signedIn();
 
       // Erstellen: Besitzer = eingeloggter User, Name verpflichtend und begrenzt
       allow create: if signedIn()

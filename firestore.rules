@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -50,7 +51,8 @@ service cloud.firestore {
     match /suggestions/{sid} {
       allow create: if signedIn()
         && request.resource.data.category in [
-          'schicksal','schande','verfuehrung','eskalation','beichte'
+          'schicksal','schande','verfuehrung','eskalation','beichte',
+          'fate','shame','seduce','escalate','confess'
         ]
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
@@ -66,7 +68,8 @@ service cloud.firestore {
       allow read: if signedIn();
       allow create, update, delete: if admin()
         && request.resource.data.category in [
-          'schicksal','schande','verfuehrung','eskalation','beichte'
+          'schicksal','schande','verfuehrung','eskalation','beichte',
+          'fate','shame','seduce','escalate','confess'
         ]
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0

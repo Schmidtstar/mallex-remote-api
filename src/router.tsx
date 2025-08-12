@@ -35,9 +35,7 @@ const ProtectedRoutes = () => {
   }
 
   return (
-    <TabLayout>
-      <Outlet />
-    </TabLayout>
+    <TabLayout />
   )
 }
 
@@ -121,13 +119,11 @@ const routes = [
 const router = useHash
   ? createHashRouter(routes, {
       future: {
-        v7_startTransition: true,
         v7_relativeSplatPath: true
       }
     })
   : createBrowserRouter(routes, {
       future: {
-        v7_startTransition: true,
         v7_relativeSplatPath: true
       }
     })

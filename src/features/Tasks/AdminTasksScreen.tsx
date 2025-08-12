@@ -428,10 +428,12 @@ export function AdminTasksScreen() {
 
     try {
       const tasksSnapshot = await getDocs(collection(db, 'tasks')); // Target 'tasks' collection for all tasks
-      const deletePromises = tasksSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      const deletePromises = tasksSnapshot.docs.map((doc) => deleteDoc(doc.ref));
       await Promise.all(deletePromises);
 
-      await loadApprovedTasks(); // Reload tasks after deletion
+      // Reload direct tasks
+      const tasks = await listApprovedTasks()
+      setDirectTasks(tasks)
       alert(`${tasksSnapshot.size} Tasks erfolgreich gelöscht!`);
     } catch (error) {
       console.error('Error deleting all tasks:', error);

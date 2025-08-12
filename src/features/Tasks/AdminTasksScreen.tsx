@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
@@ -28,83 +29,6 @@ export function AdminTasksScreen() {
   const isAdmin = useIsAdmin()
   const [items, setItems] = useState<TaskSuggestion[]>([])
   const [loading, setLoading] = useState(false)
-
-  // Admin-specific data loading
-  useEffect(() => {
-    if (!isAdmin || !user?.uid) return
-    
-    const loadAllSuggestions = async () => {
-      setLoading(true)
-      try {
-        // Admin kann alle Vorschläge sehen
-        const snapshot = await getDocs(collection(db, 'taskSuggestions'))
-        const suggestions = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as TaskSuggestion[]
-        setItems(suggestions)
-      } catch (error) {
-        console.error('Admin suggestions load failed:', error)
-        setItems([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadAllSuggestions()
-  }, [isAdmin, user?.uid])
-
-  // Admin actions
-  const approve = async (id: string) => {
-    try {
-      await updateDoc(doc(db, 'taskSuggestions', id), { 
-        status: 'approved',
-        reviewedAt: serverTimestamp(),
-        reviewedBy: user?.uid 
-      })
-      setItems(prev => prev.map(item => 
-        item.id === id ? { ...item, status: 'approved' } : item
-      ))
-    } catch (error) {
-      console.error('Approve failed:', error)
-    }
-  }
-
-  const reject = async (id: string, note?: string) => {
-    try {
-      await updateDoc(doc(db, 'taskSuggestions', id), { 
-        status: 'rejected',
-        note,
-        reviewedAt: serverTimestamp(),
-        reviewedBy: user?.uid 
-      })
-      setItems(prev => prev.map(item => 
-        item.id === id ? { ...item, status: 'rejected', note } : item
-      ))
-    } catch (error) {
-      console.error('Reject failed:', error)
-    }
-  }
-
-  const edit = async (id: string, updates: { text: string }) => {
-    try {
-      await updateDoc(doc(db, 'taskSuggestions', id), updates)
-      setItems(prev => prev.map(item => 
-        item.id === id ? { ...item, ...updates } : item
-      ))
-    } catch (error) {
-      console.error('Edit failed:', error)
-    }
-  }
-
-  const remove = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, 'taskSuggestions', id))
-      setItems(prev => prev.filter(item => item.id !== id))
-    } catch (error) {
-      console.error('Delete failed:', error)
-    }
-  }
   const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create'>('pending')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
@@ -117,8 +41,78 @@ export function AdminTasksScreen() {
   const [createError, setCreateError] = useState('')
   const [createSuccess, setCreateSuccess] = useState('')
 
+  // Admin-specific data loading - ONLY localStorage for now
+  useEffect(() => {
+    if (!isAdmin || !user?.uid) return
+    
+    const loadSuggestions = () => {
+      setLoading(true)
+      try {
+        // Use localStorage only - no Firebase until admin setup is complete
+        const saved = localStorage.getItem('mallex_admin_suggestions')
+        const suggestions = saved ? JSON.parse(saved) : []
+        setItems(suggestions)
+      } catch (error) {
+        console.error('Admin suggestions load failed:', error)
+        setItems([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSuggestions()
+  }, [isAdmin, user?.uid])
+
   if (!isAdmin) {
     return <Navigate to="/arena" replace />
+  }
+
+  // Admin actions - localStorage only
+  const approve = async (id: string) => {
+    try {
+      const updated = items.map(item => 
+        item.id === id ? { ...item, status: 'approved' as SuggestionStatus } : item
+      )
+      setItems(updated)
+      localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
+    } catch (error) {
+      console.error('Approve failed:', error)
+    }
+  }
+
+  const reject = async (id: string, note?: string) => {
+    try {
+      const updated = items.map(item => 
+        item.id === id ? { ...item, status: 'rejected' as SuggestionStatus, note } : item
+      )
+      setItems(updated)
+      localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
+      setRejectNote(prev => ({ ...prev, [id]: '' }))
+    } catch (error) {
+      console.error('Reject failed:', error)
+    }
+  }
+
+  const edit = async (id: string, updates: { text: string }) => {
+    try {
+      const updated = items.map(item => 
+        item.id === id ? { ...item, ...updates } : item
+      )
+      setItems(updated)
+      localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
+    } catch (error) {
+      console.error('Edit failed:', error)
+    }
+  }
+
+  const remove = async (id: string) => {
+    try {
+      const updated = items.filter(item => item.id !== id)
+      setItems(updated)
+      localStorage.setItem('mallex_admin_suggestions', JSON.stringify(updated))
+    } catch (error) {
+      console.error('Delete failed:', error)
+    }
   }
 
   const filteredItems = items.filter(item => item.status === activeTab)
@@ -142,7 +136,6 @@ export function AdminTasksScreen() {
   const handleReject = (id: string) => {
     const note = rejectNote[id] || ''
     reject(id, note)
-    setRejectNote(prev => ({ ...prev, [id]: '' }))
   }
 
   const handleCreateTask = async () => {
@@ -164,7 +157,6 @@ export function AdminTasksScreen() {
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
 
-      // Clear success message after 3 seconds
       setTimeout(() => setCreateSuccess(''), 3000)
     } catch (error) {
       console.error('Error creating task:', error)
@@ -173,13 +165,6 @@ export function AdminTasksScreen() {
       setCreating(false)
     }
   }
-
-  const tabs: { key: SuggestionStatus | 'create'; labelKey?: string }[] = [
-    { key: 'pending', labelKey: 'adminTasks.pending' },
-    { key: 'approved', labelKey: 'adminTasks.approved' },
-    { key: 'rejected', labelKey: 'adminTasks.rejected' },
-    { key: 'create' } // Tab for creating new tasks
-  ]
 
   return (
     <div className={styles.container}>
@@ -219,7 +204,7 @@ export function AdminTasksScreen() {
           <>
             {filteredItems.length === 0 ? (
               <div className={styles.emptyState}>
-                Keine {t(tabs.find(t => t.key === activeTab)?.labelKey || '')} vorhanden
+                Keine {activeTab} Aufgaben vorhanden
               </div>
             ) : (
               <div className={styles.itemsList}>

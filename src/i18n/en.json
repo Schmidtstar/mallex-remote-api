@@ -41,11 +41,11 @@
     "selectPlayer": "Choose 'New task' to start",
     "newTask": "New task",
     "categories": {
-      "fate": "Fate",
-      "shame": "Shame",
-      "seduction": "Seduction",
-      "escalation": "Escalation",
-      "confession": "Confession"
+      "schicksal": "Fate",
+      "schande": "Shame",
+      "verfuehrung": "Seduction", 
+      "eskalation": "Escalation",
+      "beichte": "Confession"
     }
   },
   "legends": {

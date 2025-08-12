@@ -26,7 +26,7 @@ service cloud.firestore {
       // Create: Signed-in users can create with valid categories
       allow create: if signedIn()
         && request.auth.uid == request.resource.data.createdBy
-        && request.resource.data.category in ['fate', 'shame', 'seduction', 'escalation', 'confession']
+        && request.resource.data.category in ['schicksal', 'schande', 'verfuehrung', 'eskalation', 'beichte']
         && request.resource.data.status == 'pending';
 
       // Update/Delete: Only admins (for moderation)

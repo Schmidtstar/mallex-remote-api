@@ -41,11 +41,11 @@
     "selectPlayer": "Wähle 'Neue Aufgabe' um zu beginnen",
     "newTask": "Neue Aufgabe",
     "categories": {
-      "fate": "Schicksal",
-      "shame": "Schande",
-      "seduction": "Verführung",
-      "escalation": "Eskalation",
-      "confession": "Geständnis"
+      "schicksal": "Schicksal",
+      "schande": "Schande", 
+      "verfuehrung": "Verführung",
+      "eskalation": "Eskalation",
+      "beichte": "Geständnis"
     }
   },
   "legends": {

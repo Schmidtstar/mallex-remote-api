@@ -27,11 +27,10 @@ export function TasksOverviewScreen() {
       try {
         console.log('🔄 Loading tasks from Firebase, category:', category);
         
-        // Query Firebase directly for approved, non-hidden tasks
+        // Query Firebase directly for approved tasks (filter hidden client-side)
         let q = query(
           collection(db, 'tasks'),
           where('status', '==', 'approved'),
-          where('hidden', '!=', true),
           orderBy('createdAt', 'desc')
         );
 
@@ -40,20 +39,22 @@ export function TasksOverviewScreen() {
           q = query(
             collection(db, 'tasks'),
             where('status', '==', 'approved'),
-            where('hidden', '!=', true),
             where('category', '==', category),
             orderBy('createdAt', 'desc')
           );
         }
 
         const snapshot = await getDocs(q);
-        const tasks = snapshot.docs.map(doc => ({
+        const allTasks = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as Task[];
 
-        console.log('✅ Firebase tasks loaded:', tasks.length);
-        setItems(tasks);
+        // Filter hidden tasks client-side to avoid index requirement
+        const visibleTasks = allTasks.filter(task => !task.hidden);
+
+        console.log('✅ Firebase tasks loaded:', visibleTasks.length);
+        setItems(visibleTasks);
       } catch (error) {
         console.error('❌ Firebase tasks loading failed:', error);
         // Fallback to empty array if Firebase fails

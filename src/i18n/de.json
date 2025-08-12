@@ -26,11 +26,23 @@
   },
   "profile": {
     "title": "Profil",
+    "displayName": "Anzeigename",
+    "birthdate": "Geburtsdatum",
+    "gender": "Geschlecht",
+    "gender_male": "Männlich",
+    "gender_female": "Weiblich", 
+    "gender_diverse": "Divers",
+    "nationality": "Nationalität",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "saved": "Erfolgreich gespeichert!",
+    "cancel": "Abbrechen",
     "playerCount": "Anzahl Spieler",
     "createdAt": "Mitglied seit",
     "email": "E-Mail",
     "anonymous": "Anonymer Nutzer",
-    "noPlayers": "Noch keine Spieler erstellt"
+    "noPlayers": "Noch keine Spieler erstellt",
+    "ageYears": "{{count}} Jahre"
   },
   "settings": {
     "title": "Einstellungen",
@@ -147,6 +159,18 @@
     "nationality": "Nationalität",
     "save": "Speichern",
     "ageYears": "{{count}} Jahre"
+  },
+  "countries": {
+    "DE": "Deutschland",
+    "AT": "Österreich", 
+    "CH": "Schweiz",
+    "US": "USA",
+    "GB": "Großbritannien",
+    "FR": "Frankreich",
+    "IT": "Italien",
+    "ES": "Spanien",
+    "NL": "Niederlande",
+    "BE": "Belgien"
   },
   "common": {
     "loading": "Laden…",

@@ -115,8 +115,14 @@
     "displayName": "Display name",
     "birthdate": "Date of birth",
     "gender": "Gender",
+    "gender_male": "Male",
+    "gender_female": "Female",
+    "gender_diverse": "Diverse",
     "nationality": "Nationality",
     "save": "Save",
+    "edit": "Edit",
+    "saved": "Successfully saved!",
+    "cancel": "Cancel",
     "ageYears": "{{count}} years",
     "playerCount": "Player Count",
     "createdAt": "Member since",
@@ -133,6 +139,18 @@
     "notifications": "Notifications",
     "privacy": "Privacy",
     "about": "About MALLEX"
+  },
+  "countries": {
+    "DE": "Germany",
+    "AT": "Austria",
+    "CH": "Switzerland", 
+    "US": "United States",
+    "GB": "United Kingdom",
+    "FR": "France",
+    "IT": "Italy",
+    "ES": "Spain",
+    "NL": "Netherlands",
+    "BE": "Belgium"
   },
   "common": {
     "loading": "Loading…",

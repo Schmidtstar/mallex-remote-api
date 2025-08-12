@@ -1,45 +1,50 @@
+
 {
   "nav": {
     "arena": "Arena",
     "legends": "Legends",
     "menu": "Menu",
     "tasks": "Tasks",
-    "suggestTask": "Suggest task",
+    "suggestTask": "Suggest Task",
     "profile": "Profile",
     "settings": "Settings",
     "admin": "Admin"
   },
   "menu": {
     "title": "Menu",
-    "close": "Close",
-    "sections": {
-      "game": "Game",
-      "tasks": "Tasks",
-      "account": "Account",
-      "admin": "Administration"
-    },
-    "logout": "Log out"
+    "game": "Game",
+    "tasks": "Tasks",
+    "admin": "Administration",
+    "account": "Account",
+    "arena": "Arena",
+    "legends": "Legends",
+    "tasksOverview": "Tasks Overview",
+    "suggestTask": "Suggest Task",
+    "adminDashboard": "Admin Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Sign Out"
   },
   "tabs": {
     "arena": "Arena",
     "legends": "Hall of Legends"
   },
   "auth": {
-    "loginTitle": "Sign in",
-    "email": "Email",
+    "loginTitle": "Sign In",
+    "email": "Email Address",
     "password": "Password",
-    "loginButton": "Sign in",
-    "registerLink": "Create account",
-    "guestButton": "Continue as guest",
+    "loginButton": "Sign In",
+    "registerLink": "Create New Account",
+    "guestButton": "Continue as Guest",
     "errors": {
-      "invalid": "Invalid credentials."
+      "invalid": "Email or password incorrect."
     }
   },
   "arena": {
     "title": "MALLEX Arena",
-    "selectCategory": "Choose a category",
-    "selectPlayer": "Choose 'New task' to start",
-    "newTask": "New task",
+    "selectCategory": "Choose a Category",
+    "selectPlayer": "Choose 'New Task' to Start",
+    "newTask": "New Task",
     "categories": {
       "schicksal": "Fate",
       "schande": "Shame",
@@ -85,50 +90,59 @@
   },
   "legends": {
     "title": "Hall of Legends", 
-    "loginRequired": "Sign in to save your players.",
-    "guestMode": "Guest mode: Players are stored locally only.",
-    "syncMode": "Players are saved to your profile.",
-    "playerNamePlaceholder": "Enter player name",
-    "addPlayer": "Add",
-    "removePlayer": "Remove", 
-    "playersList": "Players",
-    "noPlayers": "No players added yet",
-    "addError": "Failed to add player",
-    "removeError": "Failed to remove player"
+    "loginRequired": "Sign in to save your heroes.",
+    "guestMode": "Guest mode: Heroes are stored locally only.",
+    "syncMode": "Heroes are saved to your profile.",
+    "playerNamePlaceholder": "Enter hero name",
+    "addPlayer": "Add Hero",
+    "removePlayer": "Remove Hero", 
+    "playersList": "Your Heroes",
+    "noPlayers": "No heroes added yet",
+    "addError": "Failed to add hero",
+    "removeError": "Failed to remove hero",
+    "addSuccess": "Hero successfully added!",
+    "validation": {
+      "required": "Hero name is required",
+      "tooShort": "At least 2 characters required",
+      "tooLong": "Maximum 50 characters allowed",
+      "duplicate": "This hero already exists"
+    }
   },
   "tasks": {
     "title": "Tasks",
-    "overview": "Tasks overview",
+    "overview": "Tasks Overview",
     "suggest": {
-      "title": "Suggest task",
-      "placeholder": "Your task…",
-      "submit": "Submit"
+      "title": "Suggest Task",
+      "placeholder": "Enter your task suggestion here…",
+      "submit": "Submit Suggestion"
     },
     "admin": {
-      "title": "Task administration",
+      "title": "Task Management",
       "approve": "Approve",
-      "reject": "Reject"
+      "reject": "Reject",
+      "pending": "Pending Suggestions",
+      "noSuggestions": "No pending suggestions"
     }
   },
   "profile": {
-    "title": "Profile",
-    "displayName": "Display name",
-    "birthdate": "Date of birth",
+    "title": "My Profile",
+    "displayName": "Display Name",
+    "birthdate": "Date of Birth",
     "gender": "Gender",
     "gender_male": "Male",
     "gender_female": "Female",
-    "gender_diverse": "Diverse",
+    "gender_diverse": "Non-Binary",
     "nationality": "Nationality",
     "save": "Save",
     "edit": "Edit",
     "saved": "Successfully saved!",
     "cancel": "Cancel",
     "ageYears": "{{count}} years",
-    "playerCount": "Player Count",
+    "playerCount": "Hero Count",
     "createdAt": "Member since",
-    "email": "Email",
+    "email": "Email Address",
     "anonymous": "Anonymous User",
-    "noPlayers": "No players created yet"
+    "noPlayers": "No heroes created yet"
   },
   "settings": {
     "title": "Settings",
@@ -154,8 +168,13 @@
   },
   "common": {
     "loading": "Loading…",
-    "error": "Error",
+    "error": "An error occurred",
     "cancel": "Cancel",
-    "ok": "OK"
+    "ok": "OK",
+    "yes": "Yes",
+    "no": "No",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit"
   }
 }

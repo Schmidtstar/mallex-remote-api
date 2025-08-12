@@ -1,10 +1,11 @@
+
 {
   "nav": {
     "arena": "Arena",
-    "legends": "Legenden",
+    "legends": "Legenden", 
     "menu": "Menü",
     "tasks": "Aufgaben",
-    "suggestTask": "Aufgabe vorschlagen",
+    "suggestTask": "Task vorschlagen",
     "profile": "Profil",
     "settings": "Einstellungen",
     "admin": "Admin"
@@ -12,47 +13,17 @@
   "menu": {
     "title": "Menü",
     "game": "Spiel",
-    "tasks": "Aufgaben",
-    "admin": "Admin",
+    "tasks": "Aufgaben", 
+    "admin": "Administration",
     "account": "Konto",
     "arena": "Arena",
     "legends": "Legenden",
-    "tasksOverview": "Aufgaben",
+    "tasksOverview": "Aufgaben-Übersicht",
     "suggestTask": "Task vorschlagen",
-    "adminDashboard": "Admin Dashboard",
+    "adminDashboard": "Admin-Bereich",
     "profile": "Profil",
     "settings": "Einstellungen",
     "logout": "Abmelden"
-  },
-  "profile": {
-    "title": "Profil",
-    "displayName": "Anzeigename",
-    "birthdate": "Geburtsdatum",
-    "gender": "Geschlecht",
-    "gender_male": "Männlich",
-    "gender_female": "Weiblich", 
-    "gender_diverse": "Divers",
-    "nationality": "Nationalität",
-    "save": "Speichern",
-    "edit": "Bearbeiten",
-    "saved": "Erfolgreich gespeichert!",
-    "cancel": "Abbrechen",
-    "playerCount": "Anzahl Spieler",
-    "createdAt": "Mitglied seit",
-    "email": "E-Mail",
-    "anonymous": "Anonymer Nutzer",
-    "noPlayers": "Noch keine Spieler erstellt",
-    "ageYears": "{{count}} Jahre"
-  },
-  "settings": {
-    "title": "Einstellungen",
-    "language": "Sprache",
-    "german": "Deutsch",
-    "english": "English",
-    "theme": "Design",
-    "notifications": "Benachrichtigungen",
-    "privacy": "Datenschutz",
-    "about": "Über MALLEX"
   },
   "tabs": {
     "arena": "Arena",
@@ -60,19 +31,19 @@
   },
   "auth": {
     "loginTitle": "Anmelden",
-    "email": "E-Mail",
+    "email": "E-Mail-Adresse",
     "password": "Passwort",
     "loginButton": "Anmelden",
-    "registerLink": "Konto erstellen",
-    "guestButton": "Als Gast fortfahren",
+    "registerLink": "Neues Konto erstellen",
+    "guestButton": "Als Gast weitermachen",
     "errors": {
-      "invalid": "Ungültige Anmeldedaten."
+      "invalid": "E-Mail oder Passwort falsch."
     }
   },
   "arena": {
     "title": "MALLEX Arena",
-    "selectCategory": "Wähle eine Kategorie",
-    "selectPlayer": "Wähle 'Neue Aufgabe' um zu beginnen",
+    "selectCategory": "Kategorie wählen",
+    "selectPlayer": "Wähle 'Neue Aufgabe' zum Starten",
     "newTask": "Neue Aufgabe",
     "categories": {
       "schicksal": "Schicksal",
@@ -119,22 +90,22 @@
   },
   "legends": {
     "title": "Halle der Legenden",
-    "noPlayers": "Noch keine Spieler hinzugefügt",
-    "addPlayer": "Spieler hinzufügen",
-    "removePlayer": "Spieler entfernen",
-    "playerNamePlaceholder": "Spielername eingeben",
-    "addError": "Fehler beim Hinzufügen des Spielers",
-    "removeError": "Fehler beim Entfernen des Spielers",
-    "addSuccess": "Spieler erfolgreich hinzugefügt!",
-    "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
-    "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
-    "syncMode": "Spieler werden in deinem Profil gespeichert.",
-    "playersList": "Deine Spieler",
+    "noPlayers": "Noch keine Helden hinzugefügt",
+    "addPlayer": "Held hinzufügen",
+    "removePlayer": "Held entfernen",
+    "playerNamePlaceholder": "Name des Helden eingeben",
+    "addError": "Fehler beim Hinzufügen des Helden",
+    "removeError": "Fehler beim Entfernen des Helden",
+    "addSuccess": "Held erfolgreich hinzugefügt!",
+    "loginRequired": "Melde dich an, um deine Helden zu speichern.",
+    "guestMode": "Gast-Modus: Helden werden nur lokal gespeichert.",
+    "syncMode": "Helden werden in deinem Profil gespeichert.",
+    "playersList": "Deine Helden",
     "validation": {
-      "required": "Spielername ist erforderlich",
+      "required": "Heldenname ist erforderlich",
       "tooShort": "Mindestens 2 Zeichen erforderlich",
       "tooLong": "Maximal 50 Zeichen erlaubt",
-      "duplicate": "Dieser Spieler existiert bereits"
+      "duplicate": "Dieser Held existiert bereits"
     }
   },
   "tasks": {
@@ -142,23 +113,46 @@
     "overview": "Aufgaben-Übersicht",
     "suggest": {
       "title": "Aufgabe vorschlagen",
-      "placeholder": "Deine Aufgabe…",
-      "submit": "Senden"
+      "placeholder": "Deine Aufgabe hier eingeben…",
+      "submit": "Vorschlag senden"
     },
     "admin": {
-      "title": "Aufgabenverwaltung",
+      "title": "Aufgaben-Verwaltung",
       "approve": "Annehmen",
-      "reject": "Ablehnen"
+      "reject": "Ablehnen",
+      "pending": "Ausstehende Vorschläge",
+      "noSuggestions": "Keine ausstehenden Vorschläge"
     }
   },
   "profile": {
-    "title": "Profil",
+    "title": "Mein Profil",
     "displayName": "Anzeigename",
     "birthdate": "Geburtsdatum",
     "gender": "Geschlecht",
-    "nationality": "Nationalität",
+    "gender_male": "Männlich",
+    "gender_female": "Weiblich", 
+    "gender_diverse": "Divers",
+    "nationality": "Staatsangehörigkeit",
     "save": "Speichern",
+    "edit": "Bearbeiten",
+    "saved": "Erfolgreich gespeichert!",
+    "cancel": "Abbrechen",
+    "playerCount": "Anzahl Helden",
+    "createdAt": "Mitglied seit",
+    "email": "E-Mail-Adresse",
+    "anonymous": "Anonymer Nutzer",
+    "noPlayers": "Noch keine Helden erstellt",
     "ageYears": "{{count}} Jahre"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "german": "Deutsch",
+    "english": "English",
+    "theme": "Design-Thema",
+    "notifications": "Benachrichtigungen",
+    "privacy": "Datenschutz",
+    "about": "Über MALLEX"
   },
   "countries": {
     "DE": "Deutschland",
@@ -173,9 +167,14 @@
     "BE": "Belgien"
   },
   "common": {
-    "loading": "Laden…",
-    "error": "Fehler",
+    "loading": "Lädt…",
+    "error": "Fehler aufgetreten",
     "cancel": "Abbrechen",
-    "ok": "OK"
+    "ok": "OK",
+    "yes": "Ja",
+    "no": "Nein",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten"
   }
 }

@@ -116,7 +116,7 @@ export function ArenaScreen() {
         if (newCounter >= 10) {
           clearInterval(spinInterval)
           setIsSpinning(false)
-          setGameState('task-revealed')
+          setGameState('waiting-action')
         }
         
         return newCounter

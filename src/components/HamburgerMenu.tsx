@@ -117,9 +117,6 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
         tabIndex={-1}
       >
         <div className={styles.header}>
-          <h2 id="menuTitle" className={styles.title}>
-            {t('menu.title')}
-          </h2>
           <button
             className={styles.closeBtn}
             onClick={onClose}
@@ -131,7 +128,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
 
         <nav className={styles.nav} role="navigation">
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>{t('menu.sections.game')}</h3>
+            <h3 className={styles.sectionTitle}>Spiel</h3>
             {visibleItems
               .filter(item => ['arena', 'legends', 'leaderboard'].includes(item.key))
               .map(item => (

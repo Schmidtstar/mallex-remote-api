@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
-import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc, addDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
@@ -390,6 +390,47 @@ export function AdminTasksScreen() {
 
         setItems(suggestions)
         console.log('📦 localStorage suggestions loaded:', suggestions.length)
+
+        // 🚀 MIGRATE TO FIREBASE: Upload approved tasks to Firebase
+        if (suggestions.length > 0 && isAdmin) {
+          const approvedTasks = suggestions.filter(s => s.status === 'approved')
+          console.log('🔄 Migrating', approvedTasks.length, 'approved tasks to Firebase...')
+
+          // Migration with proper error handling
+          const migrationPromises = approvedTasks.map(async (task) => {
+            try {
+              const docRef = await addDoc(collection(db, 'taskSuggestions'), {
+                text: task.text,
+                categoryId: task.categoryId,
+                authorId: task.authorId || 'system',
+                createdAt: serverTimestamp(),
+                status: 'approved',
+                author: task.author || { email: 'system@mallex.de', uid: 'system' },
+                hidden: task.hidden || false,
+                migratedFromLocalStorage: true
+              })
+              console.log('✅ Migrated task:', task.text.substring(0, 50) + '...', docRef.id)
+              return { success: true, task: task.id }
+            } catch (error) {
+              console.warn('⚠️ Migration failed for task:', task.id, error)
+              return { success: false, task: task.id, error }
+            }
+          })
+
+          try {
+            const results = await Promise.allSettled(migrationPromises)
+            const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length
+            console.log(`🎉 Migration completed! ${successful}/${approvedTasks.length} tasks migrated to Firebase.`)
+
+            if (successful === approvedTasks.length) {
+              console.log('🗑️ All tasks migrated successfully. LocalStorage can be cleared.')
+              // localStorage.removeItem('mallex_admin_suggestions')
+            }
+          } catch (migrationError) {
+            console.error('🚫 Migration batch failed:', migrationError)
+          }
+        }
+
 
       } catch (error) {
         console.error('Admin suggestions load failed:', error)

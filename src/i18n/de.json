@@ -50,16 +50,23 @@
   },
   "legends": {
     "title": "Halle der Legenden",
+    "noPlayers": "Noch keine Spieler hinzugefügt",
+    "addPlayer": "Spieler hinzufügen",
+    "removePlayer": "Spieler entfernen",
+    "playerNamePlaceholder": "Spielername eingeben",
+    "addError": "Fehler beim Hinzufügen des Spielers",
+    "removeError": "Fehler beim Entfernen des Spielers",
+    "addSuccess": "Spieler erfolgreich hinzugefügt!",
     "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
     "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
     "syncMode": "Spieler werden in deinem Profil gespeichert.",
-    "playerNamePlaceholder": "Spielername eingeben",
-    "addPlayer": "Hinzufügen",
-    "removePlayer": "Entfernen",
-    "playersList": "Spieler",
-    "noPlayers": "Noch keine Spieler hinzugefügt",
-    "addError": "Fehler beim Hinzufügen des Spielers",
-    "removeError": "Fehler beim Entfernen des Spielers"
+    "playersList": "Deine Spieler",
+    "validation": {
+      "required": "Spielername ist erforderlich",
+      "tooShort": "Mindestens 2 Zeichen erforderlich",
+      "tooLong": "Maximal 50 Zeichen erlaubt",
+      "duplicate": "Dieser Spieler existiert bereits"
+    }
   },
   "menu": {
     "title": "Halle der Legenden",

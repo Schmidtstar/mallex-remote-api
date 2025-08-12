@@ -3,6 +3,192 @@
   min-height: 100vh;
 }
 
+.addPlayerForm {
+  margin-bottom: var(--space-6);
+}
+
+.addPlayerInputGroup {
+  display: flex;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.inputField {
+  flex: 1;
+  padding: var(--space-3);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--border-radius-md);
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition: all var(--transition-base);
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.inputField:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 140px;
+  justify-content: center;
+}
+
+.addButton:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.addButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.addButton.loading {
+  pointer-events: none;
+}
+
+.addIcon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-glass);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+}
+
+.previewLabel {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.previewName {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.messageBoxInfo,
+.messageBoxWarning,
+.messageBoxSuccess,
+.messageBoxError {
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-4);
+  font-size: 0.9rem;
+}
+
+.messageBoxInfo {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.messageBoxWarning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.messageBoxSuccess {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.messageBoxError {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.playersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.playerItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-4);
+  transition: all var(--transition-base);
+}
+
+.playerItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.playerName {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.removeButton {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.removeButton:hover {
+  background: #ef4444;
+  color: white;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 600;

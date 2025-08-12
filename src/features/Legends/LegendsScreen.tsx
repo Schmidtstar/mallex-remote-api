@@ -11,16 +11,41 @@ export function LegendsScreen() {
   const [newPlayerName, setNewPlayerName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  const validatePlayerName = (name: string): string | null => {
+    const trimmed = name.trim()
+    if (!trimmed) return t('legends.validation.required') || 'Spielername ist erforderlich'
+    if (trimmed.length < 2) return t('legends.validation.tooShort') || 'Mindestens 2 Zeichen erforderlich'
+    if (trimmed.length > 50) return t('legends.validation.tooLong') || 'Maximal 50 Zeichen erlaubt'
+    if (players.some(p => p.name.toLowerCase() === trimmed.toLowerCase())) {
+      return t('legends.validation.duplicate') || 'Dieser Spieler existiert bereits'
+    }
+    return null
+  }
+
   const handleAddPlayer = async () => {
-    if (!newPlayerName.trim() || isAdding) return
+    if (isAdding) return
+
+    const validationError = validatePlayerName(newPlayerName)
+    if (validationError) {
+      setError(validationError)
+      return
+    }
 
     setIsAdding(true)
+    setError(null)
+    setSuccessMessage(null)
+
     try {
       await addPlayer(newPlayerName.trim())
       setNewPlayerName('')
+      setSuccessMessage(t('legends.addSuccess') || 'Spieler erfolgreich hinzugefügt!')
+      setTimeout(() => setSuccessMessage(null), 3000)
     } catch (error) {
       console.error('Failed to add player:', error)
-      alert(t('legends.addError') || 'Fehler beim Hinzufügen des Spielers')
+      setError(t('legends.addError') || 'Fehler beim Hinzufügen des Spielers')
     } finally {
       setIsAdding(false)
     }
@@ -69,6 +94,18 @@ export function LegendsScreen() {
         </div>
       )}
 
+      {error && (
+        <div className={styles.messageBoxError}>
+          <p>{error}</p>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className={styles.messageBoxSuccess}>
+          <p>{successMessage}</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className={styles.addPlayerForm}>
         <div className={styles.addPlayerInputGroup}>
           <input
@@ -78,15 +115,34 @@ export function LegendsScreen() {
             placeholder={t('legends.playerNamePlaceholder') || 'Spielername eingeben'}
             className={styles.inputField}
             disabled={isAdding}
+            maxLength={50}
+            autoComplete="off"
+            spellCheck="false"
           />
           <button
             type="submit"
             disabled={!newPlayerName.trim() || isAdding}
-            className={styles.addButton}
+            className={`${styles.addButton} ${isAdding ? styles.loading : ''}`}
           >
-            {isAdding ? t('common.adding') || 'Hinzufügen...' : t('legends.addPlayer') || 'Hinzufügen'}
+            {isAdding ? (
+              <>
+                <span className={styles.spinner}></span>
+                {t('common.adding') || 'Hinzufügen...'}
+              </>
+            ) : (
+              <>
+                <span className={styles.addIcon}>+</span>
+                {t('legends.addPlayer') || 'Hinzufügen'}
+              </>
+            )}
           </button>
         </div>
+        {newPlayerName.trim() && (
+          <div className={styles.preview}>
+            <span className={styles.previewLabel}>Vorschau:</span>
+            <span className={styles.previewName}>{newPlayerName.trim()}</span>
+          </div>
+        )}
       </form>
 
       {players.length === 0 ? (

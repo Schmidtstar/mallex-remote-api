@@ -21,7 +21,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       setIsAdmin(false)
       if (!user?.uid) { if (!cancelled) setLoading(false); return }
       try {
-        const snap = await getDoc(doc(db, 'admins', user.uid))   // << nur EIN Dokument
+        const snap = await getDoc(doc(db, 'admins', user.uid))  // ✅ EIN Doc
         if (!cancelled) setIsAdmin(snap.exists())
       } catch (e) {
         console.warn('admin check failed', e)

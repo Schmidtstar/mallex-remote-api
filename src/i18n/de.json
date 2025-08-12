@@ -45,14 +45,17 @@
     "register": "Konto erstellen",
     "loginLink": "Bereits ein Konto? Jetzt anmelden",
     "registerLink": "Noch kein Konto? Jetzt registrieren",
-    "guestButton": "Als Gast spielen",
-    "loggingIn": "Anmeldung läuft...",
-    "registering": "Konto wird erstellt...",
-    "error": "Ein Fehler ist aufgetreten",
-    "invalidCredentials": "Ungültige E-Mail oder Passwort",
-    "emailAlreadyInUse": "Diese E-Mail wird bereits verwendet",
+    "guestButton": "Als Gast fortfahren",
+    "invalidCredentials": "Ungültige Anmeldedaten",
+    "emailAlreadyInUse": "Diese E-Mail-Adresse wird bereits verwendet",
     "weakPassword": "Das Passwort ist zu schwach",
-    "additionalInfo": "Persönliche Angaben (optional)"
+    "passwordReset": {
+      "button": "Passwort zurücksetzen",
+      "emailRequired": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+      "success": "E-Mail zum Zurücksetzen des Passworts wurde gesendet!",
+      "userNotFound": "Kein Benutzer mit dieser E-Mail-Adresse gefunden",
+      "invalidEmail": "Ungültige E-Mail-Adresse"
+    }
   },
   "arena": {
     "title": "MALLEX Arena",

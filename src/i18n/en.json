@@ -42,8 +42,15 @@
     "loginButton": "Sign In",
     "registerLink": "Create New Account",
     "guestButton": "Continue as Guest",
-    "errors": {
-      "invalid": "Email or password incorrect."
+    "invalidCredentials": "Invalid credentials",
+    "emailAlreadyInUse": "Email already in use",
+    "weakPassword": "Password is too weak",
+    "passwordReset": {
+      "button": "Reset Password",
+      "emailRequired": "Please enter your email address",
+      "success": "Password reset email has been sent!",
+      "userNotFound": "No user found with this email address",
+      "invalidEmail": "Invalid email address"
     }
   },
   "arena": {

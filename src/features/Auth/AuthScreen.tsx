@@ -82,6 +82,35 @@ export function AuthScreen() {
     }
   }
 
+  async function handlePasswordReset() {
+    if (!email) {
+      setError(t('auth.passwordReset.emailRequired'))
+      return
+    }
+    
+    try {
+      setLoading(true)
+      const { sendPasswordResetEmail } = await import('firebase/auth')
+      await sendPasswordResetEmail(auth, email)
+      setError(null)
+      alert(t('auth.passwordReset.success'))
+    } catch (err: any) {
+      console.error('Password reset error:', err)
+      switch (err.code) {
+        case 'auth/user-not-found':
+          setError(t('auth.passwordReset.userNotFound'))
+          break
+        case 'auth/invalid-email':
+          setError(t('auth.passwordReset.invalidEmail'))
+          break
+        default:
+          setError(t('auth.error'))
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className={styles.authWrap}>
       <div className={styles.authCard} role="region" aria-label={isLogin ? t('auth.loginTitle') : t('auth.registerTitle')}>
@@ -191,6 +220,18 @@ export function AuthScreen() {
           >
             {isLogin ? t('auth.registerLink') : t('auth.loginLink')}
           </button>
+          
+          {isLogin && (
+            <button
+              className={styles.btnGhost}
+              type="button"
+              onClick={handlePasswordReset}
+              disabled={loading || !email}
+            >
+              {t('auth.passwordReset.button')}
+            </button>
+          )}
+          
           <button
             className={styles.btnGhost}
             type="button"

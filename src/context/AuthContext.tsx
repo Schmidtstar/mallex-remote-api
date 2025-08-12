@@ -2,11 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, updateProfile, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { ensureUserProfile } from '@/lib/userApi';
-import { isEmailAdmin } from '@/lib/adminApi';
 
 interface AuthContextType {
   user: User | null;
-  admin: boolean | 'loading';
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -19,7 +17,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [admin, setAdmin] = useState<boolean | 'loading'>('loading');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn('Firebase connection test failed - switching to guest mode:', error);
         setLoading(false);
         setUser(null);
-        setAdmin(false);
         return false;
       }
     };
@@ -72,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (user) {
             setUser(user);
             
-            // Versuche Profil und Admin-Status zu laden, aber lass es nicht die App crashen
+            // Versuche Profil zu laden, aber lass es nicht die App crashen
             try {
               await ensureUserProfile(user.uid, {
                 email: user.email ?? undefined,
@@ -81,16 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } catch (profileError) {
               console.warn('Could not ensure user profile (offline?):', profileError);
             }
-
-            try {
-              const isAdmin = await isEmailAdmin(user.email);
-              setAdmin(isAdmin);
-            } catch (adminError) {
-              console.warn('Could not check admin status (offline?):', adminError);
-              setAdmin(false);
-            }
           } else {
-            setAdmin(false);
             setUser(null);
           }
         } catch (error) {
@@ -99,9 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if ((error as any)?.code === 'unavailable') {
             console.warn('🟡 Firebase became unavailable - switching to guest mode');
             setUser(null);
-            setAdmin(false);
           } else {
-            setAdmin(false);
             setUser(null);
           }
         } finally {
@@ -134,7 +119,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value: AuthContextType = {
     user,
-    admin,
     loading,
     isAuthenticated: !!user,
     login,

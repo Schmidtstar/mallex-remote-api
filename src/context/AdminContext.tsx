@@ -1,7 +1,8 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 import { db } from '@/lib/firebase'
-import { getFirestore, doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 
 type AdminCtx = {
   isAdmin: boolean
@@ -33,32 +34,29 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setIsAdmin(false)
 
-      if (!user?.email) {
+      if (!user?.uid) {
         setLoading(false)
         return
       }
 
       try {
-        // Query admins collection for user's email
-        const firestoreDb = getFirestore(db.app)
-        const q = query(
-          collection(firestoreDb, 'admins'),
-          where('email', '==', user.email)
-        )
-
-        const querySnapshot = await getDocs(q)
-        setIsAdmin(!querySnapshot.empty)
+        // Check if user's UID exists in admins collection
+        const adminDocRef = doc(db, 'admins', user.uid)
+        const adminDoc = await getDoc(adminDocRef)
+        setIsAdmin(adminDoc.exists())
       } catch (error) {
         console.error('Error checking admin status:', error)
         // Fallback: Check if email matches jp-s97@web.de on error
-        setIsAdmin(user.email.toLowerCase() === 'jp-s97@web.de')
+        if (user?.email) {
+          setIsAdmin(user.email.toLowerCase() === 'jp-s97@web.de')
+        }
       }
 
       setLoading(false)
     }
 
     checkAdminStatus()
-  }, [user?.email])
+  }, [user?.uid, user?.email])
 
   return (
     <AdminContext.Provider value={{ isAdmin, loading }}>

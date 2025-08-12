@@ -154,6 +154,8 @@ export function ArenaScreen() {
   }
 
   const renderGameContent = () => {
+    const isMobile = window.innerWidth < 768;
+    
     switch (gameState) {
       case 'idle':
         return (
@@ -283,7 +285,6 @@ export function ArenaScreen() {
         )
 
       case 'playing':
-        const isMobile = window.innerWidth < 768;
         return (
           <div style={{ textAlign: 'center', padding: '10px' }}>
             {/* Kompakter Runden-Header */}
@@ -490,7 +491,6 @@ export function ArenaScreen() {
         )
 
       case 'waiting-action':
-        const isMobile = window.innerWidth < 768;
         return (
           <div style={{ textAlign: 'center', padding: '10px' }}>
             {/* Kompakter Header */}

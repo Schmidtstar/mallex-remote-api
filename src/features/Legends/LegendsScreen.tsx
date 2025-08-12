@@ -100,14 +100,7 @@ export function LegendsScreen() {
         <div className={styles.messageBoxWarning}>
           <p>{t('legends.guestMode') || 'Gast-Modus: Legenden werden nur lokal gespeichert.'}</p>
         </div>
-      ) : (
-        <div className={styles.messageBoxSuccess}>
-          <p>
-            {t('legends.syncMode') || 'Legenden werden in deinem Profil gespeichert.'} 
-            {mode === 'firebase' ? ' ✓' : ' (lokaler Speicher als Fallback)'}
-          </p>
-        </div>
-      )}
+      ) : null}
 
       {error && (
         <div className={styles.messageBoxError}>

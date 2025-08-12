@@ -129,22 +129,6 @@
       "pending": "Ausstehende Vorschläge",
       "noSuggestions": "Keine ausstehenden Vorschläge"
     },
-    "adminTasks": {
-      "title": "Admin: Aufgaben-Verwaltung",
-      "pending": "Ausstehend",
-      "approved": "Freigegeben",
-      "rejected": "Abgelehnt",
-      "note": "Ablehnungsgrund",
-      "actions": {
-        "approve": "Freigeben",
-        "reject": "Ablehnen",
-        "edit": "Bearbeiten",
-        "delete": "Löschen",
-        "save": "Speichern",
-        "hide": "Ausblenden",
-        "show": "Einblenden"
-      }
-    },
     "create": {
       "title": "Neue Aufgabe erstellen",
       "categoryLabel": "Kategorie",
@@ -154,6 +138,22 @@
       "creating": "Erstelle...",
       "success": "Aufgabe erfolgreich erstellt!",
       "error": "Aufgabe muss mindestens 5 Zeichen haben"
+    }
+  },
+  "adminTasks": {
+    "title": "Admin: Aufgaben-Verwaltung",
+    "pending": "Ausstehend",
+    "approved": "Freigegeben",
+    "rejected": "Abgelehnt",
+    "note": "Ablehnungsgrund",
+    "actions": {
+      "approve": "Freigeben",
+      "reject": "Ablehnen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "save": "Speichern",
+      "hide": "Ausblenden",
+      "show": "Einblenden"
     }
   },
   "profile": {

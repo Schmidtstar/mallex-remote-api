@@ -327,7 +327,7 @@ export function MenuScreen() {
 
             <div className={styles.settingGroup}>
               <h3>{t('settings.theme')}</h3>
-              <p>{t('settings.about')}</p>
+              <p>Über MALLEX - Das ultimative Party-Spiel für unvergessliche Abende! Entwickelt von JPS</p>
             </div>
           </div>
         )}

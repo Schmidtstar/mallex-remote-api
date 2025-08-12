@@ -1,0 +1,137 @@
+MALLEX – Fragenkatalog & Aktionsplan (für Replit-Agent + Umsetzung)
+
+Ziel: Zuerst Klarheit (Was ist gebraucht? Was ist Ballast? Wo fehlen Dateien?), dann kleine, sichere Fixes (Abstände/Styles), danach strukturiertes Cleanup und Stabilisierung.
+
+⸻
+
+A) Fragenkatalog (für Replit-Agent & Team)
+
+1) Projekt-Ziele & Umfang
+	•	Welche Screens müssen in der ersten stabilen Version enthalten sein (Arena, Legends, Menü, Tasks-Übersicht, Vorschlagen, Admin-Bereich, Auth)?
+	•	Welche optional (Rangliste, Debug-Tools, Entwickler-Manager)?
+	•	Gibt es kurzfristige Deadlines?
+
+2) Design & Abstände
+	•	Einheitliches Spacing-System gewünscht? (z. B. --space-2:4px, --space-3:8px, --space-4:12px, --space-5:16px)
+	•	Bottom-Navigation: Icons & Labels mittig? Mindesthöhe 64px für Tap-Ziele?
+	•	Glas-/Blur-Ästhetik global oder nur in Navigation/Overlays?
+
+3) Routing & Navigation
+	•	HashRouter vs. BrowserRouter: Was ist produktiv geplant (Hosting-Setup)?
+	•	TabLayout: Korrekte Exports/Imports (Default vs. Named) verbindlich prüfen?
+	•	Menü-Verhalten: Soll das Drawer-Menü nur über Backdrop klick schließen oder zusätzlich per Esc?
+
+4) Auth & Rollen
+	•	Welche Abschnitte sind auth-pflichtig? Welche nur für Admins sichtbar?
+	•	Persistenz: Lokal/SessionStorage Anforderungen (Remember me)?
+
+5) i18n
+	•	Standardsprache de, Fallback en – passt das so?
+	•	Schlüssel-Konvention (z. B. menu.logout, nav.arena)? Brauchen wir ein Linting/Check für fehlende Keys?
+
+6) Dateien & Struktur
+	•	TaskSuggestionsContext.tsx im Root: Absicht oder Altlast? Verschieben nach src/context oder entfernen?
+	•	generated-icon.png: Einbinden als Favicon/App-Icon oder löschen?
+	•	index.js im Root: Wird es irgendwo benötigt?
+	•	lib/adminApi.ts, lib/paths.ts: Geplante Nutzung oder entfernen/deprecated verschieben?
+
+7) Qualitätssicherung
+	•	Wollen wir CI-Checks (ESLint, TypeCheck, Build, Import-Graph-Prüfung)?
+	•	Snapshot- oder E2E-Tests (z. B. Playwright) für kritische Flows (Auth, Menü, Bottom-Nav)?
+
+⸻
+
+B) Konkrete Mini-Fixes (sofort umsetzbar)
+	1.	Fehlende Datei src/components/BottomNavigation.module.css anlegen (zentriertes Layout, 64px Höhe, Grid 3 Spalten, Glass-Hintergrund).
+	2.	Import-Fix in src/layouts/TabLayout.tsx: import BottomNavigation from '../components/BottomNavigation' (statt Named Export).
+	3.	Spacing-Tokens in styles/tokens.css ergänzen und schrittweise in Modulen verwenden.
+	4.	Hamburger-Drawer: einheitliche gap/padding (8–12px) und Scrollbereich prüfen.
+
+⸻
+
+C) Repo-Cleanup (nach Freigabe)
+	•	Verschieben/Löschen
+	•	TaskSuggestionsContext.tsx (Root) → nach src/context/TaskSuggestionsContext.tsx oder löschen.
+	•	generated-icon.png → in index.html einhängen oder löschen.
+	•	index.js (Root) → löschen, wenn ungenutzt.
+	•	src/lib/adminApi.ts, src/lib/paths.ts → löschen oder nach src/deprecated/ verschieben (mit TODO-Header).
+	•	Validieren
+	•	Import-Graph nach jedem Schritt laufen lassen (keine neuen Broken-Imports).
+
+⸻
+
+D) Arbeitsplan (iterativ, risikoarm)
+
+Phase 1 – Quick Wins (0.5–1 Tag)
+	•	A1: BottomNavigation.module.css erstellen und einbinden.
+	•	A2: TabLayout-Import korrigieren.
+	•	A3: tokens.css Spacing-Tokens hinzufügen; BottomNav & Hamburger auf Tokens umstellen.
+	•	A4: Menü-Schließlogik verifizieren (Backdrop/Esc, kein „sofortiges Zuklappen“).
+
+Phase 2 – Cleanup & Struktur (0.5–1 Tag)
+	•	B1: Datei-Altlasten verschieben/entfernen (s. oben).
+	•	B2: i18n: Check auf fehlende Keys (kleines Script oder Lint-Regel).
+	•	B3: ESLint/TSConfig schärfen (keine unbenutzten Variablen/Exporte, konsistente Imports).
+
+Phase 3 – Stabilisierung & QA (1 Tag)
+	•	C1: Import-Graph-Check automatisieren (npm script).
+	•	C2: Smoke-Tests: Render Arena/Legends/Menu; Auth Flow; Admin Sichtbarkeit.
+	•	C3: Optional Playwright-Minimal-E2E (Start → Login-Mock → Menü öffnen → Tab-Wechsel).
+
+⸻
+
+E) Prompts/Vorlagen für Replit-Agent
+
+Hinweis: Immer mit Expliziten Dateien arbeiten und die Erwartungen knapp formulieren.
+
+1) BottomNav-CSS anlegen
+
+Erstelle die Datei src/components/BottomNavigation.module.css mit folgendem Inhalt:
+[ HIER den CSS-Block aus unserem Fix einfügen ]
+
+2) Import-Fix TabLayout
+
+Öffne src/layouts/TabLayout.tsx und ersetze den Import der BottomNavigation durch:
+import BottomNavigation from '../components/BottomNavigation'
+Speichere die Datei und baue das Projekt.
+
+3) Spacing-Tokens ergänzen
+
+Erweitere styles/tokens.css um:
+:root {
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-8: 24px;
+}
+Passe anschließend BottomNavigation.module.css und HamburgerMenu.module.css an, so dass nur noch diese Tokens für gap/padding/margin verwendet werden.
+
+4) Cleanup-Kandidaten prüfen
+
+Prüfe und melde, ob folgende Dateien irgendwo importiert werden:
+- src/lib/adminApi.ts
+- src/lib/paths.ts
+- TaskSuggestionsContext.tsx (im Root)
+- generated-icon.png (Root)
+- index.js (Root)
+Falls nein: Verschiebe sie nach src/deprecated/ oder lösche sie (mit Commit-Message „chore: remove unused files“).
+
+5) Import-Graph-Skript
+
+Füge ein npm-script hinzu:
+"scripts": {
+  "depcheck": "ts-node tools/dep-graph.ts"
+}
+Lege tools/dep-graph.ts an, das die Imports ab src/main.tsx und src/router.tsx traversiert und fehlende/unerreichbare Dateien meldet.
+
+
+⸻
+
+F) Definition of Done (für diese Runde)
+	•	BottomNav ist sichtbar, Icons & Labels zentriert, Tap-Ziele ≥ 48–64px, Glass-Hintergrund.
+	•	Keine kaputten Importe (insb. fehlende BottomNavigation.module.css).
+	•	Spacing-Tokens vorhanden und in BottomNav & Hamburger verwendet.
+	•	Altlasten identifiziert; Entscheidung dokumentiert (löschen/verschieben).
+	•	Projekt baut fehlerfrei; Basisscreens rendern.

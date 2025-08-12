@@ -126,11 +126,39 @@ export function LeaderboardScreen() {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>
-          🏆 {t('leaderboard.title')}
+          🏆 {t('leaderboard.title')} 🏆
         </h1>
-        <p className={styles.subtitle}>
-          {t('leaderboard.subtitle')}
-        </p>
+
+        <button
+          onClick={loadLeaderboard}
+          disabled={loading}
+          style={{
+            padding: '10px 20px',
+            fontSize: '1rem',
+            background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
+            color: 'var(--ancient-night)',
+            border: '2px solid var(--olympic-victory)',
+            borderRadius: 'var(--radius)',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            marginBottom: '2rem',
+            fontWeight: 'bold',
+            opacity: loading ? 0.6 : 1,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {loading ? '⏳ Aktualisiere...' : '🔄 Aktualisieren'}
+        </button>
+
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(218,165,32,0.2), rgba(255,215,0,0.1))',
+          padding: '1rem',
+          borderRadius: 'var(--radius)',
+          border: '1px solid rgba(218,165,32,0.3)'
+        }}>
+          <p className={styles.subtitle}>
+            {t('leaderboard.subtitle')}
+          </p>
+        </div>
       </header>
 
       <div className={styles.leaderboard}>
@@ -173,12 +201,14 @@ export function LeaderboardScreen() {
       </div>
 
       <div className={styles.footer}>
-        <button 
-          onClick={loadLeaderboard}
-          className={styles.refreshButton}
-        >
-          {t('leaderboard.refresh')}
-        </button>
+        <div style={{
+          color: 'var(--ancient-bronze)',
+          fontSize: '0.9rem',
+          fontStyle: 'italic',
+          marginTop: '2rem'
+        }}>
+          🔄 Automatische Aktualisierung alle 10 Sekunden
+        </div>
       </div>
     </div>
   )

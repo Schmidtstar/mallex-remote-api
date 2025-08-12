@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
@@ -27,7 +26,7 @@ export function LeaderboardScreen() {
       const playersRef = collection(db, 'players')
       const q = query(playersRef, orderBy('arenaPoints', 'desc'), limit(50))
       const snapshot = await getDocs(q)
-      
+
       const playersData: Player[] = []
       snapshot.forEach((doc, index) => {
         const data = doc.data()
@@ -38,7 +37,7 @@ export function LeaderboardScreen() {
           rank: index + 1
         })
       })
-      
+
       setPlayers(playersData)
     } catch (error) {
       console.error('Fehler beim Laden der Rangliste:', error)
@@ -101,13 +100,13 @@ export function LeaderboardScreen() {
                   {getRankDisplay(player.rank)}
                 </span>
               </div>
-              
+
               <div className={styles.playerInfo}>
                 <span className={styles.playerName}>
                   {player.name}
                 </span>
               </div>
-              
+
               <div className={styles.points}>
                 <span className={styles.pointsNumber}>
                   {player.arenaPoints}
@@ -126,7 +125,7 @@ export function LeaderboardScreen() {
           onClick={loadLeaderboard}
           className={styles.refreshButton}
         >
-          🔄 {t('leaderboard.refresh')}
+          {t('leaderboard.refresh')}
         </button>
       </div>
     </div>

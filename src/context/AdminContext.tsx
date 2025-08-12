@@ -16,20 +16,30 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
+    
+    const checkAdmin = async () => {
+      if (cancelled) return
+      
       setLoading(true)
       setIsAdmin(false)
-      if (!user?.uid) { if (!cancelled) setLoading(false); return }
+      
+      if (!user?.uid) { 
+        if (!cancelled) setLoading(false)
+        return 
+      }
+      
       try {
-        const snap = await getDoc(doc(db, 'admins', user.uid))  // ✅ EIN Doc
+        const snap = await getDoc(doc(db, 'admins', user.uid))  // ✅ Single doc read
         if (!cancelled) setIsAdmin(snap.exists())
       } catch (e) {
-        console.warn('admin check failed', e)
+        console.warn('Admin check failed (this is expected if not admin):', e)
         if (!cancelled) setIsAdmin(false)
       } finally {
         if (!cancelled) setLoading(false)
       }
-    })()
+    }
+
+    checkAdmin()
     return () => { cancelled = true }
   }, [user?.uid])
 

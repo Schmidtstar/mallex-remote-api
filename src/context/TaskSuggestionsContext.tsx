@@ -1,92 +1,98 @@
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { useAuth } from './AuthContext'
 
-export type SuggestionStatus = "pending" | "approved" | "rejected";
-
-export type TaskSuggestion = {
-  id: string;
-  categoryId: string;   // z.B. "fate" | "seduce" | "confess" | "escalate" | "shame"
-  text: string;
-  status: SuggestionStatus;
-  note?: string;
-  createdAt: number;
-  createdBy?: string;   // optional: uid oder "guest"
-  author?: {            // Backward compatibility
-    email?: string;
-    uid?: string;
-  };
-};
-
-type Ctx = {
-  suggestions: TaskSuggestion[];
-  pending: TaskSuggestion[];
-  approved: TaskSuggestion[];
-  rejected: TaskSuggestion[];
-  addSuggestion: (categoryId: string, text: string, createdBy?: string) => Promise<void>;
-  approve: (id: string, note?: string) => void;
-  reject: (id: string, note?: string) => void;
-  remove: (id: string) => void;
-  updateText: (id: string, text: string) => void;
-  clearAllLocal: () => void;
-};
-
-const TaskSuggestionsContext = createContext<Ctx | undefined>(undefined);
-
-const LS_KEY = "mallex:taskSuggestions";
-
-function loadLocal(): TaskSuggestion[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? (JSON.parse(raw) as TaskSuggestion[]) : [];
-  } catch {
-    return [];
-  }
-}
-function saveLocal(list: TaskSuggestion[]) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(list));
-  } catch {}
+export interface TaskSuggestion {
+  id: string
+  text: string
+  category: string
+  authorId: string
+  createdAt: Date
+  status: 'pending' | 'approved' | 'rejected'
 }
 
-export function TaskSuggestionsProvider({ children }: { children: React.ReactNode }) {
-  const [suggestions, setSuggestions] = useState<TaskSuggestion[]>(() => loadLocal());
+interface TaskSuggestionsContextType {
+  suggestions: TaskSuggestion[]
+  loading: boolean
+  addSuggestion: (text: string, category: string) => Promise<void>
+  updateSuggestionStatus: (id: string, status: 'approved' | 'rejected') => Promise<void>
+}
 
-  useEffect(() => saveLocal(suggestions), [suggestions]);
+const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | null>(null)
 
-  const addSuggestion: Ctx["addSuggestion"] = async (categoryId, text, createdBy = "guest") => {
-    const s: TaskSuggestion = {
-      id: crypto.randomUUID(),
-      categoryId,
+const STORAGE_KEY = 'mallex_task_suggestions'
+
+export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
+  const { user, loading: authLoading } = useAuth()
+  const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // FORCE localStorage-only mode (no Firebase until rules are fixed)
+  useEffect(() => {
+    if (authLoading) return
+
+    setLoading(true)
+    try {
+      // Always use localStorage - no Firebase listeners
+      const saved = localStorage.getItem(STORAGE_KEY)
+      const suggestionsList = saved ? JSON.parse(saved) : []
+      
+      // Convert dates back from JSON
+      const parsed = suggestionsList.map((s: any) => ({
+        ...s,
+        createdAt: new Date(s.createdAt)
+      }))
+      
+      setSuggestions(parsed)
+    } catch (error) {
+      console.warn('Failed to load suggestions from localStorage:', error)
+      setSuggestions([])
+    } finally {
+      setLoading(false)
+    }
+  }, [authLoading])
+
+  const addSuggestion = async (text: string, category: string) => {
+    const newSuggestion: TaskSuggestion = {
+      id: Date.now().toString(),
       text: text.trim(),
-      status: "pending",
-      createdAt: Date.now(),
-      createdBy,
-    };
-    setSuggestions(prev => [s, ...prev]);
-  };
+      category,
+      authorId: user?.uid || 'anonymous',
+      createdAt: new Date(),
+      status: 'pending'
+    }
 
-  const patch = (id: string, fn: (s: TaskSuggestion) => TaskSuggestion) =>
-    setSuggestions(prev => prev.map(s => (s.id === id ? fn(s) : s)));
+    const updated = [...suggestions, newSuggestion]
+    setSuggestions(updated)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  }
 
-  const approve: Ctx["approve"] = (id, note) => patch(id, s => ({ ...s, status: "approved", note }));
-  const reject: Ctx["reject"] = (id, note) => patch(id, s => ({ ...s, status: "rejected", note }));
-  const remove: Ctx["remove"]  = id => setSuggestions(prev => prev.filter(s => s.id !== id));
-  const updateText: Ctx["updateText"] = (id, text) => patch(id, s => ({ ...s, text }));
+  const updateSuggestionStatus = async (id: string, status: 'approved' | 'rejected') => {
+    const updated = suggestions.map(s =>
+      s.id === id ? { ...s, status } : s
+    )
+    setSuggestions(updated)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  }
 
-  const clearAllLocal = () => setSuggestions([]);
+  const value: TaskSuggestionsContextType = {
+    suggestions,
+    loading,
+    addSuggestion,
+    updateSuggestionStatus
+  }
 
-  const value = useMemo<Ctx>(() => {
-    const pending  = suggestions.filter(s => s.status === "pending");
-    const approved = suggestions.filter(s => s.status === "approved");
-    const rejected = suggestions.filter(s => s.status === "rejected");
-    return { suggestions, pending, approved, rejected, addSuggestion, approve, reject, remove, updateText, clearAllLocal };
-  }, [suggestions]);
-
-  return <TaskSuggestionsContext.Provider value={value}>{children}</TaskSuggestionsContext.Provider>;
+  return (
+    <TaskSuggestionsContext.Provider value={value}>
+      {children}
+    </TaskSuggestionsContext.Provider>
+  )
 }
 
 export function useTaskSuggestions() {
-  const ctx = useContext(TaskSuggestionsContext);
-  if (!ctx) throw new Error("useTaskSuggestions must be used within TaskSuggestionsProvider");
-  return ctx;
+  const context = useContext(TaskSuggestionsContext)
+  if (!context) {
+    throw new Error('useTaskSuggestions must be used within TaskSuggestionsProvider')
+  }
+  return context
 }

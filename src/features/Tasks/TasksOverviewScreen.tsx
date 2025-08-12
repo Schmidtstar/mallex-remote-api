@@ -48,7 +48,7 @@ export function TasksOverviewScreen() {
               {items.map(task => (
                 <li key={task.id} className={styles.taskItem}>
                   <span className={styles.category}>
-                    [{t(`categories.${task.category}`)}]
+                    [{t(`arena.categories.${task.category}`)}]
                   </span>
                   <span className={styles.text}>{task.text}</span>
                 </li>

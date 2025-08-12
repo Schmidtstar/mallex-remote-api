@@ -607,73 +607,7 @@
   font-family: 'serif';
 }
 
-/* Arena Tor mit Glow */
-.arenaGate {
-  position: absolute;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 250px;
-  height: 180px;
-  perspective: 1000px;
-}
 
-.gateGlow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 2s ease-out;
-}
-
-.arenaGate.opening .gateGlow {
-  opacity: 1;
-  animation: gateGlow 2s ease-out;
-}
-
-@keyframes gateGlow {
-  0% { transform: translate(-50%, -50%) scale(0.5); }
-  50% { transform: translate(-50%, -50%) scale(1.5); }
-  100% { transform: translate(-50%, -50%) scale(1); }
-}
-
-.gateLeft, .gateRight {
-  position: absolute;
-  width: 50%;
-  height: 100%;
-  background: 
-    linear-gradient(180deg, 
-      rgba(139, 69, 19, 0.95) 0%,
-      rgba(160, 82, 45, 0.9) 50%,
-      rgba(101, 67, 33, 1) 100%);
-  border: 4px solid rgba(218, 165, 32, 0.6);
-  transition: transform 2.5s ease-out;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.gateLeft {
-  left: 0;
-  transform-origin: left center;
-  border-radius: 15px 0 0 15px;
-}
-
-.gateRight {
-  right: 0;
-  transform-origin: right center;
-  border-radius: 0 15px 15px 0;
-}
-
-.arenaGate.opening .gateLeft {
-  transform: rotateY(-120deg);
-}
-
-.arenaGate.opening .gateRight {
-  transform: rotateY(120deg);
-}
 
 /* Verstärkte Crowd Cheering */
 .crowdCheer {
@@ -793,10 +727,7 @@
     height: 120px;
   }
   
-  .arenaGate {
-    width: 200px;
-    height: 130px;
-  }
+  
   
   .crowdCheer {
     gap: 1rem;

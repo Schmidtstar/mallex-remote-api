@@ -14,8 +14,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
     const timer2 = setTimeout(() => setStage(2), 1200)  // MALLEX Titel
     const timer3 = setTimeout(() => setStage(3), 2500)  // Olympische Saufspiele EXPLOSION
     const timer4 = setTimeout(() => setStage(4), 4500)  // Gladiator Spruch
-    const timer5 = setTimeout(() => setStage(5), 6000)  // Arena Tor öffnet
-    const timer6 = setTimeout(() => onComplete(), 8000) // Längere Pause für den Effekt
+    const timer5 = setTimeout(() => onComplete(), 6500) // Ende nach Gladiator Spruch
     
     return () => {
       clearTimeout(timer1)
@@ -23,7 +22,6 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
       clearTimeout(timer3)
       clearTimeout(timer4)
       clearTimeout(timer5)
-      clearTimeout(timer6)
     }
   }, [onComplete])
   
@@ -114,12 +112,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
           </div>
         </div>
         
-        {/* Arena Tor öffnet sich */}
-        <div className={`${styles.arenaGate} ${stage >= 5 ? styles.opening : ''}`}>
-          <div className={styles.gateLeft}></div>
-          <div className={styles.gateRight}></div>
-          <div className={styles.gateGlow}></div>
-        </div>
+        
       </div>
       
       {/* Verstärkte Crowd */}

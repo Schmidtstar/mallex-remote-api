@@ -130,16 +130,16 @@
       "noSuggestions": "Keine ausstehenden Vorschläge"
     },
     "adminTasks": {
-      "title": "Admin: Aufgaben-Moderation",
-      "pending": "Wartend",
-      "approved": "Genehmigt",
+      "title": "Admin: Aufgaben-Verwaltung",
+      "pending": "Ausstehend",
+      "approved": "Freigegeben",
       "rejected": "Abgelehnt",
-      "note": "Grund der Ablehnung",
+      "note": "Ablehnungsgrund",
       "actions": {
         "approve": "Freigeben",
         "reject": "Ablehnen",
         "edit": "Bearbeiten",
-        "delete": "Entfernen",
+        "delete": "Löschen",
         "save": "Speichern",
         "hide": "Ausblenden",
         "show": "Einblenden"

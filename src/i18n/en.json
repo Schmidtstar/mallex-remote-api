@@ -141,7 +141,7 @@
     }
   },
   "adminTasks": {
-    "title": "Admin: Task Moderation",
+    "title": "Admin: Task Management",
     "pending": "Pending",
     "approved": "Approved",
     "rejected": "Rejected", 
@@ -150,7 +150,7 @@
       "approve": "Approve",
       "reject": "Reject",
       "edit": "Edit",
-      "delete": "Remove",
+      "delete": "Delete",
       "save": "Save",
       "hide": "Hide",
       "show": "Show"

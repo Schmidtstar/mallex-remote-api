@@ -4,44 +4,53 @@
   max-width: 600px;
   margin: 0 auto;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fa;
 }
 
 .header {
   text-align: center;
   margin-bottom: 30px;
-  color: white;
+  color: #2c3e50;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .title {
   font-size: 2rem;
   margin-bottom: 8px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  color: #2c3e50;
+  text-shadow: none;
 }
 
 .subtitle {
   font-size: 1rem;
-  opacity: 0.9;
+  opacity: 0.7;
   margin: 0;
+  color: #7f8c8d;
 }
 
 .leaderboard {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   overflow: hidden;
+  border: 1px solid #e1e8ed;
 }
 
 .playerRow {
   display: flex;
   align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.2s ease;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e1e8ed;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .playerRow:hover {
-  background-color: #f8f9fa;
+  background-color: #f8f9ff;
+  transform: translateX(2px);
 }
 
 .playerRow:last-child {
@@ -49,69 +58,80 @@
 }
 
 .topThree {
-  background: linear-gradient(90deg, #fff9e6 0%, #ffffff 100%);
-  border-left: 4px solid #ffd700;
+  background: linear-gradient(90deg, #fffbf0 0%, #ffffff 100%);
+  border-left: 4px solid #f39c12;
+  position: relative;
 }
 
 .topThree:hover {
-  background: linear-gradient(90deg, #fff5d6 0%, #f8f9fa 100%);
+  background: linear-gradient(90deg, #fff8e1 0%, #f8f9ff 100%);
 }
 
 .rankSection {
   display: flex;
   align-items: center;
-  min-width: 60px;
-  margin-right: 16px;
+  min-width: 70px;
+  margin-right: 20px;
 }
 
 .medal {
-  font-size: 1.5rem;
-  margin-right: 8px;
+  font-size: 1.8rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .rank {
   font-weight: bold;
-  font-size: 1.2rem;
-  color: #666;
+  font-size: 1.3rem;
+  color: #2c3e50;
 }
 
 .playerInfo {
   flex: 1;
-  margin-right: 16px;
+  margin-right: 20px;
 }
 
 .playerName {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: #2c3e50;
+  line-height: 1.3;
 }
 
 .points {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 80px;
+  min-width: 90px;
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
 .pointsNumber {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  color: #4a90e2;
+  color: #3498db;
   line-height: 1;
 }
 
 .pointsLabel {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.75rem;
+  color: #7f8c8d;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin-top: 2px;
 }
 
 .loading, .empty {
   text-align: center;
   padding: 40px 20px;
-  color: white;
+  color: #7f8c8d;
   font-size: 1.1rem;
+  background: white;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .footer {
@@ -120,21 +140,22 @@
 }
 
 .refreshButton {
-  background: white;
-  color: #667eea;
+  background: #3498db;
+  color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 8px;
   padding: 12px 24px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
   transition: all 0.2s ease;
 }
 
 .refreshButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  background: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
 }
 
 .refreshButton:active {

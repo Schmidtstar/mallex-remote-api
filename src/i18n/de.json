@@ -1,8 +1,7 @@
-
 {
   "nav": {
     "arena": "Arena",
-    "legends": "Legenden", 
+    "legends": "Legenden",
     "menu": "Menü",
     "tasks": "Aufgaben",
     "suggestTask": "Task vorschlagen",
@@ -13,7 +12,7 @@
   "menu": {
     "title": "Menü",
     "game": "Spiel",
-    "tasks": "Aufgaben", 
+    "tasks": "Aufgaben",
     "admin": "Administration",
     "account": "Konto",
     "arena": "Arena",
@@ -125,38 +124,33 @@
     }
   },
   "profile": {
-    "title": "Mein Profil",
+    "title": "Profil",
+    "email": "E-Mail",
     "displayName": "Anzeigename",
     "birthdate": "Geburtsdatum",
+    "age": "Alter",
+    "ageYears": "{{count}} Jahre",
     "gender": "Geschlecht",
     "gender_male": "Männlich",
-    "gender_female": "Weiblich", 
+    "gender_female": "Weiblich",
     "gender_diverse": "Divers",
-    "nationality": "Staatsangehörigkeit",
-    "save": "Speichern",
+    "nationality": "Nationalität",
+    "anonymous": "Gast-Benutzer",
     "edit": "Bearbeiten",
-    "saved": "Erfolgreich gespeichert!",
-    "cancel": "Abbrechen",
-    "playerCount": "Anzahl Helden",
-    "createdAt": "Mitglied seit",
-    "email": "E-Mail-Adresse",
-    "anonymous": "Anonymer Nutzer",
-    "noPlayers": "Noch keine Helden erstellt",
-    "ageYears": "{{count}} Jahre"
+    "save": "Speichern",
+    "saved": "Profil gespeichert"
   },
   "settings": {
     "title": "Einstellungen",
     "language": "Sprache",
     "german": "Deutsch",
-    "english": "English",
-    "theme": "Design-Thema",
-    "notifications": "Benachrichtigungen",
-    "privacy": "Datenschutz",
-    "about": "Über MALLEX"
+    "english": "Englisch",
+    "theme": "Design",
+    "about": "Über MALLEX - Das ultimative Party-Spiel für unvergessliche Abende!"
   },
   "countries": {
     "DE": "Deutschland",
-    "AT": "Österreich", 
+    "AT": "Österreich",
     "CH": "Schweiz",
     "US": "USA",
     "GB": "Großbritannien",

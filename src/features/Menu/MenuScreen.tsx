@@ -271,7 +271,7 @@ export function MenuScreen() {
                             onClick={handleEditCancel}
                             className={styles.cancelButton}
                           >
-                            {t('common.cancel')}
+                            Abbrechen
                           </button>
                         </div>
 

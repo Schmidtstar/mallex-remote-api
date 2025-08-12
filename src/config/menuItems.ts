@@ -28,6 +28,13 @@ export const menuItems: MenuItem[] = [
     requiresAuth: false
   },
   {
+    key: 'leaderboard',
+    path: '/leaderboard',
+    labelKey: 'nav.leaderboard',
+    icon: '🏆',
+    requiresAuth: false
+  },
+  {
     key: 'tasks',
     path: '/tasks',
     labelKey: 'nav.tasks',

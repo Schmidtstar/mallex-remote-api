@@ -2,9 +2,8 @@
   "nav": {
     "arena": "Arena",
     "legends": "Legends",
-    "menu": "Menu",
+    "leaderboard": "Leaderboard",
     "tasks": "Tasks",
-    "suggestTask": "Suggest Task",
     "profile": "Profile",
     "settings": "Settings",
     "admin": "Admin"
@@ -103,23 +102,16 @@
   },
   "legends": {
     "title": "Hall of Legends",
-    "loginRequired": "Sign in to save your heroes.",
-    "guestMode": "Guest mode: Heroes are stored locally only.",
-    "syncMode": "Heroes are saved to your profile.",
-    "playerNamePlaceholder": "Enter hero name",
-    "addPlayer": "Add Hero",
-    "removePlayer": "Remove Hero",
-    "playersList": "Your Heroes",
-    "noPlayers": "No heroes added yet",
-    "addError": "Failed to add hero",
-    "removeError": "Failed to remove hero",
-    "addSuccess": "Hero successfully added!",
-    "validation": {
-      "required": "Hero name is required",
-      "tooShort": "At least 2 characters required",
-      "tooLong": "Maximum 50 characters allowed",
-      "duplicate": "This hero already exists"
-    }
+    "subtitle": "The greatest players of all time",
+    "empty": "No legends yet"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "Current Arena Champions",
+    "loading": "Loading leaderboard...",
+    "empty": "No players on leaderboard yet",
+    "points": "Points",
+    "refresh": "Refresh"
   },
   "tasks": {
     "title": "Tasks",

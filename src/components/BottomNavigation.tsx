@@ -11,6 +11,7 @@ export default function BottomNavigation({ openMenu }: Props) {
 
   const goArena = useCallback(() => nav("/arena"), [nav]);
   const goLegends = useCallback(() => nav("/legends"), [nav]);
+  const goLeaderboard = useCallback(() => nav("/leaderboard"), [nav]);
   const open = useCallback(() => openMenu(), [openMenu]);
 
   return (
@@ -33,6 +34,16 @@ export default function BottomNavigation({ openMenu }: Props) {
       >
         <span className={styles.icon}>🏛️</span>
         <span className={styles.label}>Legenden</span>
+      </button>
+
+      <button
+        className={styles.item}
+        data-active={pathname.startsWith("/leaderboard") || undefined}
+        onClick={goLeaderboard}
+        aria-label="Rangliste"
+      >
+        <span className={styles.icon}>🏆</span>
+        <span className={styles.label}>Tabelle</span>
       </button>
 
       <button

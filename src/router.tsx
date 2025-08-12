@@ -3,6 +3,7 @@ import { createHashRouter, createBrowserRouter, Navigate, Outlet } from 'react-r
 import { TabLayout } from './layouts/TabLayout'
 import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
+import { LeaderboardScreen } from './features/Leaderboard/LeaderboardScreen'
 import { MenuScreen } from './features/Menu/MenuScreen'
 import { TasksOverviewScreen } from './features/Tasks/TasksOverviewScreen'
 import { SuggestTaskScreen } from './features/Tasks/SuggestTaskScreen'
@@ -65,6 +66,11 @@ const routes = [
         path: 'legends',
         element: <LegendsScreen />,
         errorElement: <ErrorBoundary><div>Fehler in Legenden</div></ErrorBoundary>
+      },
+      {
+        path: 'leaderboard',
+        element: <LeaderboardScreen />,
+        errorElement: <ErrorBoundary><div>Fehler in Rangliste</div></ErrorBoundary>
       },
       {
         path: 'menu',

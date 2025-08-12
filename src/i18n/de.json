@@ -2,9 +2,8 @@
   "nav": {
     "arena": "Arena",
     "legends": "Legenden",
-    "menu": "Menü",
+    "leaderboard": "Rangliste",
     "tasks": "Aufgaben",
-    "suggestTask": "Task vorschlagen",
     "profile": "Profil",
     "settings": "Einstellungen",
     "admin": "Admin"
@@ -112,23 +111,16 @@
   },
   "legends": {
     "title": "Halle der Legenden",
-    "noPlayers": "Noch keine Legenden hinzugefügt",
-    "addPlayer": "Legende hinzufügen",
-    "removePlayer": "Legende entfernen",
-    "playerNamePlaceholder": "Name der Legende eingeben",
-    "addError": "Fehler beim Hinzufügen der Legende",
-    "removeError": "Fehler beim Entfernen der Legende",
-    "addSuccess": "Legende erfolgreich hinzugefügt!",
-    "loginRequired": "Melde dich an, um deine Legenden zu speichern.",
-    "guestMode": "Gast-Modus: Legenden werden nur lokal gespeichert.",
-    "syncMode": "Legenden werden in deinem Profil gespeichert.",
-    "playersList": "Deine Legenden",
-    "validation": {
-      "required": "Legendenname ist erforderlich",
-      "tooShort": "Mindestens 2 Zeichen erforderlich",
-      "tooLong": "Maximal 50 Zeichen erlaubt",
-      "duplicate": "Diese Legende existiert bereits"
-    }
+    "subtitle": "Die besten Spieler aller Zeiten",
+    "empty": "Noch keine Legenden vorhanden"
+  },
+  "leaderboard": {
+    "title": "Rangliste",
+    "subtitle": "Die aktuellen Arena-Champions",
+    "loading": "Lade Rangliste...",
+    "empty": "Noch keine Spieler in der Rangliste",
+    "points": "Punkte",
+    "refresh": "Aktualisieren"
   },
   "tasks": {
     "title": "Aufgaben",

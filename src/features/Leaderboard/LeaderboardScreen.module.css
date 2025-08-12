@@ -1,0 +1,178 @@
+
+.container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.leaderboard {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.playerRow {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.playerRow:hover {
+  background-color: #f8f9fa;
+}
+
+.playerRow:last-child {
+  border-bottom: none;
+}
+
+.topThree {
+  background: linear-gradient(90deg, #fff9e6 0%, #ffffff 100%);
+  border-left: 4px solid #ffd700;
+}
+
+.topThree:hover {
+  background: linear-gradient(90deg, #fff5d6 0%, #f8f9fa 100%);
+}
+
+.rankSection {
+  display: flex;
+  align-items: center;
+  min-width: 60px;
+  margin-right: 16px;
+}
+
+.medal {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.rank {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.playerInfo {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.playerName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.pointsNumber {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #4a90e2;
+  line-height: 1;
+}
+
+.pointsLabel {
+  font-size: 0.8rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.refreshButton {
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.refreshButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.refreshButton:active {
+  transform: translateY(0);
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 1.6rem;
+  }
+  
+  .playerRow {
+    padding: 12px 16px;
+  }
+  
+  .rankSection {
+    min-width: 50px;
+    margin-right: 12px;
+  }
+  
+  .medal {
+    font-size: 1.3rem;
+  }
+  
+  .playerName {
+    font-size: 1rem;
+  }
+  
+  .pointsNumber {
+    font-size: 1.1rem;
+  }
+  
+  .points {
+    min-width: 60px;
+  }
+}

@@ -34,8 +34,8 @@ export function AdminTasksScreen() {
   const [editText, setEditText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
 
-  // Task creation state
-  const [newTaskCategory, setNewTaskCategory] = useState<'fate' | 'shame' | 'seduce' | 'escalate' | 'confess'>('fate')
+  // Task creation state  
+  const [newTaskCategory, setNewTaskCategory] = useState<string>('schicksal')
   const [newTaskText, setNewTaskText] = useState('')
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState('')
@@ -625,8 +625,19 @@ export function AdminTasksScreen() {
 
     setCreating(true)
     try {
+      // Map German category IDs to English ones for API compatibility
+      const categoryMapping: Record<string, string> = {
+        'schicksal': 'fate',
+        'schande': 'shame', 
+        'verfuehrung': 'seduce',
+        'eskalation': 'escalate',
+        'beichte': 'confess'
+      }
+      
+      const englishCategory = categoryMapping[newTaskCategory] || newTaskCategory
+      
       await createTaskApproved(
-        { category: newTaskCategory, text: newTaskText.trim() },
+        { category: englishCategory as CategoryKey, text: newTaskText.trim() },
         user?.email ?? user?.uid
       )
 
@@ -636,7 +647,7 @@ export function AdminTasksScreen() {
       setTimeout(() => setCreateSuccess(''), 3000)
     } catch (error) {
       console.error('Error creating task:', error)
-      setCreateError('Fehler beim Erstellen der Aufgabe')
+      setCreateError('Fehler beim Erstellen der Aufgabe: ' + (error instanceof Error ? error.message : 'Unbekannter Fehler'))
     } finally {
       setCreating(false)
     }
@@ -813,14 +824,14 @@ export function AdminTasksScreen() {
               <label className={styles.label}>{t('tasks.create.categoryLabel')}</label>
               <select
                 value={newTaskCategory}
-                onChange={(e) => setNewTaskCategory(e.target.value as any)}
+                onChange={(e) => setNewTaskCategory(e.target.value)}
                 className={styles.select}
               >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {t(cat.labelKey)}
-                  </option>
-                ))}
+                <option value="schicksal">Schicksal</option>
+                <option value="schande">Schande</option>
+                <option value="verfuehrung">Verführung</option>
+                <option value="eskalation">Eskalation</option>
+                <option value="beichte">Beichte</option>
               </select>
             </div>
 

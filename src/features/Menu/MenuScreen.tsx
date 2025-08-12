@@ -287,9 +287,9 @@ export function MenuScreen() {
                   <p className={styles.guestInfo}>{t('profile.anonymous')}</p>
                 )}
 
-                <button 
-                  onClick={handleLogout} 
-                  disabled={loading} 
+                <button
+                  onClick={handleLogout}
+                  disabled={loading}
                   className={styles.logoutButton}
                 >
                   {t('menu.logout')}

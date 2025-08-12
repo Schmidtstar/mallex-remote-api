@@ -378,34 +378,7 @@ export function AdminTasksScreen() {
     }
   }
 
-  // Define loadApprovedTasks to be used by delete handlers
-  const loadApprovedTasks = async () => {
-    // This function's implementation would typically mirror the logic in useEffect
-    // for loading approved tasks, but for brevity and focus on the delete functionality,
-    // we'll assume it reloads the necessary data. A more robust solution might pass
-    // the setItems function or use a shared loading hook.
-    // For this example, we'll simulate a reload by re-running the core logic.
-    // In a real app, you'd likely refactor this into a reusable function.
-
-    // Re-fetching suggestions to update the UI after deletion
-    const querySnapshot = await getDocs(collection(db, 'taskSuggestions'));
-    const fetchedItems: TaskSuggestion[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      fetchedItems.push({
-        id: doc.id,
-        text: data.text || '',
-        categoryId: data.categoryId || 'fate',
-        authorId: data.authorId || data.createdBy || '',
-        createdAt: data.createdAt || new Date(),
-        status: data.status || 'pending',
-        author: data.author,
-        note: data.note,
-        hidden: data.hidden || false
-      });
-    });
-    setItems(fetchedItems);
-  };
+  
 
   const handleDeleteTask = async (taskId: string) => {
     if (!confirm('Task wirklich löschen?')) return;

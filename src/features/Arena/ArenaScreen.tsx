@@ -23,6 +23,11 @@ export function ArenaScreen() {
   const [selectedPlayer, setSelectedPlayer] = useState<string>('')
   const [currentTask, setCurrentTask] = useState<string>('')
   
+  // Oracle Animation State
+  const [isSpinning, setIsSpinning] = useState(false)
+  const [spinningCategory, setSpinningCategory] = useState<string>('')
+  const [spinCounter, setSpinCounter] = useState(0)
+  
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)
   const [taskResult, setTaskResult] = useState<'success' | 'failed' | ''>('')
@@ -97,7 +102,26 @@ export function ArenaScreen() {
   }
 
   const revealTask = () => {
-    setGameState('task-revealed')
+    setIsSpinning(true)
+    setSpinCounter(0)
+    
+    // Start the spinning animation
+    const spinInterval = setInterval(() => {
+      setSpinCounter(prev => {
+        const newCounter = prev + 1
+        const categoryIndex = (newCounter - 1) % categories.length
+        setSpinningCategory(categories[categoryIndex].id)
+        
+        // Stop after 10 spins (5 seconds with 0.5s intervals)
+        if (newCounter >= 10) {
+          clearInterval(spinInterval)
+          setIsSpinning(false)
+          setGameState('task-revealed')
+        }
+        
+        return newCounter
+      })
+    }, 500) // Change category every 0.5 seconds
   }
 
   const waitForAction = () => {
@@ -354,89 +378,147 @@ export function ArenaScreen() {
               </div>
             </div>
 
-            {/* Verstecktes Orakel - Mobile kompakt */}
+            {/* Verstecktes Orakel mit Spinning Animation */}
             <div style={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,26,46,0.9))',
+              background: isSpinning 
+                ? 'linear-gradient(135deg, rgba(218,165,32,0.4), rgba(255,215,0,0.3))'
+                : 'linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,26,46,0.9))',
               padding: isMobile ? '1.5rem 1rem' : '3rem 2rem',
               borderRadius: 'var(--radius)',
               marginBottom: '1rem',
-              border: '3px solid var(--ancient-bronze)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
-              position: 'relative'
+              border: isSpinning 
+                ? '3px solid var(--olympic-victory)' 
+                : '3px solid var(--ancient-bronze)',
+              boxShadow: isSpinning 
+                ? '0 10px 30px rgba(218,165,32,0.7), 0 0 50px rgba(255,215,0,0.5)'
+                : '0 10px 30px rgba(0,0,0,0.7)',
+              position: 'relative',
+              transition: 'all 0.3s ease'
             }}>
               <div style={{ 
                 position: 'absolute',
                 top: '-8px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: 'var(--ancient-night)',
+                background: isSpinning ? 'var(--olympic-victory)' : 'var(--ancient-night)',
                 padding: '3px 10px',
                 borderRadius: '15px',
-                border: '2px solid var(--ancient-bronze)'
+                border: isSpinning ? '2px solid var(--ancient-gold)' : '2px solid var(--ancient-bronze)',
+                transition: 'all 0.3s ease'
               }}>
                 <span style={{ 
-                  color: 'var(--ancient-bronze)', 
-                  fontSize: isMobile ? '0.7rem' : '0.9rem' 
+                  color: isSpinning ? 'var(--ancient-night)' : 'var(--ancient-bronze)', 
+                  fontSize: isMobile ? '0.7rem' : '0.9rem',
+                  fontWeight: 'bold'
                 }}>
-                  🔮 ORAKEL 🔮
+                  {isSpinning ? '⚡ ORAKEL AKTIV ⚡' : '🔮 ORAKEL 🔮'}
                 </span>
               </div>
               
-              <div style={{ fontSize: isMobile ? '2.5rem' : '4rem', marginBottom: '0.5rem', opacity: 0.8 }}>📜</div>
+              <div style={{ 
+                fontSize: isMobile ? '2.5rem' : '4rem', 
+                marginBottom: '0.5rem', 
+                opacity: 0.8,
+                transform: isSpinning ? 'rotate(360deg)' : 'rotate(0deg)',
+                transition: isSpinning ? 'transform 0.5s linear' : 'transform 0.3s ease',
+                animation: isSpinning ? 'spin-oracle 0.5s linear infinite' : 'none'
+              }}>
+                {isSpinning ? '🌀' : '📜'}
+              </div>
               
               <div style={{
-                background: 'rgba(139,125,107,0.3)',
+                background: isSpinning 
+                  ? 'rgba(218,165,32,0.4)'
+                  : 'rgba(139,125,107,0.3)',
                 padding: isMobile ? '1rem' : '2rem',
                 borderRadius: 'var(--radius)',
-                border: '2px dashed var(--ancient-stone)',
+                border: isSpinning 
+                  ? '2px solid var(--olympic-victory)'
+                  : '2px dashed var(--ancient-stone)',
                 minHeight: isMobile ? '60px' : '80px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                transition: 'all 0.3s ease'
               }}>
-                <p style={{ 
-                  fontSize: isMobile ? '1.2rem' : '2rem',
-                  color: 'var(--ancient-stone)',
-                  opacity: 0.5,
-                  fontFamily: 'monospace',
-                  letterSpacing: isMobile ? '2px' : '3px'
-                }}>
-                  ? ? ? ? ?
-                </p>
+                {isSpinning ? (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    <p style={{ 
+                      fontSize: isMobile ? '1.1rem' : '1.8rem',
+                      color: 'var(--olympic-victory)',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                      animation: 'pulse 0.5s ease-in-out infinite alternate'
+                    }}>
+                      {t(`arena.categories.${spinningCategory}`)}
+                    </p>
+                    <div style={{
+                      fontSize: isMobile ? '0.8rem' : '1rem',
+                      color: 'var(--ancient-gold)',
+                      fontStyle: 'italic'
+                    }}>
+                      🔄 Die Götter entscheiden...
+                    </div>
+                  </div>
+                ) : (
+                  <p style={{ 
+                    fontSize: isMobile ? '1.2rem' : '2rem',
+                    color: 'var(--ancient-stone)',
+                    opacity: 0.5,
+                    fontFamily: 'monospace',
+                    letterSpacing: isMobile ? '2px' : '3px'
+                  }}>
+                    ? ? ? ? ?
+                  </p>
+                )}
               </div>
               
               <div style={{
                 marginTop: '1rem',
-                color: 'var(--ancient-bronze)',
+                color: isSpinning ? 'var(--olympic-victory)' : 'var(--ancient-bronze)',
                 fontSize: isMobile ? '0.8rem' : '1.1rem',
-                fontStyle: 'italic'
+                fontStyle: 'italic',
+                fontWeight: isSpinning ? 'bold' : 'normal',
+                transition: 'all 0.3s ease'
               }}>
-                Wage es zu enthüllen?
+                {isSpinning ? '⚡ Das Schicksal erwacht! ⚡' : 'Wage es zu enthüllen?'}
               </div>
             </div>
 
             {/* Enthüllen Button - Touch optimiert */}
             <button
               onClick={revealTask}
+              disabled={isSpinning}
               style={{
                 padding: isMobile ? '15px 25px' : '20px 40px',
                 fontSize: isMobile ? '1.1rem' : '1.4rem',
-                background: 'linear-gradient(135deg, var(--ancient-wine), #8B0000)',
+                background: isSpinning 
+                  ? 'linear-gradient(135deg, #666, #888)'
+                  : 'linear-gradient(135deg, var(--ancient-wine), #8B0000)',
                 color: 'var(--ancient-marble)',
-                border: '3px solid var(--olympic-flame)',
+                border: `3px solid ${isSpinning ? '#888' : 'var(--olympic-flame)'}`,
                 borderRadius: 'var(--radius)',
-                cursor: 'pointer',
+                cursor: isSpinning ? 'not-allowed' : 'pointer',
                 fontWeight: 'bold',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
-                boxShadow: '0 8px 25px rgba(114,47,55,0.6)',
+                boxShadow: isSpinning 
+                  ? '0 4px 15px rgba(0,0,0,0.3)'
+                  : '0 8px 25px rgba(114,47,55,0.6)',
                 transition: 'all 0.3s ease',
                 width: isMobile ? '100%' : 'auto',
                 maxWidth: '280px',
-                touchAction: 'manipulation'
+                touchAction: 'manipulation',
+                opacity: isSpinning ? 0.6 : 1
               }}
             >
-              ⚡ SCHICKSAL ENTHÜLLEN ⚡
+              {isSpinning ? '🌀 ORAKEL ARBEITET...' : '⚡ SCHICKSAL ENTHÜLLEN ⚡'}
             </button>
           </div>
         )

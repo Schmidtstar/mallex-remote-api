@@ -313,7 +313,7 @@ export function AdminTasksScreen() {
     }
   }
 
-  const filteredItems = items.filter(item => item.status === activeTab)
+  const filteredItems = items.filter((s: TaskSuggestion) => s.status === activeTab)
 
   const getCategoryLabel = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId)
@@ -364,7 +364,7 @@ export function AdminTasksScreen() {
 
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
-      
+
       // Reload direct tasks to show the new task
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
@@ -412,7 +412,7 @@ export function AdminTasksScreen() {
 
     try {
       await deleteDoc(doc(db, 'tasks', taskId)); // Delete from tasks collection
-      
+
       // Reload direct tasks
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
@@ -453,11 +453,11 @@ export function AdminTasksScreen() {
         editedAt: serverTimestamp(),
         editedBy: user?.uid
       })
-      
+
       // Reload direct tasks
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
-      
+
       setEditingDirectId(null)
       setEditDirectText('')
       console.log('✅ Direct task updated successfully')
@@ -491,7 +491,7 @@ export function AdminTasksScreen() {
       'escalate': 'Eskalation',
       'confess': 'Beichte'
     }
-    
+
     Object.entries(challenges).forEach(([categoryId, tasks]) => {
       tasks.forEach((taskKey, index) => {
         staticTasks.push({
@@ -501,7 +501,7 @@ export function AdminTasksScreen() {
         })
       })
     })
-    
+
     return staticTasks
   }
 
@@ -521,19 +521,19 @@ export function AdminTasksScreen() {
             className={`${styles.tab} ${activeTab === 'pending' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('pending')}
           >
-            {t('adminTasks.pending')} ({items.filter(item => item.status === 'pending').length})
+            {t('adminTasks.pending')} ({items.filter((s: TaskSuggestion) => s.status === 'pending').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'approved' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('approved')}
           >
-            {t('adminTasks.approved')} ({items.filter(item => item.status === 'approved').length})
+            {t('adminTasks.approved')} ({items.filter((s: TaskSuggestion) => s.status === 'approved').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'rejected' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('rejected')}
           >
-            {t('adminTasks.rejected')} ({items.filter(item => item.status === 'rejected').length})
+            {t('adminTasks.rejected')} ({items.filter((s: TaskSuggestion) => s.status === 'rejected').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'direct' ? styles.tabActive : ''}`}
@@ -839,7 +839,7 @@ export function AdminTasksScreen() {
           </div>
         )}
       </div>
-      
+
     </div>
   )
 }

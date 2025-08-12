@@ -117,15 +117,7 @@ const routes = [
 ]
 
 const router = useHash
-  ? createHashRouter(routes, {
-      future: {
-        v7_relativeSplatPath: true
-      }
-    })
-  : createBrowserRouter(routes, {
-      future: {
-        v7_relativeSplatPath: true
-      }
-    })
+  ? createHashRouter(routes)
+  : createBrowserRouter(routes)
 
 export { router }

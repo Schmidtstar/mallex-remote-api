@@ -125,7 +125,7 @@ export function MenuScreen() {
         ...prev,
         displayName: editForm.displayName || null,
         birthdate: birthDateISO,
-        gender: editForm.gender || null,
+        gender: editForm.gender || undefined,
         nationality: editForm.nationality || null
       } : null);
 

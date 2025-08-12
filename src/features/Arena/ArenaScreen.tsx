@@ -157,10 +157,11 @@ export function ArenaScreen() {
     switch (gameState) {
       case 'idle':
         return (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            {/* Kompakter Header */}
             <div style={{ 
-              fontSize: '6rem', 
-              marginBottom: '1rem',
+              fontSize: window.innerWidth < 768 ? '3rem' : '6rem', 
+              marginBottom: '0.5rem',
               textShadow: '0 0 30px rgba(218, 165, 32, 0.8)',
               animation: 'pulse 2s infinite'
             }}>
@@ -168,105 +169,78 @@ export function ArenaScreen() {
             </div>
             <h1 style={{ 
               color: 'var(--ancient-gold)', 
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               background: 'var(--gradient-gold)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              fontSize: '2.5rem',
+              fontSize: window.innerWidth < 768 ? '1.4rem' : '2.5rem',
               fontWeight: 'bold',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              lineHeight: '1.2'
             }}>
               ⚔️ MALLEX ARENA ⚔️
             </h1>
-            <h2 style={{ 
-              color: 'var(--olympic-flame)', 
-              marginBottom: '2rem',
-              fontSize: '1.8rem',
-              fontStyle: 'italic',
-              textShadow: '1px 1px 3px rgba(255,107,53,0.7)'
-            }}>
-              🔥 DIE OLYMPISCHEN TRINKSPIELE DER ANTIKE 🔥
-            </h2>
             
+            {/* Mobile: Kompakter Status */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(218,165,32,0.2), rgba(205,127,50,0.1))',
               backdropFilter: 'var(--glass-blur)',
               border: '2px solid var(--ancient-gold)',
               borderRadius: 'var(--radius)',
-              padding: '2.5rem',
-              marginBottom: '2rem',
+              padding: window.innerWidth < 768 ? '1rem' : '2.5rem',
+              marginBottom: '1rem',
               position: 'relative',
-              boxShadow: '0 10px 30px rgba(218,165,32,0.3)',
-              overflow: 'hidden'
+              boxShadow: '0 10px 30px rgba(218,165,32,0.3)'
             }}>
-              <div style={{ 
-                position: 'absolute',
-                top: '10px',
-                left: '10px',
-                right: '10px',
-                fontSize: '1.5rem',
-                opacity: 0.7
-              }}>
-                🌿 ⚱️ 🌿
-              </div>
+              {window.innerWidth >= 768 && (
+                <div style={{ 
+                  position: 'absolute',
+                  top: '10px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '1.2rem',
+                  opacity: 0.7
+                }}>
+                  🌿 ⚱️ 🌿
+                </div>
+              )}
               
-              <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🏺</div>
+              <div style={{ fontSize: window.innerWidth < 768 ? '2rem' : '3rem', marginBottom: '0.5rem' }}>🏺</div>
               
               <div style={{
                 background: 'var(--glass-background)',
-                padding: '1.5rem',
+                padding: window.innerWidth < 768 ? '1rem' : '1.5rem',
                 borderRadius: 'var(--radius)',
                 border: '1px solid rgba(218,165,32,0.3)'
               }}>
                 <h3 style={{ 
                   color: 'var(--olympic-victory)', 
-                  marginBottom: '1rem',
-                  fontSize: '1.4rem'
+                  marginBottom: '0.5rem',
+                  fontSize: window.innerWidth < 768 ? '1rem' : '1.4rem'
                 }}>
-                  ⚡ GLADIATOREN-STATUS ⚡
+                  ⚡ GLADIATOREN ⚡
                 </h3>
                 <p style={{ 
-                  fontSize: '1.3rem', 
+                  fontSize: window.innerWidth < 768 ? '0.9rem' : '1.3rem', 
                   color: 'var(--ancient-marble)',
                   fontWeight: 'bold'
                 }}>
                   {players.length > 0 
-                    ? `🏆 ${players.length} LEGENDÄRE HELDEN BEREIT FÜR DIE ARENA!` 
-                    : '💀 KEINE KÄMPFER VERFÜGBAR! BESUCHE DIE HALLE DER LEGENDEN!'
+                    ? `🏆 ${players.length} HELDEN BEREIT!` 
+                    : '💀 KEINE KÄMPFER!'
                   }
                 </p>
               </div>
-              
-              <div style={{ 
-                position: 'absolute',
-                bottom: '10px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                fontSize: '1.5rem',
-                opacity: 0.7
-              }}>
-                ⚔️ 🛡️ ⚔️
-              </div>
             </div>
 
-            <div style={{ marginBottom: '2rem' }}>
-              <div style={{ 
-                color: 'var(--ancient-wine)', 
-                fontSize: '1.2rem',
-                marginBottom: '1rem',
-                fontStyle: 'italic'
-              }}>
-                "Bei den Göttern des Olymps..."
-              </div>
-            </div>
-
+            {/* Start Button - Mobile optimiert */}
             <button
               onClick={startGame}
               disabled={loadingTasks || players.length === 0}
               style={{
-                padding: '25px 50px',
-                fontSize: '1.8rem',
+                padding: window.innerWidth < 768 ? '15px 25px' : '25px 50px',
+                fontSize: window.innerWidth < 768 ? '1.1rem' : '1.8rem',
                 background: players.length === 0 
                   ? 'linear-gradient(135deg, var(--ancient-stone), #6B6B6B)' 
                   : 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
@@ -282,85 +256,79 @@ export function ArenaScreen() {
                   : 'none',
                 transition: 'all 0.3s ease',
                 textTransform: 'uppercase',
-                letterSpacing: '1px'
-              }}
-              onMouseEnter={(e) => {
-                if (players.length > 0) {
-                  e.target.style.transform = 'scale(1.05)';
-                  e.target.style.boxShadow = '0 15px 35px rgba(255,107,53,0.7), inset 0 2px 10px rgba(255,215,0,0.4)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (players.length > 0) {
-                  e.target.style.transform = 'scale(1)';
-                  e.target.style.boxShadow = '0 10px 25px rgba(255,107,53,0.5), inset 0 2px 10px rgba(255,215,0,0.3)';
-                }
+                letterSpacing: '1px',
+                width: window.innerWidth < 768 ? '100%' : 'auto',
+                maxWidth: '300px'
               }}
             >
               {loadingTasks 
-                ? '⏳ DIE GÖTTER BEREITEN DIE PRÜFUNGEN VOR...' 
+                ? '⏳ BEREIT...' 
                 : players.length === 0 
-                  ? '💀 KEINE KÄMPFER BEREIT'
-                  : '🎯 IN DIE ARENA! FÜR RUHM UND EHRE!'
+                  ? '💀 KEINE KÄMPFER'
+                  : '🎯 IN DIE ARENA!'
               }
             </button>
             
             {players.length > 0 && (
               <div style={{
-                marginTop: '1.5rem',
+                marginTop: '1rem',
                 color: 'var(--ancient-bronze)',
-                fontSize: '1rem',
+                fontSize: window.innerWidth < 768 ? '0.8rem' : '1rem',
                 fontStyle: 'italic'
               }}>
-                ⚡ Mögen die Götter mit euch sein... ⚡
+                ⚡ Mögen die Götter mit euch sein ⚡
               </div>
             )}
           </div>
         )
 
       case 'playing':
+        const isMobile = window.innerWidth < 768;
         return (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            {/* Kompakter Runden-Header */}
             <div style={{ 
               background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
               color: 'var(--ancient-night)', 
-              padding: '15px 30px', 
+              padding: isMobile ? '8px 15px' : '15px 30px', 
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               display: 'inline-block',
               border: '2px solid var(--olympic-victory)',
               boxShadow: '0 5px 20px rgba(255,107,53,0.5)',
               fontWeight: 'bold',
-              fontSize: '1.2rem',
+              fontSize: isMobile ? '0.9rem' : '1.2rem',
               textTransform: 'uppercase'
             }}>
-              ⚔️ RUNDE {currentRound} - ARENA DER GÖTTER ⚔️
+              ⚔️ RUNDE {currentRound} ⚔️
             </div>
             
+            {/* Spieler & Kategorie - Mobile kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,107,53,0.3), rgba(218,165,32,0.2))',
-              padding: '2rem',
+              padding: isMobile ? '1rem' : '2rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               border: '2px solid var(--ancient-gold)',
-              position: 'relative',
-              overflow: 'hidden'
+              position: 'relative'
             }}>
-              <div style={{ 
-                position: 'absolute',
-                top: '10px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                fontSize: '2rem',
-                opacity: 0.6
-              }}>
-                🏛️
-              </div>
+              {!isMobile && (
+                <div style={{ 
+                  position: 'absolute',
+                  top: '10px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '1.5rem',
+                  opacity: 0.6
+                }}>
+                  🏛️
+                </div>
+              )}
               
               <h2 style={{ 
                 color: 'var(--olympic-victory)', 
-                marginBottom: '2rem',
-                fontSize: '2rem',
+                marginBottom: isMobile ? '0.5rem' : '1rem',
+                fontSize: isMobile ? '1.1rem' : '2rem',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.7)'
               }}>
                 🎭 {t(`arena.categories.${selectedCategory}`).toUpperCase()} 🎭
@@ -369,130 +337,106 @@ export function ArenaScreen() {
               <div style={{
                 background: 'var(--glass-background)',
                 backdropFilter: 'var(--glass-blur)',
-                padding: '2rem',
+                padding: isMobile ? '1rem' : '2rem',
                 borderRadius: 'var(--radius)',
-                border: '1px solid rgba(255,215,0,0.3)',
-                marginBottom: '1.5rem'
+                border: '1px solid rgba(255,215,0,0.3)'
               }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+                <div style={{ fontSize: isMobile ? '1.8rem' : '3rem', marginBottom: '0.5rem' }}>⚡</div>
                 <h3 style={{ 
-                  marginBottom: '15px', 
-                  fontSize: '1.8rem',
+                  marginBottom: '0.5rem', 
+                  fontSize: isMobile ? '1rem' : '1.8rem',
                   color: 'var(--ancient-gold)',
                   fontWeight: 'bold'
                 }}>
-                  🎯 {selectedPlayer.toUpperCase()} BETRITT DIE ARENA! 🎯
+                  🎯 {selectedPlayer.toUpperCase()}! 🎯
                 </h3>
-                <div style={{ 
-                  color: 'var(--ancient-wine)', 
-                  fontSize: '1.1rem',
-                  fontStyle: 'italic'
-                }}>
-                  "Das Schicksal wird über dich richten..."
-                </div>
               </div>
             </div>
 
+            {/* Verstecktes Orakel - Mobile kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,26,46,0.9))',
-              padding: '3rem 2rem',
+              padding: isMobile ? '1.5rem 1rem' : '3rem 2rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               border: '3px solid var(--ancient-bronze)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.7), inset 0 0 50px rgba(139,125,107,0.2)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
               position: 'relative'
             }}>
               <div style={{ 
                 position: 'absolute',
-                top: '-10px',
+                top: '-8px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 background: 'var(--ancient-night)',
-                padding: '5px 15px',
-                borderRadius: '20px',
+                padding: '3px 10px',
+                borderRadius: '15px',
                 border: '2px solid var(--ancient-bronze)'
               }}>
-                <span style={{ color: 'var(--ancient-bronze)', fontSize: '0.9rem' }}>
-                  🔮 ORAKEL DER HERAUSFORDERUNG 🔮
+                <span style={{ 
+                  color: 'var(--ancient-bronze)', 
+                  fontSize: isMobile ? '0.7rem' : '0.9rem' 
+                }}>
+                  🔮 ORAKEL 🔮
                 </span>
               </div>
               
-              <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.8 }}>📜</div>
+              <div style={{ fontSize: isMobile ? '2.5rem' : '4rem', marginBottom: '0.5rem', opacity: 0.8 }}>📜</div>
               
               <div style={{
                 background: 'rgba(139,125,107,0.3)',
-                padding: '2rem',
+                padding: isMobile ? '1rem' : '2rem',
                 borderRadius: 'var(--radius)',
                 border: '2px dashed var(--ancient-stone)',
-                minHeight: '80px',
+                minHeight: isMobile ? '60px' : '80px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
                 <p style={{ 
-                  fontSize: '2rem',
+                  fontSize: isMobile ? '1.2rem' : '2rem',
                   color: 'var(--ancient-stone)',
                   opacity: 0.5,
                   fontFamily: 'monospace',
-                  letterSpacing: '3px'
+                  letterSpacing: isMobile ? '2px' : '3px'
                 }}>
                   ? ? ? ? ?
                 </p>
               </div>
               
               <div style={{
-                marginTop: '1.5rem',
+                marginTop: '1rem',
                 color: 'var(--ancient-bronze)',
-                fontSize: '1.1rem',
+                fontSize: isMobile ? '0.8rem' : '1.1rem',
                 fontStyle: 'italic'
               }}>
-                Die Götter haben gesprochen... wage es zu enthüllen?
+                Wage es zu enthüllen?
               </div>
             </div>
 
+            {/* Enthüllen Button - Touch optimiert */}
             <button
               onClick={revealTask}
               style={{
-                padding: '20px 40px',
-                fontSize: '1.4rem',
+                padding: isMobile ? '15px 25px' : '20px 40px',
+                fontSize: isMobile ? '1.1rem' : '1.4rem',
                 background: 'linear-gradient(135deg, var(--ancient-wine), #8B0000)',
                 color: 'var(--ancient-marble)',
                 border: '3px solid var(--olympic-flame)',
                 borderRadius: 'var(--radius)',
                 cursor: 'pointer',
-                marginTop: '1rem',
                 fontWeight: 'bold',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
                 boxShadow: '0 8px 25px rgba(114,47,55,0.6)',
                 transition: 'all 0.3s ease',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'scale(1.05)';
-                e.target.style.boxShadow = '0 12px 35px rgba(114,47,55,0.8)';
-                e.target.style.background = 'linear-gradient(135deg, #8B0000, var(--olympic-flame))';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'scale(1)';
-                e.target.style.boxShadow = '0 8px 25px rgba(114,47,55,0.6)';
-                e.target.style.background = 'linear-gradient(135deg, var(--ancient-wine), #8B0000)';
+                width: isMobile ? '100%' : 'auto',
+                maxWidth: '280px',
+                touchAction: 'manipulation'
               }}
             >
-              <span style={{ position: 'relative', zIndex: 1 }}>
-                ⚡ SCHICKSAL ENTHÜLLEN ⚡
-              </span>
+              ⚡ SCHICKSAL ENTHÜLLEN ⚡
             </button>
-            
-            <div style={{
-              marginTop: '2rem',
-              color: 'var(--ancient-stone)',
-              fontSize: '0.9rem',
-              fontStyle: 'italic'
-            }}>
-              🔥 Nur die Mutigen werden belohnt... oder verflucht 🔥
-            </div>
           </div>
         )
 
@@ -546,89 +490,86 @@ export function ArenaScreen() {
         )
 
       case 'waiting-action':
+        const isMobile = window.innerWidth < 768;
         return (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            {/* Kompakter Header */}
             <div style={{ 
               background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
               color: 'var(--ancient-night)', 
-              padding: '15px 30px', 
+              padding: isMobile ? '8px 15px' : '15px 30px', 
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               display: 'inline-block',
               border: '2px solid var(--olympic-victory)',
               boxShadow: '0 5px 20px rgba(255,107,53,0.5)',
               fontWeight: 'bold',
-              fontSize: '1.1rem',
+              fontSize: isMobile ? '0.8rem' : '1.1rem',
               textTransform: 'uppercase'
             }}>
-              ⚔️ RUNDE {currentRound} - {t(`arena.categories.${selectedCategory}`).toUpperCase()} ⚔️
+              ⚔️ RUNDE {currentRound} ⚔️
             </div>
             
+            {/* Spieler Info - Kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(218,165,32,0.1))',
-              padding: '2rem',
+              padding: isMobile ? '1rem' : '2rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
-              border: '2px solid var(--ancient-gold)',
-              position: 'relative'
+              marginBottom: '1rem',
+              border: '2px solid var(--ancient-gold)'
             }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+              <div style={{ fontSize: isMobile ? '2rem' : '3rem', marginBottom: '0.5rem' }}>⚡</div>
               <h3 style={{ 
-                marginBottom: '10px', 
-                fontSize: '1.6rem',
+                marginBottom: '0.5rem', 
+                fontSize: isMobile ? '1rem' : '1.6rem',
                 color: 'var(--olympic-victory)',
-                fontWeight: 'bold',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
+                fontWeight: 'bold'
               }}>
-                🏛️ {selectedPlayer.toUpperCase()} KÄMPFT IN DER ARENA! 🏛️
+                🏛️ {selectedPlayer.toUpperCase()}! 🏛️
               </h3>
-              <div style={{ 
-                color: 'var(--ancient-wine)', 
-                fontSize: '1rem',
-                fontStyle: 'italic'
-              }}>
-                "Die Götter beobachten jeden Schritt..."
-              </div>
             </div>
 
+            {/* Aufgaben-Anzeige - Mobile kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(218,165,32,0.3), rgba(255,215,0,0.2))',
-              padding: '2.5rem',
+              padding: isMobile ? '1.5rem' : '2.5rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2.5rem',
+              marginBottom: '1.5rem',
               border: '3px solid var(--olympic-victory)',
               boxShadow: '0 15px 40px rgba(218,165,32,0.4)',
               position: 'relative'
             }}>
-              <div style={{ 
-                position: 'absolute',
-                top: '10px',
-                left: '10px',
-                right: '10px',
-                fontSize: '1.5rem',
-                opacity: 0.6
-              }}>
-                🌿 ⚱️ 🏺 ⚱️ 🌿
-              </div>
+              {!isMobile && (
+                <div style={{ 
+                  position: 'absolute',
+                  top: '10px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '1.2rem',
+                  opacity: 0.6
+                }}>
+                  🌿 ⚱️ 🌿
+                </div>
+              )}
               
-              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>📜</div>
+              <div style={{ fontSize: isMobile ? '2rem' : '2.5rem', marginBottom: '1rem' }}>📜</div>
               
               <div style={{
                 background: 'var(--glass-background)',
                 backdropFilter: 'var(--glass-blur)',
-                padding: '2rem',
+                padding: isMobile ? '1rem' : '2rem',
                 borderRadius: 'var(--radius)',
                 border: '2px solid rgba(255,215,0,0.5)',
-                minHeight: '100px',
+                minHeight: isMobile ? '60px' : '100px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
                 <p style={{ 
-                  fontSize: '1.3rem',
+                  fontSize: isMobile ? '0.95rem' : '1.3rem',
                   color: 'var(--ancient-marble)',
                   fontWeight: '600',
-                  lineHeight: '1.6',
+                  lineHeight: '1.4',
                   textAlign: 'center'
                 }}>
                   {currentTask}
@@ -636,39 +577,41 @@ export function ArenaScreen() {
               </div>
               
               <div style={{
-                marginTop: '1.5rem',
+                marginTop: '1rem',
                 color: 'var(--olympic-flame)',
-                fontSize: '1.1rem',
+                fontSize: isMobile ? '0.8rem' : '1.1rem',
                 fontStyle: 'italic',
                 fontWeight: 'bold'
               }}>
-                🔥 Die Prüfung ist vollbracht! Das Urteil der Götter erwartet dich! 🔥
+                🔥 Das Urteil der Götter! 🔥
               </div>
             </div>
 
+            {/* Göttliches Urteil - Kompakt */}
             <h2 style={{ 
-              margin: '2rem 0 2rem',
+              margin: '1rem 0 1.5rem',
               color: 'var(--ancient-gold)',
-              fontSize: '2rem',
+              fontSize: isMobile ? '1.2rem' : '2rem',
               fontWeight: 'bold',
               textShadow: '2px 2px 4px rgba(0,0,0,0.7)',
               textTransform: 'uppercase'
             }}>
-              ⚖️ GÖTTLICHES URTEIL ⚖️
+              ⚖️ URTEIL ⚖️
             </h2>
 
+            {/* Action Buttons - Touch optimiert */}
             <div style={{ 
               display: 'flex', 
               flexDirection: 'column', 
-              gap: '20px',
-              maxWidth: '400px',
+              gap: isMobile ? '10px' : '15px',
+              maxWidth: isMobile ? '100%' : '400px',
               margin: '0 auto'
             }}>
               <button
                 onClick={handleTaskSuccess}
                 style={{
-                  padding: '20px 30px',
-                  fontSize: '1.3rem',
+                  padding: isMobile ? '12px 20px' : '20px 30px',
+                  fontSize: isMobile ? '0.9rem' : '1.2rem',
                   background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
                   color: 'white',
                   border: '3px solid #388E3C',
@@ -677,25 +620,18 @@ export function ArenaScreen() {
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
                   boxShadow: '0 8px 25px rgba(76,175,80,0.4)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'scale(1.05)';
-                  e.target.style.boxShadow = '0 12px 35px rgba(76,175,80,0.6)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'scale(1)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(76,175,80,0.4)';
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
                 }}
               >
-                🏆 TRIUMPH! AUFGABE GEMEISTERT! 🏆
+                🏆 TRIUMPH! 🏆
               </button>
               
               <button
                 onClick={handleTaskFailed}
                 style={{
-                  padding: '20px 30px',
-                  fontSize: '1.3rem',
+                  padding: isMobile ? '12px 20px' : '20px 30px',
+                  fontSize: isMobile ? '0.9rem' : '1.2rem',
                   background: 'linear-gradient(135deg, #F44336, #C62828)',
                   color: 'white',
                   border: '3px solid #D32F2F',
@@ -704,25 +640,18 @@ export function ArenaScreen() {
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
                   boxShadow: '0 8px 25px rgba(244,67,54,0.4)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'scale(1.05)';
-                  e.target.style.boxShadow = '0 12px 35px rgba(244,67,54,0.6)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'scale(1)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(244,67,54,0.4)';
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
                 }}
               >
-                💀 NIEDERLAGE! AUFGABE GESCHEITERT! 💀
+                💀 NIEDERLAGE! 💀
               </button>
               
               <button
                 onClick={handleTaskSkipped}
                 style={{
-                  padding: '18px 28px',
-                  fontSize: '1.2rem',
+                  padding: isMobile ? '12px 20px' : '18px 28px',
+                  fontSize: isMobile ? '0.85rem' : '1.1rem',
                   background: 'linear-gradient(135deg, #FF9800, #F57C00)',
                   color: 'white',
                   border: '3px solid #FF8F00',
@@ -731,55 +660,32 @@ export function ArenaScreen() {
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
                   boxShadow: '0 6px 20px rgba(255,152,0,0.4)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'scale(1.05)';
-                  e.target.style.boxShadow = '0 10px 30px rgba(255,152,0,0.6)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'scale(1)';
-                  e.target.style.boxShadow = '0 6px 20px rgba(255,152,0,0.4)';
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
                 }}
               >
-                ⏭️ VERWEIGERUNG - NÄCHSTE PRÜFUNG! ⏭️
+                ⏭️ NÄCHSTE PRÜFUNG! ⏭️
               </button>
               
               <button
                 onClick={endGame}
                 style={{
-                  padding: '15px 25px',
-                  fontSize: '1rem',
+                  padding: isMobile ? '10px 15px' : '15px 25px',
+                  fontSize: isMobile ? '0.8rem' : '1rem',
                   background: 'transparent',
                   color: 'var(--ancient-stone)',
                   border: '2px solid var(--ancient-stone)',
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  marginTop: '20px',
+                  marginTop: isMobile ? '10px' : '20px',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = 'var(--ancient-stone)';
-                  e.target.style.color = 'var(--ancient-night)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'transparent';
-                  e.target.style.color = 'var(--ancient-stone)';
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
                 }}
               >
                 💀 ARENA VERLASSEN 💀
               </button>
-            </div>
-            
-            <div style={{
-              marginTop: '2rem',
-              color: 'var(--ancient-bronze)',
-              fontSize: '1rem',
-              fontStyle: 'italic'
-            }}>
-              ⚡ "Wähle weise, denn die Götter vergessen nichts..." ⚡
             </div>
           </div>
         )
@@ -905,18 +811,16 @@ export function ArenaScreen() {
 
   return (
     <div style={{
-      padding: '24px',
+      padding: window.innerWidth < 768 ? '10px' : '24px',
       textAlign: 'center',
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      paddingTop: window.innerWidth < 768 ? '20px' : '50px',
+      paddingBottom: window.innerWidth < 768 ? '80px' : '24px' // Platz für Bottom Nav
     }}>
-      <h1 style={{ color: 'var(--primary)', marginBottom: '2rem', fontSize: '2.5rem' }}>
-        MALLEX Arena
-      </h1>
-
       {renderGameContent()}
     </div>
   )

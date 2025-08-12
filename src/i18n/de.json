@@ -11,14 +11,36 @@
   },
   "menu": {
     "title": "Menü",
-    "close": "Schließen",
-    "sections": {
-      "game": "Spiel",
-      "tasks": "Aufgaben",
-      "account": "Konto",
-      "admin": "Administration"
-    },
+    "game": "Spiel",
+    "tasks": "Aufgaben",
+    "admin": "Admin",
+    "account": "Konto",
+    "arena": "Arena",
+    "legends": "Legenden",
+    "tasksOverview": "Aufgaben",
+    "suggestTask": "Task vorschlagen",
+    "adminDashboard": "Admin Dashboard",
+    "profile": "Profil",
+    "settings": "Einstellungen",
     "logout": "Abmelden"
+  },
+  "profile": {
+    "title": "Profil",
+    "playerCount": "Anzahl Spieler",
+    "createdAt": "Mitglied seit",
+    "email": "E-Mail",
+    "anonymous": "Anonymer Nutzer",
+    "noPlayers": "Noch keine Spieler erstellt"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "german": "Deutsch",
+    "english": "English",
+    "theme": "Design",
+    "notifications": "Benachrichtigungen",
+    "privacy": "Datenschutz",
+    "about": "Über MALLEX"
   },
   "tabs": {
     "arena": "Arena",
@@ -42,7 +64,7 @@
     "newTask": "Neue Aufgabe",
     "categories": {
       "schicksal": "Schicksal",
-      "schande": "Schande", 
+      "schande": "Schande",
       "verfuehrung": "Verführung",
       "eskalation": "Eskalation",
       "beichte": "Geständnis"

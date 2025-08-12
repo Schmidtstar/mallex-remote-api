@@ -117,7 +117,22 @@
     "gender": "Gender",
     "nationality": "Nationality",
     "save": "Save",
-    "ageYears": "{{count}} years"
+    "ageYears": "{{count}} years",
+    "playerCount": "Player Count",
+    "createdAt": "Member since",
+    "email": "Email",
+    "anonymous": "Anonymous User",
+    "noPlayers": "No players created yet"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "german": "Deutsch",
+    "english": "English",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "about": "About MALLEX"
   },
   "common": {
     "loading": "Loading…",

@@ -39,7 +39,7 @@ export function AdminTasksScreen() {
   const [editDirectText, setEditDirectText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
 
-  // Task creation state  
+  // Task creation state
   const [newTaskCategory, setNewTaskCategory] = useState<string>('schicksal')
   const [newTaskText, setNewTaskText] = useState('')
   const [creating, setCreating] = useState(false)
@@ -108,7 +108,7 @@ export function AdminTasksScreen() {
 
         // 🚀 MIGRATE TO FIREBASE: Upload approved tasks to Firebase
         if (suggestions.length > 0 && isAdmin) {
-          const approvedTasks = suggestions.filter(s => s.status === 'approved')
+          const approvedTasks = suggestions.filter((s: TaskSuggestion) => s.status === 'approved')
           console.log('🔄 Migrating', approvedTasks.length, 'approved tasks to Firebase...')
 
           // Sequential migration to avoid overwhelming Firebase
@@ -118,7 +118,7 @@ export function AdminTasksScreen() {
               // Map German category IDs to English ones for Arena compatibility
               const categoryMapping: Record<string, string> = {
                 'schicksal': 'fate',
-                'schande': 'shame', 
+                'schande': 'shame',
                 'verfuehrung': 'seduce',
                 'eskalation': 'escalate',
                 'beichte': 'confess'
@@ -349,7 +349,7 @@ export function AdminTasksScreen() {
       // Map German category IDs to English ones for API compatibility
       const categoryMapping: Record<string, string> = {
         'schicksal': 'fate',
-        'schande': 'shame', 
+        'schande': 'shame',
         'verfuehrung': 'seduce',
         'eskalation': 'escalate',
         'beichte': 'confess'
@@ -486,7 +486,7 @@ export function AdminTasksScreen() {
     const staticTasks: Array<{key: string, text: string, category: string}> = []
     const categoryMapping = {
       'fate': 'Schicksal',
-      'shame': 'Schande', 
+      'shame': 'Schande',
       'seduce': 'Verführung',
       'escalate': 'Eskalation',
       'confess': 'Beichte'
@@ -768,7 +768,7 @@ export function AdminTasksScreen() {
                     </span>
                   </div>
                   <div className={styles.itemContent}>
-                    <p className={styles.text} style={{ 
+                    <p className={styles.text} style={{
                       opacity: hiddenStaticTasks.has(task.key) ? 0.5 : 1,
                       textDecoration: hiddenStaticTasks.has(task.key) ? 'line-through' : 'none'
                     }}>

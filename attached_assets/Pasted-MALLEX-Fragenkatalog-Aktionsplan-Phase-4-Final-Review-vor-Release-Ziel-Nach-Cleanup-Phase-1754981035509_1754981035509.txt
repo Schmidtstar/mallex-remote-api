@@ -1,0 +1,59 @@
+MALLEX – Fragenkatalog & Aktionsplan (Phase 4 – Final Review vor Release)
+
+Ziel: Nach Cleanup (Phase 3) jetzt letzte Risiken ausschließen, Konsistenz sichern und Release-Tauglichkeit herstellen.
+
+⸻
+
+A) Status (nach Phase 3)
+	•	✅ Altlasten nach src/deprecated/ verschoben (playersApi.ts, suggestionsApi.ts, env.ts)
+	•	✅ ArenaScreen.module.css geprüft/entfernt, falls ungenutzt
+	•	✅ Keine kritischen Broken Imports mehr
+	•	✅ Spacing-Tokens, UX-Verbesserungen und Accessibility-Optimierungen umgesetzt
+
+⸻
+
+B) Phase 4 – Final Review
+
+1) Technisches Repo-Audit
+	•	Import-Graph erneut prüfen (npm run depcheck oder eigenes Script) → keine neuen Missing Imports
+	•	Lint/Typecheck: npm run lint & npm run typecheck müssen fehlerfrei sein
+	•	Build-Test: npm run build → kein ungenutzter Code im Output, keine .map-Files in Production (falls nicht gewünscht)
+
+2) Responsiveness-Check
+	•	Mobile Portrait (≤480px): Navigation, HamburgerMenu, Arena/Legends-Listen ohne Überläufe
+	•	Mobile Landscape: BottomNav & Hamburger passen sich an, keine abgeschnittenen Inhalte
+	•	Tablet/Desktop: Keine zu großen Leerräume, Layouts bleiben ausgewogen
+
+3) QA mit Rollentests
+	•	Screens: Arena, Legends, Menu, Tasks-Übersicht, Vorschlagen, Admin
+	•	Rollen: Gast, registrierter User, Admin
+	•	Prüfen: Alle Buttons ≥48px Höhe, States (Hover, Focus, Active) klar sichtbar, keine Fehlermeldungen in der Konsole
+
+4) Design-Konsistenz
+	•	Alle Abstände aus Spacing-Tokens (--space-*), keine harten px-Werte mehr
+	•	Einheitliche Typografie (ggf. Typo-Tokens für H1/H2/H3 ergänzen)
+	•	Icon-Größen und Label-Ausrichtung in allen Navigations- und Menüelementen identisch
+
+5) Performance- & Accessibility-Check
+	•	Lighthouse-Test (Performance, Accessibility, Best Practices, SEO)
+	•	Mobile Performance ≥85 Punkte anstreben
+	•	Fokus-Indikatoren sichtbar und kontrastreich
+
+⸻
+
+C) Nächste Schritte – Umsetzung (0.5–1 Tag)
+	1.	Import-Graph, Lint, Typecheck, Build prüfen und ggf. fixen
+	2.	Responsive-Tests auf echten Geräten / Emulatoren durchführen
+	3.	QA-Durchlauf mit allen Rollen dokumentieren
+	4.	Lighthouse-Test ausführen, Optimierungen übernehmen
+	5.	Finalen Release-Tag setzen (git tag v1.0.0) und Deployment durchführen
+
+⸻
+
+D) Definition of Done (für Phase 4)
+	•	Keine ungenutzten oder fehlerhaften Imports
+	•	Lint, Typecheck, Build fehlerfrei
+	•	UI konsistent in Spacing, Typografie, Icons
+	•	Responsive auf allen Zielgeräten
+	•	Lighthouse-Bewertungen im Zielbereich
+	•	QA-Dokumentation vollständig und erfolgreich

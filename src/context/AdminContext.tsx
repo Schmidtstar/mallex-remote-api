@@ -3,25 +3,11 @@ import { useAuth } from './AuthContext'
 import { db } from '@/lib/firebase'
 import { doc, getDoc } from 'firebase/firestore'
 
-type AdminCtx = {
-  isAdmin: boolean
-  loading: boolean
-}
-
+type AdminCtx = { isAdmin: boolean; loading: boolean }
 const AdminContext = createContext<AdminCtx>({ isAdmin: false, loading: true })
 
-export function useAdmin() {
-  const context = useContext(AdminContext)
-  if (!context) {
-    throw new Error('useAdmin must be used within an AdminProvider')
-  }
-  return context
-}
-
-export function useIsAdmin() {
-  const { isAdmin } = useAdmin()
-  return isAdmin
-}
+export function useAdmin() { return useContext(AdminContext) }
+export function useIsAdmin() { return useAdmin().isAdmin }
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
@@ -30,36 +16,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-
-    async function checkAdminStatus() {
+    ;(async () => {
       setLoading(true)
       setIsAdmin(false)
-
-      if (!user?.uid) {
-        if (!cancelled) setLoading(false)
-        return
-      }
-
+      if (!user?.uid) { if (!cancelled) setLoading(false); return }
       try {
-        // UID-basiert: admins/{uid}
-        const adminDocRef = doc(db, 'admins', user.uid)
-        const adminDoc = await getDoc(adminDocRef)
-        if (!cancelled) setIsAdmin(adminDoc.exists())
-      } catch (error) {
-        console.warn('Error checking admin status:', error)
+        const snap = await getDoc(doc(db, 'admins', user.uid))   // << nur EIN Dokument
+        if (!cancelled) setIsAdmin(snap.exists())
+      } catch (e) {
+        console.warn('admin check failed', e)
         if (!cancelled) setIsAdmin(false)
       } finally {
         if (!cancelled) setLoading(false)
       }
-    }
-
-    checkAdminStatus()
+    })()
     return () => { cancelled = true }
   }, [user?.uid])
 
-  return (
-    <AdminContext.Provider value={{ isAdmin, loading }}>
-      {children}
-    </AdminContext.Provider>
-  )
+  return <AdminContext.Provider value={{ isAdmin, loading }}>{children}</AdminContext.Provider>
 }

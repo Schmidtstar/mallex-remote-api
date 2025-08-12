@@ -1,4 +1,3 @@
-
 rules_version = '2';
 
 service cloud.firestore {
@@ -7,7 +6,7 @@ service cloud.firestore {
     function admin() {
       return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
-    
+
     // Helper function: Check if user is signed in
     function signedIn() {
       return request.auth != null;
@@ -23,13 +22,13 @@ service cloud.firestore {
     match /suggestions/{suggestionId} {
       // Read: Admin can read all, users can read only their own
       allow read: if admin() || (signedIn() && resource.data.createdBy == request.auth.uid);
-      
+
       // Create: Signed-in users can create with valid categories
-      allow create: if signedIn() 
+      allow create: if signedIn()
         && request.auth.uid == request.resource.data.createdBy
         && request.resource.data.category in ['fate', 'shame', 'seduction', 'escalation', 'confession']
         && request.resource.data.status == 'pending';
-      
+
       // Update/Delete: Only admins (for moderation)
       allow update, delete: if admin();
     }
@@ -38,7 +37,7 @@ service cloud.firestore {
     match /tasks/{taskId} {
       // Read: Everyone can read tasks
       allow read: if true;
-      
+
       // Create/Update/Delete: Only admins
       allow create, update, delete: if admin();
     }

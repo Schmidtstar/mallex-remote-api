@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { createSuggestion } from '@/deprecated/suggestionsApi';
 import { useAuth } from '@/context/AuthContext';
@@ -34,11 +35,24 @@ export function SuggestTaskScreen() {
 
   return (
     <div className={styles.container}>
-      <h2>{t('menu.suggest')}</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>📝 Aufgaben vorschlagen</h2>
+        <p className={styles.subtitle}>
+          Teile deine Ideen für neue Aufgaben mit der Community
+        </p>
+      </div>
+
+      {success && (
+        <div className={styles.successMessage}>
+          ✅ Vielen Dank! Dein Vorschlag wurde erfolgreich eingereicht.
+        </div>
+      )}
 
       <form onSubmit={onSubmit} className={styles.form}>
         <div className={styles.field}>
-          <label htmlFor="category">{t('tasks.category')}</label>
+          <label htmlFor="category" className={styles.label}>
+            🎯 Kategorie auswählen
+          </label>
           <select 
             id="category"
             value={category} 
@@ -54,35 +68,41 @@ export function SuggestTaskScreen() {
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="text">{t('tasks.text')}</label>
+          <label htmlFor="text" className={styles.label}>
+            📋 Aufgabentext
+          </label>
           <textarea
             id="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder={t('tasks.placeholder')}
+            placeholder="Beschreibe deine Aufgabenidee hier... (z.B. 'Erzähle von deinem schönsten Kindheitserlebnis')"
             className={styles.textarea}
             rows={4}
             maxLength={500}
           />
-          <small className={styles.counter}>
-            {text.length}/500
-          </small>
+          <div className={styles.counter}>
+            {text.length}/500 Zeichen
+          </div>
         </div>
 
         <button 
           type="submit"
           disabled={busy || !text.trim()} 
-          className={styles.submitBtn}
+          className={styles.submitButton}
         >
-          {busy ? t('tasks.submitting') : t('tasks.submit')}
+          {busy ? '📤 Wird gesendet...' : '🚀 Vorschlag einreichen'}
         </button>
-
-        {success && (
-          <div className={styles.success}>
-            {t('tasks.thanks')}
-          </div>
-        )}
       </form>
+
+      <div className={styles.infoBox}>
+        <h3>💡 Tipps für gute Aufgaben:</h3>
+        <ul>
+          <li>Sei kreativ und originell</li>
+          <li>Stelle offene Fragen, die zum Nachdenken anregen</li>
+          <li>Achte auf eine klare und verständliche Formulierung</li>
+          <li>Vermeide zu persönliche oder sensible Themen</li>
+        </ul>
+      </div>
     </div>
   );
 }

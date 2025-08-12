@@ -1,22 +1,185 @@
-*{box-sizing:border-box}
-html,body,#root{height:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif}
-a{color:inherit;text-decoration:none}
-input,select,button{font:inherit}
 
-/* Base styles for consistent theming */
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-  margin: 0;
-  padding: 0;
+/* Antikes MALLEX Base Styling */
+*{
+  box-sizing: border-box;
 }
 
-/* Responsive utility classes */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: var(--font-weight-normal);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Antike Schriftarten Hierarchie */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-accent);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: var(--space-4);
+}
+
+h1 {
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-epic);
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+  color: var(--ancient-gold);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+/* Links - Goldene Akzente */
+a {
+  color: var(--ancient-gold);
+  text-decoration: none;
+  transition: all var(--transition-normal) ease;
+  position: relative;
+}
+
+a:hover {
+  color: var(--olympic-victory);
+  text-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+}
+
+a:active {
+  color: var(--ancient-bronze);
+}
+
+/* Form Elements - Antiker Stil */
+input, select, button, textarea {
+  font: inherit;
+  border-radius: var(--radius);
+  transition: all var(--transition-normal) ease;
+}
+
+input, select, textarea {
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text-primary);
+  padding: var(--space-4);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--ancient-gold);
+  box-shadow: var(--focus-ring);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Buttons - Olympischer Stil */
+button {
+  background: var(--gradient-gold);
+  color: var(--ancient-night);
+  border: none;
+  padding: var(--space-4) var(--space-6);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-gold);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold), 0 6px 20px rgba(218, 165, 32, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background: var(--color-text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Button Varianten */
+button.secondary {
+  background: transparent;
+  color: var(--ancient-gold);
+  border: 2px solid var(--ancient-gold);
+  box-shadow: none;
+}
+
+button.secondary:hover {
+  background: var(--ancient-gold);
+  color: var(--ancient-night);
+}
+
+button.danger {
+  background: linear-gradient(135deg, var(--ancient-wine), #B22222);
+  color: var(--ancient-marble);
+}
+
+/* Utility Classes */
+.text-gold {
+  color: var(--ancient-gold);
+}
+
+.text-bronze {
+  color: var(--ancient-bronze);
+}
+
+.text-victory {
+  background: var(--gradient-victory);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-marble {
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-marble);
+}
+
+.olympic-glow {
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
+}
+
+/* Responsive Anpassungen */
 @media (max-width: 767px) {
   .md\:hidden {
     display: none !important;
+  }
+  
+  h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  button {
+    min-height: var(--mobile-touch-target);
   }
 }
 
@@ -24,4 +187,41 @@ body {
   .hidden {
     display: none !important;
   }
+}
+
+/* Antike Ornamente */
+.ornament-top::before {
+  content: "⚜ ◆ ⚜";
+  display: block;
+  text-align: center;
+  color: var(--ancient-gold);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-lg);
+}
+
+.ornament-bottom::after {
+  content: "◆ ⚜ ◆";
+  display: block;
+  text-align: center;
+  color: var(--ancient-gold);
+  margin-top: var(--space-4);
+  font-size: var(--font-size-lg);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ancient-night);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ancient-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--olympic-victory);
 }

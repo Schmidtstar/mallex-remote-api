@@ -1,6 +1,62 @@
-/* Design Tokens */
+
+/* Ancient Olympic Design Tokens für MALLEX */
 :root {
-  /* Spacing */
+  /* Antike Farbpalette */
+  --ancient-gold: #DAA520;
+  --ancient-bronze: #CD7F32;
+  --ancient-marble: #F5F5DC;
+  --ancient-stone: #8B7D6B;
+  --ancient-wine: #722F37;
+  --ancient-olive: #808000;
+  --ancient-night: #1a1a2e;
+  --ancient-dawn: #16213e;
+  --ancient-twilight: #0f3460;
+
+  /* Olympische Akzentfarben */
+  --olympic-flame: #FF6B35;
+  --olympic-laurel: #228B22;
+  --olympic-sky: #4169E1;
+  --olympic-victory: #FFD700;
+
+  /* Hauptfarben */
+  --bg: linear-gradient(135deg, var(--ancient-night) 0%, var(--ancient-dawn) 50%, var(--ancient-twilight) 100%);
+  --fg: var(--ancient-marble);
+  --stroke: rgba(218, 165, 32, 0.3);
+  --glass: rgba(0, 0, 0, 0.4);
+
+  /* Text Farben */
+  --color-text-primary: var(--ancient-marble);
+  --color-text-secondary: rgba(245, 245, 220, 0.8);
+  --color-text-muted: rgba(245, 245, 220, 0.6);
+  --color-text-accent: var(--ancient-gold);
+
+  /* Oberflächen */
+  --color-background: var(--ancient-night);
+  --color-surface: rgba(0, 0, 0, 0.6);
+  --color-surface-elevated: rgba(0, 0, 0, 0.8);
+  --color-border: var(--stroke);
+
+  /* Glassmorphismus - Antiker Stil */
+  --glass-background: rgba(0, 0, 0, 0.4);
+  --glass-border: rgba(218, 165, 32, 0.3);
+  --glass-blur: blur(12px);
+
+  /* Interaktive Zustände */
+  --hover-background: rgba(218, 165, 32, 0.1);
+  --active-background: rgba(218, 165, 32, 0.2);
+  --focus-ring: 0 0 0 2px rgba(218, 165, 32, 0.5);
+
+  /* Schatten - Marmor-Effekte */
+  --shadow-marble: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-gold: 0 4px 20px rgba(218, 165, 32, 0.3);
+  --shadow-bronze: 0 2px 12px rgba(205, 127, 50, 0.3);
+
+  /* Gradienten */
+  --gradient-gold: linear-gradient(135deg, #DAA520 0%, #FFD700 50%, #FFA500 100%);
+  --gradient-marble: linear-gradient(135deg, #F5F5DC 0%, #E6E6FA 50%, #D3D3D3 100%);
+  --gradient-victory: linear-gradient(45deg, #FFD700, #DAA520, #CD7F32);
+
+  /* Spacing - Olympische Proportionen */
   --space-1: 2px;
   --space-2: 4px;
   --space-3: 8px;
@@ -9,66 +65,67 @@
   --space-6: 20px;
   --space-7: 24px;
   --space-8: 32px;
+  --space-temple: 48px; /* Für große architektonische Abstände */
 
-  /* Colors */
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #666666;
-  --color-text-muted: #999999;
-  --color-background: #ffffff;
-  --color-surface: #f8f9fa;
-  --color-border: rgba(0, 0, 0, 0.1);
+  /* Border Radius - Antike Formen */
+  --radius: 12px;
+  --radius-small: 6px;
+  --radius-large: 20px;
+  --radius-marble: 16px;
 
-  /* Glassmorphism */
-  --glass-background: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-blur: blur(12px);
-
-  /* Interactive states */
-  --hover-background: rgba(0, 0, 0, 0.04);
-  --active-background: rgba(0, 0, 0, 0.08);
-  --focus-ring: 0 0 0 2px rgba(59, 130, 246, 0.5);
-
-  /* Touch targets */
-  --touch-target-min: 48px;
-
-  /* Typography */
+  /* Typography - Klassische Verhältnisse */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.25rem;
   --font-size-2xl: 1.5rem;
+  --font-size-hero: 2.5rem;
+  --font-size-epic: 4rem;
+
+  /* Font Weights - Hierarchie */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-epic: 900;
 
   /* Z-index */
   --z-dropdown: 1000;
   --z-modal: 1001;
   --z-toast: 1002;
+  --z-intro: 9999;
 
-  /* Mobile-specific spacing */
+  /* Performance optimized */
   --mobile-padding: var(--space-5);
   --mobile-gap: var(--space-4);
   --mobile-touch-target: 48px;
-  
-  /* Performance optimized blur */
   --mobile-blur: blur(8px);
   --desktop-blur: blur(12px);
+
+  /* Animation Zeiten */
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.6s;
+  --transition-epic: 1.2s;
 }
 
-/* Mobile-first media queries */
+/* Mobile Anpassungen für antikes Design */
 @media (max-width: 480px) {
   :root {
-    /* Reduced blur for performance */
     --glass-blur: var(--mobile-blur);
+    --space-8: 24px;
+    --space-temple: 32px;
     
-    /* Optimized spacing */
-    --space-8: 24px; /* Reduce large spacing on mobile */
-    
-    /* Typography adjustments */
-    --font-size-xs: 12px;
-    --font-size-sm: 14px;
-    --font-size-base: 16px; /* iOS minimum readable size */
-    --font-size-lg: 18px;
-    --font-size-xl: 20px;
-    --font-size-2xl: 22px;
+    --font-size-hero: 2rem;
+    --font-size-epic: 2.5rem;
+  }
+}
+
+/* Dunkles Theme verstärken */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-background: rgba(0, 0, 0, 0.6);
+    --color-surface: rgba(0, 0, 0, 0.8);
   }
 }

@@ -1,13 +1,283 @@
+
 @import './tokens.css';
 @import './base.css';
 @import './mobile.css';
 
-.app-shell{min-height:100%;display:flex;flex-direction:column}
-.app-content{flex:1; padding:16px; max-width:720px; margin:0 auto}
-.bottom-nav{position:sticky;bottom:0;display:flex;gap:16px;justify-content:space-around;
-  padding:10px 12px;background:var(--glass);backdrop-filter: blur(10px); border-top:1px solid var(--stroke)}
-.card.glass{padding:16px;border-radius:var(--radius);background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--stroke)}
-button{padding:10px 14px;border-radius:10px;border:1px solid var(--stroke);background:transparent;color:var(--fg);cursor:pointer}
-select,input{padding:10px;border-radius:10px;background:transparent;color:var(--fg);border:1px solid var(--stroke)}
-h1{margin:0 0 12px}
-section{padding:8px}
+/* MALLEX - Olympische Trinkspiele Hauptlayout */
+.app-shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(205, 127, 50, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.app-content {
+  flex: 1;
+  padding: var(--space-5);
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+}
+
+/* Antike Navigation */
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-around;
+  padding: var(--space-4) var(--space-5);
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+  box-shadow: 
+    0 -4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(218, 165, 32, 0.1);
+  z-index: var(--z-dropdown);
+}
+
+.bottom-nav::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--gradient-gold);
+  border-radius: 1px;
+}
+
+/* Glasmorphism Karten - Marmor-Effekt */
+.card.glass {
+  padding: var(--space-5);
+  border-radius: var(--radius-marble);
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-marble);
+  position: relative;
+  overflow: hidden;
+}
+
+.card.glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(218, 165, 32, 0.3) 50%, 
+    transparent 100%);
+}
+
+.card.glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    var(--shadow-marble),
+    0 8px 32px rgba(218, 165, 32, 0.2);
+  border-color: rgba(218, 165, 32, 0.4);
+}
+
+/* Epic Hero Cards */
+.card.hero {
+  background: var(--gradient-marble);
+  color: var(--ancient-night);
+  border: 2px solid var(--ancient-gold);
+  box-shadow: 
+    var(--shadow-gold),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.card.victory {
+  background: var(--gradient-victory);
+  color: var(--ancient-night);
+  border: 2px solid var(--olympic-victory);
+  box-shadow: 
+    0 8px 32px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: victoryGlow 2s infinite alternate;
+}
+
+@keyframes victoryGlow {
+  0% {
+    box-shadow: 
+      0 8px 32px rgba(255, 215, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 
+      0 12px 40px rgba(255, 215, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Buttons - Olympischer Stil */
+button {
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius);
+  border: 1px solid var(--stroke);
+  background: var(--gradient-gold);
+  color: var(--ancient-night);
+  cursor: pointer;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-gold);
+  transition: all var(--transition-normal) ease;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 100%);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    var(--shadow-gold),
+    0 6px 20px rgba(218, 165, 32, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Form Elements */
+select, input, textarea {
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  background: var(--glass-background);
+  color: var(--fg);
+  border: 1px solid var(--stroke);
+  backdrop-filter: var(--glass-blur);
+  transition: all var(--transition-normal) ease;
+}
+
+select:focus, input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--ancient-gold);
+  box-shadow: var(--focus-ring);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Headings mit antiken Ornamenten */
+h1 {
+  margin: 0 0 var(--space-5);
+  position: relative;
+  text-align: center;
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-epic);
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+h1::before {
+  content: "⚔ ⚜ ⚔";
+  display: block;
+  font-size: var(--font-size-lg);
+  color: var(--ancient-gold);
+  margin-bottom: var(--space-3);
+  opacity: 0.7;
+}
+
+h1::after {
+  content: "";
+  position: absolute;
+  bottom: -var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: var(--gradient-gold);
+  border-radius: 1px;
+}
+
+section {
+  padding: var(--space-5);
+}
+
+/* Antike Ornament Klassen */
+.olympic-border {
+  border: 2px solid var(--ancient-gold);
+  border-image: linear-gradient(45deg, var(--ancient-gold), var(--olympic-victory), var(--ancient-bronze)) 1;
+}
+
+.marble-texture {
+  background: 
+    linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%),
+    linear-gradient(-45deg, transparent 25%, rgba(255,255,255,0.1) 25%),
+    var(--glass-background);
+  background-size: 20px 20px;
+}
+
+.temple-shadow {
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(218, 165, 32, 0.2);
+}
+
+/* Mobile Optimierungen */
+@media (max-width: 768px) {
+  .app-content {
+    padding: var(--mobile-padding);
+  }
+  
+  .bottom-nav {
+    padding: var(--space-3) var(--mobile-padding);
+  }
+  
+  .card.glass {
+    padding: var(--space-4);
+  }
+  
+  button {
+    min-height: var(--mobile-touch-target);
+    padding: var(--space-4) var(--space-5);
+  }
+  
+  h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  h1::before {
+    font-size: var(--font-size-base);
+  }
+}

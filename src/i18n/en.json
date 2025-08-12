@@ -22,7 +22,14 @@
     "adminDashboard": "Admin Dashboard",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Sign Out"
+    "logout": "Sign Out",
+    "close": "Close",
+    "sections": {
+      "game": "Game",
+      "tasks": "Tasks",
+      "account": "Account",
+      "admin": "Administration"
+    }
   },
   "tabs": {
     "arena": "Arena",

@@ -22,7 +22,14 @@
     "adminDashboard": "Admin-Bereich",
     "profile": "Profil",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "close": "Schließen",
+    "sections": {
+      "game": "Spiel",
+      "tasks": "Aufgaben",
+      "account": "Konto",
+      "admin": "Administration"
+    }
   },
   "tabs": {
     "arena": "Arena",

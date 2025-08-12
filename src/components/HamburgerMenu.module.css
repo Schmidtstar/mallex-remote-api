@@ -1,150 +1,240 @@
 .backdrop {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  justify-content: flex-end;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-modal);
 }
 
 .drawer {
   position: fixed;
-  inset: 0 0 0 auto;
-  width: min(90vw, 360px);
-  background: rgba(20, 20, 28, 0.95);
-  backdrop-filter: blur(12px);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-  outline: none;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  height: 100%;
+  background: 
+    linear-gradient(180deg, 
+      rgba(26, 26, 46, 0.95) 0%,
+      rgba(22, 33, 62, 0.95) 50%,
+      rgba(15, 52, 96, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-left: 2px solid var(--ancient-gold);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  padding: var(--space-4);
+  box-shadow: 
+    -10px 0 40px rgba(0, 0, 0, 0.5),
+    inset 2px 0 0 rgba(218, 165, 32, 0.3);
+  position: relative;
+}
+
+.drawer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-gold);
+}
+
+.drawer::after {
+  content: "🏛️";
+  position: absolute;
+  top: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  opacity: 0.3;
+  z-index: -1;
 }
 
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: var(--space-5);
-  gap: var(--space-3);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
+  border-bottom: 2px solid rgba(218, 165, 32, 0.3);
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
 }
 
-.title {
-  margin: 0;
-  color: white;
-  font-size: 18px;
-  font-weight: 600;
+.header::before {
+  content: "⚔ TEMPEL MENÜ ⚔";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--ancient-gold);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .closeBtn {
-  background: none;
+  background: var(--gradient-gold);
   border: none;
-  font-size: 1.5rem;
+  color: var(--ancient-night);
+  font-size: 1.8rem;
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   padding: var(--space-2);
-  border-radius: 4px;
-  color: var(--color-text-muted);
-  transition: all 0.2s ease;
-  min-width: var(--touch-target-min);
-  min-height: var(--touch-target-min);
+  border-radius: 50%;
+  transition: all var(--transition-normal) ease;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  box-shadow: var(--shadow-gold);
 }
 
 .closeBtn:hover {
-  background-color: var(--hover-background);
-  color: var(--color-text-secondary);
-  transform: scale(1.1);
-}
-
-.closeBtn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.closeBtn:active {
-  transform: scale(0.95);
+  background: var(--olympic-victory);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 6px 20px rgba(218, 165, 32, 0.5);
 }
 
 .nav {
   flex: 1;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  padding: var(--space-4) 0;
 }
 
 .section {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-7);
+  padding: 0 var(--space-4);
+  position: relative;
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--ancient-gold) 50%, 
+    transparent 100%);
 }
 
 .sectionTitle {
-  margin: 0 0 8px 0;
-  padding: 0 12px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--ancient-gold);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: var(--space-3);
-  padding-left: var(--space-2);
+  letter-spacing: 1px;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  text-align: center;
+  background: rgba(218, 165, 32, 0.1);
+  border-radius: var(--radius);
+  border: 1px solid rgba(218, 165, 32, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.sectionTitle::before {
+  content: "⚜";
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+}
+
+.sectionTitle::after {
+  content: "⚜";
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
 }
 
 .itemBtn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-4);
   width: 100%;
-  text-align: left;
   padding: var(--space-4) var(--space-5);
-  margin: var(--space-2) 0;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(218, 165, 32, 0.2);
+  color: var(--ancient-marble);
   cursor: pointer;
-  border-radius: 10px;
-  transition: all 0.2s ease;
-  min-height: 48px;
-  line-height: 1.25;
-  font-size: 15px;
+  transition: all var(--transition-normal) ease;
+  border-radius: var(--radius);
+  margin-bottom: var(--space-2);
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+}
+
+.itemBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(218, 165, 32, 0.2) 50%, 
+    transparent 100%);
+  transition: left 0.5s ease;
+}
+
+.itemBtn:hover::before {
+  left: 100%;
 }
 
 .itemBtn:hover {
-  background-color: var(--hover-background);
-  transform: translateX(2px);
-}
-
-.itemBtn:active {
-  background-color: var(--active-background);
-  transform: translateX(0);
+  background: rgba(218, 165, 32, 0.15);
+  color: var(--ancient-gold);
+  transform: translateX(6px);
+  border-color: var(--ancient-gold);
+  box-shadow: 
+    0 4px 15px rgba(218, 165, 32, 0.2),
+    inset 0 1px 0 rgba(218, 165, 32, 0.3);
 }
 
 .itemBtn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
+  outline: 2px solid var(--ancient-gold);
+  outline-offset: 2px;
+}
+
+.itemBtn:active {
+  transform: translateX(2px);
+  background: var(--gradient-gold);
+  color: var(--ancient-night);
 }
 
 .itemIcon {
-  font-size: 1.2rem;
-  margin-right: var(--space-4);
-  width: 20px;
+  font-size: 1.5rem;
+  width: 28px;
   text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .itemLabel {
-  flex: 1;
-  font-weight: 500;
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .logoutBtn {

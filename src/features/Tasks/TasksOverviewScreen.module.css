@@ -3,36 +3,40 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--ancient-night) 0%, var(--ancient-dawn) 50%, var(--ancient-twilight) 100%);
+  color: var(--ancient-marble);
   overflow: hidden;
 }
 
 .header {
   padding: 1.5rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid var(--ancient-gold);
+  position: relative;
 }
 
 .header h1 {
   margin: 0 0 0.5rem 0;
   font-size: 2rem;
   font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: var(--ancient-gold);
+  text-shadow: 0 2px 8px rgba(218, 165, 32, 0.5);
+  font-family: 'Times New Roman', serif;
 }
 
 .subtitle {
   margin: 0;
+  color: var(--ancient-marble);
   opacity: 0.9;
   font-size: 1rem;
 }
 
 .filters {
   padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid var(--ancient-bronze);
 }
 
 .filters h3 {
@@ -49,26 +53,30 @@
 
 .categoryButton {
   padding: 0.5rem 1rem;
-  border: none;
+  border: 2px solid var(--ancient-bronze);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--ancient-marble);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
 
 .categoryButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  background: rgba(218, 165, 32, 0.2);
+  border-color: var(--ancient-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(218, 165, 32, 0.3);
 }
 
 .categoryButton.active {
-  background: rgba(255, 255, 255, 0.9);
-  color: #4a5568;
+  background: linear-gradient(135deg, var(--ancient-gold), var(--olympic-victory));
+  color: var(--ancient-night);
   font-weight: bold;
+  border-color: var(--olympic-victory);
+  box-shadow: 0 4px 16px rgba(218, 165, 32, 0.4);
 }
 
 .content {
@@ -134,19 +142,37 @@
 }
 
 .taskCard {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--ancient-bronze);
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.taskCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(218, 165, 32, 0.1), transparent);
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .taskCard:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  border-color: var(--ancient-gold);
+  box-shadow: 0 12px 48px rgba(218, 165, 32, 0.2);
+}
+
+.taskCard:hover::before {
+  opacity: 1;
 }
 
 .taskHeader {
@@ -157,20 +183,23 @@
 }
 
 .categoryBadge {
-  background: rgba(255, 255, 255, 0.9);
-  color: #4a5568;
+  background: linear-gradient(135deg, var(--ancient-gold), var(--olympic-victory));
+  color: var(--ancient-night);
   padding: 0.25rem 0.75rem;
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.3);
 }
 
 .taskNumber {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(205, 127, 50, 0.3);
+  color: var(--ancient-bronze);
   padding: 0.25rem 0.5rem;
   border-radius: 10px;
+  border: 1px solid var(--ancient-bronze);
   font-size: 0.8rem;
   font-weight: bold;
 }
@@ -178,7 +207,7 @@
 .taskText {
   font-size: 1rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--ancient-marble);
 }
 
 /* Mobile Optimierung */

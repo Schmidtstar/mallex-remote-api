@@ -10,25 +10,19 @@
   },
   "menu": {
     "title": "Menü",
-    "game": "Spiel",
-    "tasks": "Aufgaben",
-    "admin": "Administration",
-    "account": "Konto",
-    "arena": "Arena",
-    "legends": "Legenden",
-    "tasksOverview": "Aufgaben-Übersicht",
-    "suggestTask": "Task vorschlagen",
-    "adminDashboard": "Admin-Bereich",
     "profile": "Profil",
     "settings": "Einstellungen",
     "logout": "Abmelden",
-    "close": "Schließen",
-    "sections": {
-      "game": "Spiel",
-      "tasks": "Aufgaben",
-      "account": "Konto",
-      "admin": "Administration"
-    }
+    "game": "Spiel",
+    "arena": "Arena",
+    "legends": "Legenden",
+    "leaderboard": "Tabelle",
+    "tasks": "Aufgaben",
+    "tasksOverview": "Übersicht",
+    "suggestTask": "Vorschlagen",
+    "admin": "Administration",
+    "adminTasks": "Aufgaben verwalten",
+    "adminSuggestions": "Vorschläge moderieren"
   },
   "tabs": {
     "arena": "Arena",

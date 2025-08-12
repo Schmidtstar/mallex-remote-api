@@ -10,25 +10,19 @@
   },
   "menu": {
     "title": "Menu",
-    "game": "Game",
-    "tasks": "Tasks",
-    "admin": "Administration",
-    "account": "Account",
-    "arena": "Arena",
-    "legends": "Legends",
-    "tasksOverview": "Tasks Overview",
-    "suggestTask": "Suggest Task",
-    "adminDashboard": "Admin Dashboard",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Sign Out",
-    "close": "Close",
-    "sections": {
-      "game": "Game",
-      "tasks": "Tasks",
-      "account": "Account",
-      "admin": "Administration"
-    }
+    "logout": "Logout",
+    "game": "Game",
+    "arena": "Arena",
+    "legends": "Legends",
+    "leaderboard": "Leaderboard",
+    "tasks": "Tasks",
+    "tasksOverview": "Overview",
+    "suggestTask": "Suggest",
+    "admin": "Administration",
+    "adminTasks": "Manage Tasks",
+    "adminSuggestions": "Moderate Suggestions"
   },
   "tabs": {
     "arena": "Arena",
@@ -143,7 +137,7 @@
     "title": "Admin: Task Management",
     "pending": "Pending",
     "approved": "Approved",
-    "rejected": "Rejected", 
+    "rejected": "Rejected",
     "note": "Rejection reason",
     "actions": {
       "approve": "Approve",

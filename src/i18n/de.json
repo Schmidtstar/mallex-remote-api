@@ -207,6 +207,8 @@
     "no": "Nein",
     "save": "Speichern",
     "delete": "Löschen",
-    "edit": "Bearbeiten"
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "adding": "Hinzufügen..."
   }
 }

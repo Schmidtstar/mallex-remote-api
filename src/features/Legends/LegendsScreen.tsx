@@ -89,7 +89,7 @@ export function LegendsScreen() {
         <div className={styles.messageBoxSuccess}>
           <p>
             {t('legends.syncMode') || 'Legenden werden in deinem Profil gespeichert.'} 
-            {mode === 'firebase' ? ' ✓' : ' (localStorage fallback)'}
+            {mode === 'firebase' ? ' ✓' : ' (lokaler Speicher als Fallback)'}
           </p>
         </div>
       )}

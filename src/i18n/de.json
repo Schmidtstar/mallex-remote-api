@@ -106,7 +106,24 @@
   "legends": {
     "title": "Halle der Legenden",
     "subtitle": "Die besten Spieler aller Zeiten",
-    "empty": "Noch keine Legenden vorhanden"
+    "empty": "Noch keine Legenden vorhanden",
+    "loginRequired": "Melde dich an, um deine Legenden zu speichern.",
+    "guestMode": "Gast-Modus: Legenden werden nur lokal gespeichert.",
+    "syncMode": "Legenden werden in deinem Profil gespeichert.",
+    "playerNamePlaceholder": "Legendenname eingeben",
+    "addPlayer": "Hinzufügen",
+    "removePlayer": "Legende entfernen",
+    "playersList": "Legenden",
+    "noPlayers": "Noch keine Legenden hinzugefügt",
+    "addSuccess": "Legende erfolgreich hinzugefügt!",
+    "addError": "Fehler beim Hinzufügen der Legende",
+    "removeError": "Fehler beim Entfernen der Legende",
+    "validation": {
+      "required": "Legendenname ist erforderlich",
+      "tooShort": "Mindestens 2 Zeichen erforderlich",
+      "tooLong": "Maximal 50 Zeichen erlaubt",
+      "duplicate": "Diese Legende existiert bereits"
+    }
   },
   "leaderboard": {
     "title": "Rangliste",

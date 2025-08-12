@@ -145,71 +145,286 @@
 
 .playersGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-6);
 }
 
 .playerItem {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surface-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-subtle);
+  background: 
+    linear-gradient(135deg, 
+      rgba(218, 165, 32, 0.1) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(139, 69, 19, 0.2) 100%);
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(218, 165, 32, 0.4);
   border-radius: var(--border-radius-lg);
-  padding: var(--space-4);
-  transition: all var(--transition-base);
+  padding: var(--space-5);
+  transition: all var(--transition-normal);
+  animation: legendEntry 0.8s ease-out;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.playerItem:nth-child(1) { animation-delay: 0.1s; }
+.playerItem:nth-child(2) { animation-delay: 0.2s; }
+.playerItem:nth-child(3) { animation-delay: 0.3s; }
+.playerItem:nth-child(4) { animation-delay: 0.4s; }
+.playerItem:nth-child(5) { animation-delay: 0.5s; }
+
+.playerItem::before {
+  content: "🏛️";
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  animation: torchFlicker 2s infinite;
+}
+
+.playerItem::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 48%, rgba(218, 165, 32, 0.1) 50%, transparent 52%);
+  border-radius: var(--border-radius-lg);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
 }
 
 .playerItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 
+    0 8px 32px rgba(218, 165, 32, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: var(--ancient-gold);
+  animation: legendGlow 2s infinite;
+}
+
+.playerItem:hover::after {
+  opacity: 1;
 }
 
 .playerName {
-  color: var(--color-text-primary);
-  font-weight: 500;
+  color: var(--ancient-gold);
+  font-weight: 700;
+  font-size: 1.2rem;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 
+    0 0 10px rgba(218, 165, 32, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05em;
+  animation: nameShimmer 3s ease-in-out infinite;
+  position: relative;
+}
+
+.playerName::before {
+  content: "⚜️";
+  margin-right: var(--space-2);
   font-size: 1rem;
+  animation: crownRotate 4s linear infinite;
+}
+
+.playerName::after {
+  content: "⚜️";
+  margin-left: var(--space-2);
+  font-size: 1rem;
+  animation: crownRotate 4s linear infinite reverse;
 }
 
 .removeButton {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+  background: 
+    linear-gradient(135deg, 
+      rgba(139, 69, 19, 0.2) 0%,
+      rgba(205, 127, 50, 0.1) 100%);
+  border: 1px solid rgba(205, 127, 50, 0.4);
+  color: var(--ancient-bronze);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--border-radius-sm);
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all var(--transition-normal);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.removeButton::before {
+  content: "⚔️";
+  margin-right: var(--space-1);
+  font-size: 0.9rem;
 }
 
 .removeButton:hover {
-  background: #ef4444;
-  color: white;
+  background: 
+    linear-gradient(135deg, 
+      rgba(205, 127, 50, 0.8) 0%,
+      rgba(139, 69, 19, 0.9) 100%);
+  color: var(--ancient-marble);
+  border-color: var(--ancient-bronze);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
+}
+
+/* Epic Animations */
+@keyframes legendEntry {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) rotateX(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+  }
+}
+
+@keyframes legendGlow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(218, 165, 32, 0.3),
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 12px 40px rgba(218, 165, 32, 0.5),
+      0 6px 20px rgba(255, 215, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes nameShimmer {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(218, 165, 32, 0.6),
+      0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    text-shadow: 
+      0 0 20px rgba(255, 215, 0, 1),
+      0 0 30px rgba(218, 165, 32, 0.8),
+      0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
+@keyframes crownRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-5deg) scale(1.1); }
+  50% { transform: rotate(0deg) scale(1.2); }
+  75% { transform: rotate(5deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes torchFlicker {
+  0%, 100% { 
+    transform: translateY(-50%) scale(1);
+    filter: brightness(1);
+  }
+  25% { 
+    transform: translateY(-50%) scale(1.1) rotate(-2deg);
+    filter: brightness(1.2);
+  }
+  75% { 
+    transform: translateY(-50%) scale(0.9) rotate(2deg);
+    filter: brightness(0.8);
+  }
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 2.5rem;
+  font-weight: 800;
   margin-bottom: var(--space-4);
-  color: var(--color-text-primary);
+  color: var(--ancient-gold);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-align: center;
+  text-shadow: 
+    0 0 20px rgba(218, 165, 32, 0.8),
+    0 4px 8px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.1em;
+  animation: titleMajestic 4s ease-in-out infinite;
+  position: relative;
 }
 
-.description {
-  font-size: 1rem;
-  line-height: 1.5;
+.playersListTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--ancient-gold);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-align: center;
+  margin: var(--space-6) 0 var(--space-4) 0;
+  text-shadow: 
+    0 0 15px rgba(218, 165, 32, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05em;
+  position: relative;
+}
+
+.playersListTitle::before {
+  content: "🏺";
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  animation: torchFlicker 2s infinite;
+}
+
+.playersListTitle::after {
+  content: "🏺";
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  animation: torchFlicker 2s infinite 1s;
+}
+
+.noPlayersMessage {
+  text-align: center;
+  font-size: 1.2rem;
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-5);
+  font-style: italic;
+  margin: var(--space-8) 0;
+  padding: var(--space-6);
+  background: 
+    linear-gradient(135deg, 
+      rgba(139, 69, 19, 0.1) 0%,
+      rgba(0, 0, 0, 0.4) 100%);
+  border: 2px dashed rgba(218, 165, 32, 0.3);
+  border-radius: var(--border-radius-lg);
+  position: relative;
 }
 
-.playerCard {
-  background: var(--surface-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
-  transition: all var(--transition-base);
-  min-height: 56px;
-  touch-action: manipulation;
+.noPlayersMessage::before {
+  content: "🏛️ Noch keine würdigen Helden in den Annalen der Geschichte 🏛️";
+  display: block;
+  font-size: 1rem;
+  margin-bottom: var(--space-2);
+  color: var(--ancient-gold);
+}
+
+@keyframes titleMajestic {
+  0%, 100% {
+    text-shadow: 
+      0 0 20px rgba(218, 165, 32, 0.8),
+      0 4px 8px rgba(0, 0, 0, 0.9);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 
+      0 0 30px rgba(255, 215, 0, 1),
+      0 0 40px rgba(218, 165, 32, 0.8),
+      0 4px 8px rgba(0, 0, 0, 0.9);
+    transform: scale(1.02);
+  }
 }

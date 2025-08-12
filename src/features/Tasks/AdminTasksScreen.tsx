@@ -33,6 +33,8 @@ export function AdminTasksScreen() {
   const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create' | 'direct'>('pending')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  const [editingDirectId, setEditingDirectId] = useState<string | null>(null)
+  const [editDirectText, setEditDirectText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
 
   // Task creation state  
@@ -429,6 +431,36 @@ export function AdminTasksScreen() {
     }
   };
 
+  const handleEditDirectTask = (task: Task) => {
+    setEditingDirectId(task.id!)
+    setEditDirectText(task.text)
+  }
+
+  const handleSaveDirectEdit = async (id: string) => {
+    try {
+      await updateDoc(doc(db, 'tasks', id), {
+        text: editDirectText,
+        editedAt: serverTimestamp(),
+        editedBy: user?.uid
+      })
+      
+      // Reload direct tasks
+      const tasks = await listApprovedTasks()
+      setDirectTasks(tasks)
+      
+      setEditingDirectId(null)
+      setEditDirectText('')
+      console.log('✅ Direct task updated successfully')
+    } catch (error) {
+      console.error('Error updating direct task:', error)
+    }
+  }
+
+  const handleCancelDirectEdit = () => {
+    setEditingDirectId(null)
+    setEditDirectText('')
+  }
+
 
   return (
     <div className={styles.container}>
@@ -621,12 +653,43 @@ export function AdminTasksScreen() {
                       </span>
                     </div>
                     <div className={styles.itemContent}>
-                      <p className={styles.text}>{task.text}</p>
+                      {editingDirectId === task.id ? (
+                        <div className={styles.editForm}>
+                          <textarea
+                            value={editDirectText}
+                            onChange={(e) => setEditDirectText(e.target.value)}
+                            className={styles.editTextarea}
+                            rows={3}
+                          />
+                          <div className={styles.editActions}>
+                            <button
+                              onClick={() => handleSaveDirectEdit(task.id!)}
+                              className={styles.saveButton}
+                            >
+                              💾 Speichern
+                            </button>
+                            <button
+                              onClick={handleCancelDirectEdit}
+                              className={styles.cancelButton}
+                            >
+                              ❌ Abbrechen
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className={styles.text}>{task.text}</p>
+                      )}
                     </div>
                     <div className={styles.author}>
                       Erstellt von: {task.createdBy || 'System'}
                     </div>
                     <div className={styles.actions}>
+                      <button
+                        onClick={() => handleEditDirectTask(task)}
+                        className={styles.editButton}
+                      >
+                        ✏️ Bearbeiten
+                      </button>
                       <button
                         onClick={() => handleDeleteTask(task.id!)}
                         className={styles.deleteButton}

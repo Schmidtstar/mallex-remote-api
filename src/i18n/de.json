@@ -101,22 +101,22 @@
   },
   "legends": {
     "title": "Halle der Legenden",
-    "noPlayers": "Noch keine Helden hinzugefügt",
-    "addPlayer": "Held hinzufügen",
-    "removePlayer": "Held entfernen",
-    "playerNamePlaceholder": "Name des Helden eingeben",
-    "addError": "Fehler beim Hinzufügen des Helden",
-    "removeError": "Fehler beim Entfernen des Helden",
-    "addSuccess": "Held erfolgreich hinzugefügt!",
-    "loginRequired": "Melde dich an, um deine Helden zu speichern.",
-    "guestMode": "Gast-Modus: Helden werden nur lokal gespeichert.",
-    "syncMode": "Helden werden in deinem Profil gespeichert.",
-    "playersList": "Deine Helden",
+    "noPlayers": "Noch keine Legenden hinzugefügt",
+    "addPlayer": "Legende hinzufügen",
+    "removePlayer": "Legende entfernen",
+    "playerNamePlaceholder": "Name der Legende eingeben",
+    "addError": "Fehler beim Hinzufügen der Legende",
+    "removeError": "Fehler beim Entfernen der Legende",
+    "addSuccess": "Legende erfolgreich hinzugefügt!",
+    "loginRequired": "Melde dich an, um deine Legenden zu speichern.",
+    "guestMode": "Gast-Modus: Legenden werden nur lokal gespeichert.",
+    "syncMode": "Legenden werden in deinem Profil gespeichert.",
+    "playersList": "Deine Legenden",
     "validation": {
-      "required": "Heldenname ist erforderlich",
+      "required": "Legendenname ist erforderlich",
       "tooShort": "Mindestens 2 Zeichen erforderlich",
       "tooLong": "Maximal 50 Zeichen erlaubt",
-      "duplicate": "Dieser Held existiert bereits"
+      "duplicate": "Diese Legende existiert bereits"
     }
   },
   "tasks": {

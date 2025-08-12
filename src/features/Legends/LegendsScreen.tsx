@@ -16,11 +16,11 @@ export function LegendsScreen() {
 
   const validatePlayerName = (name: string): string | null => {
     const trimmed = name.trim()
-    if (!trimmed) return t('legends.validation.required') || 'Heldenname ist erforderlich'
+    if (!trimmed) return t('legends.validation.required') || 'Legendenname ist erforderlich'
     if (trimmed.length < 2) return t('legends.validation.tooShort') || 'Mindestens 2 Zeichen erforderlich'
     if (trimmed.length > 50) return t('legends.validation.tooLong') || 'Maximal 50 Zeichen erlaubt'
     if (players.some(p => p.name.toLowerCase() === trimmed.toLowerCase())) {
-      return t('legends.validation.duplicate') || 'Dieser Held existiert bereits'
+      return t('legends.validation.duplicate') || 'Diese Legende existiert bereits'
     }
     return null
   }
@@ -41,11 +41,11 @@ export function LegendsScreen() {
     try {
       await addPlayer(newPlayerName.trim())
       setNewPlayerName('')
-      setSuccessMessage(t('legends.addSuccess') || 'Held erfolgreich hinzugefügt!')
+      setSuccessMessage(t('legends.addSuccess') || 'Legende erfolgreich hinzugefügt!')
       setTimeout(() => setSuccessMessage(null), 3000)
     } catch (error) {
       console.error('Failed to add player:', error)
-      setError(t('legends.addError') || 'Fehler beim Hinzufügen des Helden')
+      setError(t('legends.addError') || 'Fehler beim Hinzufügen der Legende')
     } finally {
       setIsAdding(false)
     }
@@ -56,7 +56,7 @@ export function LegendsScreen() {
       await removePlayer(id)
     } catch (error) {
       console.error('Failed to remove player:', error)
-      alert(t('legends.removeError') || 'Fehler beim Entfernen des Helden')
+      alert(t('legends.removeError') || 'Fehler beim Entfernen der Legende')
     }
   }
 
@@ -79,16 +79,16 @@ export function LegendsScreen() {
 
       {!user ? (
         <div className={styles.messageBoxInfo}>
-          <p>{t('legends.loginRequired') || 'Melde dich an, um deine Helden zu speichern.'}</p>
+          <p>{t('legends.loginRequired') || 'Melde dich an, um deine Legenden zu speichern.'}</p>
         </div>
       ) : user.isAnonymous ? (
         <div className={styles.messageBoxWarning}>
-          <p>{t('legends.guestMode') || 'Gast-Modus: Helden werden nur lokal gespeichert.'}</p>
+          <p>{t('legends.guestMode') || 'Gast-Modus: Legenden werden nur lokal gespeichert.'}</p>
         </div>
       ) : (
         <div className={styles.messageBoxSuccess}>
           <p>
-            {t('legends.syncMode') || 'Helden werden in deinem Profil gespeichert.'} 
+            {t('legends.syncMode') || 'Legenden werden in deinem Profil gespeichert.'} 
             {mode === 'firebase' ? ' ✓' : ' (localStorage fallback)'}
           </p>
         </div>
@@ -112,7 +112,7 @@ export function LegendsScreen() {
             type="text"
             value={newPlayerName}
             onChange={(e) => setNewPlayerName(e.target.value)}
-            placeholder={t('legends.playerNamePlaceholder') || 'Heldenname eingeben'}
+            placeholder={t('legends.playerNamePlaceholder') || 'Legendenname eingeben'}
             className={styles.inputField}
             disabled={isAdding}
             maxLength={50}
@@ -147,11 +147,11 @@ export function LegendsScreen() {
 
       {players.length === 0 ? (
         <div className={styles.noPlayersMessage}>
-          {t('legends.noPlayers') || 'Noch keine Helden hinzugefügt'}
+          {t('legends.noPlayers') || 'Noch keine Legenden hinzugefügt'}
         </div>
       ) : (
         <div>
-          <h2 className={styles.playersListTitle}>{t('legends.playersList') || 'Helden'} ({players.length})</h2>
+          <h2 className={styles.playersListTitle}>{t('legends.playersList') || 'Legenden'} ({players.length})</h2>
           <div className={styles.playersGrid}>
             {players.map((player) => (
               <div
@@ -164,7 +164,7 @@ export function LegendsScreen() {
                 <button
                   onClick={() => handleRemovePlayer(player.id)}
                   className={styles.removeButton}
-                  title={t('legends.removePlayer') || 'Held entfernen'}
+                  title={t('legends.removePlayer') || 'Legende entfernen'}
                 >
                   {t('common.remove') || 'Entfernen'}
                 </button>

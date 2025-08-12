@@ -133,7 +133,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t('menu.sections.game')}</h3>
             {visibleItems
-              .filter(item => ['arena', 'legends'].includes(item.key))
+              .filter(item => ['arena', 'legends', 'leaderboard'].includes(item.key))
               .map(item => (
                 <button
                   key={item.key}

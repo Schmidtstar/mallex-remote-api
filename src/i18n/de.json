@@ -50,6 +50,19 @@
   },
   "legends": {
     "title": "Halle der Legenden",
+    "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
+    "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
+    "syncMode": "Spieler werden in deinem Profil gespeichert.",
+    "playerNamePlaceholder": "Spielername eingeben",
+    "addPlayer": "Hinzufügen",
+    "removePlayer": "Entfernen",
+    "playersList": "Spieler",
+    "noPlayers": "Noch keine Spieler hinzugefügt",
+    "addError": "Fehler beim Hinzufügen des Spielers",
+    "removeError": "Fehler beim Entfernen des Spielers"
+  },
+  "menu": {
+    "title": "Halle der Legenden",
     "playersList": "Spieler werden in deinem Profil gespeichert.",
     "addPlaceholder": "Name des Helden",
     "addButton": "Beschwöre die Götter"

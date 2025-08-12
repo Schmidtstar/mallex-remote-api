@@ -49,6 +49,19 @@
     }
   },
   "legends": {
+    "title": "Hall of Legends", 
+    "loginRequired": "Sign in to save your players.",
+    "guestMode": "Guest mode: Players are stored locally only.",
+    "syncMode": "Players are saved to your profile.",
+    "playerNamePlaceholder": "Enter player name",
+    "addPlayer": "Add",
+    "removePlayer": "Remove", 
+    "playersList": "Players",
+    "noPlayers": "No players added yet",
+    "addError": "Failed to add player",
+    "removeError": "Failed to remove player"
+  },
+  "menu": {
     "title": "Hall of Legends",
     "playersList": "Players are saved in your profile.",
     "addPlaceholder": "Name of the hero",

@@ -1,12 +1,15 @@
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { useIsAdmin } from '../context/AdminContext'
+import type { ReactNode } from 'react'
 
 export interface MenuItem {
   key: string
   labelKey: string
-  path: string
-  requiresAuth?: boolean
+  icon?: ReactNode | string
+  path?: string
+  action?: () => void
+  authRequired?: boolean
   adminOnly?: boolean
 }
 
@@ -14,11 +17,11 @@ export interface MenuItem {
 export const menuItems: MenuItem[] = [
   { key: 'arena', labelKey: 'menu.arena', path: '/arena' },
   { key: 'tasks', labelKey: 'menu.tasks', path: '/tasks' },
-  { key: 'suggest', labelKey: 'menu.suggest', path: '/suggest', requiresAuth: true },
+  { key: 'suggest', labelKey: 'menu.suggest', path: '/suggest', authRequired: true },
   { key: 'legends', labelKey: 'menu.legends', path: '/legends' },
-  { key: 'profile', labelKey: 'menu.profile', path: '/profile', requiresAuth: true },
-  { key: 'admin-tasks', labelKey: 'menu.adminTasks', path: '/admin/tasks', requiresAuth: true, adminOnly: true },
-  { key: 'admin-suggestions', labelKey: 'menu.adminSuggestions', path: '/admin/suggestions', requiresAuth: true, adminOnly: true },
+  { key: 'profile', labelKey: 'menu.profile', path: '/profile', authRequired: true },
+  { key: 'admin-tasks', labelKey: 'menu.adminTasks', path: '/admin/tasks', authRequired: true, adminOnly: true },
+  { key: 'admin-suggestions', labelKey: 'menu.adminSuggestions', path: '/admin/suggestions', authRequired: true, adminOnly: true },
 ]
 
 export const useMenuItems = () => {
@@ -28,7 +31,7 @@ export const useMenuItems = () => {
 
   return menuItems
     .filter(item => {
-      if (item.requiresAuth && !isAuthenticated) return false
+      if (item.authRequired && !isAuthenticated) return false
       if (item.adminOnly && !isAdmin) return false
       return true
     })

@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -43,10 +42,10 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
     if (open) {
       const first = drawerRef.current?.querySelector<HTMLElement>('button, a, [tabindex="0"]')
       first?.focus()
-      
+
       const prevOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
-      
+
       return () => {
         document.body.style.overflow = prevOverflow
       }
@@ -103,8 +102,8 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
   })
 
   return (
-    <div 
-      className={styles.backdrop} 
+    <div
+      className={styles.backdrop}
       onClick={handleBackdropClick}
       role="presentation"
     >
@@ -141,7 +140,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                   className={styles.itemBtn}
                   onClick={() => handleItemClick(item)}
                 >
-                  <span className={styles.itemIcon}>{item.icon}</span>
+                  <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
                   <span className={styles.itemLabel}>{t(item.labelKey)}</span>
                 </button>
               ))}
@@ -157,7 +156,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                   className={styles.itemBtn}
                   onClick={() => handleItemClick(item)}
                 >
-                  <span className={styles.itemIcon}>{item.icon}</span>
+                  <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
                   <span className={styles.itemLabel}>{t(item.labelKey)}</span>
                 </button>
               ))}
@@ -174,7 +173,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                     className={styles.itemBtn}
                     onClick={() => handleItemClick(item)}
                   >
-                    <span className={styles.itemIcon}>{item.icon}</span>
+                    <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
                     <span className={styles.itemLabel}>{t(item.labelKey)}</span>
                   </button>
                 ))}
@@ -191,7 +190,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                   className={styles.itemBtn}
                   onClick={() => handleItemClick(item)}
                 >
-                  <span className={styles.itemIcon}>{item.icon}</span>
+                  <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
                   <span className={styles.itemLabel}>{t(item.labelKey)}</span>
                 </button>
               ))}

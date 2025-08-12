@@ -10,11 +10,11 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
   const [stage, setStage] = useState(0)
   
   useEffect(() => {
-    const timer1 = setTimeout(() => setStage(1), 500)   // Kolosseum erscheint
-    const timer2 = setTimeout(() => setStage(2), 1200)  // MALLEX Titel
-    const timer3 = setTimeout(() => setStage(3), 2500)  // Olympische Saufspiele EXPLOSION
-    const timer4 = setTimeout(() => setStage(4), 4500)  // Gladiator Spruch
-    const timer5 = setTimeout(() => onComplete(), 6500) // Ende nach Gladiator Spruch
+    const timer1 = setTimeout(() => setStage(1), 800)   // Kolosseum erscheint (länger)
+    const timer2 = setTimeout(() => setStage(2), 2000)  // MALLEX Titel (mehr Zeit)
+    const timer3 = setTimeout(() => setStage(3), 4000)  // Olympische Saufspiele EXPLOSION (mehr Zeit zum Lesen)
+    const timer4 = setTimeout(() => setStage(4), 7000)  // Gladiator Spruch (mehr Zeit für Explosion)
+    const timer5 = setTimeout(() => onComplete(), 11500) // Ende nach Gladiator Spruch (5+ Sekunden länger!)
     
     return () => {
       clearTimeout(timer1)

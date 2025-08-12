@@ -144,6 +144,16 @@
         "hide": "Ausblenden",
         "show": "Einblenden"
       }
+    },
+    "create": {
+      "title": "Neue Aufgabe erstellen",
+      "categoryLabel": "Kategorie",
+      "textLabel": "Aufgabentext",
+      "placeholder": "Beschreibe die Aufgabe...",
+      "submit": "Aufgabe erstellen",
+      "creating": "Erstelle...",
+      "success": "Aufgabe erfolgreich erstellt!",
+      "error": "Aufgabe muss mindestens 5 Zeichen haben"
     }
   },
   "profile": {

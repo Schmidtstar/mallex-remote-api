@@ -128,6 +128,16 @@
       "reject": "Reject",
       "pending": "Pending Suggestions",
       "noSuggestions": "No pending suggestions"
+    },
+    "create": {
+      "title": "Create New Task",
+      "categoryLabel": "Category",
+      "textLabel": "Task Text",
+      "placeholder": "Describe the task...",
+      "submit": "Create Task",
+      "creating": "Creating...",
+      "success": "Task successfully created!",
+      "error": "Task must be at least 5 characters long"
     }
   },
   "adminTasks": {

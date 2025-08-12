@@ -41,17 +41,47 @@ export function AdminTasksScreen() {
   const [createError, setCreateError] = useState('')
   const [createSuccess, setCreateSuccess] = useState('')
 
-  // Admin-specific data loading - ONLY localStorage for now
+  // Admin-specific data loading with Firebase fallback
   useEffect(() => {
     if (!isAdmin || !user?.uid) return
     
-    const loadSuggestions = () => {
+    const loadSuggestions = async () => {
       setLoading(true)
       try {
-        // Use localStorage only - no Firebase until admin setup is complete
+        // Try Firebase first if admin is confirmed
+        if (isAdmin) {
+          try {
+            const querySnapshot = await getDocs(collection(db, 'taskSuggestions'))
+            const firebaseSuggestions: TaskSuggestion[] = []
+            
+            querySnapshot.forEach((doc) => {
+              const data = doc.data()
+              firebaseSuggestions.push({
+                id: doc.id,
+                text: data.text || '',
+                categoryId: data.categoryId || 'fate',
+                authorId: data.authorId || data.createdBy || '',
+                createdAt: data.createdAt || new Date(),
+                status: data.status || 'pending',
+                author: data.author,
+                note: data.note
+              })
+            })
+            
+            setItems(firebaseSuggestions)
+            console.log('✅ Firebase suggestions loaded:', firebaseSuggestions.length)
+            return
+          } catch (firebaseError: any) {
+            console.warn('Firebase load failed, using localStorage fallback:', firebaseError?.code)
+          }
+        }
+        
+        // Fallback to localStorage
         const saved = localStorage.getItem('mallex_admin_suggestions')
         const suggestions = saved ? JSON.parse(saved) : []
         setItems(suggestions)
+        console.log('📦 localStorage suggestions loaded:', suggestions.length)
+        
       } catch (error) {
         console.error('Admin suggestions load failed:', error)
         setItems([])
@@ -60,7 +90,11 @@ export function AdminTasksScreen() {
       }
     }
 
-    loadSuggestions()
+    loadSuggestions().catch(error => {
+      console.error('loadSuggestions promise error:', error)
+      setItems([])
+      setLoading(false)
+    })
   }, [isAdmin, user?.uid])
 
   if (!isAdmin) {

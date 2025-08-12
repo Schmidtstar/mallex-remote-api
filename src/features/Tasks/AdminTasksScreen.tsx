@@ -30,7 +30,8 @@ export function AdminTasksScreen() {
   const [items, setItems] = useState<TaskSuggestion[]>([])
   const [directTasks, setDirectTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create' | 'direct'>('pending')
+  const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create' | 'direct' | 'static'>('pending')
+  const [hiddenStaticTasks, setHiddenStaticTasks] = useState<Set<string>>(new Set())
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [editingDirectId, setEditingDirectId] = useState<string | null>(null)
@@ -159,6 +160,12 @@ export function AdminTasksScreen() {
       setItems([])
       setLoading(false)
     })
+
+    // Load hidden static tasks from localStorage
+    const hiddenTasks = localStorage.getItem('mallex_hidden_static_tasks')
+    if (hiddenTasks) {
+      setHiddenStaticTasks(new Set(JSON.parse(hiddenTasks)))
+    }
   }, [isAdmin, user?.uid])
 
   if (!isAdmin) {
@@ -461,6 +468,40 @@ export function AdminTasksScreen() {
     setEditDirectText('')
   }
 
+  const toggleHideStaticTask = (taskKey: string) => {
+    const newHiddenTasks = new Set(hiddenStaticTasks)
+    if (newHiddenTasks.has(taskKey)) {
+      newHiddenTasks.delete(taskKey)
+    } else {
+      newHiddenTasks.add(taskKey)
+    }
+    setHiddenStaticTasks(newHiddenTasks)
+    localStorage.setItem('mallex_hidden_static_tasks', JSON.stringify([...newHiddenTasks]))
+  }
+
+  const getStaticTasks = () => {
+    const staticTasks: Array<{key: string, text: string, category: string}> = []
+    const categoryMapping = {
+      'fate': 'Schicksal',
+      'shame': 'Schande', 
+      'seduce': 'Verführung',
+      'escalate': 'Eskalation',
+      'confess': 'Beichte'
+    }
+    
+    Object.entries(challenges).forEach(([categoryId, tasks]) => {
+      tasks.forEach((taskKey, index) => {
+        staticTasks.push({
+          key: taskKey,
+          text: t(taskKey),
+          category: categoryMapping[categoryId as keyof typeof categoryMapping] || categoryId
+        })
+      })
+    })
+    
+    return staticTasks
+  }
+
 
   return (
     <div className={styles.container}>
@@ -496,6 +537,12 @@ export function AdminTasksScreen() {
             onClick={() => setActiveTab('direct')}
           >
             Direkte Tasks ({directTasks.length})
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'static' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('static')}
+          >
+            Statische Tasks ({getStaticTasks().length - hiddenStaticTasks.size}/{getStaticTasks().length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'create' ? styles.tabActive : ''}`}
@@ -701,6 +748,44 @@ export function AdminTasksScreen() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'static' && (
+          <div className={styles.directTasksList}>
+            <div className={styles.itemsList}>
+              {getStaticTasks().map((task) => (
+                <div key={task.key} className={styles.item}>
+                  <div className={styles.itemHeader}>
+                    <span className={styles.category}>
+                      {task.category}
+                    </span>
+                    <span className={styles.date}>
+                      Statisch
+                    </span>
+                  </div>
+                  <div className={styles.itemContent}>
+                    <p className={styles.text} style={{ 
+                      opacity: hiddenStaticTasks.has(task.key) ? 0.5 : 1,
+                      textDecoration: hiddenStaticTasks.has(task.key) ? 'line-through' : 'none'
+                    }}>
+                      {task.text}
+                    </p>
+                  </div>
+                  <div className={styles.author}>
+                    Übersetzungsschlüssel: {task.key}
+                  </div>
+                  <div className={styles.actions}>
+                    <button
+                      onClick={() => toggleHideStaticTask(task.key)}
+                      className={hiddenStaticTasks.has(task.key) ? styles.showButton : styles.hideButton}
+                    >
+                      {hiddenStaticTasks.has(task.key) ? '👁️ Einblenden' : '🙈 Ausblenden'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

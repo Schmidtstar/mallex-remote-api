@@ -66,7 +66,12 @@ export function ArenaScreen() {
   }
 
   const getRandomTask = (categoryId: string) => {
-    const staticTasks = challenges[categoryId] || []
+    // Load hidden static tasks from localStorage
+    const hiddenTasksData = localStorage.getItem('mallex_hidden_static_tasks')
+    const hiddenTasks = hiddenTasksData ? new Set(JSON.parse(hiddenTasksData)) : new Set()
+    
+    // Filter out hidden static tasks
+    const staticTasks = (challenges[categoryId] || []).filter(taskKey => !hiddenTasks.has(taskKey))
     const dynamicTasks = firestoreTasks[categoryId] || []
     const allTasks = [...staticTasks, ...dynamicTasks]
 

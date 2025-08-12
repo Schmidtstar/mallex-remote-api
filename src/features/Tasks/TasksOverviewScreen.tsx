@@ -21,30 +21,10 @@ export function TasksOverviewScreen() {
         // Use the working tasksApi instead of direct Firebase queries
         let tasks = await listApprovedTasks(category);
         
-        // Fallback to localStorage demo data if Firebase is empty
+        // No localStorage fallback - only use Firebase tasks
         if (tasks.length === 0) {
-          console.log('🔄 Firebase empty, checking localStorage for demo tasks');
-          const demoTasks = JSON.parse(localStorage.getItem('suggestions') || '[]');
-          console.log('📦 Raw localStorage data:', demoTasks.length, 'items');
-          
-          if (demoTasks.length > 0) {
-            // Debug: Check first item structure
-            console.log('📦 First localStorage item:', demoTasks[0]);
-            
-            // Convert demo format to Task format - fix the mapping
-            const convertedTasks = demoTasks
-              .filter((task: any) => task.status === 'approved' || !task.status) // Include tasks without status
-              .map((task: any) => ({
-                id: task.id,
-                text: task.text,
-                category: task.categoryId || task.category, // Handle both formats
-                status: 'approved' as const
-              }));
-            
-            console.log('📦 Converted tasks:', convertedTasks.length);
-            console.log('📦 First converted task:', convertedTasks[0]);
-            
-            // Filter by category if specified
+          console.log('📝 No approved tasks found in Firebase');
+        }egory if specified
             if (category) {
               tasks = convertedTasks.filter((task: any) => task.category === category);
               console.log(`📦 Filtered for category "${category}":`, tasks.length);

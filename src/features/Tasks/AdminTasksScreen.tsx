@@ -635,23 +635,6 @@ export function AdminTasksScreen() {
 
         {activeTab === 'direct' && (
           <div className={styles.directTasksList}>
-            <div className={styles.bulkActions}>
-              <button
-                onClick={handleDeleteAllTasks}
-                className={styles.deleteAllButton}
-                style={{ 
-                  background: '#dc2626', 
-                  color: 'white', 
-                  padding: '10px 20px', 
-                  border: 'none', 
-                  borderRadius: '6px', 
-                  cursor: 'pointer',
-                  marginBottom: '1rem'
-                }}
-              >
-                🗑️ ALLE Tasks löschen
-              </button>
-            </div>
             {directTasks.length === 0 ? (
               <div className={styles.emptyState}>
                 <h3>Keine direkten Tasks vorhanden</h3>

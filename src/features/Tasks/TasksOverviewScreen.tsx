@@ -24,15 +24,6 @@ export function TasksOverviewScreen() {
         // No localStorage fallback - only use Firebase tasks
         if (tasks.length === 0) {
           console.log('📝 No approved tasks found in Firebase');
-        }egory if specified
-            if (category) {
-              tasks = convertedTasks.filter((task: any) => task.category === category);
-              console.log(`📦 Filtered for category "${category}":`, tasks.length);
-            } else {
-              tasks = convertedTasks;
-            }
-            console.log('📦 Final tasks to display:', tasks.length);
-          }
         }
         
         console.log('✅ Tasks loaded successfully:', tasks.length);

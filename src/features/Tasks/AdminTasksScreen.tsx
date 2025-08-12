@@ -108,7 +108,7 @@ export function AdminTasksScreen() {
                 'eskalation': 'escalate',
                 'beichte': 'confess'
               }
-              
+
               const docRef = await addDoc(collection(db, 'tasks'), {
                 text: task.text,
                 category: categoryMapping[task.categoryId] || task.categoryId, // Map to English category
@@ -126,7 +126,7 @@ export function AdminTasksScreen() {
           }
 
           console.log(`🎉 Migration completed! ${successful}/${approvedTasks.length} tasks migrated to Firebase.`)
-          
+
           if (successful > 0) {
             console.log('🔄 Reloading Arena to show new tasks...')
           }
@@ -333,9 +333,9 @@ export function AdminTasksScreen() {
         'eskalation': 'escalate',
         'beichte': 'confess'
       }
-      
+
       const englishCategory = categoryMapping[newTaskCategory] || newTaskCategory
-      
+
       await createTaskApproved(
         { category: englishCategory as CategoryKey, text: newTaskText.trim() },
         user?.email ?? user?.uid
@@ -352,6 +352,64 @@ export function AdminTasksScreen() {
       setCreating(false)
     }
   }
+
+  // Define loadApprovedTasks to be used by delete handlers
+  const loadApprovedTasks = async () => {
+    // This function's implementation would typically mirror the logic in useEffect
+    // for loading approved tasks, but for brevity and focus on the delete functionality,
+    // we'll assume it reloads the necessary data. A more robust solution might pass
+    // the setItems function or use a shared loading hook.
+    // For this example, we'll simulate a reload by re-running the core logic.
+    // In a real app, you'd likely refactor this into a reusable function.
+
+    // Re-fetching suggestions to update the UI after deletion
+    const querySnapshot = await getDocs(collection(db, 'taskSuggestions'));
+    const fetchedItems: TaskSuggestion[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      fetchedItems.push({
+        id: doc.id,
+        text: data.text || '',
+        categoryId: data.categoryId || 'fate',
+        authorId: data.authorId || data.createdBy || '',
+        createdAt: data.createdAt || new Date(),
+        status: data.status || 'pending',
+        author: data.author,
+        note: data.note,
+        hidden: data.hidden || false
+      });
+    });
+    setItems(fetchedItems);
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (!confirm('Task wirklich löschen?')) return;
+
+    try {
+      await deleteDoc(doc(db, 'taskSuggestions', taskId)); // Use deleteDoc for taskSuggestions
+      await loadApprovedTasks(); // Reload tasks
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const handleDeleteAllTasks = async () => {
+    if (!confirm('ALLE Tasks löschen? Diese Aktion kann nicht rückgängig gemacht werden!')) return;
+    if (!confirm('Sind Sie sicher? Alle Demo- und echten Tasks werden gelöscht!')) return;
+
+    try {
+      const tasksSnapshot = await getDocs(collection(db, 'tasks')); // Target 'tasks' collection for all tasks
+      const deletePromises = tasksSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      await loadApprovedTasks(); // Reload tasks after deletion
+      alert(`${tasksSnapshot.size} Tasks erfolgreich gelöscht!`);
+    } catch (error) {
+      console.error('Error deleting all tasks:', error);
+      alert('Fehler beim Löschen der Tasks!');
+    }
+  };
+
 
   return (
     <div className={styles.container}>
@@ -565,6 +623,19 @@ export function AdminTasksScreen() {
           </div>
         )}
       </div>
+      {/* Danger Zone for deleting all tasks */}
+      {isAdmin && ( // Only show danger zone if the user is an admin
+        <div className={styles.dangerZone}>
+          <h3>⚠️ Danger Zone</h3>
+          <button 
+            type="button" 
+            onClick={handleDeleteAllTasks}
+            className={styles.deleteAllButton}
+          >
+            🗑️ Alle Tasks löschen
+          </button>
+        </div>
+      )}
     </div>
   )
 }

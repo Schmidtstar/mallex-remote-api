@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { doc, setDoc, getDoc, increment } from 'firebase/firestore'
+import { db } from '../../lib/firebase'
 import { categories } from './categories'
 import { challenges } from './challenges'
 import { listApprovedTasks } from '../../lib/tasksApi'
@@ -132,15 +134,56 @@ export function ArenaScreen() {
     return Math.floor(Math.random() * 5) + 1; // 1-5 Schlücke
   }
 
-  const handleTaskSuccess = () => {
+  // Function to update player points in Firebase
+  const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
+    try {
+      // Create a simple ID from player name (lowercase, no spaces)
+      const playerId = playerName.toLowerCase().replace(/\s+/g, '-')
+      const playerRef = doc(db, 'players', playerId)
+      
+      // Check if player exists
+      const playerDoc = await getDoc(playerRef)
+      
+      if (playerDoc.exists()) {
+        // Player exists, increment points
+        await setDoc(playerRef, {
+          arenaPoints: increment(pointsToAdd)
+        }, { merge: true })
+      } else {
+        // Player doesn't exist, create new entry
+        await setDoc(playerRef, {
+          name: playerName,
+          arenaPoints: pointsToAdd,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      }
+      
+      console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte!`)
+    } catch (error) {
+      console.warn('⚠️ Punkte konnten nicht gespeichert werden:', error)
+    }
+  }
+
+  const handleTaskSuccess = async () => {
     const sips = generateRandomSips()
+    const arenaPoints = Math.floor(Math.random() * 3) + 1 // 1-3 Punkte für Erfolg
+    
+    // Award arena points to the player
+    await updatePlayerPoints(selectedPlayer, arenaPoints)
+    
     setDrinkingSips(sips)
     setTaskResult('success')
     setGameState('drinking-result')
   }
 
-  const handleTaskFailed = () => {
+  const handleTaskFailed = async () => {
     const sips = generateRandomSips()
+    const arenaPoints = 1 // 1 Punkt für den Versuch, auch bei Niederlage
+    
+    // Award small arena points even for trying
+    await updatePlayerPoints(selectedPlayer, arenaPoints)
+    
     setDrinkingSips(sips)
     setTaskResult('failed')
     setGameState('drinking-result')

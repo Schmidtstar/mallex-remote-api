@@ -1,185 +1,87 @@
+
 {
-  "arena": {
-    "title": "Arena",
-    "selectPlayer": "Select Player:",
-    "selectCategory": "Select Category:",
-    "spinWheel": "Spin Wheel",
-    "revealing": {
-      "player": "Selected player is being revealed...",
-      "category": "Category is being revealed...",
-      "challenge": "Challenge is being revealed..."
-    },
-    "selectedPlayer": "Selected Player",
-    "category": "Category",
-    "challenge": "Challenge",
-    "newChallenge": "New Challenge",
-    "fate": {
-      "item1": "Tell us about your most embarrassing moment",
-      "item2": "Name three things you would change about yourself",
-      "item3": "Who was your first great love?",
-      "item4": "Describe your ideal first date",
-      "item5": "What is your biggest fear?"
-    },
-    "seduce": {
-      "item1": "Flirt with the person to your left",
-      "item2": "Compliment someone on their appearance",
-      "item3": "Describe your dream partner",
-      "item4": "Tell us about your most romantic experience",
-      "item5": "What do you find most attractive in a person?"
-    },
-    "confess": {
-      "item1": "Confess a lie you have told",
-      "item2": "Tell us a secret about yourself",
-      "item3": "What do you regret most?",
-      "item4": "Name someone you were secretly in love with",
-      "item5": "What would you like to change about someone?"
-    },
-    "escalate": {
-      "item1": "Kiss the person of your choice",
-      "item2": "Dance seductively for 30 seconds",
-      "item3": "Give someone a shoulder massage",
-      "item4": "Whisper something suggestive in someone's ear",
-      "item5": "Remove an item of clothing"
-    },
-    "shame": {
-      "item1": "Tell us about your biggest failure",
-      "item2": "Name three bad habits you have",
-      "item3": "What's the meanest thing you've ever done?",
-      "item4": "Tell us about a situation where you felt ashamed",
-      "item5": "What would you never admit?"
-    }
-  },
-  "categories": {
-    "fate": "Fate",
-    "shame": "Shame",
-    "seduce": "Seduce",
-    "escalate": "Escalate",
-    "confess": "Confess"
-  },
-  "tabs": {
-    "arena": "Arena",
-    "legends": "Hall of Legends",
-    "menu": "Menu"
-  },
-  "menu": {
-    "arena": "Arena",
-    "tasks": "Tasks",
-    "legends": "Legends",
-    "profile": "Profile",
-    "adminTasks": "Admin: Tasks",
-    "adminSuggestions": "Admin: Suggestions",
-    "suggest": "Suggest Task"
-  },
-  "profile": {
-    "title": "Profile",
-    "birthDate": "Date of Birth",
-    "birthDate_placeholder": "DD.MM.YYYY",
-    "gender": "Gender",
-    "gender_male": "Male",
-    "gender_female": "Female",
-    "gender_diverse": "Diverse",
-    "nationality": "Nationality",
-    "save": "Save",
-    "saved": "Saved",
-    "cancel": "Cancel",
-    "edit": "Edit",
-    "ageYears": "{{count}} years"
-  },
-  "auth": {
-    "title": "Welcome to MALLEX",
-    "login": "Login",
-    "register": "Register",
-    "email": "Email",
-    "password": "Password",
-    "displayName": "Name",
-    "loginButton": "Login",
-    "registerButton": "Register",
-    "switchToRegister": "No account yet? Register",
-    "switchToLogin": "Already have an account? Login",
-    "anonymousLogin": "Continue as Guest",
-    "logout": "Logout",
-    "additionalInfo": "Additional info (optional)"
-  },
-  "common": {
-    "loading": "Loading",
-    "adding": "Adding",
-    "remove": "Remove"
-  },
-  "tasks": {
-    "overview": {
-      "title": "Tasks Overview",
-      "category": "Category",
-      "emptyState": "No tasks found in this category."
-    },
-    "suggest": {
-      "title": "Suggest Task",
-      "category": "Category",
-      "text": "Task text",
-      "placeholder": "Describe your task...",
-      "submit": "Suggest",
-      "success": "Task successfully suggested!"
-    },
-    "admin": {
-      "title": "Manage Tasks",
-      "tabs": {
-        "pending": "Pending",
-        "approved": "Approved",
-        "rejected": "Rejected",
-        "create": "Create"
-      },
-      "actions": {
-        "approve": "Approve",
-        "reject": "Reject",
-        "edit": "Edit",
-        "save": "Save",
-        "cancel": "Cancel",
-        "remove": "Remove"
-      },
-      "emptyStates": {
-        "pending": "No pending tasks",
-        "approved": "No approved tasks",
-        "rejected": "No rejected tasks"
-      },
-      "rejectNote": "Rejection reason (optional)"
-    },
-    "create": {
-      "title": "Create New Task",
-      "category": "Choose Category",
-      "text": "Task text",
-      "placeholder": "Enter the task text...",
-      "submit": "Create Task",
-      "success": "Task successfully created!"
-    }
-  },
-  "profile": {
-    "birthdate": "Birth Date",
-    "gender": "Gender",
-    "nationality": "Nationality",
-    "age": "Age",
-    "edit": "Edit",
-    "save": "Save",
-    "cancel": "Cancel",
-    "updateSuccess": "Profile successfully updated!",
-    "birthdatePlaceholder": "01/01/1985"
-  },
-  "navigation": {
+  "nav": {
     "arena": "Arena",
     "legends": "Legends",
     "menu": "Menu",
+    "tasks": "Tasks",
+    "suggestTask": "Suggest task",
     "profile": "Profile",
     "settings": "Settings",
-    "suggest": "Suggest",
-    "close": "Close"
+    "admin": "Admin"
   },
-  "countries": {
-    "DE": "Germany",
-    "AT": "Austria",
-    "CH": "Switzerland",
-    "US": "United States",
-    "GB": "United Kingdom",
-    "FR": "France",
-    "ES": "Spain",
-    "IT": "Italy",
-    "TR": "Türkiye"
+  "menu": {
+    "title": "Menu",
+    "close": "Close",
+    "sections": {
+      "game": "Game",
+      "tasks": "Tasks",
+      "account": "Account",
+      "admin": "Administration"
+    },
+    "logout": "Log out"
+  },
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Hall of Legends"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Sign in",
+    "registerLink": "Create account",
+    "guestButton": "Continue as guest",
+    "errors": {
+      "invalid": "Invalid credentials."
+    }
+  },
+  "arena": {
+    "title": "MALLEX Arena",
+    "selectCategory": "Choose a category",
+    "selectPlayer": "Choose 'New task' to start",
+    "newTask": "New task",
+    "categories": {
+      "fate": "Fate",
+      "shame": "Shame",
+      "seduction": "Seduction",
+      "escalation": "Escalation",
+      "confession": "Confession"
+    }
+  },
+  "legends": {
+    "title": "Hall of Legends",
+    "playersList": "Players are saved in your profile.",
+    "addPlaceholder": "Name of the hero",
+    "addButton": "Summon the gods"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "overview": "Tasks overview",
+    "suggest": {
+      "title": "Suggest a task",
+      "placeholder": "Your task…",
+      "submit": "Submit"
+    },
+    "admin": {
+      "title": "Task admin",
+      "approve": "Approve",
+      "reject": "Reject"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "displayName": "Display name",
+    "birthdate": "Date of birth",
+    "gender": "Gender",
+    "nationality": "Nationality",
+    "save": "Save",
+    "ageYears": "{{count}} years"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Error",
+    "cancel": "Cancel",
+    "ok": "OK"
   }
 }

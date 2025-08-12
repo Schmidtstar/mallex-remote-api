@@ -1,182 +1,87 @@
+
 {
-  "arena": {
-    "title": "Arena",
-    "selectPlayer": "Spieler auswählen:",
-    "selectCategory": "Kategorie auswählen:",
-    "spinWheel": "Glücksrad drehen",
-    "revealing": {
-      "player": "Ausgewählter Spieler wird enthüllt...",
-      "category": "Kategorie wird enthüllt...",
-      "challenge": "Aufgabe wird enthüllt..."
-    },
-    "selectedPlayer": "Ausgewählter Spieler",
-    "category": "Kategorie",
-    "challenge": "Aufgabe",
-    "newChallenge": "Neue Aufgabe",
-    "fate": {
-      "item1": "Erzähle von deinem peinlichsten Moment",
-      "item2": "Nenne drei Dinge, die du an dir ändern würdest",
-      "item3": "Was war deine erste große Liebe?",
-      "item4": "Beschreibe dein ideales erstes Date",
-      "item5": "Was ist deine größte Angst?"
-    },
-    "seduce": {
-      "item1": "Flirte mit der Person links von dir",
-      "item2": "Mache jemandem ein Kompliment über sein Aussehen",
-      "item3": "Beschreibe deinen Traumpartner",
-      "item4": "Erzähle von deinem romantischsten Erlebnis",
-      "item5": "Was findest du am attraktivsten an einer Person?"
-    },
-    "confess": {
-      "item1": "Gestehe eine Lüge, die du erzählt hast",
-      "item2": "Erzähle ein Geheimnis über dich",
-      "item3": "Was bereust du am meisten?",
-      "item4": "Nenne eine Person, in die du heimlich verliebt warst",
-      "item5": "Was würdest du gerne an jemandem ändern?"
-    },
-    "escalate": {
-      "item1": "Küsse die Person deiner Wahl",
-      "item2": "Tanze verführerisch für 30 Sekunden",
-      "item3": "Massiere jemandem die Schultern",
-      "item4": "Flüstere jemandem etwas Anzügliches ins Ohr",
-      "item5": "Ziehe ein Kleidungsstück aus"
-    },
-    "shame": {
-      "item1": "Erzähle von deinem größten Versagen",
-      "item2": "Nenne drei schlechte Gewohnheiten von dir",
-      "item3": "Was ist das Gemeinste, was du je getan hast?",
-      "item4": "Erzähle von einer Situation, wo du dich geschämt hast",
-      "item5": "Was würdest du niemals zugeben?"
-    }
-  },
-  "categories": {
-    "fate": "Schicksal",
-    "shame": "Scham",
-    "seduce": "Verführung",
-    "escalate": "Eskalation",
-    "confess": "Geständnis"
-  },
-  "tabs": {
-    "arena": "Arena",
-    "legends": "Halle der Legenden",
-    "menu": "Menü"
-  },
-  "menu": {
-    "arena": "Arena",
-    "tasks": "Aufgaben",
-    "legends": "Legenden",
-    "profile": "Profil",
-    "adminTasks": "Admin: Aufgaben",
-    "adminSuggestions": "Admin: Vorschläge",
-    "suggest": "Aufgabe vorschlagen"
-  },
-  "legends": {
-    "title": "Halle der Legenden",
-    "subtitle": "Verwalte die Spieler für epische Schlachten",
-    "loginRequired": "Melde dich an, um deine Spieler zu speichern.",
-    "guestMode": "Gast-Modus: Spieler werden nur lokal gespeichert.",
-    "syncMode": "Spieler werden in deinem Profil gespeichert.",
-    "playerNamePlaceholder": "Name des Helden",
-    "addPlayer": "Beschwöre die Götter",
-    "removePlayer": "Verbannen",
-    "noPlayers": "Keine Helden in der Halle. Beschwöre die ersten Götter!",
-    "addError": "Fehler beim Hinzufügen des Spielers",
-    "removeError": "Fehler beim Entfernen des Spielers"
-  },
-  "auth": {
-    "title": "Willkommen bei MALLEX",
-    "login": "Anmelden",
-    "register": "Registrieren",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "displayName": "Name",
-    "loginButton": "Anmelden",
-    "registerButton": "Registrieren",
-    "switchToRegister": "Noch kein Konto? Registrieren",
-    "switchToLogin": "Bereits ein Konto? Anmelden",
-    "anonymousLogin": "Als Gast fortfahren",
-    "logout": "Abmelden",
-    "additionalInfo": "Zusätzliche Angaben (optional)"
-  },
-  "common": {
-    "loading": "Lädt..."
-  },
-  "tasks": {
-    "overview": {
-      "title": "Aufgaben-Übersicht",
-      "category": "Kategorie",
-      "emptyState": "Keine Aufgaben in dieser Kategorie gefunden."
-    },
-    "suggest": {
-      "title": "Aufgabe vorschlagen",
-      "category": "Kategorie",
-      "text": "Aufgabentext",
-      "placeholder": "Beschreibe deine Aufgabe hier...",
-      "submit": "Vorschlag senden",
-      "success": "Vielen Dank für deinen Vorschlag!",
-      "submitting": "Wird gesendet..."
-    },
-    "admin": {
-      "title": "Admin-Bereich",
-      "tasks": "Aufgaben verwalten",
-      "approve": "Genehmigen",
-      "reject": "Ablehnen",
-      "suggestions": {
-        "title": "Vorschläge moderieren",
-        "empty": "Keine ausstehenden Vorschläge",
-        "by": "Von"
-      }
-    },
-    "create": {
-      "title": "Neue Aufgabe erstellen",
-      "category": "Kategorie wählen",
-      "text": "Aufgabentext",
-      "placeholder": "Gib den Text der Aufgabe ein...",
-      "submit": "Aufgabe erstellen",
-      "success": "Aufgabe erfolgreich erstellt!"
-    },
-    "all": "Alle Kategorien",
-    "empty": "Keine Aufgaben gefunden",
-    "category": "Kategorie",
-    "text": "Aufgabentext",
-    "placeholder": "Beschreibe deine Aufgabe hier...",
-    "submit": "Vorschlag senden",
-    "submitting": "Wird gesendet...",
-    "thanks": "Vielen Dank für deinen Vorschlag!"
-  },
-  "profile": {
-    "title": "Profil",
-    "birthDate": "Geburtsdatum",
-    "birthDate_placeholder": "TT.MM.JJJJ",
-    "gender": "Geschlecht",
-    "gender_male": "Männlich",
-    "gender_female": "Weiblich",
-    "gender_diverse": "Divers",
-    "nationality": "Nationalität",
-    "save": "Speichern",
-    "saved": "Gespeichert",
-    "cancel": "Abbrechen",
-    "edit": "Bearbeiten",
-    "ageYears": "{{count}} Jahre"
-  },
-  "navigation": {
+  "nav": {
     "arena": "Arena",
     "legends": "Legenden",
     "menu": "Menü",
+    "tasks": "Aufgaben",
+    "suggestTask": "Aufgabe vorschlagen",
     "profile": "Profil",
     "settings": "Einstellungen",
-    "suggest": "Vorschlagen",
-    "close": "Schließen"
+    "admin": "Admin"
   },
-  "countries": {
-    "DE": "Deutschland",
-    "AT": "Österreich",
-    "CH": "Schweiz",
-    "US": "Vereinigte Staaten",
-    "GB": "Vereinigtes Königreich",
-    "FR": "Frankreich",
-    "ES": "Spanien",
-    "IT": "Italien",
-    "TR": "Türkei"
+  "menu": {
+    "title": "Menü",
+    "close": "Schließen",
+    "sections": {
+      "game": "Spiel",
+      "tasks": "Aufgaben",
+      "account": "Konto",
+      "admin": "Administration"
+    },
+    "logout": "Abmelden"
+  },
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Halle der Legenden"
+  },
+  "auth": {
+    "loginTitle": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "loginButton": "Anmelden",
+    "registerLink": "Konto erstellen",
+    "guestButton": "Als Gast fortfahren",
+    "errors": {
+      "invalid": "Ungültige Anmeldedaten."
+    }
+  },
+  "arena": {
+    "title": "MALLEX Arena",
+    "selectCategory": "Wähle eine Kategorie",
+    "selectPlayer": "Wähle 'Neue Aufgabe' um zu beginnen",
+    "newTask": "Neue Aufgabe",
+    "categories": {
+      "fate": "Schicksal",
+      "shame": "Schande",
+      "seduction": "Verführung",
+      "escalation": "Eskalation",
+      "confession": "Geständnis"
+    }
+  },
+  "legends": {
+    "title": "Halle der Legenden",
+    "playersList": "Spieler werden in deinem Profil gespeichert.",
+    "addPlaceholder": "Name des Helden",
+    "addButton": "Beschwöre die Götter"
+  },
+  "tasks": {
+    "title": "Aufgaben",
+    "overview": "Aufgaben-Übersicht",
+    "suggest": {
+      "title": "Aufgabe vorschlagen",
+      "placeholder": "Deine Aufgabe…",
+      "submit": "Senden"
+    },
+    "admin": {
+      "title": "Aufgabenverwaltung",
+      "approve": "Annehmen",
+      "reject": "Ablehnen"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Anzeigename",
+    "birthdate": "Geburtsdatum",
+    "gender": "Geschlecht",
+    "nationality": "Nationalität",
+    "save": "Speichern",
+    "ageYears": "{{count}} Jahre"
+  },
+  "common": {
+    "loading": "Laden…",
+    "error": "Fehler",
+    "cancel": "Abbrechen",
+    "ok": "OK"
   }
 }

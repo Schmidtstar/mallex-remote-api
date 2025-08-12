@@ -10,13 +10,19 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false }
 })
 
-export function safeT(key: string, options?: any): string {
-  const v = i18n.t(key, options);
-  if (typeof v !== 'string') {
-    console.warn(`[i18n] Key "${key}" returned non-string`, v);
-    return String(v ?? key);
+// Safe translation function with fallback
+export function safeT(key: string, fallback?: string): string {
+  try {
+    const result = i18n.t(key)
+    // If translation key is returned unchanged, use fallback
+    if (result === key && fallback) {
+      return fallback
+    }
+    return result
+  } catch (error) {
+    console.warn(`Translation error for key '${key}':`, error)
+    return fallback || key
   }
-  return v;
 }
 
-export { i18n }
+export default i18n

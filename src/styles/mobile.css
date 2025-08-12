@@ -1,0 +1,58 @@
+
+/* Mobile-First CSS Utilities */
+
+/* Safe Areas für iPhone Notch etc. */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Touch-optimized interactions */
+.touch-target {
+  min-height: var(--mobile-touch-target);
+  min-width: var(--mobile-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile-specific layouts */
+@media (max-width: 480px) {
+  /* Single column layout */
+  .mobile-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--mobile-gap) !important;
+  }
+  
+  /* Full-width mobile buttons */
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  
+  /* Reduce motion for performance */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 481px) and (max-width: 768px) {
+  .tablet-two-column {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: var(--space-6) !important;
+  }
+}
+
+/* High DPI displays (Retina etc.) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .glass {
+    backdrop-filter: blur(10px); /* Bessere Qualität auf Retina */
+  }
+}

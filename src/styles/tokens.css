@@ -43,4 +43,32 @@
   --z-dropdown: 1000;
   --z-modal: 1001;
   --z-toast: 1002;
+
+  /* Mobile-specific spacing */
+  --mobile-padding: var(--space-5);
+  --mobile-gap: var(--space-4);
+  --mobile-touch-target: 48px;
+  
+  /* Performance optimized blur */
+  --mobile-blur: blur(8px);
+  --desktop-blur: blur(12px);
+}
+
+/* Mobile-first media queries */
+@media (max-width: 480px) {
+  :root {
+    /* Reduced blur for performance */
+    --glass-blur: var(--mobile-blur);
+    
+    /* Optimized spacing */
+    --space-8: 24px; /* Reduce large spacing on mobile */
+    
+    /* Typography adjustments */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px; /* iOS minimum readable size */
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 22px;
+  }
 }

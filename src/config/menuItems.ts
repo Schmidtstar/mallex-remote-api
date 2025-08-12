@@ -8,7 +8,6 @@ export type MenuItem = {
   labelKey: string
   icon?: ReactNode | string
   requiresAuth?: boolean
-  authRequired?: boolean // Backward compatibility
   adminOnly?: boolean
   action?: () => void
 }
@@ -58,7 +57,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     key: 'admin',
-    path: '/admin',
+    path: '/admin/tasks',
     labelKey: 'nav.admin',
     icon: '🔧',
     requiresAuth: true,

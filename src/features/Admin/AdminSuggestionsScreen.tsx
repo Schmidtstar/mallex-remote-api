@@ -1,12 +1,13 @@
-
 import React, { useEffect, useState } from 'react';
 import { listSuggestionsForAdmin, moderateSuggestion, promoteApprovedSuggestionToTask, type Suggestion } from '@/deprecated/suggestionsApi';
 import { useAuth } from '@/context/AuthContext';
+import { useIsAdmin } from '@/context/AdminContext';
 import { useTranslation } from 'react-i18next';
 import styles from './AdminSuggestionsScreen.module.css';
 
 export function AdminSuggestionsScreen() {
   const { user } = useAuth();
+  const isAdmin = useIsAdmin();
   const { t } = useTranslation();
   const [items, setItems] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export function AdminSuggestionsScreen() {
 
   const handle = async (s: Suggestion, action: 'approve' | 'reject') => {
     if (!s.id) return;
-    
+
     setProcessing(s.id);
     try {
       await moderateSuggestion(s.id, action);
@@ -40,10 +41,12 @@ export function AdminSuggestionsScreen() {
     }
   };
 
+  if (!user || !isAdmin) return null;
+
   return (
     <div className={styles.container}>
       <h2>{t('admin.suggestions.title')}</h2>
-      
+
       {loading ? (
         <div className={styles.loading}>{t('loading')}</div>
       ) : (
@@ -64,14 +67,14 @@ export function AdminSuggestionsScreen() {
                     </small>
                   </div>
                   <div className={styles.actions}>
-                    <button 
+                    <button
                       onClick={() => handle(s, 'approve')}
                       disabled={processing === s.id}
                       className={`${styles.btn} ${styles.approve}`}
                     >
                       {processing === s.id ? '...' : t('admin.approve')}
                     </button>
-                    <button 
+                    <button
                       onClick={() => handle(s, 'reject')}
                       disabled={processing === s.id}
                       className={`${styles.btn} ${styles.reject}`}

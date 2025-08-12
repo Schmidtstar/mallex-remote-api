@@ -1,4 +1,3 @@
-
 {
   "nav": {
     "arena": "Arena",
@@ -59,12 +58,12 @@
     "title": "Tasks",
     "overview": "Tasks overview",
     "suggest": {
-      "title": "Suggest a task",
+      "title": "Suggest task",
       "placeholder": "Your task…",
       "submit": "Submit"
     },
     "admin": {
-      "title": "Task admin",
+      "title": "Task administration",
       "approve": "Approve",
       "reject": "Reject"
     }

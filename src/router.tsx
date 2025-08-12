@@ -8,6 +8,7 @@ import { TasksOverviewScreen } from './features/Tasks/TasksOverviewScreen'
 import { SuggestTaskScreen } from './features/Tasks/SuggestTaskScreen'
 import { AdminTasksScreen } from './features/Tasks/AdminTasksScreen'
 import { AdminSuggestionsScreen } from './features/Admin/AdminSuggestionsScreen'
+import RequireAdmin from './routes/guards/RequireAdmin'
 
 import { AuthScreen } from './features/Auth/AuthScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -81,14 +82,21 @@ const routes = [
         errorElement: <ErrorBoundary><div>Fehler beim Vorschlagen</div></ErrorBoundary>
       },
       {
-        path: 'admin/tasks',
-        element: <AdminTasksScreen />,
-        errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>
-      },
-      {
-        path: 'admin/suggestions',
-        element: <AdminSuggestionsScreen />,
-        errorElement: <ErrorBoundary><div>Fehler bei Vorschlag-Moderation</div></ErrorBoundary>
+        path: 'admin',
+        element: <RequireAdmin />,
+        errorElement: <ErrorBoundary><div>Fehler beim Admin-Zugriff</div></ErrorBoundary>,
+        children: [
+          {
+            path: 'tasks',
+            element: <AdminTasksScreen />,
+            errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>
+          },
+          {
+            path: 'suggestions',
+            element: <AdminSuggestionsScreen />,
+            errorElement: <ErrorBoundary><div>Fehler bei Vorschlag-Moderation</div></ErrorBoundary>
+          }
+        ]
       },
       {
         path: 'profile',

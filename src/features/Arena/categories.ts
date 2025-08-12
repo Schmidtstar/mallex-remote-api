@@ -5,11 +5,11 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { id: 'schicksal', labelKey: 'arena.categories.schicksal' },
-  { id: 'schande', labelKey: 'arena.categories.schande' },
-  { id: 'verfuehrung', labelKey: 'arena.categories.verfuehrung' },
-  { id: 'eskalation', labelKey: 'arena.categories.eskalation' },
-  { id: 'beichte', labelKey: 'arena.categories.beichte' }
+  { id: 'fate', labelKey: 'arena.categories.schicksal' },
+  { id: 'shame', labelKey: 'arena.categories.schande' },
+  { id: 'seduce', labelKey: 'arena.categories.verfuehrung' },
+  { id: 'escalate', labelKey: 'arena.categories.eskalation' },
+  { id: 'confess', labelKey: 'arena.categories.beichte' }
 ];
 
-export type CategoryKey = 'schicksal' | 'schande' | 'verfuehrung' | 'eskalation' | 'beichte';
+export type CategoryKey = 'fate' | 'shame' | 'seduce' | 'escalate' | 'confess';

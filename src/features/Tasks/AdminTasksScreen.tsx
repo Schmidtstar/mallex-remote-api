@@ -358,8 +358,7 @@ export function AdminTasksScreen() {
       const englishCategory = categoryMapping[newTaskCategory] || newTaskCategory
 
       await createTaskApproved(
-        { category: englishCategory as CategoryKey, text: newTaskText.trim() },
-        user?.email ?? user?.uid
+        { category: englishCategory as CategoryKey, text: newTaskText.trim() }
       )
 
       setNewTaskText('')

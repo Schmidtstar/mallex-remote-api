@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { useTranslation } from 'react-i18next';
 import { categories } from '../Arena/categories';
+import { listApprovedTasks, type Task, type CategoryKey } from '@/lib/tasksApi';
 import styles from './TasksOverviewScreen.module.css';
 
-interface Task {
-  id: string;
-  text: string;
-  category: string;
-  status: string;
-  hidden?: boolean;
-}
 
-type CategoryKey = 'fate' | 'shame' | 'seduce' | 'escalate' | 'confess';
 
 export function TasksOverviewScreen() {
   const { t } = useTranslation();
@@ -22,49 +13,25 @@ export function TasksOverviewScreen() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const loadTasksFromFirebase = async () => {
+    const loadTasks = async () => {
       setLoading(true);
       try {
-        console.log('🔄 Loading tasks from Firebase, category:', category);
+        console.log('🔄 Loading approved tasks, category:', category);
         
-        // Query Firebase directly for approved tasks (filter hidden client-side)
-        let q = query(
-          collection(db, 'tasks'),
-          where('status', '==', 'approved'),
-          orderBy('createdAt', 'desc')
-        );
-
-        // Add category filter if specified
-        if (category) {
-          q = query(
-            collection(db, 'tasks'),
-            where('status', '==', 'approved'),
-            where('category', '==', category),
-            orderBy('createdAt', 'desc')
-          );
-        }
-
-        const snapshot = await getDocs(q);
-        const allTasks = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Task[];
-
-        // Filter hidden tasks client-side to avoid index requirement
-        const visibleTasks = allTasks.filter(task => !task.hidden);
-
-        console.log('✅ Firebase tasks loaded:', visibleTasks.length);
-        setItems(visibleTasks);
+        // Use the working tasksApi instead of direct Firebase queries
+        const tasks = await listApprovedTasks(category);
+        
+        console.log('✅ Tasks loaded successfully:', tasks.length);
+        setItems(tasks);
       } catch (error) {
-        console.error('❌ Firebase tasks loading failed:', error);
-        // Fallback to empty array if Firebase fails
+        console.error('❌ Tasks loading failed:', error);
         setItems([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadTasksFromFirebase();
+    loadTasks();
   }, [category]);
 
   return (

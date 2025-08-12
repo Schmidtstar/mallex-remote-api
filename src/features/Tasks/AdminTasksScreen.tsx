@@ -80,35 +80,75 @@ export function AdminTasksScreen() {
         const saved = localStorage.getItem('mallex_admin_suggestions')
         let suggestions = saved ? JSON.parse(saved) : []
         
-        // Add demo suggestions if none exist
+        // Add comprehensive demo suggestions if none exist
         if (suggestions.length === 0) {
           suggestions = [
+            // Pending suggestions
             {
-              id: 'demo-1',
+              id: 'demo-pending-1',
               text: 'Trinke einen Schluck und erzähle eine peinliche Geschichte aus deiner Kindheit.',
               categoryId: 'schande',
-              authorId: 'demo-user',
-              createdAt: new Date(),
+              authorId: 'demo-user-1',
+              createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
               status: 'pending',
-              author: { email: 'demo@example.com' }
+              author: { email: 'user1@example.com', uid: 'demo-user-1' }
             },
             {
-              id: 'demo-2', 
+              id: 'demo-pending-2', 
               text: 'Küsse die Person zu deiner Rechten auf die Stirn.',
               categoryId: 'verfuehrung',
-              authorId: 'demo-user',
-              createdAt: new Date(),
+              authorId: 'demo-user-2',
+              createdAt: new Date(Date.now() - 1000 * 60 * 15), // 15 min ago
               status: 'pending',
-              author: { email: 'demo2@example.com' }
+              author: { email: 'user2@example.com', uid: 'demo-user-2' }
             },
             {
-              id: 'demo-3',
+              id: 'demo-pending-3',
+              text: 'Erzähle der Gruppe von deinem letzten Alptraum.',
+              categoryId: 'beichte',
+              authorId: 'demo-user-3',
+              createdAt: new Date(Date.now() - 1000 * 60 * 5), // 5 min ago
+              status: 'pending',
+              author: { email: 'user3@example.com', uid: 'demo-user-3' }
+            },
+            {
+              id: 'demo-pending-4',
+              text: 'Mache 10 Liegestütze oder trinke zwei Schlücke.',
+              categoryId: 'schicksal',
+              authorId: 'demo-user-4',
+              createdAt: new Date(Date.now() - 1000 * 60 * 2), // 2 min ago
+              status: 'pending',
+              author: { email: 'user4@example.com', uid: 'demo-user-4' }
+            },
+            // Approved suggestions
+            {
+              id: 'demo-approved-1',
               text: 'Gestehe deine größte Schwäche vor der Gruppe.',
               categoryId: 'beichte',
-              authorId: 'demo-user',
-              createdAt: new Date(),
+              authorId: 'demo-user-5',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
               status: 'approved',
-              author: { email: 'demo3@example.com' }
+              author: { email: 'user5@example.com', uid: 'demo-user-5' }
+            },
+            {
+              id: 'demo-approved-2',
+              text: 'Tausche für eine Runde die Plätze mit der Person gegenüber.',
+              categoryId: 'eskalation',
+              authorId: 'demo-user-6',
+              createdAt: new Date(Date.now() - 1000 * 60 * 45), // 45 min ago
+              status: 'approved',
+              author: { email: 'user6@example.com', uid: 'demo-user-6' }
+            },
+            // Rejected suggestions
+            {
+              id: 'demo-rejected-1',
+              text: 'Springe nackt in den Pool.',
+              categoryId: 'eskalation',
+              authorId: 'demo-user-7',
+              createdAt: new Date(Date.now() - 1000 * 60 * 90), // 1.5 hours ago
+              status: 'rejected',
+              note: 'Zu extrem für die meisten Spielrunden',
+              author: { email: 'user7@example.com', uid: 'demo-user-7' }
             }
           ]
           localStorage.setItem('mallex_admin_suggestions', JSON.stringify(suggestions))
@@ -334,9 +374,18 @@ export function AdminTasksScreen() {
       <div className={styles.content}>
         {(activeTab === 'pending' || activeTab === 'approved' || activeTab === 'rejected') && (
           <>
-            {filteredItems.length === 0 ? (
+            {loading ? (
+              <div className={styles.loading}>
+                Lade Vorschläge...
+              </div>
+            ) : filteredItems.length === 0 ? (
               <div className={styles.emptyState}>
-                Keine {activeTab} Aufgaben vorhanden
+                <h3>Keine {activeTab} Aufgaben vorhanden</h3>
+                <p>
+                  {activeTab === 'pending' && 'Sobald Benutzer Aufgaben vorschlagen, erscheinen sie hier zur Moderation.'}
+                  {activeTab === 'approved' && 'Genehmigte Aufgaben werden hier angezeigt.'}
+                  {activeTab === 'rejected' && 'Abgelehnte Aufgaben werden hier angezeigt.'}
+                </p>
               </div>
             ) : (
               <div className={styles.itemsList}>

@@ -751,19 +751,7 @@ export function AdminTasksScreen() {
           </div>
         )}
       </div>
-      {/* Danger Zone for deleting all tasks */}
-      {isAdmin && ( // Only show danger zone if the user is an admin
-        <div className={styles.dangerZone}>
-          <h3>⚠️ Danger Zone</h3>
-          <button 
-            type="button" 
-            onClick={handleDeleteAllTasks}
-            className={styles.deleteAllButton}
-          >
-            🗑️ Alle Tasks löschen
-          </button>
-        </div>
-      )}
+      
     </div>
   )
 }

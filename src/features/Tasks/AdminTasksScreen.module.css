@@ -488,29 +488,3 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
-.dangerZone {
-  margin-top: 2rem;
-  padding: 1rem;
-  border: 2px solid #ff4444;
-  border-radius: 8px;
-  background-color: #fff5f5;
-}
-
-.dangerZone h3 {
-  color: #cc0000;
-  margin-top: 0;
-}
-
-.deleteAllButton {
-  background-color: #ff4444;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.deleteAllButton:hover {
-  background-color: #cc0000;
-}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
-import { db } from '../firebase'
+import { db } from '../lib/firebase'
 import { addDoc, collection, deleteDoc, doc, getDocs, query, where, serverTimestamp, updateDoc } from 'firebase/firestore'
 
 export interface TaskSuggestion {

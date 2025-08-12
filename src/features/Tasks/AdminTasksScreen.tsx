@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
-import { TaskSuggestion, SuggestionStatus } from '../../context/TaskSuggestionsContext'
 import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 import { useIsAdmin } from '../../context/AdminContext'
@@ -9,6 +8,19 @@ import { useAuth } from '../../context/AuthContext'
 import { categories } from '../Arena/categories'
 import { createTaskApproved } from '../../lib/tasksApi'
 import styles from './AdminTasksScreen.module.css'
+
+export type SuggestionStatus = 'pending' | 'approved' | 'rejected'
+
+interface TaskSuggestion {
+  id: string
+  text: string
+  categoryId: string
+  authorId: string
+  createdAt: any
+  status: SuggestionStatus
+  author?: { email?: string; uid?: string }
+  note?: string
+}
 
 export function AdminTasksScreen() {
   const { t } = useTranslation()

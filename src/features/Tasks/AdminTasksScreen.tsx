@@ -332,7 +332,7 @@ export function AdminTasksScreen() {
   }
 
   const handleReject = (id: string) => {
-    reject(id).catch(error => console.error("Error in handleReject:", error))
+    reject(id)
   }
 
   const handleCreateTask = async () => {

@@ -22,8 +22,6 @@ const genderOptions = [
   { value: 'diverse', labelKey: 'profile.gender_diverse' }
 ];
 
-const nationalityOptions = nationalities;
-
 // Helper functions
 const formatISOToDob = (isoDate: string): string => {
   const date = new Date(isoDate);

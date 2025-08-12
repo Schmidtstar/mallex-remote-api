@@ -1,121 +1,87 @@
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+export type SuggestionStatus = "pending" | "approved" | "rejected";
 
-export type SuggestionStatus = 'pending' | 'approved' | 'rejected' | 'edited'
+export type TaskSuggestion = {
+  id: string;
+  categoryId: string;   // z.B. "fate" | "seduce" | "confess" | "escalate" | "shame"
+  text: string;
+  status: SuggestionStatus;
+  note?: string;
+  createdAt: number;
+  createdBy?: string;   // optional: uid oder "guest"
+};
 
-export interface TaskSuggestion {
-  id: string
-  categoryId: string
-  text: string
-  status: SuggestionStatus
-  note?: string
-  author?: { uid?: string; email?: string | null }
-  createdAt: number
-  updatedAt: number
+type Ctx = {
+  suggestions: TaskSuggestion[];
+  pending: TaskSuggestion[];
+  approved: TaskSuggestion[];
+  rejected: TaskSuggestion[];
+  addSuggestion: (categoryId: string, text: string, createdBy?: string) => Promise<void>;
+  approve: (id: string, note?: string) => void;
+  reject: (id: string, note?: string) => void;
+  remove: (id: string) => void;
+  updateText: (id: string, text: string) => void;
+  clearAllLocal: () => void;
+};
+
+const TaskSuggestionsContext = createContext<Ctx | undefined>(undefined);
+
+const LS_KEY = "mallex:taskSuggestions";
+
+function loadLocal(): TaskSuggestion[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? (JSON.parse(raw) as TaskSuggestion[]) : [];
+  } catch {
+    return [];
+  }
+}
+function saveLocal(list: TaskSuggestion[]) {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(list));
+  } catch {}
 }
 
-interface TaskSuggestionsContextType {
-  items: TaskSuggestion[]
-  add: (categoryId: string, text: string, author?: { uid?: string; email?: string | null }) => void
-  approve: (id: string) => void
-  reject: (id: string, note?: string) => void
-  edit: (id: string, patch: Partial<Pick<TaskSuggestion, 'text' | 'categoryId' | 'note'>>) => void
-  remove: (id: string) => void
-  clear: () => void
-}
+export function TaskSuggestionsProvider({ children }: { children: React.ReactNode }) {
+  const [suggestions, setSuggestions] = useState<TaskSuggestion[]>(() => loadLocal());
 
-const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | null>(null)
+  useEffect(() => saveLocal(suggestions), [suggestions]);
 
-const STORAGE_KEY = 'taskSuggestions'
-
-export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<TaskSuggestion[]>([])
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        setItems(JSON.parse(stored))
-      }
-    } catch (error) {
-      console.error('Failed to load task suggestions:', error)
-    }
-  }, [])
-
-  // Save to localStorage when items change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-    } catch (error) {
-      console.error('Failed to save task suggestions:', error)
-    }
-  }, [items])
-
-  const add = (categoryId: string, text: string, author?: { uid?: string; email?: string | null }) => {
-    const newSuggestion: TaskSuggestion = {
-      id: `suggestion_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  const addSuggestion: Ctx["addSuggestion"] = async (categoryId, text, createdBy = "guest") => {
+    const s: TaskSuggestion = {
+      id: crypto.randomUUID(),
       categoryId,
-      text,
-      status: 'pending',
-      author,
+      text: text.trim(),
+      status: "pending",
       createdAt: Date.now(),
-      updatedAt: Date.now()
-    }
-    setItems(prev => [...prev, newSuggestion])
-  }
+      createdBy,
+    };
+    setSuggestions(prev => [s, ...prev]);
+  };
 
-  const approve = (id: string) => {
-    setItems(prev => prev.map(item => 
-      item.id === id 
-        ? { ...item, status: 'approved' as SuggestionStatus, updatedAt: Date.now() }
-        : item
-    ))
-  }
+  const patch = (id: string, fn: (s: TaskSuggestion) => TaskSuggestion) =>
+    setSuggestions(prev => prev.map(s => (s.id === id ? fn(s) : s)));
 
-  const reject = (id: string, note?: string) => {
-    setItems(prev => prev.map(item => 
-      item.id === id 
-        ? { ...item, status: 'rejected' as SuggestionStatus, note, updatedAt: Date.now() }
-        : item
-    ))
-  }
+  const approve: Ctx["approve"] = (id, note) => patch(id, s => ({ ...s, status: "approved", note }));
+  const reject: Ctx["reject"] = (id, note) => patch(id, s => ({ ...s, status: "rejected", note }));
+  const remove: Ctx["remove"]  = id => setSuggestions(prev => prev.filter(s => s.id !== id));
+  const updateText: Ctx["updateText"] = (id, text) => patch(id, s => ({ ...s, text }));
 
-  const edit = (id: string, patch: Partial<Pick<TaskSuggestion, 'text' | 'categoryId' | 'note'>>) => {
-    setItems(prev => prev.map(item => 
-      item.id === id 
-        ? { ...item, ...patch, status: 'edited' as SuggestionStatus, updatedAt: Date.now() }
-        : item
-    ))
-  }
+  const clearAllLocal = () => setSuggestions([]);
 
-  const remove = (id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id))
-  }
+  const value = useMemo<Ctx>(() => {
+    const pending  = suggestions.filter(s => s.status === "pending");
+    const approved = suggestions.filter(s => s.status === "approved");
+    const rejected = suggestions.filter(s => s.status === "rejected");
+    return { suggestions, pending, approved, rejected, addSuggestion, approve, reject, remove, updateText, clearAllLocal };
+  }, [suggestions]);
 
-  const clear = () => {
-    setItems([])
-  }
-
-  return (
-    <TaskSuggestionsContext.Provider value={{
-      items,
-      add,
-      approve,
-      reject,
-      edit,
-      remove,
-      clear
-    }}>
-      {children}
-    </TaskSuggestionsContext.Provider>
-  )
+  return <TaskSuggestionsContext.Provider value={value}>{children}</TaskSuggestionsContext.Provider>;
 }
 
 export function useTaskSuggestions() {
-  const context = useContext(TaskSuggestionsContext)
-  if (!context) {
-    throw new Error('useTaskSuggestions must be used within a TaskSuggestionsProvider')
-  }
-  return context
+  const ctx = useContext(TaskSuggestionsContext);
+  if (!ctx) throw new Error("useTaskSuggestions must be used within TaskSuggestionsProvider");
+  return ctx;
 }

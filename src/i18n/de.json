@@ -56,7 +56,12 @@
       "schande": "Schande",
       "verfuehrung": "Verführung",
       "eskalation": "Eskalation",
-      "beichte": "Geständnis"
+      "beichte": "Beichte",
+      "fate": "Schicksal",
+      "shame": "Schande",
+      "seduce": "Verführung",
+      "escalate": "Eskalation",
+      "confess": "Beichte"
     },
     "fate": {
       "item1": "Erzähle von deinem ersten Kuss",

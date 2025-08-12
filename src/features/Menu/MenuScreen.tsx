@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -228,7 +227,7 @@ export function MenuScreen() {
                           placeholder="DD.MM.YYYY"
                           className={styles.input}
                         />
-                        
+
                         <div className={styles.genderGroup}>
                           <label className={styles.label}>{t('profile.gender')}</label>
                           <div className={styles.buttonGroup}>
@@ -307,7 +306,7 @@ export function MenuScreen() {
         {currentTab === 'settings' && (
           <div className={styles.settingsSection}>
             <h2>{t('settings.title')}</h2>
-            
+
             <div className={styles.settingGroup}>
               <h3>{t('settings.language')}</h3>
               <div className={styles.languageButtons}>

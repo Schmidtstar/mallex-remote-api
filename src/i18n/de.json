@@ -103,12 +103,6 @@
       "duplicate": "Dieser Spieler existiert bereits"
     }
   },
-  "menu": {
-    "title": "Halle der Legenden",
-    "playersList": "Spieler werden in deinem Profil gespeichert.",
-    "addPlaceholder": "Name des Helden",
-    "addButton": "Beschwöre die Götter"
-  },
   "tasks": {
     "title": "Aufgaben",
     "overview": "Aufgaben-Übersicht",

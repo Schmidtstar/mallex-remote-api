@@ -96,12 +96,6 @@
     "addError": "Failed to add player",
     "removeError": "Failed to remove player"
   },
-  "menu": {
-    "title": "Hall of Legends",
-    "playersList": "Players are saved in your profile.",
-    "addPlaceholder": "Name of the hero",
-    "addButton": "Summon the gods"
-  },
   "tasks": {
     "title": "Tasks",
     "overview": "Tasks overview",

@@ -1,0 +1,64 @@
+MALLEX – Fragenkatalog & Aktionsplan (Phase 3 – nach Spacing- & UX-Optimierungen)
+
+Ziel: Nach der erfolgreichen Umsetzung der Spacing-Tokens und UX-Verbesserungen jetzt Altlasten bereinigen, finale QA durchführen und Responsiveness sichern.
+
+⸻
+
+A) Status (nach Phase 2)
+	•	✅ Konsistente Spacing-Tokens in allen Hauptkomponenten (Arena, Legends, HamburgerMenu, BottomNav)
+	•	✅ Design-Token-Palette erweitert
+	•	✅ UX-Optimierungen: Touch-Ziele ≥ 48px, Hover-/Focus-/Active-States, Icon-Ausrichtung, Typography-Konsistenz
+	•	✅ Accessibility-Verbesserungen (focus-visible)
+	•	⏳ Altlasten-Bereinigung noch offen
+
+⸻
+
+B) Phase 3 – Cleanup & QA
+
+1) Altlasten-Bereinigung
+	•	index.js (Root) → prüfen, ob ungenutzt, ansonsten löschen
+	•	generated-icon.png → als Favicon/App-Icon in index.html einbinden oder löschen
+	•	src/lib/adminApi.ts, src/lib/paths.ts → prüfen, ob künftige Nutzung geplant; falls nicht, nach /deprecated verschieben oder löschen
+	•	Prüfen mit:
+
+find . -name "index.js" -type f
+ls -la generated-icon.png
+grep -r "generated-icon" src/ || echo "No references found"
+
+
+
+2) QA – Funktional & Visuell
+	•	Funktional:
+	•	Arena, Legends, Menu, Tasks-Übersicht, Vorschlagen, Admin-Aufgaben durchklicken
+	•	Auth-Flow: Gast, registrierter Nutzer, Admin
+	•	Menü-Drawer auf allen Geräten testen
+	•	Visuell:
+	•	Spacing in allen Screens konsistent
+	•	Alle Buttons und Interaktionsflächen ≥ 48px hoch
+	•	Icons zentriert und einheitlich groß
+
+3) Responsiveness-Check
+	•	Mobile Breakpoints ≤ 480px: Kein Überlappen oder abgeschnittene Inhalte
+	•	Tablet/Desktop: Layouts bleiben ausgewogen, keine zu großen Leerräume
+	•	HamburgerMenu und BottomNav bleiben nutzbar bei allen Größen
+
+4) Finaler Feinschliff
+	•	Hover-/Active-States auf Kontrast und Sichtbarkeit prüfen (Dark/Light Mode)
+	•	Fokus-Styling bei Tastaturnutzung deutlich sichtbar lassen
+
+⸻
+
+C) Nächste Schritte – Umsetzung (0.5–1 Tag)
+	1.	Altlasten-Entscheidungen treffen und Dateien entfernen/verschieben
+	2.	Manuelle QA gemäß obiger Checkliste
+	3.	Responsiveness auf gängigen Gerätegrößen testen
+	4.	Letzte UX-Details justieren
+
+⸻
+
+D) Definition of Done (für Phase 3)
+	•	Keine ungenutzten Dateien mehr im Repo
+	•	Alle Screens funktionieren in allen Rollen ohne Layout- oder Funktionsfehler
+	•	UI konsistent in Spacing, Typografie, Icon-Ausrichtung
+	•	Mobile/Desktop-Ansichten ohne Brüche
+	•	Accessibility-Standards erfüllt

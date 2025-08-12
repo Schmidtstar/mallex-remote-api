@@ -37,14 +37,22 @@
   },
   "auth": {
     "loginTitle": "Anmelden",
+    "registerTitle": "Registrieren",
     "email": "E-Mail-Adresse",
     "password": "Passwort",
-    "loginButton": "Anmelden",
-    "registerLink": "Neues Konto erstellen",
-    "guestButton": "Als Gast weitermachen",
-    "errors": {
-      "invalid": "E-Mail oder Passwort falsch."
-    }
+    "displayName": "Benutzername",
+    "login": "Anmelden",
+    "register": "Konto erstellen",
+    "loginLink": "Bereits ein Konto? Jetzt anmelden",
+    "registerLink": "Noch kein Konto? Jetzt registrieren",
+    "guestButton": "Als Gast spielen",
+    "loggingIn": "Anmeldung läuft...",
+    "registering": "Konto wird erstellt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "emailAlreadyInUse": "Diese E-Mail wird bereits verwendet",
+    "weakPassword": "Das Passwort ist zu schwach",
+    "additionalInfo": "Persönliche Angaben (optional)"
   },
   "arena": {
     "title": "MALLEX Arena",
@@ -163,20 +171,19 @@
   },
   "profile": {
     "title": "Profil",
-    "email": "E-Mail",
-    "displayName": "Anzeigename",
-    "birthdate": "Geburtsdatum",
-    "age": "Alter",
-    "ageYears": "{{count}} Jahre",
+    "displayName": "Benutzername",
+    "email": "E-Mail-Adresse",
+    "birthDate": "Geburtsdatum",
+    "birthDate_placeholder": "TT.MM.JJJJ (z.B. 15.03.1995)",
     "gender": "Geschlecht",
-    "gender_male": "Männlich",
-    "gender_female": "Weiblich",
-    "gender_diverse": "Divers",
     "nationality": "Nationalität",
-    "anonymous": "Gast-Benutzer",
-    "edit": "Bearbeiten",
-    "save": "Speichern",
-    "saved": "Profil gespeichert"
+    "age": "Alter",
+    "edit": "Profil bearbeiten",
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen",
+    "updated": "Profil wurde erfolgreich gespeichert",
+    "loading": "Wird geladen...",
+    "anonymous": "Gast-Benutzer"
   },
   "settings": {
     "title": "Einstellungen",

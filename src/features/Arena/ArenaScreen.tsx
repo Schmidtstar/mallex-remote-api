@@ -158,30 +158,52 @@ export function ArenaScreen() {
       case 'idle':
         return (
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ color: 'var(--primary)', marginBottom: '2rem' }}>
-              Bereit für MALLEX?
+            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏛️</div>
+            <h2 style={{ 
+              color: 'var(--ancient-gold)', 
+              marginBottom: '1rem',
+              background: 'var(--gradient-gold)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
+              ⚔️ Bereit für die Olympischen Trinkspiele? ⚔️
             </h2>
-            <p style={{ marginBottom: '2rem', fontSize: '1.1rem' }}>
-              {players.length > 0 
-                ? `${players.length} Spieler bereit!` 
-                : 'Keine Spieler in den Legenden. Füge welche hinzu!'
-              }
-            </p>
+            <div style={{
+              background: 'var(--glass-background)',
+              backdropFilter: 'var(--glass-blur)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: 'var(--radius)',
+              padding: '2rem',
+              marginBottom: '2rem',
+              position: 'relative'
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏺</div>
+              <p style={{ fontSize: '1.2rem', color: 'var(--ancient-marble)' }}>
+                {players.length > 0 
+                  ? `🏆 ${players.length} Helden bereit für den Wettkampf!` 
+                  : '⚠️ Keine Legenden verfügbar. Besuche die Halle der Legenden!'
+                }
+              </p>
+            </div>
             <button
               onClick={startGame}
               disabled={loadingTasks || players.length === 0}
               style={{
                 padding: '20px 40px',
                 fontSize: '1.5rem',
-                background: players.length === 0 ? '#666' : 'var(--primary)',
-                color: 'var(--bg)',
-                border: 'none',
+                background: players.length === 0 ? 'var(--ancient-stone)' : 'var(--gradient-gold)',
+                color: 'var(--ancient-night)',
+                border: `2px solid ${players.length === 0 ? 'var(--ancient-stone)' : 'var(--ancient-gold)'}`,
                 borderRadius: 'var(--radius)',
                 cursor: players.length === 0 ? 'not-allowed' : 'pointer',
-                opacity: players.length === 0 ? 0.6 : 1
+                opacity: players.length === 0 ? 0.6 : 1,
+                fontWeight: 'bold',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                boxShadow: players.length > 0 ? 'var(--shadow-gold)' : 'none'
               }}
             >
-              {loadingTasks ? 'Lade Aufgaben...' : 'Spiel starten!'}
+              {loadingTasks ? '⏳ Lade olympische Herausforderungen...' : '🎮 Wettkampf beginnen!'}
             </button>
           </div>
         )
@@ -398,33 +420,52 @@ export function ArenaScreen() {
         return (
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              background: 'var(--primary)', 
-              color: 'var(--bg)', 
-              padding: '10px 20px', 
+              background: 'var(--gradient-gold)', 
+              color: 'var(--ancient-night)', 
+              padding: '15px 30px', 
               borderRadius: 'var(--radius)',
               marginBottom: '2rem',
-              display: 'inline-block'
+              display: 'inline-block',
+              border: '2px solid var(--ancient-gold)',
+              fontWeight: 'bold'
             }}>
-              Runde {currentRound} - Trinkspiel! 🍺
+              🏛️ Runde {currentRound} - Olympisches Urteil! 🍷
             </div>
 
             <div style={{
-              background: taskResult === 'success' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
+              background: taskResult === 'success' 
+                ? 'linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(218, 165, 32, 0.1))'
+                : 'linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(139, 125, 107, 0.1))',
               padding: '30px',
               borderRadius: 'var(--radius)',
               marginBottom: '2rem',
-              border: `2px solid ${taskResult === 'success' ? '#4CAF50' : '#F44336'}`
+              border: `3px solid ${taskResult === 'success' ? 'var(--olympic-victory)' : 'var(--ancient-bronze)'}`,
+              backdropFilter: 'var(--glass-blur)',
+              position: 'relative'
             }}>
-              <div style={{ fontSize: '4rem', marginBottom: '10px' }}>
-                {taskResult === 'success' ? '🎉' : '💔'}
+              <div style={{ fontSize: '5rem', marginBottom: '15px' }}>
+                {taskResult === 'success' ? '🏆' : '⚱️'}
               </div>
               
+              {taskResult === 'success' && (
+                <div style={{ 
+                  position: 'absolute',
+                  top: '10px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '2rem'
+                }}>
+                  🌿 🌿 🌿
+                </div>
+              )}
+              
               <h2 style={{ 
-                color: taskResult === 'success' ? '#4CAF50' : '#F44336',
+                color: taskResult === 'success' ? 'var(--olympic-victory)' : 'var(--ancient-bronze)',
                 marginBottom: '20px',
-                fontSize: '1.5rem'
+                fontSize: '1.8rem',
+                fontWeight: 'bold'
               }}>
-                {taskResult === 'success' ? 'Aufgabe erfüllt!' : 'Aufgabe gescheitert!'}
+                {taskResult === 'success' ? '🎊 Olympischer Sieg! 🎊' : '⚔️ Ehrenvolle Niederlage ⚔️'}
               </h2>
               
               <div style={{

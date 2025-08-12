@@ -75,7 +75,22 @@ export function LegendsScreen() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{t('legends.title')}</h1>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏛️</div>
+        <h1 className={styles.title}>
+          <span style={{ marginRight: '1rem' }}>⚜️</span>
+          {t('legends.title')}
+          <span style={{ marginLeft: '1rem' }}>⚜️</span>
+        </h1>
+        <div style={{ 
+          color: 'var(--ancient-gold)', 
+          fontSize: '1.1rem',
+          fontStyle: 'italic',
+          margin: '1rem 0' 
+        }}>
+          🌿 "Nur die Würdigsten betreten diese heiligen Hallen" 🌿
+        </div>
+      </div>
 
       {!user ? (
         <div className={styles.messageBoxInfo}>

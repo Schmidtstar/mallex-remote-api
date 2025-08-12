@@ -123,12 +123,66 @@
     box-shadow: 
       0 8px 32px rgba(255, 215, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: scale(1);
   }
-  100% {
+  50% {
     box-shadow: 
       0 12px 40px rgba(255, 215, 0, 0.6),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
   }
+  100% {
+    box-shadow: 
+      0 8px 32px rgba(255, 215, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: scale(1);
+  }
+}
+
+/* Olympische Lorbeerkranz Animation */
+@keyframes laurelCrown {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-2deg) scale(1.05); }
+  50% { transform: rotate(0deg) scale(1.1); }
+  75% { transform: rotate(2deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.olympic-laurel {
+  animation: laurelCrown 3s infinite ease-in-out;
+  display: inline-block;
+}
+
+/* Marmor-Säulen Effekt */
+.marble-column {
+  position: relative;
+  background: 
+    linear-gradient(180deg, 
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(0, 0, 0, 0.1) 100%),
+    var(--glass-background);
+  border-left: 2px solid rgba(218, 165, 32, 0.3);
+  border-right: 2px solid rgba(218, 165, 32, 0.3);
+}
+
+.marble-column::before {
+  content: "⚱️";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+}
+
+.marble-column::after {
+  content: "🏛️";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
 }
 
 /* Buttons - Olympischer Stil */

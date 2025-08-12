@@ -56,30 +56,25 @@
     "selectPlayer": "Wähle 'Neue Aufgabe' zum Starten",
     "newTask": "Neue Aufgabe",
     "categories": {
-      "schicksal": "Schicksal",
-      "schande": "Schande",
-      "verfuehrung": "Verführung",
-      "eskalation": "Eskalation",
-      "beichte": "Beichte",
-      "fate": "Schicksal",
-      "shame": "Schande",
-      "seduce": "Verführung",
-      "escalate": "Eskalation",
-      "confess": "Beichte"
+      "fate": "🎭 Fatum - Schicksal der Götter",
+      "shame": "🔥 Pudor - Prüfung der Scham",
+      "seduce": "💘 Venus - Kunst der Verführung",
+      "escalate": "⚡ Bacchus - Rausch der Eskalation",
+      "confess": "🗿 Veritas - Beichte der Wahrheit"
     },
     "fate": {
-      "item1": "Erzähle von deinem ersten Kuss",
-      "item2": "Beschreibe dein peinlichstes Erlebnis",
-      "item3": "Was ist dein größter Traum?",
-      "item4": "Welches Geheimnis hast du nie preisgegeben?",
-      "item5": "Was würdest du ändern, wenn du die Zeit zurückdrehen könntest?"
+      "item1": "🪙 Wirf die Münze des Schicksals - Die Götter entscheiden über Triumph oder Tribut!",
+      "item2": "👑 Der Orakel-Sprecher zu deiner Rechten verkündet dein Schicksal!",
+      "item3": "⚱️ Bekenne vor den Göttern deine größte Schmach oder opfere 3 Schlücke!",
+      "item4": "🔄 Tausche für 2 Runden deinen Platz im Amphitheater!",
+      "item5": "🤐 Du bist von den Musen mit Schweigen geschlagen - bis zur nächsten Prüfung!"
     },
     "shame": {
-      "item1": "Gib zu, was dich am meisten beschämt",
-      "item2": "Erzähle von einem Moment, in dem du versagt hast",
-      "item3": "Bekenne deine schlechteste Angewohnheit",
-      "item4": "Was ist das Dümmste, was du je getan hast?",
-      "item5": "Wofür schämst du dich am meisten?"
+      "item1": "💃 Führe den Tanz der Bacchanten für 30 Sekunden auf!",
+      "item2": "🎭 Imitiere die Gesänge eines Minnesängers aus der Antike!",
+      "item3": "💘 Berichte von deinen Abenteuern in den Gärten der Venus!",
+      "item4": "💪 Beweise deine Stärke wie ein Gladiator - 10 Liegestütze oder 2 Opfergaben!",
+      "item5": "🎨 Sprich 3 Runden nur in den Versen eines antiken Dichters!"
     },
     "seduce": {
       "item1": "Flüstere jemandem etwas Verführerisches ins Ohr",
@@ -181,7 +176,7 @@
     "birthdate": "Geburtsdatum",
     "gender": "Geschlecht",
     "gender_male": "Männlich",
-    "gender_female": "Weiblich", 
+    "gender_female": "Weiblich",
     "gender_diverse": "Divers",
     "nationality": "Nationalität",
     "save": "Speichern",

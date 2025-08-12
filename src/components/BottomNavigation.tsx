@@ -19,9 +19,9 @@ export default function BottomNavigation({ openMenu }: Props) {
         className={styles.item}
         data-active={pathname.startsWith("/arena") || undefined}
         onClick={goArena}
-        aria-label="Arena"
+        aria-label="Olympische Arena"
       >
-        <span className={styles.icon}>🏟️</span>
+        <span className={styles.icon}>⚔️</span>
         <span className={styles.label}>Arena</span>
       </button>
 
@@ -31,17 +31,17 @@ export default function BottomNavigation({ openMenu }: Props) {
         onClick={goLegends}
         aria-label="Halle der Legenden"
       >
-        <span className={styles.icon}>🏛️</span>
+        <span className={styles.icon}>🏆</span>
         <span className={styles.label}>Legenden</span>
       </button>
 
       <button
         className={styles.item}
         onClick={open}
-        aria-label="Menü öffnen"
+        aria-label="Tempel-Menü öffnen"
       >
-        <span className={styles.icon}>≡</span>
-        <span className={styles.label}>Menü</span>
+        <span className={styles.icon}>🏛️</span>
+        <span className={styles.label}>Tempel</span>
       </button>
     </nav>
   );

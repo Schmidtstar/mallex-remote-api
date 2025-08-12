@@ -12,7 +12,7 @@ export function AdminTasksScreen() {
   const { t } = useTranslation()
   const isAdmin = useIsAdmin()
   const { user } = useAuth()
-  const { items, approve, reject, edit, remove } = useTaskSuggestions()
+  const { suggestions: items, approve, reject, updateText: edit, remove } = useTaskSuggestions()
   const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create'>('pending')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')

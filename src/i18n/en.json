@@ -121,7 +121,8 @@
       "reject": "Reject",
       "pending": "Pending Suggestions",
       "noSuggestions": "No pending suggestions"
-    },
+    }
+  },
   "adminTasks": {
     "title": "Admin: Task Moderation",
     "pending": "Pending",

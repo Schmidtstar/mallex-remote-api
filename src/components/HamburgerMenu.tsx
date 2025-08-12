@@ -147,7 +147,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
           </div>
 
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>{t('menu.sections.tasks')}</h3>
+            <h3 className={styles.sectionTitle}>{t('menu.tasks')}</h3>
             {visibleItems
               .filter(item => ['tasks', 'suggestTask'].includes(item.key))
               .map(item => (
@@ -157,16 +157,20 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                   onClick={() => handleItemClick(item)}
                 >
                   <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
-                  <span className={styles.itemLabel}>{t(item.labelKey)}</span>
+                  <span className={styles.itemLabel}>
+                    {item.key === 'tasks' ? t('menu.tasksOverview') :
+                     item.key === 'suggestTask' ? t('menu.suggestTask') :
+                     t(item.labelKey)}
+                  </span>
                 </button>
               ))}
           </div>
 
           {isAdmin && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{t('menu.sections.admin')}</h3>
+              <h3 className={styles.sectionTitle}>{t('menu.admin')}</h3>
               {visibleItems
-                .filter(item => item.adminOnly)
+                .filter(item => ['admin'].includes(item.key))
                 .map(item => (
                   <button
                     key={item.key}
@@ -174,31 +178,33 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                     onClick={() => handleItemClick(item)}
                   >
                     <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
-                    <span className={styles.itemLabel}>{t(item.labelKey)}</span>
+                    <span className={styles.itemLabel}>{t('menu.adminTasks')}</span>
                   </button>
                 ))}
             </div>
           )}
 
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>{t('menu.sections.account')}</h3>
-            {visibleItems
-              .filter(item => ['profile', 'settings'].includes(item.key))
-              .map(item => (
-                <button
-                  key={item.key}
-                  className={styles.itemBtn}
-                  onClick={() => handleItemClick(item)}
-                >
-                  <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
-                  <span className={styles.itemLabel}>{t(item.labelKey)}</span>
-                </button>
-              ))}
+            <h3 className={styles.sectionTitle}>{t('profile.title')}</h3>
+            <button
+              className={styles.itemBtn}
+              onClick={() => handleItemClick({ path: '/menu?tab=profile' })}
+            >
+              <span className={styles.itemIcon}>👤</span>
+              <span className={styles.itemLabel}>{t('menu.profile')}</span>
+            </button>
+            <button
+              className={styles.itemBtn}
+              onClick={() => handleItemClick({ path: '/menu?tab=settings' })}
+            >
+              <span className={styles.itemIcon}>⚙️</span>
+              <span className={styles.itemLabel}>{t('menu.settings')}</span>
+            </button>
 
-            {user && (
+            {user && !user.isAnonymous && (
               <button
-                className={`${styles.itemBtn} ${styles.logoutBtn}`}
-                onClick={handleLogout}
+                className={styles.itemBtn}
+                onClick={logout}
               >
                 <span className={styles.itemIcon}>🚪</span>
                 <span className={styles.itemLabel}>{t('menu.logout')}</span>

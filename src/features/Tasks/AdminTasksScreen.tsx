@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
-import { useTaskSuggestions, TaskSuggestion, SuggestionStatus } from '../../context/TaskSuggestionsContext'
+import { TaskSuggestion, SuggestionStatus } from '../../context/TaskSuggestionsContext'
+import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { db } from '../../lib/firebase'
 import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import { categories } from '../Arena/categories'
@@ -10,9 +12,87 @@ import styles from './AdminTasksScreen.module.css'
 
 export function AdminTasksScreen() {
   const { t } = useTranslation()
-  const isAdmin = useIsAdmin()
   const { user } = useAuth()
-  const { suggestions: items, approve, reject, updateText: edit, remove } = useTaskSuggestions()
+  const isAdmin = useIsAdmin()
+  const [items, setItems] = useState<TaskSuggestion[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // Admin-specific data loading
+  useEffect(() => {
+    if (!isAdmin || !user?.uid) return
+    
+    const loadAllSuggestions = async () => {
+      setLoading(true)
+      try {
+        // Admin kann alle Vorschläge sehen
+        const snapshot = await getDocs(collection(db, 'taskSuggestions'))
+        const suggestions = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as TaskSuggestion[]
+        setItems(suggestions)
+      } catch (error) {
+        console.error('Admin suggestions load failed:', error)
+        setItems([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadAllSuggestions()
+  }, [isAdmin, user?.uid])
+
+  // Admin actions
+  const approve = async (id: string) => {
+    try {
+      await updateDoc(doc(db, 'taskSuggestions', id), { 
+        status: 'approved',
+        reviewedAt: serverTimestamp(),
+        reviewedBy: user?.uid 
+      })
+      setItems(prev => prev.map(item => 
+        item.id === id ? { ...item, status: 'approved' } : item
+      ))
+    } catch (error) {
+      console.error('Approve failed:', error)
+    }
+  }
+
+  const reject = async (id: string, note?: string) => {
+    try {
+      await updateDoc(doc(db, 'taskSuggestions', id), { 
+        status: 'rejected',
+        note,
+        reviewedAt: serverTimestamp(),
+        reviewedBy: user?.uid 
+      })
+      setItems(prev => prev.map(item => 
+        item.id === id ? { ...item, status: 'rejected', note } : item
+      ))
+    } catch (error) {
+      console.error('Reject failed:', error)
+    }
+  }
+
+  const edit = async (id: string, updates: { text: string }) => {
+    try {
+      await updateDoc(doc(db, 'taskSuggestions', id), updates)
+      setItems(prev => prev.map(item => 
+        item.id === id ? { ...item, ...updates } : item
+      ))
+    } catch (error) {
+      console.error('Edit failed:', error)
+    }
+  }
+
+  const remove = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'taskSuggestions', id))
+      setItems(prev => prev.filter(item => item.id !== id))
+    } catch (error) {
+      console.error('Delete failed:', error)
+    }
+  }
   const [activeTab, setActiveTab] = useState<SuggestionStatus | 'create'>('pending')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')

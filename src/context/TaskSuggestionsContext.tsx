@@ -1,6 +1,7 @@
-
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
+import { db } from '../firebase'
+import { addDoc, collection, deleteDoc, doc, getDocs, query, where, serverTimestamp, updateDoc } from 'firebase/firestore'
 
 export interface TaskSuggestion {
   id: string
@@ -36,13 +37,13 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
       // Always use localStorage - no Firebase listeners
       const saved = localStorage.getItem(STORAGE_KEY)
       const suggestionsList = saved ? JSON.parse(saved) : []
-      
+
       // Convert dates back from JSON
       const parsed = suggestionsList.map((s: any) => ({
         ...s,
         createdAt: new Date(s.createdAt)
       }))
-      
+
       setSuggestions(parsed)
     } catch (error) {
       console.warn('Failed to load suggestions from localStorage:', error)

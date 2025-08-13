@@ -16,6 +16,7 @@ const AdminSuggestionsScreen = React.lazy(() => import('./features/Admin/AdminSu
 const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })))
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin').then(m => ({ default: m.default })))
 const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m => ({ default: m.AuthScreen })))
+const PostfachScreen = React.lazy(() => import('./components/NotificationCenter').then(m => ({ default: m.PostfachScreen })))
 
 const LoadingSpinner = () => (
   <div style={{ 
@@ -82,6 +83,11 @@ const routes = [
         path: 'menu',
         element: <MenuScreen />,
         errorElement: <ErrorBoundary><div>Fehler im Menü</div></ErrorBoundary>
+      },
+      {
+        path: 'postfach',
+        element: withAuth(<TabLayout><PostfachScreen /></TabLayout>),
+        errorElement: <ErrorBoundary><div>Fehler im Postfach</div></ErrorBoundary>
       },
       {
         path: 'tasks',

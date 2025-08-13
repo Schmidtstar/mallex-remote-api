@@ -25,27 +25,168 @@
   transform: scale(1.1);
 }
 
+.itemIcon {
+  font-size: 1.2rem;
+}
+
+.itemLabel {
+  font-weight: 500;
+}
+
 .badge {
   position: absolute;
-  top: 0;
-  right: 0;
-  background: var(--ancient-wine);
+  top: -2px;
+  right: -2px;
+  background: #ff3b30;
   color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 0.7rem;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  animation: pulse 2s infinite;
+  margin-left: auto;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+/* Postfach Screen Styling */
+.postfachContainer {
+  min-height: 100vh;
+  background: var(--ancient-night);
+  color: var(--ancient-marble);
+  padding: 1rem;
+}
+
+.postfachHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, var(--ancient-bronze) 0%, var(--ancient-gold) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.postfachHeader h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.postfachHeader p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.postfachContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--ancient-marble);
+  opacity: 0.7;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.empty h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--ancient-gold);
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.messageItem {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--ancient-bronze);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.messageItem:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--ancient-gold);
+}
+
+.messageItem.unread {
+  border-color: var(--ancient-gold);
+  background: rgba(218, 165, 32, 0.05);
+}
+
+.messageIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.messageContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.messageText {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  color: var(--ancient-marble);
+}
+
+.messageMeta {
+  font-size: 0.875rem;
+  color: var(--ancient-bronze);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fromAdmin {
+  color: var(--ancient-gold);
+  font-weight: 500;
+}
+
+.messageActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.readButton,
+.deleteButton {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.readButton:hover {
+  background: rgba(34, 197, 94, 0.2);
+  opacity: 1;
+}
+
+.deleteButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  opacity: 1;
 }
 
 .notificationPanel {
@@ -157,13 +298,6 @@
   border-radius: 50%;
   margin-left: auto;
   flex-shrink: 0;
-}
-
-.empty {
-  padding: 2rem;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
 }
 
 /* Mobile responsiveness */

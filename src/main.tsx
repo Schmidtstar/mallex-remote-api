@@ -10,6 +10,7 @@ import { AdminSettingsProvider } from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import { IntroScreen } from './components/IntroScreen'
+import React from 'react' // React importieren, da es für React.StrictMode benötigt wird
 
 const App = () => {
   const [showIntro, setShowIntro] = useState(true)
@@ -33,4 +34,11 @@ const App = () => {
   )
 }
 
-createRoot(document.getElementById('root')!).render(<App />)
+const rootElement = document.getElementById('root')!
+if (!rootElement.hasAttribute('data-reactroot')) {
+  createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
+}

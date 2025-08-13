@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { doc, setDoc, getDoc, increment } from 'firebase/firestore'
@@ -15,35 +14,59 @@ type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drin
 export function ArenaScreen() {
   const { t } = useTranslation()
   const { players } = usePlayersContext()
-  
+
   // Game State
   const [gameState, setGameState] = useState<GameState>('idle')
   const [currentRound, setCurrentRound] = useState(0)
-  
+
   // Current Game Data
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [selectedPlayer, setSelectedPlayer] = useState<string>('')
   const [currentTask, setCurrentTask] = useState<string>('')
-  
+
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinningCategory, setSpinningCategory] = useState<string>('')
   const [spinCounter, setSpinCounter] = useState(0)
-  
+
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)
   const [taskResult, setTaskResult] = useState<'success' | 'failed' | ''>('')
-  
+
   // Task Data
   const [firestoreTasks, setFirestoreTasks] = useState<{[key: string]: string[]}>({})
   const [loadingTasks, setLoadingTasks] = useState(false)
+
+  // Swipe functionality for task navigation
+  const { bindSwipe } = useSwipe({
+    onSwipeLeft: () => {
+      if (gameState === 'waiting-action') {
+        handleTaskSuccess()
+      }
+    },
+    onSwipeRight: () => {
+      if (gameState === 'waiting-action') {
+        handleTaskFailed()
+      }
+    },
+    onSwipeUp: () => {
+      if (gameState === 'waiting-action') {
+        handleTaskSkipped()
+      }
+    },
+    onSwipeDown: () => {
+      if (gameState === 'waiting-action') {
+        endGame()
+      }
+    }
+  })
 
   // Load all tasks for all categories on mount
   useEffect(() => {
     const loadAllTasks = async () => {
       setLoadingTasks(true)
       const tasksByCategory: {[key: string]: string[]} = {}
-      
+
       for (const category of categories) {
         try {
           const categoryTasks = await listApprovedTasks(category.id as any)
@@ -53,7 +76,7 @@ export function ArenaScreen() {
           tasksByCategory[category.id] = []
         }
       }
-      
+
       setFirestoreTasks(tasksByCategory)
       setLoadingTasks(false)
     }
@@ -76,7 +99,7 @@ export function ArenaScreen() {
     // Load hidden static tasks from localStorage
     const hiddenTasksData = localStorage.getItem('mallex_hidden_static_tasks')
     const hiddenTasks = hiddenTasksData ? new Set(JSON.parse(hiddenTasksData)) : new Set()
-    
+
     // Filter out hidden static tasks
     const staticTasks = (challenges[categoryId] || []).filter(taskKey => !hiddenTasks.has(taskKey))
     const dynamicTasks = firestoreTasks[categoryId] || []
@@ -106,21 +129,21 @@ export function ArenaScreen() {
   const revealTask = () => {
     setIsSpinning(true)
     setSpinCounter(0)
-    
+
     // Start the spinning animation
     const spinInterval = setInterval(() => {
       setSpinCounter(prev => {
         const newCounter = prev + 1
         const categoryIndex = (newCounter - 1) % categories.length
         setSpinningCategory(categories[categoryIndex].id)
-        
+
         // Stop after 10 spins (5 seconds with 0.5s intervals)
         if (newCounter >= 10) {
           clearInterval(spinInterval)
           setIsSpinning(false)
           setGameState('waiting-action')
         }
-        
+
         return newCounter
       })
     }, 500) // Change category every 0.5 seconds
@@ -140,10 +163,10 @@ export function ArenaScreen() {
       // Create a simple ID from player name (lowercase, no spaces)
       const playerId = playerName.toLowerCase().replace(/\s+/g, '-')
       const playerRef = doc(db, 'players', playerId)
-      
+
       // Check if player exists
       const playerDoc = await getDoc(playerRef)
-      
+
       if (playerDoc.exists()) {
         // Player exists, increment points
         await setDoc(playerRef, {
@@ -158,7 +181,7 @@ export function ArenaScreen() {
           updatedAt: new Date()
         })
       }
-      
+
       console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte!`)
     } catch (error) {
       console.warn('⚠️ Punkte konnten nicht gespeichert werden:', error)
@@ -168,10 +191,10 @@ export function ArenaScreen() {
   const handleTaskSuccess = async () => {
     const sips = generateRandomSips()
     const arenaPoints = Math.floor(Math.random() * 3) + 1 // 1-3 Punkte für Erfolg
-    
+
     // Award arena points to the player
     await updatePlayerPoints(selectedPlayer, arenaPoints)
-    
+
     setDrinkingSips(sips)
     setTaskResult('success')
     setGameState('drinking-result')
@@ -180,10 +203,10 @@ export function ArenaScreen() {
   const handleTaskFailed = async () => {
     const sips = generateRandomSips()
     const arenaPoints = 1 // 1 Punkt für den Versuch, auch bei Niederlage
-    
+
     // Award small arena points even for trying
     await updatePlayerPoints(selectedPlayer, arenaPoints)
-    
+
     setDrinkingSips(sips)
     setTaskResult('failed')
     setGameState('drinking-result')
@@ -204,7 +227,7 @@ export function ArenaScreen() {
     setCurrentTask(task)
     setCurrentRound(prev => prev + 1)
     setGameState('playing')
-    
+
     // Reset drinking game state
     setDrinkingSips(0)
     setTaskResult('')
@@ -222,7 +245,7 @@ export function ArenaScreen() {
 
   const renderGameContent = () => {
     const isMobile = window.innerWidth < 768;
-    
+
     switch (gameState) {
       case 'idle':
         return (
@@ -250,7 +273,7 @@ export function ArenaScreen() {
             }}>
               ⚔️ MALLEX ARENA ⚔️
             </h1>
-            
+
             {/* Mobile: Kompakter Status */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(218,165,32,0.2), rgba(205,127,50,0.1))',
@@ -274,9 +297,9 @@ export function ArenaScreen() {
                   🌿 ⚱️ 🌿
                 </div>
               )}
-              
+
               <div style={{ fontSize: window.innerWidth < 768 ? '2rem' : '3rem', marginBottom: '0.5rem' }}>🏺</div>
-              
+
               <div style={{
                 background: 'var(--glass-background)',
                 padding: window.innerWidth < 768 ? '1rem' : '1.5rem',
@@ -337,7 +360,7 @@ export function ArenaScreen() {
                   : '🎯 IN DIE ARENA!'
               }
             </button>
-            
+
             {players.length > 0 && (
               <div style={{
                 marginTop: '1rem',
@@ -370,7 +393,7 @@ export function ArenaScreen() {
             }}>
               ⚔️ RUNDE {currentRound} ⚔️
             </div>
-            
+
             {/* Spieler & Kategorie - Mobile kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,107,53,0.3), rgba(218,165,32,0.2))',
@@ -392,7 +415,7 @@ export function ArenaScreen() {
                   🏛️
                 </div>
               )}
-              
+
               <h2 style={{ 
                 color: 'var(--olympic-victory)', 
                 marginBottom: isMobile ? '0.5rem' : '1rem',
@@ -401,7 +424,7 @@ export function ArenaScreen() {
               }}>
                 🎭 {t(`arena.categories.${selectedCategory}`).toUpperCase()} 🎭
               </h2>
-              
+
               <div style={{
                 background: 'var(--glass-background)',
                 backdropFilter: 'var(--glass-blur)',
@@ -457,7 +480,7 @@ export function ArenaScreen() {
                   {isSpinning ? '⚡ ORAKEL AKTIV ⚡' : '🔮 ORAKEL 🔮'}
                 </span>
               </div>
-              
+
               <div style={{ 
                 fontSize: isMobile ? '2.5rem' : '4rem', 
                 marginBottom: '0.5rem', 
@@ -468,7 +491,7 @@ export function ArenaScreen() {
               }}>
                 {isSpinning ? '🌀' : '📜'}
               </div>
-              
+
               <div style={{
                 background: isSpinning 
                   ? 'rgba(218,165,32,0.4)'
@@ -521,7 +544,7 @@ export function ArenaScreen() {
                   </p>
                 )}
               </div>
-              
+
               <div style={{
                 marginTop: '1rem',
                 color: isSpinning ? 'var(--olympic-victory)' : 'var(--ancient-bronze)',
@@ -579,7 +602,7 @@ export function ArenaScreen() {
             }}>
               Runde {currentRound} - {t(`arena.categories.${selectedCategory}`)}
             </div>
-            
+
             <div style={{
               background: 'rgba(var(--primary-rgb), 0.1)',
               padding: '20px',
@@ -617,7 +640,7 @@ export function ArenaScreen() {
 
       case 'waiting-action':
         return (
-          <div style={{ textAlign: 'center', padding: '10px' }}>
+          <div style={{ textAlign: 'center', padding: '10px' }} {...bindSwipe()}>
             {/* Kompakter Header */}
             <div style={{ 
               background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
@@ -634,7 +657,7 @@ export function ArenaScreen() {
             }}>
               ⚔️ RUNDE {currentRound} ⚔️
             </div>
-            
+
             {/* Spieler Info - Kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(218,165,32,0.1))',
@@ -676,9 +699,9 @@ export function ArenaScreen() {
                   🌿 ⚱️ 🌿
                 </div>
               )}
-              
+
               <div style={{ fontSize: isMobile ? '2rem' : '2.5rem', marginBottom: '1rem' }}>📜</div>
-              
+
               <div style={{
                 background: 'var(--glass-background)',
                 backdropFilter: 'var(--glass-blur)',
@@ -700,7 +723,7 @@ export function ArenaScreen() {
                   {currentTask}
                 </p>
               </div>
-              
+
               <div style={{
                 marginTop: '1rem',
                 color: 'var(--olympic-flame)',
@@ -751,7 +774,7 @@ export function ArenaScreen() {
               >
                 🏆 TRIUMPH! 🏆
               </button>
-              
+
               <button
                 onClick={handleTaskFailed}
                 style={{
@@ -771,7 +794,7 @@ export function ArenaScreen() {
               >
                 💀 NIEDERLAGE! 💀
               </button>
-              
+
               <button
                 onClick={handleTaskSkipped}
                 style={{
@@ -791,7 +814,7 @@ export function ArenaScreen() {
               >
                 ⏭️ NÄCHSTE PRÜFUNG! ⏭️
               </button>
-              
+
               <button
                 onClick={endGame}
                 style={{
@@ -845,7 +868,7 @@ export function ArenaScreen() {
               <div style={{ fontSize: '5rem', marginBottom: '15px' }}>
                 {taskResult === 'success' ? '🏆' : '⚱️'}
               </div>
-              
+
               {taskResult === 'success' && (
                 <div style={{ 
                   position: 'absolute',
@@ -857,7 +880,7 @@ export function ArenaScreen() {
                   🌿 🌿 🌿
                 </div>
               )}
-              
+
               <h2 style={{ 
                 color: taskResult === 'success' ? 'var(--olympic-victory)' : 'var(--ancient-bronze)',
                 marginBottom: '20px',
@@ -866,7 +889,7 @@ export function ArenaScreen() {
               }}>
                 {taskResult === 'success' ? '🎊 Olympischer Sieg! 🎊' : '⚔️ Ehrenvolle Niederlage ⚔️'}
               </h2>
-              
+
               <div style={{
                 background: taskResult === 'success' ? '#4CAF50' : '#F44336',
                 color: 'white',

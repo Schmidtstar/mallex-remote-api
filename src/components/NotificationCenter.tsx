@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react'
-import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDocs, setDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -21,55 +20,74 @@ export function NotificationCenter() {
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
+  const [loading, setLoading] = useState(true) // Added loading state
 
   useEffect(() => {
-    if (!user) return
+    if (!user?.uid) return
 
-    // Firebase Listener für Benachrichtigungen
-    const q = query(
-      collection(db, 'notifications'),
-      where('userId', 'in', [user.uid, 'all']),
-      orderBy('timestamp', 'desc')
-    )
+    const loadNotifications = async () => {
+      try {
+        // Check if welcome message exists
+        const welcomeQuery = query(
+          collection(db, 'notifications'),
+          where('userId', '==', user.uid),
+          where('type', '==', 'welcome')
+        )
+        const welcomeSnap = await getDocs(welcomeQuery)
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifs: Notification[] = []
-      snapshot.forEach((doc) => {
-        notifs.push({ id: doc.id, ...doc.data() } as Notification)
-      })
-      
-      setNotifications(notifs)
-      setUnreadCount(notifs.filter(n => !n.read).length)
+        // Create welcome message if it doesn't exist
+        if (welcomeSnap.empty) {
+          const welcomeNotification = {
+            userId: user.uid,
+            message: `Willkommen ${user.displayName || user.email}! 🎉 Dies ist dein persönliches Postfach. Hier erhältst du wichtige Nachrichten und Updates.`,
+            timestamp: serverTimestamp(),
+            type: 'welcome' as const,
+            read: false,
+            fromAdmin: 'System'
+          }
+          await setDoc(doc(db, 'notifications', `welcome_${user.uid}`), welcomeNotification)
+        }
 
-      // Willkommensnachricht für neue Nutzer erstellen
-      createWelcomeMessage(user.uid, notifs)
-    })
+        // Listen for all notifications
+        const notificationsQuery = query(
+          collection(db, 'notifications'),
+          where('userId', '==', user.uid),
+          orderBy('timestamp', 'desc')
+        )
 
-    return () => unsubscribe()
-  }, [user])
-
-  const createWelcomeMessage = async (userId: string, existingNotifications: Notification[]) => {
-    try {
-      // Prüfen ob bereits eine Willkommensnachricht existiert
-      const hasWelcomeMessage = existingNotifications.some(n => 
-        n.type === 'welcome' && n.userId === userId
-      )
-
-      if (!hasWelcomeMessage) {
-        // Willkommensnachricht erstellen
-        await addDoc(collection(db, 'notifications'), {
-          userId: userId,
-          message: '🎉 Willkommen bei MALLEX! Hier erhältst du wichtige Nachrichten und Updates. Viel Spaß beim Spielen!',
-          timestamp: serverTimestamp(),
-          type: 'welcome',
-          read: false,
-          fromAdmin: 'System'
+        const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+          const notificationsData: Notification[] = []
+          snapshot.forEach((doc) => {
+            const data = doc.data()
+            notificationsData.push({
+              id: doc.id,
+              userId: data.userId,
+              message: data.message,
+              timestamp: data.timestamp?.toDate() || new Date(),
+              type: data.type || 'system',
+              read: data.read || false,
+              fromAdmin: data.fromAdmin
+            })
+          })
+          setNotifications(notificationsData)
+          setLoading(false)
+        }, (error) => {
+          console.error('Fehler beim Laden der Benachrichtigungen:', error)
+          setLoading(false)
         })
+
+        return unsubscribe
+      } catch (error) {
+        console.error('Failed to setup notifications:', error)
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Failed to create welcome message:', error)
     }
-  }
+
+    const cleanup = loadNotifications()
+    return () => {
+      cleanup.then(unsubscribe => unsubscribe?.())
+    }
+  }, [user?.uid])
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -144,26 +162,40 @@ export function NotificationCenter() {
 export function PostfachScreen() {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
-  
-  useEffect(() => {
-    if (!user) return
+  const [loading, setLoading] = useState(true) // Added loading state
 
-    const q = query(
+  useEffect(() => {
+    if (!user?.uid) return
+
+    const notificationsQuery = query(
       collection(db, 'notifications'),
-      where('userId', 'in', [user.uid, 'all']),
+      where('userId', '==', user.uid),
       orderBy('timestamp', 'desc')
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifs: Notification[] = []
+    const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+      const notificationsData: Notification[] = []
       snapshot.forEach((doc) => {
-        notifs.push({ id: doc.id, ...doc.data() } as Notification)
+        const data = doc.data()
+        notificationsData.push({
+          id: doc.id,
+          userId: data.userId,
+          message: data.message,
+          timestamp: data.timestamp?.toDate() || new Date(),
+          type: data.type || 'system',
+          read: data.read || false,
+          fromAdmin: data.fromAdmin
+        })
       })
-      setNotifications(notifs)
+      setNotifications(notificationsData)
+      setLoading(false)
+    }, (error) => {
+      console.error('Fehler beim Laden der Benachrichtigungen:', error)
+      setLoading(false)
     })
 
     return () => unsubscribe()
-  }, [user])
+  }, [user?.uid])
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -213,7 +245,11 @@ export function PostfachScreen() {
       </header>
 
       <div className={styles.postfachContent}>
-        {notifications.length === 0 ? (
+        {loading ? (
+          <div className={styles.loading}>
+            <p>Lade Benachrichtigungen...</p>
+          </div>
+        ) : notifications.length === 0 ? (
           <div className={styles.empty}>
             <span className={styles.emptyIcon}>📪</span>
             <h3>Postfach ist leer</h3>
@@ -229,7 +265,7 @@ export function PostfachScreen() {
                 <div className={styles.messageIcon}>
                   {getNotificationIcon(notification.type)}
                 </div>
-                
+
                 <div className={styles.messageContent}>
                   <div className={styles.messageText}>
                     {notification.message}

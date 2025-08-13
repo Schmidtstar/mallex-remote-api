@@ -95,15 +95,13 @@ const defaultAppSettings: AppSettings = {
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
 // Hook mit konsistentem Export für Fast Refresh
-function useAdminSettings() {
+export function useAdminSettings() {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')
   }
   return context
 }
-
-export { useAdminSettings }
 
 export function AdminSettingsProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
@@ -336,7 +334,7 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
         })
       }
 
-      console.log('✅ System notification sent')
+      console.log('✅ System notification sent:', { userId, message })
     } catch (error) {
       console.error('Failed to send notification:', error)
       throw error

@@ -372,9 +372,9 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   }, [])
 
   const userManagement: UserManagement = {
-    users,
-    bannedUsers,
-    moderators
+    users: users || [],
+    bannedUsers: bannedUsers || new Set(),
+    moderators: moderators || new Set()
   }
 
   const value: AdminSettingsContextType = {

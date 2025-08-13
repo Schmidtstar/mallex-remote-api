@@ -41,7 +41,7 @@ export function AdminDashboard() {
     return <Navigate to="/arena" replace />
   }
 
-  const filteredUsers = userManagement.users.filter(user => 
+  const filteredUsers = (userManagement?.users || []).filter(user => 
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.uid.includes(searchTerm)
@@ -137,7 +137,7 @@ export function AdminDashboard() {
       <div className={styles.header}>
         <h1 className={styles.title}>🔧 Admin Dashboard</h1>
         <div className={styles.adminInfo}>
-          👤 {user?.email} | 👥 {userManagement.users.length} Users
+          👤 {user?.email} | 👥 {userManagement?.users?.length || 0} Users
         </div>
       </div>
 
@@ -159,15 +159,15 @@ export function AdminDashboard() {
             <div className={styles.statsGrid}>
               <div className={styles.statCard}>
                 <h3>👥 Benutzer gesamt</h3>
-                <div className={styles.statValue}>{userManagement.users.length}</div>
+                <div className={styles.statValue}>{userManagement?.users?.length || 0}</div>
               </div>
               <div className={styles.statCard}>
                 <h3>🚫 Gesperrte Benutzer</h3>
-                <div className={styles.statValue}>{userManagement.bannedUsers.size}</div>
+                <div className={styles.statValue}>{userManagement?.bannedUsers?.size || 0}</div>
               </div>
               <div className={styles.statCard}>
                 <h3>👮 Moderatoren</h3>
-                <div className={styles.statValue}>{userManagement.moderators.size}</div>
+                <div className={styles.statValue}>{userManagement?.moderators?.size || 0}</div>
               </div>
               <div className={styles.statCard}>
                 <h3>🔧 Wartungsmodus</h3>
@@ -254,7 +254,7 @@ export function AdminDashboard() {
                   </div>
 
                   <div className={styles.userActions}>
-                    {userManagement.bannedUsers.has(targetUser.uid) ? (
+                    {userManagement?.bannedUsers?.has(targetUser.uid) ? (
                       <button
                         onClick={() => unbanUser(targetUser.uid)}
                         className={styles.unbanButton}
@@ -270,7 +270,7 @@ export function AdminDashboard() {
                       </button>
                     )}
 
-                    {userManagement.moderators.has(targetUser.uid) ? (
+                    {userManagement?.moderators?.has(targetUser.uid) ? (
                       <button
                         onClick={() => demoteFromModerator(targetUser.uid)}
                         className={styles.demoteButton}

@@ -158,7 +158,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>{t('menu.admin')}</h3>
               {visibleItems
-                .filter(item => ['admin', 'adminSettings'].includes(item.key))
+                .filter(item => ['admin', 'adminTasks'].includes(item.key))
                 .map(item => (
                   <button
                     key={item.key}
@@ -167,8 +167,8 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
                   >
                     <span className={styles.itemIcon}>{String(item.icon ?? '')}</span>
                     <span className={styles.itemLabel}>
-                      {item.key === 'admin' ? t('menu.adminTasks') :
-                       item.key === 'adminSettings' ? t('menu.adminSettings') :
+                      {item.key === 'admin' ? 'Admin Dashboard' :
+                       item.key === 'adminTasks' ? 'Aufgaben verwalten' :
                        t(item.labelKey)}
                     </span>
                   </button>

@@ -6,7 +6,8 @@
     "tasks": "Aufgaben",
     "profile": "Profil",
     "settings": "Einstellungen",
-    "admin": "Admin"
+    "admin": "Admin",
+    "adminTasks": "Aufgaben verwalten"
   },
   "menu": {
     "title": "Menü",

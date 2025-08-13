@@ -3,9 +3,9 @@ import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-do
 import { useAuth } from './context/AuthContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
-// Lazy load components für bessere Performance
-const TabLayout = React.lazy(() => import('./layouts/TabLayout').then(m => ({ default: m.TabLayout })))
-const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen').then(m => ({ default: m.ArenaScreen })))
+// Lazy load components mit Preload-Optimierung
+const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout').then(m => ({ default: m.TabLayout })))
+const ArenaScreen = React.lazy(() => import(/* webpackPrefetch: true */ './features/Arena/ArenaScreen').then(m => ({ default: m.ArenaScreen })))
 const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen').then(m => ({ default: m.LegendsScreen })))
 const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(m => ({ default: m.LeaderboardScreen })))
 const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen').then(m => ({ default: m.MenuScreen })))

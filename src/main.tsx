@@ -11,25 +11,36 @@ import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import { IntroScreen } from './components/IntroScreen'
 
+const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
+  <AuthProvider>
+    <AdminProvider>
+      <AdminSettingsProvider>
+        <PlayersProvider>
+          <TaskSuggestionsProvider>
+            {children}
+          </TaskSuggestionsProvider>
+        </PlayersProvider>
+      </AdminSettingsProvider>
+    </AdminProvider>
+  </AuthProvider>
+))
+ContextProviders.displayName = 'ContextProviders'
+
 const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true)
+  
+  const handleIntroComplete = React.useCallback(() => {
+    setShowIntro(false)
+  }, [])
 
   if (showIntro) {
-    return <IntroScreen onComplete={() => setShowIntro(false)} />
+    return <IntroScreen onComplete={handleIntroComplete} />
   }
 
   return (
-    <AuthProvider>
-      <AdminProvider>
-        <AdminSettingsProvider>
-          <PlayersProvider>
-            <TaskSuggestionsProvider>
-              <RouterProvider router={router} />
-            </TaskSuggestionsProvider>
-          </PlayersProvider>
-        </AdminSettingsProvider>
-      </AdminProvider>
-    </AuthProvider>
+    <ContextProviders>
+      <RouterProvider router={router} />
+    </ContextProviders>
   )
 }
 

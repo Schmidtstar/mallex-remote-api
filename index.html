@@ -8,6 +8,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+
+    <!-- Critical CSS inline -->
+    <style>
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+      #root { min-height: 100vh; }
+    </style>
+
     <title>MALLEX</title>
   </head>
   <body>

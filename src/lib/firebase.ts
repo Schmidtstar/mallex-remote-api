@@ -52,6 +52,11 @@ setPersistence(auth, browserLocalPersistence).catch((e) =>
 export const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: true, // Automatische Erkennung für Replit
   cacheSizeBytes: 40000000, // 40MB Cache für bessere Performance
+  ignoreUndefinedProperties: true, // Bessere Performance bei undefined values
+  localCache: {
+    kind: 'persistent',
+    tabManager: 'optimistic'
+  }
 });
 
 // Mobile-specific settings

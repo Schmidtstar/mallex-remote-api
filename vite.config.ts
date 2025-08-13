@@ -22,8 +22,8 @@ export default defineConfig(({ mode }) => {
         'localhost'            // Local development
       ],
       hmr: {
-        protocol: 'wss',       // WebSocket Secure for HTTPS
-        clientPort: 443        // Standard HTTPS port
+        port: 5000,           // Use same port for HMR
+        host: '0.0.0.0'       // Bind to all interfaces
       }
     },
     preview: {

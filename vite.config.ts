@@ -10,6 +10,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     strictPort: true,
+    allowedHosts: ['all'],
     hmr: { 
       timeout: 10000,
       overlay: false

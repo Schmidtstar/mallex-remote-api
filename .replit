@@ -25,7 +25,7 @@ runButton = "Dev Server"
 [[workflows.workflow]]
 name = "Dev Server"
 author = 45411998
-mode = "sequential"
+mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

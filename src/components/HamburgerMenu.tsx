@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -83,15 +83,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
     onClose()
   }
 
-  const handleLogout = async () => {
-    try {
-      await logout()
-      navigate('/auth')
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
-    onClose()
-  }
+  
 
   if (!open) return null
 

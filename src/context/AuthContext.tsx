@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const timeoutPromise = new Promise((_, reject) => 
           setTimeout(() => reject(new Error('timeout')), 3000)
         );
-        
+
         await Promise.race([
           new Promise(resolve => {
             const unsubscribe = onAuthStateChanged(auth, () => {
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }),
           timeoutPromise
         ]);
-        
+
         return true;
       } catch (error) {
         console.warn('Firebase connection test failed - switching to guest mode:', error);
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           if (user) {
             setUser(user);
-            
+
             // Versuche Profil zu laden, aber lass es nicht die App crashen
             try {
               await ensureUserProfile(user.uid, {

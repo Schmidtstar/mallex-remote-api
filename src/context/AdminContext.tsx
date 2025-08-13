@@ -16,18 +16,18 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-    
+
     const checkAdmin = async () => {
       if (cancelled) return
-      
+
       setLoading(true)
       setIsAdmin(false)
-      
-      if (!user?.uid) { 
+
+      if (!user?.uid) {
         if (!cancelled) setLoading(false)
-        return 
+        return
       }
-      
+
       try {
         // Check localStorage first for dev testing
         const localAdmin = localStorage.getItem('mallex_dev_admin')
@@ -45,16 +45,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           const isFirebaseAdmin = snap.exists()
           setIsAdmin(isFirebaseAdmin)
-          console.log(isFirebaseAdmin ? '✅ Firebase Admin verified' : '❌ Not Firebase Admin')
+          // Admin verified silently
         }
       } catch (error: any) {
         console.warn('Firebase admin check failed (expected if not admin):', error?.code || error?.message)
-        
+
         // Prevent unhandled promise rejections
         if (error?.code === 'permission-denied') {
           console.log('🚫 Admin permission denied - user is not admin')
         }
-        
+
         if (!cancelled) setIsAdmin(false)
       } finally {
         if (!cancelled) setLoading(false)

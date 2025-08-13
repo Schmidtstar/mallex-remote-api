@@ -13,9 +13,9 @@ const firebaseConfig = {
   // measurementId optional
 };
 
-// Only log once in development mode
+// Minimal logging - only once
 if (import.meta.env.DEV && !window._firebaseConfigLogged) {
-  console.log('🔥 Firebase initialized');
+  console.log('🔥 Firebase ready');
   window._firebaseConfigLogged = true;
 }
 

@@ -36,11 +36,11 @@ import { initializeFirestore, enableNetwork, connectFirestoreEmulator } from 'fi
 const auth = getAuth(app)
 const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: true,
-  cacheSizeBytes: 40000000,
   ignoreUndefinedProperties: true,
   localCache: {
     kind: 'persistent',
-    tabManager: 'optimistic'
+    tabManager: 'optimistic',
+    cacheSizeBytes: 40000000  // Cache-Größe im localCache-Objekt
   }
 })
 

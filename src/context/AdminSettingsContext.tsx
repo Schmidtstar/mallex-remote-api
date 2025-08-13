@@ -57,7 +57,7 @@ const defaultSettings: AppSettings = {
 
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
-export const useAdminSettings = () => {
+function useAdminSettings() {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')
@@ -68,6 +68,8 @@ export const useAdminSettings = () => {
 interface AdminSettingsProviderProps {
   children: ReactNode
 }
+
+export { useAdminSettings }
 
 export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ children }) => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings)
@@ -102,6 +104,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   const refreshUsers = async () => {
     try {
       setLoading(true)
+      setError(null)
       const usersRef = collection(db, 'users')
       const usersQuery = query(usersRef, orderBy('createdAt', 'desc'))
       const snapshot = await getDocs(usersQuery)
@@ -124,9 +127,14 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
 
       setUsers(usersData)
       console.log('✅ Users loaded successfully:', usersData.length)
-    } catch (error) {
-      console.error('Failed to refresh users:', error)
-      setError('Fehler beim Laden der Benutzer')
+    } catch (error: any) {
+      if (error?.code === 'permission-denied') {
+        console.log('📋 User management not accessible - admin permissions required')
+        setUsers([]) // Set empty array instead of error
+      } else {
+        console.error('Failed to refresh users:', error)
+        setError('Fehler beim Laden der Benutzer')
+      }
     } finally {
       setLoading(false)
     }

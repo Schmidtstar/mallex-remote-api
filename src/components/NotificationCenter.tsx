@@ -15,7 +15,7 @@ interface Notification {
   userId?: string
 }
 
-export function NotificationCenter() {
+function NotificationCenter() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -313,5 +313,5 @@ const PostfachScreenComponent: React.FC = () => {
   )
 }
 
-export { PostfachScreenComponent as PostfachScreen }
+export { NotificationCenter, PostfachScreenComponent as PostfachScreen }
 export default PostfachScreenComponent

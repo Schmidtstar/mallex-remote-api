@@ -158,45 +158,45 @@ export function AdminDashboard() {
           <div className={styles.overview}>
             <div className={styles.statsGrid}>
               <div className={styles.statCard}>
-                <h3>👥 Total Users</h3>
+                <h3>👥 Benutzer gesamt</h3>
                 <div className={styles.statValue}>{userManagement.users.length}</div>
               </div>
               <div className={styles.statCard}>
-                <h3>🚫 Banned Users</h3>
+                <h3>🚫 Gesperrte Benutzer</h3>
                 <div className={styles.statValue}>{userManagement.bannedUsers.size}</div>
               </div>
               <div className={styles.statCard}>
-                <h3>👮 Moderators</h3>
+                <h3>👮 Moderatoren</h3>
                 <div className={styles.statValue}>{userManagement.moderators.size}</div>
               </div>
               <div className={styles.statCard}>
-                <h3>🔧 Maintenance</h3>
+                <h3>🔧 Wartungsmodus</h3>
                 <div className={styles.statValue}>
-                  {appSettings.maintenanceMode ? '🔴 ON' : '🟢 OFF'}
+                  {appSettings.maintenanceMode ? '🔴 AN' : '🟢 AUS'}
                 </div>
               </div>
             </div>
 
             <div className={styles.quickActions}>
-              <h3>Quick Actions</h3>
+              <h3>Schnellaktionen</h3>
               <div className={styles.actionButtons}>
                 <button
                   className={styles.actionButton}
                   onClick={() => handleSettingChange('maintenanceMode', !appSettings.maintenanceMode)}
                 >
-                  {appSettings.maintenanceMode ? '🟢 Disable' : '🔴 Enable'} Maintenance
+                  {appSettings.maintenanceMode ? '🟢 Wartung beenden' : '🔴 Wartung aktivieren'}
                 </button>
                 <button
                   className={styles.actionButton}
                   onClick={() => refreshUsers()}
                 >
-                  🔄 Refresh Users
+                  🔄 Benutzer aktualisieren
                 </button>
                 <button
                   className={styles.actionButton}
-                  onClick={() => sendSystemNotification('all', 'System maintenance scheduled for tonight.')}
+                  onClick={() => sendSystemNotification('all', 'Systembwartung ist für heute Nacht geplant.')}
                 >
-                  📢 Send Global Notification
+                  📢 Globale Benachrichtigung
                 </button>
               </div>
             </div>
@@ -208,7 +208,7 @@ export function AdminDashboard() {
             <div className={styles.userControls}>
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder="Benutzer suchen..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={styles.searchInput}
@@ -216,15 +216,15 @@ export function AdminDashboard() {
               
               {selectedUsers.size > 0 && (
                 <div className={styles.bulkActions}>
-                  <span>{selectedUsers.size} selected</span>
+                  <span>{selectedUsers.size} ausgewählt</span>
                   <button onClick={() => handleBulkAction('ban')} className={styles.banButton}>
-                    Ban Selected
+                    Ausgewählte sperren
                   </button>
                   <button onClick={() => handleBulkAction('suspend')} className={styles.suspendButton}>
-                    Suspend Selected
+                    Ausgewählte suspendieren
                   </button>
                   <button onClick={() => handleBulkAction('promote')} className={styles.promoteButton}>
-                    Promote Selected
+                    Ausgewählte befördern
                   </button>
                 </div>
               )}
@@ -244,12 +244,12 @@ export function AdminDashboard() {
                       {targetUser.displayName || targetUser.email || 'Anonymous'}
                     </div>
                     <div className={styles.userDetails}>
-                      {targetUser.email} | {targetUser.tasksCompleted} tasks | Rank #{targetUser.rank}
+                      {targetUser.email} | {targetUser.tasksCompleted} Aufgaben | Rang #{targetUser.rank}
                     </div>
                     <div className={styles.userMeta}>
                       Status: {targetUser.status} | 
-                      Roles: {targetUser.roles.join(', ')} |
-                      Created: {targetUser.createdAt?.toDate?.()?.toLocaleDateString() || 'Unknown'}
+                      Rollen: {targetUser.roles.join(', ')} |
+                      Erstellt: {targetUser.createdAt?.toDate?.()?.toLocaleDateString() || 'Unbekannt'}
                     </div>
                   </div>
 
@@ -259,14 +259,14 @@ export function AdminDashboard() {
                         onClick={() => unbanUser(targetUser.uid)}
                         className={styles.unbanButton}
                       >
-                        Unban
+                        Entsperren
                       </button>
                     ) : (
                       <button
                         onClick={() => banUser(targetUser.uid)}
                         className={styles.banButton}
                       >
-                        Ban
+                        Sperren
                       </button>
                     )}
 
@@ -275,22 +275,22 @@ export function AdminDashboard() {
                         onClick={() => demoteFromModerator(targetUser.uid)}
                         className={styles.demoteButton}
                       >
-                        Demote
+                        Degradieren
                       </button>
                     ) : (
                       <button
                         onClick={() => promoteToModerator(targetUser.uid)}
                         className={styles.promoteButton}
                       >
-                        Promote
+                        Befördern
                       </button>
                     )}
 
                     <button
-                      onClick={() => sendSystemNotification(targetUser.uid, 'Admin message for you')}
+                      onClick={() => sendSystemNotification(targetUser.uid, 'Admin-Nachricht für Sie')}
                       className={styles.notifyButton}
                     >
-                      Notify
+                      Benachrichtigen
                     </button>
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export function AdminDashboard() {
           <div className={styles.settings}>
             <div className={styles.settingsGrid}>
               <div className={styles.settingGroup}>
-                <h3>App Configuration</h3>
+                <h3>App-Konfiguration</h3>
                 
                 <label className={styles.settingItem}>
                   <input
@@ -311,7 +311,7 @@ export function AdminDashboard() {
                     checked={appSettings.maintenanceMode}
                     onChange={(e) => handleSettingChange('maintenanceMode', e.target.checked)}
                   />
-                  Maintenance Mode
+                  Wartungsmodus
                 </label>
 
                 <label className={styles.settingItem}>
@@ -320,7 +320,7 @@ export function AdminDashboard() {
                     checked={appSettings.registrationEnabled}
                     onChange={(e) => handleSettingChange('registrationEnabled', e.target.checked)}
                   />
-                  Registration Enabled
+                  Registrierung aktiviert
                 </label>
 
                 <label className={styles.settingItem}>
@@ -329,11 +329,11 @@ export function AdminDashboard() {
                     checked={appSettings.guestAccessEnabled}
                     onChange={(e) => handleSettingChange('guestAccessEnabled', e.target.checked)}
                   />
-                  Guest Access Enabled
+                  Gastzugang aktiviert
                 </label>
 
                 <label className={styles.settingItem}>
-                  Max Tasks per User:
+                  Max. Aufgaben pro Benutzer:
                   <input
                     type="number"
                     value={appSettings.maxTasksPerUser}
@@ -344,7 +344,7 @@ export function AdminDashboard() {
                 </label>
 
                 <label className={styles.settingItem}>
-                  Task Cooldown (minutes):
+                  Aufgaben-Abklingzeit (Minuten):
                   <input
                     type="number"
                     value={appSettings.taskCooldownMinutes}
@@ -356,7 +356,7 @@ export function AdminDashboard() {
               </div>
 
               <div className={styles.settingGroup}>
-                <h3>Features</h3>
+                <h3>Funktionen</h3>
                 
                 {Object.entries(appSettings.featuresEnabled).map(([feature, enabled]) => (
                   <label key={feature} className={styles.settingItem}>
@@ -368,13 +368,13 @@ export function AdminDashboard() {
                         [feature]: e.target.checked
                       })}
                     />
-                    {feature.charAt(0).toUpperCase() + feature.slice(1)} Enabled
+                    {feature.charAt(0).toUpperCase() + feature.slice(1)} aktiviert
                   </label>
                 ))}
               </div>
 
               <div className={styles.settingGroup}>
-                <h3>Announcement</h3>
+                <h3>Ankündigung</h3>
                 
                 <label className={styles.settingItem}>
                   <input
@@ -382,13 +382,13 @@ export function AdminDashboard() {
                     checked={appSettings.announcementActive}
                     onChange={(e) => handleSettingChange('announcementActive', e.target.checked)}
                   />
-                  Show Announcement
+                  Ankündigung anzeigen
                 </label>
 
                 <textarea
                   value={appSettings.announcementText}
                   onChange={(e) => handleSettingChange('announcementText', e.target.value)}
-                  placeholder="Enter announcement text..."
+                  placeholder="Ankündigungstext eingeben..."
                   className={styles.announcementText}
                   rows={3}
                 />
@@ -467,11 +467,11 @@ export function AdminDashboard() {
         {activeTab === 'notifications' && (
           <div className={styles.notifications}>
             <div className={styles.notificationSender}>
-              <h3>Send System Notification</h3>
+              <h3>System-Benachrichtigung senden</h3>
               <textarea
                 value={notificationMessage}
                 onChange={(e) => setNotificationMessage(e.target.value)}
-                placeholder="Enter notification message..."
+                placeholder="Benachrichtigungstext eingeben..."
                 className={styles.messageInput}
                 rows={4}
               />
@@ -481,14 +481,14 @@ export function AdminDashboard() {
                   className={styles.sendAllButton}
                   disabled={!notificationMessage.trim()}
                 >
-                  Send to All Users
+                  An alle Benutzer senden
                 </button>
                 <button
                   onClick={() => handleBulkAction('notify')}
                   className={styles.sendSelectedButton}
                   disabled={!notificationMessage.trim() || selectedUsers.size === 0}
                 >
-                  Send to Selected ({selectedUsers.size})
+                  An Ausgewählte senden ({selectedUsers.size})
                 </button>
               </div>
             </div>

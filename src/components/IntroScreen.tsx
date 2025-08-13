@@ -78,7 +78,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
             <div className={styles.drinkItem} style={{transform: 'rotate(180deg) translateX(120px)'}}>🥂</div>
             <div className={styles.drinkItem} style={{transform: 'rotate(240deg) translateX(120px)'}}>🍾</div>
             <div className={styles.drinkItem} style={{transform: 'rotate(300deg) translateX(120px)'}}>🥃</div>
-          </div></div>
+          </div>
           
           {/* Der Haupttext mit EXPLOSION */}
           <div className={styles.olympicTitle}>

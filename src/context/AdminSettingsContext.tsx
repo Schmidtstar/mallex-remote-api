@@ -13,8 +13,10 @@ import {
   orderBy, 
   serverTimestamp, 
   deleteDoc,
-  updateDoc
+  updateDoc,
+  addDoc
 } from 'firebase/firestore'
+import { auth } from '../lib/firebase'
 
 interface AppSettings {
   maintenanceMode: boolean
@@ -311,35 +313,21 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
 
     try {
       const notification = {
-        userId,
         message,
         timestamp: serverTimestamp(),
-        type: 'system',
+        type: 'system' as const,
         read: false,
         fromAdmin: auth.currentUser?.email || 'Admin'
       }
 
-      // Add notification to Firebase
-      await addDoc(collection(db, 'notifications'), notification)
-      
-      console.log('✅ System notification sent:', { userId, message })
-    } catch (error) {
-      console.error('Failed to send notification:', error)
-      throw error
-    }
-  }
-        read: false
-      }
-
       if (userId === 'all') {
         // Send to all users
-        const batch = collection(db, 'notifications')
-        userManagement.users.forEach(async (targetUser) => {
-          await setDoc(doc(batch, `${targetUser.uid}_${Date.now()}`), {
+        for (const targetUser of userManagement.users) {
+          await setDoc(doc(db, 'notifications', `${targetUser.uid}_${Date.now()}`), {
             ...notification,
             userId: targetUser.uid
           })
-        })
+        }
       } else {
         // Send to specific user
         await setDoc(doc(db, 'notifications', `${userId}_${Date.now()}`), {

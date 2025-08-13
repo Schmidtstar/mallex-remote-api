@@ -35,7 +35,7 @@ type PlayersProviderProps = {
 const STORAGE_KEY = 'mallex-players'
 
 export function PlayersProvider({ children }: PlayersProviderProps) {
-  const { loading: authLoading } = useAuth()
+  const { loading: authLoading, user } = useAuth() // Assuming 'user' is available from useAuth
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -46,12 +46,21 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
 
   // Load players when auth state changes - ONLY localStorage for now
   useEffect(() => {
-    const loadPlayers = async () => {
-      if (authLoading) return
+    let unsubscribe: (() => void) | undefined
+    let retryCount = 0
+    const maxRetries = 3
+
+    const fetchPlayers = async () => {
+      if (!user) return
 
       setLoading(true)
       try {
-        // Always use localStorage for now (Firebase rules need players collection setup)
+        // Add connection timeout
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Connection timeout')), 5000)
+        );
+
+        // Use localStorage for now (Firebase rules need players collection setup)
         const saved = localStorage.getItem(STORAGE_KEY)
         const playersList = saved ? JSON.parse(saved) : []
         setPlayers(playersList)
@@ -65,8 +74,26 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       }
     }
 
-    loadPlayers()
-  }, [authLoading])
+    // Temporarily use localStorage for player loading
+    const loadPlayersFromLocalStorage = async () => {
+      setLoading(true);
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        const playersList = saved ? JSON.parse(saved) : [];
+        setPlayers(playersList);
+        setLoading(false);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('Failed to load players from localStorage:', error);
+        }
+        setPlayers([]);
+        setLoading(false);
+      }
+    };
+
+    loadPlayersFromLocalStorage();
+
+  }, [authLoading, user]) // Dependency array includes user
 
   const handleAddPlayer = useCallback(async (name: string) => {
     if (!name.trim()) return

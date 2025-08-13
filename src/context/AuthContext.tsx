@@ -32,9 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return false;
         }
 
-        // Quick connection test mit Timeout
+        // Quick connection test mit Timeout (verlängert für Replit)
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('timeout')), 2000)
+          setTimeout(() => reject(new Error('timeout')), 5000)
         );
 
         await Promise.race([

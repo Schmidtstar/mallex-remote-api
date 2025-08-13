@@ -15,6 +15,10 @@ publicDir = "dist"
 build = ["sh", "-c", "npm run build"]
 run = ["sh", "-c", "npm run preview"]
 
+[[deployment.rewrites]]
+from = "/*"
+to = "/index.html"
+
 [workflows]
 runButton = "Dev Server"
 

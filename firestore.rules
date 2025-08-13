@@ -19,7 +19,7 @@ service cloud.firestore {
 
     /* Nutzerprofil */
     match /users/{uid} {
-      allow read, create, update: if owner(uid);
+      allow read, create, update: if owner(uid) || admin();
     }
 
     /* Spielerverwaltung (Legenden – Top-Level) */
@@ -80,6 +80,16 @@ service cloud.firestore {
     match /taskSuggestions/{suggestionId} {
       allow read, write: if request.auth != null && 
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    /* Admin Settings */
+    match /adminSettings/{settingId} {
+      allow read, write: if admin();
+    }
+
+    /* Notifications (für System-Benachrichtigungen) */
+    match /notifications/{notificationId} {
+      allow read, write: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
     }
 
     /* Alles andere verboten */

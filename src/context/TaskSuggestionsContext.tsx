@@ -90,7 +90,7 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useTaskSuggestions() {
+export const useTaskSuggestions = () => {
   const context = useContext(TaskSuggestionsContext)
   if (!context) {
     throw new Error('useTaskSuggestions must be used within TaskSuggestionsProvider')

@@ -18,7 +18,7 @@ type PlayersContextType = {
 
 const PlayersContext = createContext<PlayersContextType | undefined>(undefined)
 
-export function usePlayersContext() {
+export const usePlayersContext = () => {
   const context = useContext(PlayersContext)
   if (!context) {
     throw new Error('usePlayersContext must be used within a PlayersProvider')

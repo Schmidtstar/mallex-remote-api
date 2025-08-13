@@ -20,13 +20,16 @@ const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m 
 const LoadingSpinner = () => (
   <div style={{ 
     display: 'flex', 
+    flexDirection: 'column',
     justifyContent: 'center', 
     alignItems: 'center', 
     height: '50vh',
     fontSize: '1rem',
-    color: '#666'
+    color: '#666',
+    gap: '10px'
   }}>
-    ⚡ Laden...
+    <div style={{ fontSize: '2rem' }}>⚡</div>
+    <div>Laden...</div>
   </div>
 )
 
@@ -131,8 +134,6 @@ const routes = [
   }
 ]
 
-const router = useHash
+export const router = useHash
   ? createHashRouter(routes)
   : createBrowserRouter(routes)
-
-export { router }

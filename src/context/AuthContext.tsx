@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Quick connection test mit Timeout
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('timeout')), 3000)
+          setTimeout(() => reject(new Error('timeout')), 2000)
         );
 
         await Promise.race([
@@ -63,7 +63,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       console.log('🟢 Firebase online - normal auth mode');
+      let isMounted = true;
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (!isMounted) return;
         setLoading(true);
         try {
           if (user) {
@@ -91,11 +93,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(null);
           }
         } finally {
-          setLoading(false);
+          if (isMounted) setLoading(false);
         }
       });
 
-      return () => unsubscribe();
+      return () => {
+        isMounted = false;
+        unsubscribe();
+      };
     });
   }, []);
 

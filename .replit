@@ -6,13 +6,16 @@ modules = ["nodejs-20"]
 
 [env]
 VITE_HASH_ROUTER = "1"
+REPLIT_DISABLE_PACKAGE_LAYER = "1"
+NIXPACKS_BUILD_CACHE = "false"
+NPM_CONFIG_AUDIT = "false"
 
 [packager]
 ignoredPackages = ["nodejs-22"]
 
 [deployment]
 build = ["npm", "run", "build"]
-run = ["sh", "-c", "npx serve -s dist -l ${PORT:-3000}"]
+run = ["sh", "-c", "npm run start"]
 deploymentTarget = "autoscale"
 ignorePorts = false
 

@@ -10,7 +10,8 @@ VITE_HASH_ROUTER = "true"
 
 [deployment]
 build = ["npm", "run", "build"]
-run = ["sh", "-c", "npm run start"]
+deploymentTarget = "static"
+publicDir = "dist"
 
 [[ports]]
 localPort = 3000

@@ -16,11 +16,19 @@ import { db, auth } from '../lib/firebase'
 // Define interfaces for settings and user data
 interface AppSettings {
   maintenanceMode: boolean
-  allowRegistration: boolean
-  maxUsers: number
-  minTasksForReward: number
-  dailyTaskLimit: number
-  announcements: string[]
+  registrationEnabled: boolean
+  guestAccessEnabled: boolean
+  maxTasksPerUser: number
+  taskCooldownMinutes: number
+  announcementActive: boolean
+  announcementText: string
+  featuresEnabled: {
+    arena: boolean
+    tasks: boolean
+    leaderboard: boolean
+    legends: boolean
+    notifications: boolean
+  }
 }
 
 interface UserStats {
@@ -43,6 +51,7 @@ interface UserManagement {
   users: UserStats[]
   bannedUsers: Set<string>
   moderators: Set<string>
+  error?: string | null
 }
 
 // Define context type
@@ -69,11 +78,19 @@ interface AdminSettingsContextType {
 // Default settings for the app
 const defaultSettings: AppSettings = {
   maintenanceMode: false,
-  allowRegistration: true,
-  maxUsers: 100,
-  minTasksForReward: 5,
-  dailyTaskLimit: 10,
-  announcements: []
+  registrationEnabled: true,
+  guestAccessEnabled: true,
+  maxTasksPerUser: 50,
+  taskCooldownMinutes: 5,
+  announcementActive: false,
+  announcementText: '',
+  featuresEnabled: {
+    arena: true,
+    tasks: true,
+    leaderboard: true,
+    legends: true,
+    notifications: true
+  }
 }
 
 // Create the context
@@ -394,7 +411,8 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   const userManagement: UserManagement = {
     users: users || [],
     bannedUsers: bannedUsers || new Set(),
-    moderators: moderators || new Set()
+    moderators: moderators || new Set(),
+    error: error
   }
 
   // Combine all context values

@@ -46,6 +46,11 @@ export function AdminDashboard() {
             🔄 Lädt Admin-Daten...
           </div>
         </div>
+        <div className={styles.content}>
+          <div className={styles.loadingMessage}>
+            Lade Einstellungen und Benutzerdaten...
+          </div>
+        </div>
       </div>
     )
   }

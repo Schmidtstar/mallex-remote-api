@@ -413,6 +413,122 @@
 }
 
 .addAdmin {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.addAdminForm {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid rgba(218, 165, 32, 0.3);
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.emailInput:focus {
+  outline: none;
+  border-color: var(--ancient-gold);
+}
+
+.adminHint {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.adminList {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.adminList h4 {
+  margin: 0 0 1rem 0;
+  color: var(--ancient-gold);
+}
+
+.noAdmins {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  padding: 2rem;
+}
+
+.adminCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(218, 165, 32, 0.1);
+  border: 1px solid rgba(218, 165, 32, 0.3);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.adminInfo {
+  flex: 1;
+}
+
+.adminEmail {
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.adminMeta {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.adminActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.revokeButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.revokeButton:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.revokeButton:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.loadingMessage {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  padding: 3rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  margin: 2rem;
+}
+
+.addAdmin {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--ancient-bronze);
   border-radius: 0.5rem;

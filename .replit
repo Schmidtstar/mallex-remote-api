@@ -13,6 +13,7 @@ deploymentTarget = "static"
 ignorePorts = false
 publicDir = "dist"
 build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "npm run preview"]
 
 [workflows]
 runButton = "Dev Server"

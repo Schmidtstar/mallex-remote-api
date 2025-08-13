@@ -45,16 +45,20 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           const isFirebaseAdmin = snap.exists()
           setIsAdmin(isFirebaseAdmin)
-          // Admin verified silently
+          if (isFirebaseAdmin) {
+            console.log('✅ Admin verified via Firebase')
+          }
         }
       } catch (error: any) {
-        console.warn('Firebase admin check failed (expected if not admin):', error?.code || error?.message)
-
-        // Prevent unhandled promise rejections
+        // Permission denied is EXPECTED for non-admins - don't log as error
         if (error?.code === 'permission-denied') {
-          console.log('🚫 Admin permission denied - user is not admin')
+          // This is normal - user is simply not an admin
+          if (!cancelled) setIsAdmin(false)
+          return // Silent exit for permission-denied
         }
 
+        // Only log actual unexpected errors
+        console.warn('Unexpected Firebase admin check error:', error?.code || error?.message)
         if (!cancelled) setIsAdmin(false)
       } finally {
         if (!cancelled) setLoading(false)

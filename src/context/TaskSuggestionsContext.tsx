@@ -46,7 +46,9 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
 
       setSuggestions(parsed)
     } catch (error) {
-      console.warn('Failed to load suggestions from localStorage:', error)
+      if (import.meta.env.DEV) {
+        console.warn('Failed to load suggestions from localStorage:', error)
+      }
       setSuggestions([])
     } finally {
       setLoading(false)

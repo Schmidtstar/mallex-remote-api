@@ -50,7 +50,9 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         setPlayers(playersList)
         setLoading(false)
       } catch (error) {
-        console.warn('Failed to load players:', error)
+        if (import.meta.env.DEV) {
+          console.warn('Failed to load players:', error)
+        }
         setPlayers([])
         setLoading(false)
       }
@@ -72,7 +74,9 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
     } catch (error) {
-      console.warn('Failed to add player:', error)
+      if (import.meta.env.DEV) {
+        console.warn('Failed to add player:', error)
+      }
       throw error
     }
   }, [players])

@@ -13,13 +13,15 @@ const firebaseConfig = {
   // measurementId optional
 };
 
-// Debug: nur Struktur (keine Secrets)
-console.log('Firebase Config:', {
-  hasApiKey: !!firebaseConfig.apiKey,
-  hasAuthDomain: !!firebaseConfig.authDomain,
-  hasProjectId: !!firebaseConfig.projectId,
-  hasAppId: !!firebaseConfig.appId,
-});
+// Only log in development mode
+if (import.meta.env.DEV) {
+  console.log('Firebase Config:', {
+    hasApiKey: !!firebaseConfig.apiKey,
+    hasAuthDomain: !!firebaseConfig.authDomain,
+    hasProjectId: !!firebaseConfig.projectId,
+    hasAppId: !!firebaseConfig.appId,
+  });
+}
 
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {
   console.error('Firebase config is incomplete! Check your environment variables.');

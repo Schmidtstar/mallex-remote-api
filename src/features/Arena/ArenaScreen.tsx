@@ -48,7 +48,9 @@ export function ArenaScreen() {
           const categoryTasks = await listApprovedTasks(category.id as any)
           tasksByCategory[category.id] = categoryTasks.map(task => task.text)
         } catch (error) {
-          console.error(`Error loading tasks for ${category.id}:`, error)
+          if (import.meta.env.DEV) {
+            console.error(`Error loading tasks for ${category.id}:`, error)
+          }
           tasksByCategory[category.id] = []
         }
       }
@@ -158,9 +160,13 @@ export function ArenaScreen() {
         })
       }
 
-      console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte!`)
+      if (import.meta.env.DEV) {
+        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte!`)
+      }
     } catch (error) {
-      console.warn('⚠️ Punkte konnten nicht gespeichert werden:', error)
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Punkte konnten nicht gespeichert werden:', error)
+      }
     }
   }
 
@@ -219,8 +225,10 @@ export function ArenaScreen() {
     setTaskResult('')
   }
 
+  // Memoize mobile detection to prevent re-calculations
+  const isMobile = useMemo(() => window.innerWidth < 768, [])
+  
   const renderGameContent = () => {
-    const isMobile = window.innerWidth < 768;
 
     switch (gameState) {
       case 'idle':

@@ -9,6 +9,10 @@ import { AdminProvider } from './context/AdminContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import { IntroScreen } from './components/IntroScreen'
+import { assertEnv } from './lib/env'
+
+// Validate environment variables before app startup
+assertEnv()
 
 const App = () => {
   const [showIntro, setShowIntro] = useState(true)

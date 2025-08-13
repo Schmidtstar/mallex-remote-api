@@ -15,7 +15,7 @@ import { AuthScreen } from './features/Auth/AuthScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { useAuth } from './context/AuthContext'
 
-const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
+const useHash = import.meta.env.VITE_HASH_ROUTER === 'true'
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

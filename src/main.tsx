@@ -57,4 +57,4 @@ if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
 }
 
-export default App
+// No export needed - App component is used directly

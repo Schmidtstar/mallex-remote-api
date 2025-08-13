@@ -485,6 +485,5 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   )
 }
 
-// Export hooks und Provider korrekt
+// Export only what's needed for Fast Refresh compatibility
 export { useAdminSettings, AdminSettingsProvider };
-export default AdminSettingsProvider;

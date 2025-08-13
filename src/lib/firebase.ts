@@ -28,44 +28,55 @@ if (import.meta.env.PROD) {
 // Initialize Firebase app once
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Lazy loading für bessere Performance
-let auth: any = null
-let db: any = null
+// Synchrone Initialisierung für bessere Performance
+import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
+import { initializeFirestore, enableNetwork, connectFirestoreEmulator } from 'firebase/firestore'
 
-export const getFirebaseAuth = async () => {
-  if (!auth) {
-    const { getAuth, browserLocalPersistence, setPersistence } = await import('firebase/auth')
-    auth = getAuth(app)
-    await setPersistence(auth, browserLocalPersistence).catch((e) =>
-      console.warn('Auth persistence warning:', e?.message || e)
-    )
+// Initialize Firebase services synchronously
+const auth = getAuth(app)
+const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  cacheSizeBytes: 40000000,
+  ignoreUndefinedProperties: true,
+  localCache: {
+    kind: 'persistent',
+    tabManager: 'optimistic'
   }
-  return auth
+})
+
+// Setup auth persistence
+setPersistence(auth, browserLocalPersistence).catch((e) =>
+  console.warn('Auth persistence warning:', e?.message || e)
+)
+
+// Enable network for Firestore
+if (typeof window !== 'undefined') {
+  enableNetwork(db).catch(console.warn)
 }
 
-export const getFirestore = async () => {
-  if (!db) {
-    const { initializeFirestore, enableNetwork } = await import('firebase/firestore')
-    db = initializeFirestore(app, {
-      experimentalAutoDetectLongPolling: true,
-      cacheSizeBytes: 40000000,
-      ignoreUndefinedProperties: true,
-      localCache: {
-        kind: 'persistent',
-        tabManager: 'optimistic'
-      }
-    })
+// Connection retry logic
+let connectionAttempts = 0
+const maxRetries = 3
 
-    if (typeof window !== 'undefined') {
-      await enableNetwork(db).catch(console.warn)
+const ensureConnection = async () => {
+  try {
+    await enableNetwork(db)
+    connectionAttempts = 0
+  } catch (error) {
+    if (connectionAttempts < maxRetries) {
+      connectionAttempts++
+      const delay = Math.pow(2, connectionAttempts) * 1000
+      setTimeout(ensureConnection, delay)
     }
   }
-  return db
 }
 
-// Legacy exports für Backward Compatibility
-export const auth = await getFirebaseAuth()
-export const db = await getFirestore()
+// Auto-retry connection on network issues
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', ensureConnection)
+}
+
+export { auth, db }
 
 // Firebase ready indicator - development only
 if (import.meta.env.DEV && !window._firebaseConfigLogged) {

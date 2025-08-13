@@ -27,7 +27,7 @@ export function ArenaScreen() {
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinningCategory, setSpinningCategory] = useState<string>('')
-  const [showResult, setShowResult] = useState(false)
+  
 
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)

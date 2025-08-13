@@ -368,7 +368,7 @@ export function AdminTasksScreen() {
       // Reload direct tasks to show the new task
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
-      setItems(tasks); // This line was added based on the provided changes
+      setItems(tasks) // This line was corrected
       setTimeout(() => setCreateSuccess(''), 3000)
     } catch (error) {
       console.error('Error creating task:', error)

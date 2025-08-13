@@ -12,21 +12,13 @@ ignoredPackages = ["nodejs-22"]
 
 [deployment]
 build = ["npm", "run", "build"]
-run = ["sh", "-c", "npx serve -s dist -l $PORT"]
+run = ["sh", "-c", "npx serve -s dist -l ${PORT:-3000}"]
 deploymentTarget = "autoscale"
 ignorePorts = false
 
 [[ports]]
 localPort = 3000
 externalPort = 80
-
-[[ports]]
-localPort = 3001
-externalPort = 3001
-
-[[ports]]
-localPort = 3002
-externalPort = 3002
 
 [workflows]
 runButton = "Run"

@@ -484,5 +484,6 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   )
 }
 
-// Single export for Fast Refresh compatibility
-export { useAdminSettings, AdminSettingsProvider }
+// Export components individually for Fast Refresh
+export { useAdminSettings }
+export { AdminSettingsProvider }

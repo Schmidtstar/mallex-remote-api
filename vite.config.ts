@@ -8,22 +8,20 @@ export default defineConfig({
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
   server: {
     host: '0.0.0.0',
-    port: Number(process.env.PORT) || 3000,
-    strictPort: false,
+    port: 3000,
+    strictPort: true,
     hmr: { 
-      port: 443,
-      timeout: 30000,
+      timeout: 10000,
       overlay: false
     },
-    allowedHosts: true,
-    cors: true,
-    ws: {
-      port: 443
+    watch: {
+      usePolling: true,
+      interval: 1000
     }
   },
   preview: { 
     host: '0.0.0.0', 
-    port: 4173 
+    port: 3000 
   },
   build: {
     target: 'es2020',

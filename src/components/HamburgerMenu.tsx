@@ -8,6 +8,134 @@ import { trapFocus } from '../lib/a11y'
 import styles from './HamburgerMenu.module.css'
 
 interface HamburgerMenuProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { user, signOut } = useAuth()
+  const isAdmin = useIsAdmin()
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onClose()
+    }
+  }, [onClose])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      if (menuRef.current) {
+        trapFocus(menuRef.current)
+      }
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, handleKeyDown])
+
+  const handleMenuClick = (item: typeof menuItems[0]) => {
+    if (item.action) {
+      item.action()
+    } else {
+      navigate(item.path)
+    }
+    onClose()
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      navigate('/auth')
+      onClose()
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
+  }
+
+  if (!isOpen) return null
+
+  // Filter menu items based on user auth and admin status
+  const visibleMenuItems = menuItems.filter(item => {
+    // If item requires auth but user is not logged in, hide it
+    if (item.requiresAuth && !user) return false
+    
+    // If item is admin only but user is not admin, hide it
+    if (item.adminOnly && !isAdmin) return false
+    
+    return true
+  })
+
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div 
+        ref={menuRef}
+        className={styles.menu}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('nav.menu')}
+      >
+        <div className={styles.header}>
+          <h2 className={styles.title}>{t('nav.menu')}</h2>
+          <button 
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label={t('common.close')}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className={styles.content}>
+          <nav className={styles.navigation}>
+            {visibleMenuItems.map((item) => (
+              <button
+                key={item.key}
+                className={`${styles.menuItem} ${
+                  location.pathname === item.path ? styles.menuItemActive : ''
+                }`}
+                onClick={() => handleMenuClick(item)}
+              >
+                <span className={styles.menuIcon}>{item.icon}</span>
+                <span className={styles.menuLabel}>{t(item.labelKey)}</span>
+                {item.adminOnly && (
+                  <span className={styles.adminBadge}>Admin</span>
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {user && (
+            <div className={styles.footer}>
+              <div className={styles.userInfo}>
+                <span className={styles.userIcon}>👤</span>
+                <span className={styles.userName}>
+                  {user.displayName || user.email}
+                </span>
+                {isAdmin && (
+                  <span className={styles.adminIndicator}>🔧</span>
+                )}
+              </div>
+              <button 
+                className={styles.signOutButton}
+                onClick={handleSignOut}
+              >
+                {t('auth.signOut')}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface HamburgerMenuProps {
   open: boolean
   onClose: () => void
   triggerRef?: React.RefObject<HTMLButtonElement>

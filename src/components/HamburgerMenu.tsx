@@ -109,7 +109,7 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
       >
         <div className={styles.header}>
           <div className={styles.headerContent}>
-            <NotificationCenter />
+            <h2 id="menuTitle" className={styles.menuTitle}>📜 Menü</h2>
             <button
               className={styles.closeBtn}
               onClick={onClose}

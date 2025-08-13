@@ -2,12 +2,24 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { useAuth } from './AuthContext'
 import { useIsAdmin } from './AdminContext'
 import { db } from '../lib/firebase'
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, getDocs, deleteDoc } from 'firebase/firestore'
+import { 
+  doc, 
+  getDoc, 
+  setDoc, 
+  collection, 
+  getDocs, 
+  query, 
+  where, 
+  orderBy, 
+  serverTimestamp, 
+  deleteDoc,
+  updateDoc
+} from 'firebase/firestore'
 
 interface AppSettings {
   maintenanceMode: boolean
-  registrationEnabled: boolean
-  guestAccessEnabled: boolean
+  registrationEnabled: true
+  guestAccessEnabled: true
   maxTasksPerUser: number
   taskCooldownMinutes: number
   leaderboardVisible: boolean
@@ -52,8 +64,11 @@ interface AdminSettingsContextType {
   promoteToModerator: (uid: string) => Promise<void>
   demoteFromModerator: (uid: string) => Promise<void>
   deleteUser: (uid: string) => Promise<void>
-  sendSystemNotification: (userId: string | 'all', message: string) => Promise<void>
+  sendSystemNotification: (userId: string, message: string) => Promise<void>
   refreshUsers: () => Promise<void>
+  promoteToAdmin: (userIdOrEmail: string) => Promise<void>
+  revokeAdmin: (userIdOrEmail: string) => Promise<void>
+  getAdminList: () => Promise<any[]>
 }
 
 const defaultAppSettings: AppSettings = {
@@ -291,14 +306,14 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const sendSystemNotification = async (userId: string | 'all', message: string) => {
+  const sendSystemNotification = async (userId: string, message: string) => {
+    if (!isAdmin) throw new Error('Only admins can send notifications')
+
     try {
       const notification = {
         message,
+        timestamp: serverTimestamp(),
         type: 'system',
-        from: 'admin',
-        sentBy: user?.uid,
-        sentAt: serverTimestamp(),
         read: false
       }
 
@@ -326,6 +341,92 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const promoteToAdmin = async (userIdOrEmail: string) => {
+    if (!isAdmin) throw new Error('Only admins can promote other admins')
+
+    try {
+      // Find user by email or UID
+      let targetUser = userManagement.users.find(u => 
+        u.uid === userIdOrEmail || u.email === userIdOrEmail
+      )
+
+      if (!targetUser && userIdOrEmail.includes('@')) {
+        // If email provided but user not found, create admin entry anyway
+        await setDoc(doc(db, 'admins', userIdOrEmail), {
+          email: userIdOrEmail,
+          promotedBy: user?.uid,
+          promotedAt: serverTimestamp(),
+          type: 'email_based'
+        })
+        console.log('✅ Email added to admin list:', userIdOrEmail)
+        return
+      }
+
+      if (!targetUser) {
+        throw new Error('User not found')
+      }
+
+      // Add to admins collection
+      await setDoc(doc(db, 'admins', targetUser.uid), {
+        email: targetUser.email,
+        displayName: targetUser.displayName,
+        promotedBy: user?.uid,
+        promotedAt: serverTimestamp(),
+        type: 'user_based'
+      })
+
+      console.log('✅ User promoted to admin:', targetUser.email)
+      await refreshUsers()
+    } catch (error) {
+      console.error('Failed to promote to admin:', error)
+      throw error
+    }
+  }
+
+  const revokeAdmin = async (userIdOrEmail: string) => {
+    if (!isAdmin) throw new Error('Only admins can revoke admin access')
+
+    try {
+      // Try to delete by UID first, then by email
+      try {
+        await deleteDoc(doc(db, 'admins', userIdOrEmail))
+      } catch {
+        // If UID fails, try finding by email
+        const adminQuery = query(
+          collection(db, 'admins'),
+          where('email', '==', userIdOrEmail)
+        )
+        const adminSnap = await getDocs(adminQuery)
+
+        if (!adminSnap.empty) {
+          await deleteDoc(adminSnap.docs[0].ref)
+        }
+      }
+
+      console.log('✅ Admin access revoked for:', userIdOrEmail)
+      await refreshUsers()
+    } catch (error) {
+      console.error('Failed to revoke admin:', error)
+      throw error
+    }
+  }
+
+  const getAdminList = async () => {
+    if (!isAdmin) return []
+
+    try {
+      const adminSnap = await getDocs(collection(db, 'admins'))
+      return adminSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+    } catch (error) {
+      console.error('Failed to load admin list:', error)
+      return []
+    }
+  }
+
+
   const value: AdminSettingsContextType = {
     appSettings,
     userManagement,
@@ -338,7 +439,10 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
     demoteFromModerator,
     deleteUser,
     sendSystemNotification,
-    refreshUsers
+    refreshUsers,
+    promoteToAdmin,
+    revokeAdmin,
+    getAdminList
   }
 
   return (

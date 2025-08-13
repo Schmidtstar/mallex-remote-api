@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useAdminSettings } from '../../context/AdminSettingsContext'
 import styles from './AdminDashboard.module.css'
 
-type AdminTab = 'overview' | 'users' | 'settings' | 'content' | 'analytics' | 'notifications'
+type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 
 export function AdminDashboard() {
   const { t } = useTranslation()
@@ -24,13 +24,18 @@ export function AdminDashboard() {
     promoteToModerator,
     demoteFromModerator,
     sendSystemNotification,
-    refreshUsers
+    refreshUsers,
+    promoteToAdmin,
+    revokeAdmin,
+    getAdminList
   } = useAdminSettings()
 
   const [activeTab, setActiveTab] = useState<AdminTab>('overview')
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [notificationMessage, setNotificationMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [adminList, setAdminList] = useState<any[]>([])
+  const [newAdminEmail, setNewAdminEmail] = useState('')
 
   if (!isAdmin) {
     return <Navigate to="/arena" replace />
@@ -89,6 +94,44 @@ export function AdminDashboard() {
     setSelectedUsers(newSelection)
   }
 
+  const loadAdminList = async () => {
+    try {
+      const admins = await getAdminList()
+      setAdminList(admins)
+    } catch (error) {
+      console.error('Failed to load admin list:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'admins') {
+      loadAdminList()
+    }
+  }, [activeTab])
+
+  const handlePromoteToAdmin = async () => {
+    if (!newAdminEmail.trim()) return
+    
+    try {
+      await promoteToAdmin(newAdminEmail.trim())
+      setNewAdminEmail('')
+      await loadAdminList()
+    } catch (error) {
+      console.error('Failed to promote to admin:', error)
+    }
+  }
+
+  const handleRevokeAdmin = async (userIdOrEmail: string) => {
+    if (!confirm('Admin-Berechtigung wirklich entziehen?')) return
+    
+    try {
+      await revokeAdmin(userIdOrEmail)
+      await loadAdminList()
+    } catch (error) {
+      console.error('Failed to revoke admin:', error)
+    }
+  }
+
   return (
     <div className={styles.dashboard}>
       <div className={styles.header}>
@@ -99,13 +142,13 @@ export function AdminDashboard() {
       </div>
 
       <div className={styles.tabs}>
-        {['overview', 'users', 'settings', 'content', 'analytics', 'notifications'].map(tab => (
+        {['overview', 'users', 'settings', 'admins', 'notifications'].map(tab => (
           <button
             key={tab}
             className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
             onClick={() => setActiveTab(tab as AdminTab)}
           >
-            {t(`admin.tabs.${tab}`)}
+            {tab === 'admins' ? '👑 Admins' : t(`admin.tabs.${tab}`)}
           </button>
         ))}
       </div>
@@ -350,6 +393,73 @@ export function AdminDashboard() {
                   rows={3}
                 />
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'admins' && (
+          <div className={styles.adminManagement}>
+            <div className={styles.adminControls}>
+              <h3>👑 Admin Management</h3>
+              
+              <div className={styles.addAdmin}>
+                <div className={styles.addAdminForm}>
+                  <input
+                    type="email"
+                    value={newAdminEmail}
+                    onChange={(e) => setNewAdminEmail(e.target.value)}
+                    placeholder="E-Mail-Adresse eingeben..."
+                    className={styles.emailInput}
+                  />
+                  <button
+                    onClick={handlePromoteToAdmin}
+                    className={styles.promoteButton}
+                    disabled={!newAdminEmail.trim()}
+                  >
+                    🔼 Zu Admin ernennen
+                  </button>
+                </div>
+                <div className={styles.adminHint}>
+                  💡 E-Mail-Adresse eingeben, um Benutzer zum Admin zu ernennen
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.adminList}>
+              <h4>Aktuelle Admins ({adminList.length})</h4>
+              {adminList.length === 0 ? (
+                <div className={styles.noAdmins}>
+                  Keine Admins gefunden. Lade Admin-Liste...
+                </div>
+              ) : (
+                adminList.map((admin, index) => (
+                  <div key={admin.id || index} className={styles.adminCard}>
+                    <div className={styles.adminInfo}>
+                      <div className={styles.adminEmail}>
+                        📧 {admin.email || admin.id}
+                      </div>
+                      <div className={styles.adminMeta}>
+                        {admin.displayName && (
+                          <span>👤 {admin.displayName} | </span>
+                        )}
+                        <span>📅 {admin.promotedAt?.toDate?.()?.toLocaleDateString() || 'Unbekannt'}</span>
+                        {admin.type && (
+                          <span> | 🏷️ {admin.type}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className={styles.adminActions}>
+                      <button
+                        onClick={() => handleRevokeAdmin(admin.id)}
+                        className={styles.revokeButton}
+                        disabled={admin.id === user?.uid}
+                      >
+                        {admin.id === user?.uid ? '🔒 Selbst' : '❌ Entziehen'}
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       sourcemap: mode === 'development',
       minify: mode === 'production' ? 'esbuild' : false,
+      target: 'es2015', // Better mobile compatibility
       rollupOptions: {
         output: {
           manualChunks: {

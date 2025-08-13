@@ -1,0 +1,20 @@
+
+{
+  "name": "MALLEX - Antike Arena",
+  "short_name": "MALLEX",
+  "description": "Antike Arena Herausforderungen",
+  "theme_color": "#DAA520",
+  "background_color": "#1a1a1a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/generated-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

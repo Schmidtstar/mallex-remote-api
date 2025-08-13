@@ -111,7 +111,7 @@ interface AdminSettingsProviderProps {
   children: ReactNode
 }
 
-export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ children }) => {
+export const AdminSettingsProvider = React.memo<AdminSettingsProviderProps>(({ children }) => {
   // State variables for app settings, user management, loading, and errors
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultSettings)
   const [users, setUsers] = useState<UserStats[]>([])
@@ -442,9 +442,22 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Load users on component mount
+  // Load users on component mount with cleanup
   useEffect(() => {
-    refreshUsers()
+    let isMounted = true
+    
+    const loadUsers = async () => {
+      if (isMounted) {
+        await refreshUsers()
+      }
+    }
+    
+    loadUsers()
+    
+    // Cleanup function
+    return () => {
+      isMounted = false
+    }
   }, []) // Empty dependency array means this runs once on mount
 
   // Aggregate user data into the UserManagement interface
@@ -482,7 +495,6 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
       {children}
     </AdminSettingsContext.Provider>
   )
-}
+})
 
-// Export everything in a single statement for Fast Refresh compatibility  
-export { useAdminSettings, AdminSettingsProvider }
+// Components are already exported above - no additional exports needed for Fast Refresh

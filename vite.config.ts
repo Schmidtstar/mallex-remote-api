@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
   server: {
     host: true,
-    port: Number(process.env.PORT) || 3000,
+    port: Number(process.env.PORT) || 5173,
     strictPort: false,
     hmr: { clientPort: 443 },
     allowedHosts: true

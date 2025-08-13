@@ -9,6 +9,7 @@ import { TasksOverviewScreen } from './features/Tasks/TasksOverviewScreen'
 import { SuggestTaskScreen } from './features/Tasks/SuggestTaskScreen'
 import { AdminTasksScreen } from './features/Tasks/AdminTasksScreen'
 import { AdminSuggestionsScreen } from './features/Admin/AdminSuggestionsScreen'
+import { AdminDashboard } from './features/Admin/AdminDashboard'
 import RequireAdmin from './routes/guards/RequireAdmin'
 
 import { AuthScreen } from './features/Auth/AuthScreen'
@@ -80,6 +81,16 @@ const routes = [
         element: <RequireAdmin />,
         errorElement: <ErrorBoundary><div>Fehler beim Admin-Zugriff</div></ErrorBoundary>,
         children: [
+          {
+            index: true,
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
+          },
+          {
+            path: 'dashboard',
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
+          },
           {
             path: 'tasks',
             element: <AdminTasksScreen />,

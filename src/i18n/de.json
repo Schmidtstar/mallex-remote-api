@@ -222,5 +222,22 @@
     "edit": "Bearbeiten",
     "remove": "Entfernen",
     "adding": "Hinzufügen..."
+  },
+  "admin": {
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "suggestions": {
+      "title": "Vorschläge verwalten",
+      "empty": "Keine ausstehenden Vorschläge",
+      "by": "Von"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "users": "Benutzer",
+      "settings": "Einstellungen",
+      "content": "Inhalte",
+      "analytics": "Analytics",
+      "notifications": "Benachrichtigungen"
+    }
   }
 }

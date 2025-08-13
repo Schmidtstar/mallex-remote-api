@@ -63,10 +63,12 @@ export const menuItems: MenuItem[] = [
   },
   {
     key: 'admin',
-    path: '/admin/tasks',
+    path: '/admin/dashboard',
     labelKey: 'nav.admin',
     icon: '🔧',
     requiresAuth: true,
+    adminOnly: true
+  }e,
     adminOnly: true
   }
 ]

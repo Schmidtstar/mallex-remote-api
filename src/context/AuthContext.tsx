@@ -141,12 +141,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 // Hook mit konsistentem Export für Fast Refresh
-function useAuth() {
+export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth must be used within AuthProvider')
   }
   return context
 }
-
-export { useAuth }

@@ -1,7 +1,7 @@
 // src/lib/firebase.ts
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
-import { initializeFirestore } from 'firebase/firestore';
+import { initializeFirestore, getDoc, doc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,8 +15,16 @@ const firebaseConfig = {
 
 // Minimal logging - only once
 if (import.meta.env.DEV && !window._firebaseConfigLogged) {
-  console.log('🔥 Firebase ready');
-  window._firebaseConfigLogged = true;
+  console.log('🔥 Firebase ready')
+    console.log('🟢 Firebase online - normal auth mode')
+
+    // Test Firestore connection
+    try {
+      await getDoc(doc(db, 'test', 'connection'))
+      console.log('✅ Firestore connection successful')
+    } catch (error: any) {
+      console.warn('⚠️ Firestore connection issue:', error?.code || error?.message)
+    }
 }
 
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {

@@ -1,4 +1,3 @@
-
 import React, { Component, ReactNode } from 'react'
 
 interface Props {
@@ -21,7 +20,15 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+    console.error('🚨 Error caught by boundary:', error, errorInfo)
+
+    // Additional error logging for Firebase/Firestore errors
+    if (error.message.includes('permission-denied')) {
+      console.error('🔒 Firebase permission error - check Firestore rules')
+    }
+    if (error.message.includes('Firebase')) {
+      console.error('🔥 Firebase error detected - check configuration')
+    }
   }
 
   handleReload = () => {

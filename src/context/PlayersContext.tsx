@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
 // Player type lokal definiert da deprecated API entfernt

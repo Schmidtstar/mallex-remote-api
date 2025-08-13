@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
@@ -39,4 +38,14 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
   const root = createRoot(rootElement)
   root.render(<App />)
+}
+
+// Expose a global boolean for debugging
+if (import.meta.env.DEV) {
+  ;(window as any).__MALLEX_DEV__ = true
+}
+
+// Default export for Fast Refresh compatibility
+export default function App() {
+  return null // This component is not used, just for Fast Refresh
 }

@@ -6,7 +6,13 @@ import { doc, getDoc } from 'firebase/firestore'
 type AdminCtx = { isAdmin: boolean; loading: boolean }
 const AdminContext = createContext<AdminCtx>({ isAdmin: false, loading: true })
 
-export const useAdmin = () => useContext(AdminContext)
+export function useAdmin() {
+  const context = useContext(AdminContext)
+  if (!context) {
+    throw new Error('useAdmin must be used within AdminProvider')
+  }
+  return context
+}
 export const useIsAdmin = () => useAdmin().isAdmin
 
 export function AdminProvider({ children }: { children: ReactNode }) {

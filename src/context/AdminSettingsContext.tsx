@@ -130,7 +130,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     const unsubscribe = onSnapshot(settingsRef, (doc) => {
       if (doc.exists()) {
         const data = doc.data()
-        
+
         // Migration: Map old settings to new structure
         const migratedSettings = {
           ...defaultSettings,
@@ -144,7 +144,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
           announcementText: data.announcements?.[0] ?? data.announcementText ?? '',
           featuresEnabled: data.featuresEnabled ?? defaultSettings.featuresEnabled
         }
-        
+
         setAppSettings(migratedSettings)
         console.log('✅ Admin settings loaded and migrated:', migratedSettings)
       } else {

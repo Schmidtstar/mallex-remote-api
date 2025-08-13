@@ -22,8 +22,9 @@ const LoadingSpinner = () => (
     display: 'flex', 
     justifyContent: 'center', 
     alignItems: 'center', 
-    height: '100vh',
-    fontSize: '1.2rem'
+    height: '50vh',
+    fontSize: '1rem',
+    color: '#666'
   }}>
     ⚡ Laden...
   </div>

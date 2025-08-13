@@ -34,39 +34,28 @@ export class ErrorBoundary extends Component<Props, State> {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
+          height: '50vh',
+          padding: '2rem',
+          textAlign: 'center'
         }}>
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '16px',
-            padding: '2rem',
-            textAlign: 'center',
-            color: 'white',
-            maxWidth: '400px',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}>
-            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>
-              Oops! Etwas ist schief gelaufen
+          <div>
+            <h2 style={{ margin: '0 0 1rem 0' }}>
+              ⚠️ Fehler aufgetreten
             </h2>
-            <p style={{ margin: '0 0 2rem 0', opacity: 0.8 }}>
-              Ein unerwarteter Fehler ist aufgetreten. Bitte lade die Seite neu.
-            </p>
             <button
               onClick={this.handleReload}
               style={{
-                background: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '8px',
-                padding: '0.75rem 1.5rem',
+                padding: '0.5rem 1rem',
                 cursor: 'pointer',
-                fontSize: '1rem',
-                transition: 'all 0.2s ease'
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                background: '#f5f5f5'
               }}
-              onMouseOver={(e) => {
+            >
+              Seite neu laden
+            </button>
+          </div>
+        </div>
                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'
               }}
               onMouseOut={(e) => {

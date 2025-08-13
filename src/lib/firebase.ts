@@ -13,14 +13,9 @@ const firebaseConfig = {
   // measurementId optional
 };
 
-// Only log in development mode - reduced logging
+// Only log once in development mode
 if (import.meta.env.DEV && !window._firebaseConfigLogged) {
-  console.log('Firebase Config:', {
-    hasApiKey: !!firebaseConfig.apiKey,
-    hasAuthDomain: !!firebaseConfig.authDomain,
-    hasProjectId: !!firebaseConfig.projectId,
-    hasAppId: !!firebaseConfig.appId,
-  });
+  console.log('🔥 Firebase initialized');
   window._firebaseConfigLogged = true;
 }
 

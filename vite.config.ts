@@ -11,17 +11,23 @@ export default defineConfig({
     port: Number(process.env.PORT) || 3000,
     strictPort: false,
     hmr: { 
-      clientPort: 443,
-      timeout: 60000
+      port: 443,
+      timeout: 30000,
+      overlay: false
     },
     allowedHosts: true,
-    cors: true
+    cors: true,
+    ws: {
+      port: 443
+    }
   },
   preview: { 
     host: '0.0.0.0', 
     port: 4173 
   },
   build: {
+    target: 'es2020',
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -31,6 +37,8 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    minify: 'esbuild',
+    cssMinify: true
   }
 })

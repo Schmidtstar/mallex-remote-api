@@ -1,29 +1,42 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
-import { TabLayout } from './layouts/TabLayout'
-import { ArenaScreen } from './features/Arena/ArenaScreen'
-import { LegendsScreen } from './features/Legends/LegendsScreen'
-import { LeaderboardScreen } from './features/Leaderboard/LeaderboardScreen'
-import { MenuScreen } from './features/Menu/MenuScreen'
-import { TasksOverviewScreen } from './features/Tasks/TasksOverviewScreen'
-import { SuggestTaskScreen } from './features/Tasks/SuggestTaskScreen'
-import { AdminTasksScreen } from './features/Tasks/AdminTasksScreen'
-import { AdminSuggestionsScreen } from './features/Admin/AdminSuggestionsScreen'
-import { AdminDashboard } from './features/Admin/AdminDashboard'
-import RequireAdmin from './routes/guards/RequireAdmin'
-
-import { AuthScreen } from './features/Auth/AuthScreen'
-import { ErrorBoundary } from './components/ErrorBoundary'
 import { useAuth } from './context/AuthContext'
+import { ErrorBoundary } from './components/ErrorBoundary'
+
+// Lazy load components für bessere Performance
+const TabLayout = React.lazy(() => import('./layouts/TabLayout').then(m => ({ default: m.TabLayout })))
+const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen').then(m => ({ default: m.ArenaScreen })))
+const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen').then(m => ({ default: m.LegendsScreen })))
+const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(m => ({ default: m.LeaderboardScreen })))
+const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen').then(m => ({ default: m.MenuScreen })))
+const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen').then(m => ({ default: m.TasksOverviewScreen })))
+const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen').then(m => ({ default: m.SuggestTaskScreen })))
+const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen').then(m => ({ default: m.AdminTasksScreen })))
+const AdminSuggestionsScreen = React.lazy(() => import('./features/Admin/AdminSuggestionsScreen').then(m => ({ default: m.AdminSuggestionsScreen })))
+const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })))
+const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin').then(m => ({ default: m.default })))
+const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m => ({ default: m.AuthScreen })))
+
+const LoadingSpinner = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '100vh',
+    fontSize: '1.2rem'
+  }}>
+    ⚡ Laden...
+  </div>
+)
 
 const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
     const { user, loading } = useAuth()
-    if (loading) return <div style={{padding:24}}>Laden…</div>
+    if (loading) return <LoadingSpinner />
     if (!user) return <Navigate to="/auth" replace />
-    return <>{element}</>
+    return <Suspense fallback={<LoadingSpinner />}>{element}</Suspense>
   }
   return <Guard />
 }
@@ -33,7 +46,7 @@ function withAuth(element: React.ReactNode) {
 const routes = [
   {
     path: '/auth',
-    element: <AuthScreen />,
+    element: <Suspense fallback={<LoadingSpinner />}><AuthScreen /></Suspense>,
     errorElement: <ErrorBoundary><div>Fehler beim Laden der Anmeldung</div></ErrorBoundary>
   },
   {

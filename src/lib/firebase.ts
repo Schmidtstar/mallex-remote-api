@@ -13,14 +13,15 @@ const firebaseConfig = {
   // measurementId optional
 };
 
-// Only log in development mode
-if (import.meta.env.DEV) {
+// Only log in development mode - reduced logging
+if (import.meta.env.DEV && !window._firebaseConfigLogged) {
   console.log('Firebase Config:', {
     hasApiKey: !!firebaseConfig.apiKey,
     hasAuthDomain: !!firebaseConfig.authDomain,
     hasProjectId: !!firebaseConfig.projectId,
     hasAppId: !!firebaseConfig.appId,
   });
+  window._firebaseConfigLogged = true;
 }
 
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {
@@ -52,9 +53,11 @@ setPersistence(auth, browserLocalPersistence).catch((e) =>
   console.warn('Auth persistence warning:', e?.message || e)
 );
 
-// Firestore mit Auto-Long-Polling (replit/proxy-freundlich)
+// Firestore mit Auto-Long-Polling (replit/proxy-freundlich) + optimiert
 export const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: true,
+  experimentalForceLongPolling: true,
+  cacheSizeBytes: 40000000, // 40MB Cache für bessere Performance
 });
 
 // keine Default-Exporte → vermeidet Barrel-/Star-Export-Probleme

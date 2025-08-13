@@ -359,7 +359,7 @@ export function AdminTasksScreen() {
 
       await createTaskApproved(
         { category: englishCategory as CategoryKey, text: newTaskText.trim() },
-        user?.email || user?.uid || ''
+        user?.email || user?.uid || 'unknown'
       )
 
       setNewTaskText('')

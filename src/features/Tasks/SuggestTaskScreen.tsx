@@ -1,6 +1,10 @@
 
 import React, { useState } from 'react';
-import { createSuggestion } from '@/deprecated/suggestionsApi';
+// Deprecated API entfernt - placeholder Funktion
+const createSuggestion = async (suggestion: any) => {
+  console.log('Suggestion would be created:', suggestion);
+  // TODO: Implement with Firebase
+};
 import { useAuth } from '@/context/AuthContext';
 import type { CategoryKey } from '@/lib/tasksApi';
 import { useTranslation } from 'react-i18next';

@@ -1,7 +1,12 @@
 
 import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-import { Player } from '@/deprecated/playersApi'
+// Player type lokal definiert da deprecated API entfernt
+interface Player {
+  id: string;
+  name: string;
+  score: number;
+}
 
 type PlayersContextType = {
   players: Player[]

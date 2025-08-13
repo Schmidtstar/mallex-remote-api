@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { listSuggestionsForAdmin, moderateSuggestion, promoteApprovedSuggestionToTask, type Suggestion } from '@/deprecated/suggestionsApi';
+// Deprecated API entfernt - lokale Typen
+interface Suggestion {
+  id: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/context/AdminContext';
 import { useTranslation } from 'react-i18next';

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { collection, doc, onSnapshot, updateDoc, setDoc, getDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -78,7 +77,7 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
     }
 
     const settingsRef = doc(db, 'admin', 'settings')
-    
+
     const unsubscribe = onSnapshot(
       settingsRef,
       (doc) => {
@@ -111,7 +110,7 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
       setLoading(true)
       const settingsRef = doc(db, 'admin', 'settings')
       const updatedSettings = { ...settings, ...newSettings }
-      
+
       await setDoc(settingsRef, updatedSettings, { merge: true })
       setSettings(updatedSettings)
       setError(null)
@@ -168,4 +167,6 @@ function useAdminSettings() {
   return context
 }
 
-export { AdminSettingsProvider, useAdminSettings }
+// Clean exports for Fast Refresh compatibility
+export { useAdminSettings }
+export default AdminSettingsProvider

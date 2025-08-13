@@ -86,7 +86,7 @@ const routes = [
       },
       {
         path: 'postfach',
-        element: withAuth(<TabLayout><PostfachScreen /></TabLayout>),
+        element: <PostfachScreen />,
         errorElement: <ErrorBoundary><div>Fehler im Postfach</div></ErrorBoundary>
       },
       {

@@ -397,7 +397,7 @@
   transform: translate(-50%, -50%);
   width: 300px;
   height: 300px;
-  animation: ringOfDrinks 6s linear infinite; /* Von 4s auf 6s verlangsamt */
+  animation: ringOfDrinks 12s linear infinite; /* Nochmals um die Hälfte verlangsamt */
 }
 
 @keyframes ringOfDrinks {
@@ -408,7 +408,7 @@
 /* Mobile-optimierte langsamere Ring-Animation */
 @media (max-width: 768px) {
   .drinkingRing {
-    animation-duration: 8s; /* Doppelt so langsam auf mobilen Geräten */
+    animation-duration: 16s; /* Sehr ruhig auf mobilen Geräten */
   }
 }
 
@@ -442,7 +442,7 @@
 /* Mobile-optimierte Drink-Animation */
 @media (max-width: 768px) {
   .drinkItem {
-    animation-duration: 2.5s !important; /* Langsamer Bounce auf mobil */
+    animation-duration: 3.5s !important; /* Noch ruhigerer Bounce auf mobil */
   }
 }
 

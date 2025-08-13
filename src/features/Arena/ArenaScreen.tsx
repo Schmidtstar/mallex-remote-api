@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { doc, setDoc, getDoc, increment } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
@@ -227,7 +227,7 @@ export function ArenaScreen() {
 
   // Memoize mobile detection to prevent re-calculations
   const isMobile = useMemo(() => window.innerWidth < 768, [])
-  
+
   const renderGameContent = () => {
 
     switch (gameState) {

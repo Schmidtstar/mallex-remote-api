@@ -21,7 +21,9 @@ export function LeaderboardScreen() {
     
     // Auto-refresh every 10 seconds
     const interval = setInterval(() => {
-      console.log('🔄 Auto-refresh Rangliste...')
+      if (import.meta.env.DEV) {
+        console.log('🔄 Auto-refresh Rangliste...')
+      }
       loadLeaderboard()
     }, 10000)
     
@@ -49,10 +51,14 @@ export function LeaderboardScreen() {
             rank: 0 // Will be set later
           }
           playersData.push(player)
-          console.log('🏆 Spieler geladen:', player.name, 'Punkte:', player.arenaPoints)
+          if (import.meta.env.DEV) {
+            console.log('🏆 Spieler geladen:', player.name, 'Punkte:', player.arenaPoints)
+          }
         })
         
-        console.log('📊 Gesamte Spielerliste aus Firebase:', playersData.length, 'Spieler')
+        if (import.meta.env.DEV) {
+          console.log('📊 Gesamte Spielerliste aus Firebase:', playersData.length, 'Spieler')
+        }
       } catch (firebaseError) {
         console.warn('Firebase nicht verfügbar, lade lokale Legenden:', firebaseError)
       }
@@ -89,7 +95,9 @@ export function LeaderboardScreen() {
         player.rank = index + 1
       })
 
-      console.log('🏁 Finale Rangliste:', playersData.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
+      if (import.meta.env.DEV) {
+        console.log('🏁 Finale Rangliste:', playersData.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
+      }
       setPlayers(playersData)
     } catch (error) {
       console.error('Fehler beim Laden der Rangliste:', error)

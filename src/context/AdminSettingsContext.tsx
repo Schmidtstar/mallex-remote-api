@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db, auth } from '../lib/firebase'
 
+// Define interfaces for settings and user data
 interface AppSettings {
   maintenanceMode: boolean
   allowRegistration: boolean
@@ -44,6 +45,7 @@ interface UserManagement {
   moderators: Set<string>
 }
 
+// Define context type
 interface AdminSettingsContextType {
   appSettings: AppSettings
   userManagement: UserManagement
@@ -64,6 +66,7 @@ interface AdminSettingsContextType {
   getAdminList: () => Promise<any[]>
 }
 
+// Default settings for the app
 const defaultSettings: AppSettings = {
   maintenanceMode: false,
   allowRegistration: true,
@@ -73,8 +76,10 @@ const defaultSettings: AppSettings = {
   announcements: []
 }
 
+// Create the context
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
+// Custom hook to use the context
 function useAdminSettings() {
   const context = useContext(AdminSettingsContext)
   if (!context) {
@@ -83,21 +88,25 @@ function useAdminSettings() {
   return context
 }
 
+// Props for the provider
 interface AdminSettingsProviderProps {
   children: ReactNode
 }
 
+// Export the hook and the provider component
 export { useAdminSettings }
 
 export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ children }) => {
+  // State variables for app settings, user management, loading, and errors
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultSettings)
   const [users, setUsers] = useState<UserStats[]>([])
   const [bannedUsers, setBannedUsers] = useState<Set<string>>(new Set())
   const [moderators, setModerators] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const user = auth.currentUser // Get the current authenticated user
 
-  // Load settings from Firebase
+  // Load settings from Firebase on component mount
   useEffect(() => {
     const settingsRef = doc(db, 'adminSettings', 'app')
 
@@ -110,61 +119,67 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
         console.log('📋 Admin settings not accessible - using defaults')
         setAppSettings(defaultSettings)
       }
-      setLoading(false)
+      setLoading(false) // Set loading to false after settings are loaded or not found
     }, (error) => {
       console.log('📋 Admin settings not accessible - using defaults')
       setAppSettings(defaultSettings)
-      setLoading(false)
+      setLoading(false) // Set loading to false even if there's an error
     })
 
-    return unsubscribe
+    return unsubscribe // Cleanup subscription on unmount
   }, [])
 
-  // Load users from Firebase
+  // Refresh users from Firebase
   const refreshUsers = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const usersRef = collection(db, 'users')
-      const usersQuery = query(usersRef, orderBy('createdAt', 'desc'))
-      const snapshot = await getDocs(usersQuery)
+    if (!user?.uid) {
+      console.warn('⚠️ No authenticated user for refreshUsers')
+      return
+    }
 
-      const usersData: UserStats[] = []
+    setLoading(true)
+    setError(null)
+
+    try {
+      const usersRef = collection(db, 'users')
+      const snapshot = await getDocs(usersRef)
+      const userList: UserStats[] = [] // Use UserStats interface
+      const banned = new Set<string>()
+      const mods = new Set<string>()
+
       snapshot.forEach((doc) => {
-        const data = doc.data()
-        usersData.push({
-          uid: doc.id,
-          email: data.email || 'Unbekannt',
-          displayName: data.displayName || 'Unbekannt',
-          isAdmin: data.isAdmin || false,
-          createdAt: data.createdAt || null,
-          lastActive: data.lastActive || null,
-          totalTasks: data.totalTasks || 0,
-          totalPoints: data.totalPoints || 0,
-          level: data.level || 1,
-          tasksCompleted: data.tasksCompleted || data.totalTasks || 0,
-          rank: data.rank || 999,
-          status: data.status || 'active',
-          roles: data.roles || ['user']
-        })
+        const userData = { uid: doc.id, ...doc.data() } as UserStats // Type assertion
+        userList.push(userData)
+
+        if (userData.status === 'banned') {
+          banned.add(doc.id)
+        }
+        if (userData.roles?.includes('moderator')) {
+          mods.add(doc.id)
+        }
       })
 
-      setUsers(usersData)
-      console.log('✅ Users loaded successfully:', usersData.length)
+      setUsers(userList)
+      setBannedUsers(banned)
+      setModerators(mods)
+      console.log('✅ Users loaded successfully:', userList.length)
     } catch (error: any) {
+      console.error('Failed to refresh users:', error)
       if (error?.code === 'permission-denied') {
-        console.log('📋 User management not accessible - admin permissions required')
-        setUsers([]) // Set empty array instead of error
+        setError('Keine Berechtigung zum Laden der Benutzer. Admin-Rechte erforderlich.')
       } else {
-        console.error('Failed to refresh users:', error)
-        setError('Fehler beim Laden der Benutzer')
+        setError('Fehler beim Laden der Benutzer: ' + (error?.code || error?.message || 'Unbekannter Fehler'))
       }
+
+      // Fallback: leere Arrays setzen statt undefined zu lassen
+      setUsers([])
+      setBannedUsers(new Set())
+      setModerators(new Set())
     } finally {
       setLoading(false)
     }
   }
 
-  // Update settings
+  // Update app settings
   const updateAppSettings = async (newSettings: Partial<AppSettings>) => {
     try {
       const settingsRef = doc(db, 'adminSettings', 'app')
@@ -176,7 +191,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Send system notification
+  // Send system notification to users
   const sendSystemNotification = async (userId: string, message: string) => {
     try {
       const notification = {
@@ -206,28 +221,28 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
       console.log('✅ System notification sent:', { userId, message })
     } catch (error) {
       console.error('Failed to send notification:', error)
-      throw error
+      throw error // Re-throw to allow caller to handle
     }
   }
 
-  // Delete user
+  // Delete a user
   const deleteUser = async (userId: string) => {
     try {
       await deleteDoc(doc(db, 'users', userId))
       console.log('✅ User deleted:', userId)
-      refreshUsers()
+      refreshUsers() // Refresh user list after deletion
     } catch (error) {
       console.error('Failed to delete user:', error)
       setError('Fehler beim Löschen des Benutzers')
     }
   }
 
-  // Ban user
+  // Ban a user
   const banUser = async (userId: string, reason: string = 'Admin action') => {
     try {
       const userRef = doc(db, 'users', userId)
       await updateDoc(userRef, { status: 'banned', banReason: reason })
-      setBannedUsers(prev => new Set([...prev, userId]))
+      setBannedUsers(prev => new Set([...prev, userId])) // Update local state
       console.log('✅ User banned:', { userId, reason })
     } catch (error) {
       console.error('Failed to ban user:', error)
@@ -235,7 +250,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Unban user
+  // Unban a user
   const unbanUser = async (userId: string) => {
     try {
       const userRef = doc(db, 'users', userId)
@@ -244,7 +259,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
         const newSet = new Set(prev)
         newSet.delete(userId)
         return newSet
-      })
+      }) // Update local state
       console.log('✅ User unbanned:', userId)
     } catch (error) {
       console.error('Failed to unban user:', error)
@@ -252,7 +267,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Suspend user
+  // Suspend a user
   const suspendUser = async (userId: string, reason: string = 'Admin action') => {
     try {
       const userRef = doc(db, 'users', userId)
@@ -264,12 +279,13 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Promote to moderator
+  // Promote a user to moderator
   const promoteToModerator = async (userId: string) => {
     try {
       const userRef = doc(db, 'users', userId)
+      // Assuming roles is an array and we add 'moderator' to it
       await updateDoc(userRef, { roles: ['user', 'moderator'] })
-      setModerators(prev => new Set([...prev, userId]))
+      setModerators(prev => new Set([...prev, userId])) // Update local state
       console.log('✅ User promoted to moderator:', userId)
     } catch (error) {
       console.error('Failed to promote to moderator:', error)
@@ -277,16 +293,17 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Demote from moderator
+  // Demote a user from moderator
   const demoteFromModerator = async (userId: string) => {
     try {
       const userRef = doc(db, 'users', userId)
+      // Assuming roles is an array and we remove 'moderator' from it
       await updateDoc(userRef, { roles: ['user'] })
       setModerators(prev => {
         const newSet = new Set(prev)
         newSet.delete(userId)
         return newSet
-      })
+      }) // Update local state
       console.log('✅ User demoted from moderator:', userId)
     } catch (error) {
       console.error('Failed to demote from moderator:', error)
@@ -294,14 +311,14 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Promote to admin
+  // Promote a user to admin (by email)
   const promoteToAdmin = async (userEmail: string) => {
     try {
-      // Find user by email
+      // Find user by email in the 'users' collection
       const usersRef = collection(db, 'users')
       const q = query(usersRef)
       const snapshot = await getDocs(q)
-      
+
       let targetUserId = null
       snapshot.forEach((doc) => {
         if (doc.data().email === userEmail) {
@@ -310,6 +327,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
       })
 
       if (targetUserId) {
+        // Create an entry in the 'admins' collection for the user
         const adminRef = doc(db, 'admins', targetUserId)
         await setDoc(adminRef, {
           email: userEmail,
@@ -326,9 +344,10 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Revoke admin
+  // Revoke admin privileges
   const revokeAdmin = async (userIdOrEmail: string) => {
     try {
+      // Assumes the doc ID in 'admins' collection is the user ID
       await deleteDoc(doc(db, 'admins', userIdOrEmail))
       console.log('✅ Admin privileges revoked:', userIdOrEmail)
     } catch (error) {
@@ -337,7 +356,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     }
   }
 
-  // Get admin list
+  // Get the list of admins
   const getAdminList = async () => {
     try {
       const adminsRef = collection(db, 'admins')
@@ -349,34 +368,36 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
       return adminList
     } catch (error) {
       console.error('Failed to get admin list:', error)
-      return []
+      return [] // Return empty array on error
     }
   }
 
-  // Toggle user admin status
+  // Toggle user's admin status directly in the 'users' collection
   const toggleUserAdmin = async (userId: string, isAdmin: boolean) => {
     try {
       const userRef = doc(db, 'users', userId)
       await updateDoc(userRef, { isAdmin })
       console.log('✅ User admin status updated:', { userId, isAdmin })
-      refreshUsers()
+      refreshUsers() // Refresh user list to reflect changes
     } catch (error) {
       console.error('Failed to update user admin status:', error)
       setError('Fehler beim Aktualisieren des Admin-Status')
     }
   }
 
-  // Load users on mount
+  // Load users on component mount
   useEffect(() => {
     refreshUsers()
-  }, [])
+  }, []) // Empty dependency array means this runs once on mount
 
+  // Aggregate user data into the UserManagement interface
   const userManagement: UserManagement = {
     users: users || [],
     bannedUsers: bannedUsers || new Set(),
     moderators: moderators || new Set()
   }
 
+  // Combine all context values
   const value: AdminSettingsContextType = {
     appSettings,
     userManagement,
@@ -397,6 +418,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     getAdminList
   }
 
+  // Provide the context value to children
   return (
     <AdminSettingsContext.Provider value={value}>
       {children}

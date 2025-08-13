@@ -37,6 +37,19 @@ export function AdminDashboard() {
   const [adminList, setAdminList] = useState<any[]>([])
   const [newAdminEmail, setNewAdminEmail] = useState('')
 
+  if (loading) {
+    return (
+      <div className={styles.dashboard}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>🔧 Admin Dashboard</h1>
+          <div className={styles.adminInfo}>
+            🔄 Lädt Admin-Daten...
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!isAdmin) {
     return <Navigate to="/arena" replace />
   }
@@ -152,6 +165,18 @@ export function AdminDashboard() {
           </button>
         ))}
       </div>
+
+      {userManagement?.error && (
+        <div className={styles.errorBanner}>
+          ⚠️ {userManagement.error}
+          <button 
+            onClick={() => refreshUsers()}
+            className={styles.retryButton}
+          >
+            🔄 Erneut versuchen
+          </button>
+        </div>
+      )}
 
       <div className={styles.content}>
         {activeTab === 'overview' && (

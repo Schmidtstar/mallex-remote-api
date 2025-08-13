@@ -405,10 +405,17 @@
   100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Mobile-optimierte langsamere Ring-Animation */
+/* Mobile-optimierte SEHR langsamere Ring-Animation */
 @media (max-width: 768px) {
   .drinkingRing {
-    animation-duration: 16s; /* Sehr ruhig auf mobilen Geräten */
+    animation-duration: 25s !important; /* EXTREM langsam auf Mobile */
+    width: 220px;
+    height: 220px;
+  }
+  
+  /* Mobile Drink Items kleiner positionieren */
+  .drinkItem[style*="translateX(120px)"] {
+    font-size: 1.8rem !important;
   }
 }
 

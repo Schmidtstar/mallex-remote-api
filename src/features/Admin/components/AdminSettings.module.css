@@ -1,0 +1,146 @@
+
+.settings {
+  padding: 1rem;
+  min-height: 100%;
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.settingGroup {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--ancient-bronze);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.settingGroup h3 {
+  margin: 0 0 1rem 0;
+  color: var(--ancient-gold);
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--ancient-bronze);
+  padding-bottom: 0.5rem;
+}
+
+.settingItem {
+  margin-bottom: 1rem;
+}
+
+.settingLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ancient-marble);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.settingLabel:has(input[type="number"]),
+.settingLabel:has(select),
+.settingLabel:has(textarea) {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.checkboxLabel {
+  user-select: none;
+}
+
+.checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--ancient-bronze);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.checkbox:checked {
+  background: var(--ancient-gold);
+  border-color: var(--ancient-gold);
+}
+
+.checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.numberInput,
+.selectInput,
+.textareaInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--ancient-bronze);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--ancient-marble);
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.numberInput {
+  max-width: 120px;
+}
+
+.textareaInput {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.settingDescription {
+  font-size: 0.8rem;
+  color: rgba(218, 165, 32, 0.7);
+  margin-top: 0.25rem;
+  margin-left: 1.5rem;
+}
+
+.savingIndicator {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: rgba(218, 165, 32, 0.9);
+  color: black;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .settingLabel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .checkbox {
+    align-self: flex-start;
+  }
+}

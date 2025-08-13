@@ -1,42 +1,49 @@
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'node:path'
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
-  server: {
-    host: '0.0.0.0',
-    port: 3000,
-    strictPort: true,
-    allowedHosts: ['all'],
-    hmr: { 
-      timeout: 10000,
-      overlay: false
+export default defineConfig(({ mode }) => {
+  console.log('[vite] 🚀 Config loaded – mode:', mode)
+  
+  return {
+    plugins: [react()],
+    server: {
+      host: true,              // Allow external hosts
+      port: 3000,              // Your current port
+      strictPort: false,       // Auto-increment if port busy
+      allowedHosts: [
+        '.replit.dev',         // Wildcard for all Replit subdomains
+        '.riker.replit.dev',   // Specific Replit infrastructure
+        'localhost'            // Local development
+      ],
+      hmr: {
+        protocol: 'wss',       // WebSocket Secure for HTTPS
+        clientPort: 443        // Standard HTTPS port
+      }
     },
-    watch: {
-      usePolling: true,
-      interval: 1000
-    }
-  },
-  preview: { 
-    host: '0.0.0.0', 
-    port: 3000 
-  },
-  build: {
-    target: 'es2020',
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          i18n: ['i18next', 'react-i18next']
+    preview: {
+      host: true,
+      port: 3000,
+      allowedHosts: [
+        '.replit.dev',
+        '.riker.replit.dev'
+      ]
+    },
+    build: {
+      outDir: 'dist',
+      sourcemap: mode === 'development',
+      minify: mode === 'production' ? 'esbuild' : false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
+          }
         }
       }
     },
-    chunkSizeWarningLimit: 1000,
-    minify: 'esbuild',
-    cssMinify: true
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore']
+    }
   }
 })

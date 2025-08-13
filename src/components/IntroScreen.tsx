@@ -79,6 +79,18 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
         
         {/* OLYMPISCHE TRINKSPIELE */}
         <div className={`${styles.olympicDrinkingGames} ${stage >= 3 ? styles.explosion : ''}`}>
+          {/* NEUES BIERGLAS MIT GIESSPIEL */}
+          <div className={styles.beerPouringScene}>
+            <div className={styles.tiltingBeerGlass}>🍺</div>
+            <div className={styles.pouringBeer}></div>
+            <div className={styles.cheeringPlayers}>
+              <div className={styles.cheeringPlayer}>🙋‍♂️</div>
+              <div className={styles.cheeringPlayer}>🙋‍♀️</div>
+              <div className={styles.cheeringPlayer}>🙋‍♂️</div>
+              <div className={styles.cheeringPlayer}>🙋‍♀️</div>
+            </div>
+          </div>
+          
           {/* Bier und Wein Animation rings um den Text */}
           <div className={styles.drinkingRing}>
             <div className={styles.drinkItem} style={{transform: 'rotate(0deg) translateX(110px)'}}>🍺</div>

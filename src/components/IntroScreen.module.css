@@ -376,6 +376,140 @@
   }
 }
 
+/* NEUES BIERGLAS MIT KIPP-ANIMATION */
+.beerPouringScene {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 300px;
+  z-index: 20;
+}
+
+.tiltingBeerGlass {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 4rem;
+  animation: tiltAndPour 6s ease-in-out infinite;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes tiltAndPour {
+  0%, 30% { 
+    transform: translateX(-50%) rotate(0deg);
+  }
+  50%, 70% { 
+    transform: translateX(-50%) rotate(-45deg);
+  }
+  100% { 
+    transform: translateX(-50%) rotate(0deg);
+  }
+}
+
+.pouringBeer {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 200px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 193, 7, 0.9) 0%,
+    rgba(255, 235, 59, 0.8) 30%,
+    rgba(255, 255, 255, 0.6) 70%,
+    transparent 100%
+  );
+  border-radius: 15px;
+  opacity: 0;
+  animation: beerFlow 6s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+}
+
+@keyframes beerFlow {
+  0%, 30%, 100% { 
+    opacity: 0;
+    height: 0;
+  }
+  35% {
+    opacity: 1;
+    height: 50px;
+  }
+  50%, 70% { 
+    opacity: 1;
+    height: 200px;
+  }
+  75% {
+    opacity: 0.7;
+    height: 150px;
+  }
+}
+
+.cheeringPlayers {
+  position: absolute;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.cheeringPlayer {
+  font-size: 2.5rem;
+  animation: playerCheer 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+}
+
+.cheeringPlayer:nth-child(1) { 
+  animation-delay: 0s;
+  animation-name: playerCheerLeft;
+}
+.cheeringPlayer:nth-child(2) { 
+  animation-delay: 0.3s;
+  animation-name: playerCheerCenter;
+}
+.cheeringPlayer:nth-child(3) { 
+  animation-delay: 0.6s;
+  animation-name: playerCheerRight;
+}
+.cheeringPlayer:nth-child(4) { 
+  animation-delay: 0.9s;
+  animation-name: playerCheerLeft;
+}
+
+@keyframes playerCheerLeft {
+  0%, 100% { 
+    transform: translateY(0) rotate(-10deg) scale(1);
+  }
+  50% { 
+    transform: translateY(-20px) rotate(-15deg) scale(1.1);
+  }
+}
+
+@keyframes playerCheerCenter {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% { 
+    transform: translateY(-30px) rotate(5deg) scale(1.2);
+  }
+}
+
+@keyframes playerCheerRight {
+  0%, 100% { 
+    transform: translateY(0) rotate(10deg) scale(1);
+  }
+  50% { 
+    transform: translateY(-25px) rotate(15deg) scale(1.1);
+  }
+}
+
 .drinkingRing {
   position: absolute;
   top: 50%;
@@ -383,7 +517,7 @@
   transform: translate(-50%, -50%);
   width: 300px;
   height: 300px;
-  animation: ringOfDrinks 12s linear infinite; /* Nochmals um die Hälfte verlangsamt */
+  animation: ringOfDrinks 12s linear infinite;
 }
 
 @keyframes ringOfDrinks {
@@ -393,13 +527,32 @@
 
 @media (max-width: 768px) {
   .drinkingRing {
-    animation-duration: 25s !important; /* EXTREM langsam auf Mobile */
+    animation-duration: 25s !important;
     width: 220px;
     height: 220px;
   }
   
   .drinkItem[style*="translateX(120px)"] {
     font-size: 1.8rem !important;
+  }
+  
+  .beerPouringScene {
+    width: 300px;
+    height: 250px;
+    top: -25%;
+  }
+  
+  .tiltingBeerGlass {
+    font-size: 3rem;
+  }
+  
+  .cheeringPlayers {
+    gap: 1rem;
+    bottom: -80px;
+  }
+  
+  .cheeringPlayer {
+    font-size: 2rem;
   }
 }
 
@@ -430,7 +583,7 @@
 
 @media (max-width: 768px) {
   .drinkItem {
-    animation-duration: 3.5s !important; /* Noch ruhigerer Bounce auf mobil */
+    animation-duration: 3.5s !important;
   }
 }
 

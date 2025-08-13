@@ -1,20 +1,46 @@
-import { useRef } from 'react'
 
-type Opts = { threshold?: number, onSwipeLeft?: ()=>void, onSwipeRight?: ()=>void, stopPropagation?: boolean }
-export function useSwipe<T extends HTMLElement>({ threshold = 48, onSwipeLeft, onSwipeRight, stopPropagation = false }: Opts) {
-  const startX = useRef<number | null>(null)
+import { useCallback, useEffect } from 'react'
 
-  function onTouchStart(e: React.TouchEvent<T>) {
-    if (stopPropagation) e.stopPropagation()
-    startX.current = e.touches[0].clientX
-  }
-  function onTouchEnd(e: React.TouchEvent<T>) {
-    if (stopPropagation) e.stopPropagation()
-    if (startX.current == null) return
-    const dx = e.changedTouches[0].clientX - startX.current
-    if (dx <= -threshold) onSwipeLeft?.()
-    else if (dx >= threshold) onSwipeRight?.()
-    startX.current = null
-  }
-  return { onTouchStart, onTouchEnd }
+interface SwipeConfig {
+  onSwipeLeft?: () => void
+  onSwipeRight?: () => void
+  minSwipeDistance?: number
+}
+
+export const useSwipe = ({ onSwipeLeft, onSwipeRight, minSwipeDistance = 50 }: SwipeConfig) => {
+  let touchStartX = 0
+  let touchEndX = 0
+
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    touchStartX = e.changedTouches[0].screenX
+  }, [])
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    touchEndX = e.changedTouches[0].screenX
+    handleSwipe()
+  }, [onSwipeLeft, onSwipeRight, minSwipeDistance])
+
+  const handleSwipe = useCallback(() => {
+    const swipeDistance = touchEndX - touchStartX
+    
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0 && onSwipeRight) {
+        onSwipeRight()
+      } else if (swipeDistance < 0 && onSwipeLeft) {
+        onSwipeLeft()
+      }
+    }
+  }, [onSwipeLeft, onSwipeRight, minSwipeDistance, touchStartX, touchEndX])
+
+  const bindSwipe = useCallback(() => {
+    document.addEventListener('touchstart', handleTouchStart)
+    document.addEventListener('touchend', handleTouchEnd)
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [handleTouchStart, handleTouchEnd])
+
+  return { bindSwipe }
 }

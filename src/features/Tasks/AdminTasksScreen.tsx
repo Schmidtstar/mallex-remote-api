@@ -474,43 +474,25 @@ export function AdminTasksScreen() {
             className={`${styles.tab} ${activeTab === 'pending' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('pending')}
           >
-            {t('adminTasks.pending')} ({items.filter(item => item.status === 'pending').length})
+            📋 Zu moderieren ({items.filter(item => item.status === 'pending').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'approved' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('approved')}
           >
-            {t('adminTasks.approved')} ({items.filter(item => item.status === 'approved').length})
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'rejected' ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab('rejected')}
-          >
-            {t('adminTasks.rejected')} ({items.filter(item => item.status === 'rejected').length})
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'direct' ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab('direct')}
-          >
-            Direkte Tasks ({directTasks.length})
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'static' ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab('static')}
-          >
-            Statische Tasks ({getStaticTasks().length - hiddenStaticTasks.size}/{getStaticTasks().length})
+            ✅ Alle Tasks ({items.filter(item => item.status === 'approved').length + directTasks.length + (getStaticTasks().length - hiddenStaticTasks.size)})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'create' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('create')}
           >
-            {t('tasks.create.title')}
+            ➕ Neue Task erstellen
           </button>
         </div>
       </div>
 
       <div className={styles.content}>
-        {(activeTab === 'pending' || activeTab === 'approved' || activeTab === 'rejected') && (
+        {activeTab === 'pending' && (
           <>
             {loading ? (
               <div className={styles.loading}>
@@ -634,6 +616,92 @@ export function AdminTasksScreen() {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'approved' && (
+          <div className={styles.unifiedTasksList}>
+            <div className={styles.sectionHeader}>
+              <h3>📝 Vorgeschlagene Tasks ({items.filter(item => item.status === 'approved').length})</h3>
+            </div>
+            {items.filter(item => item.status === 'approved').map(item => (
+              <div key={item.id} className={styles.item}>
+                <div className={styles.itemHeader}>
+                  <span className={styles.category}>{getCategoryLabel(item.categoryId)}</span>
+                  <div className={styles.quickActions}>
+                    <button onClick={() => toggleHide(item.id)} className={item.hidden ? styles.showButton : styles.hideButton}>
+                      {item.hidden ? '👁️' : '🙈'}
+                    </button>
+                    <button onClick={() => handleEdit(item)} className={styles.editButton}>✏️</button>
+                    <button onClick={() => remove(item.id)} className={styles.deleteButton}>🗑️</button>
+                  </div>
+                </div>
+                <div className={styles.itemContent}>
+                  {editingId === item.id ? (
+                    <div className={styles.editForm}>
+                      <textarea value={editText} onChange={(e) => setEditText(e.target.value)} className={styles.editTextarea} rows={2} />
+                      <div className={styles.editActions}>
+                        <button onClick={() => handleSaveEdit(item.id)} className={styles.saveButton}>💾</button>
+                        <button onClick={() => setEditingId(null)} className={styles.cancelButton}>❌</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className={styles.text} style={{ opacity: item.hidden ? 0.5 : 1, textDecoration: item.hidden ? 'line-through' : 'none' }}>
+                      {item.text}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            <div className={styles.sectionHeader}>
+              <h3>🎯 Direkte Tasks ({directTasks.length})</h3>
+            </div>
+            {directTasks.map((task) => (
+              <div key={task.id} className={styles.item}>
+                <div className={styles.itemHeader}>
+                  <span className={styles.category}>{getCategoryLabel(task.category)}</span>
+                  <div className={styles.quickActions}>
+                    <button onClick={() => handleEditDirectTask(task)} className={styles.editButton}>✏️</button>
+                    <button onClick={() => handleDeleteTask(task.id!)} className={styles.deleteButton}>🗑️</button>
+                  </div>
+                </div>
+                <div className={styles.itemContent}>
+                  {editingDirectId === task.id ? (
+                    <div className={styles.editForm}>
+                      <textarea value={editDirectText} onChange={(e) => setEditDirectText(e.target.value)} className={styles.editTextarea} rows={2} />
+                      <div className={styles.editActions}>
+                        <button onClick={() => handleSaveDirectEdit(task.id!)} className={styles.saveButton}>💾</button>
+                        <button onClick={handleCancelDirectEdit} className={styles.cancelButton}>❌</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className={styles.text}>{task.text}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            <div className={styles.sectionHeader}>
+              <h3>🏛️ Statische Tasks ({getStaticTasks().length - hiddenStaticTasks.size}/{getStaticTasks().length})</h3>
+            </div>
+            {getStaticTasks().map((task) => (
+              <div key={task.key} className={styles.item}>
+                <div className={styles.itemHeader}>
+                  <span className={styles.category}>{task.category}</span>
+                  <div className={styles.quickActions}>
+                    <button onClick={() => toggleHideStaticTask(task.key)} className={hiddenStaticTasks.has(task.key) ? styles.showButton : styles.hideButton}>
+                      {hiddenStaticTasks.has(task.key) ? '👁️' : '🙈'}
+                    </button>
+                  </div>
+                </div>
+                <div className={styles.itemContent}>
+                  <p className={styles.text} style={{ opacity: hiddenStaticTasks.has(task.key) ? 0.5 : 1, textDecoration: hiddenStaticTasks.has(task.key) ? 'line-through' : 'none' }}>
+                    {task.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {activeTab === 'direct' && (

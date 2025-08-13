@@ -167,6 +167,5 @@ function useAdminSettings() {
   return context
 }
 
-// Clean exports for Fast Refresh compatibility
-export { useAdminSettings }
 export default AdminSettingsProvider
+export { useAdminSettings }

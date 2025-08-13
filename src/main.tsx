@@ -55,5 +55,3 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
 }
-
-// No export needed - App component is used directly

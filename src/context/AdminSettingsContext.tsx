@@ -78,7 +78,7 @@ const defaultAppSettings: AppSettings = {
 
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
-export function useAdminSettings() {
+export const useAdminSettings = () => {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')
@@ -109,16 +109,32 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
   const loadAdminData = async () => {
     setLoading(true)
     try {
-      // Load app settings
-      const settingsDoc = await getDoc(doc(db, 'adminSettings', 'appConfig'))
-      if (settingsDoc.exists()) {
-        setAppSettings({ ...defaultAppSettings, ...settingsDoc.data() })
+      // Load app settings with error handling
+      try {
+        const settingsDoc = await getDoc(doc(db, 'adminSettings', 'appConfig'))
+        if (settingsDoc.exists()) {
+          setAppSettings({ ...defaultAppSettings, ...settingsDoc.data() })
+        }
+      } catch (settingsError: any) {
+        if (settingsError?.code === 'permission-denied') {
+          console.log('📋 Admin settings not accessible - using defaults')
+        } else {
+          console.warn('Settings load error:', settingsError?.code)
+        }
       }
 
-      // Load users
-      await refreshUsers()
+      // Load users with error handling
+      try {
+        await refreshUsers()
+      } catch (usersError: any) {
+        if (usersError?.code === 'permission-denied') {
+          console.log('👥 User management not accessible')
+        } else {
+          console.warn('Users load error:', usersError?.code)
+        }
+      }
     } catch (error) {
-      console.error('Failed to load admin data:', error)
+      console.error('Unexpected admin data load error:', error)
     } finally {
       setLoading(false)
     }

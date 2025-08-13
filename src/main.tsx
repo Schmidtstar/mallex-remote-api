@@ -35,10 +35,5 @@ const App = () => {
 }
 
 const rootElement = document.getElementById('root')!
-if (!rootElement.hasAttribute('data-reactroot')) {
-  createRoot(rootElement).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  )
-}
+const root = createRoot(rootElement)
+root.render(<App />)

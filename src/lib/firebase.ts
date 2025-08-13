@@ -50,8 +50,7 @@ setPersistence(auth, browserLocalPersistence).catch((e) =>
 
 // Firestore mit Auto-Long-Polling (replit/proxy-freundlich) + optimiert
 export const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true,
-  experimentalForceLongPolling: true,
+  experimentalAutoDetectLongPolling: true, // Automatische Erkennung für Replit
   cacheSizeBytes: 40000000, // 40MB Cache für bessere Performance
 });
 

@@ -1,6 +1,8 @@
 @import './tokens.css';
 @import './base.css';
 @import './mobile.css';
+@import './design-system.css';
+@import './color-utilities.css';
 
 /* MALLEX - Olympische Trinkspiele Hauptlayout */
 .app-shell {

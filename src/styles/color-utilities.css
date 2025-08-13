@@ -1,0 +1,99 @@
+
+/* MALLEX Color Utilities - Einheitliche Farbverwendung */
+
+/* Text Colors */
+.text-gold { color: var(--ancient-gold); }
+.text-bronze { color: var(--ancient-bronze); }
+.text-marble { color: var(--ancient-marble); }
+.text-wine { color: var(--ancient-wine); }
+.text-victory { 
+  background: var(--gradient-victory);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+.text-danger { color: var(--color-danger); }
+.text-success { color: var(--olympic-laurel); }
+
+/* Background Colors */
+.bg-gold { background: var(--ancient-gold); }
+.bg-bronze { background: var(--ancient-bronze); }
+.bg-marble { background: var(--ancient-marble); }
+.bg-glass { 
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+}
+.bg-gradient-gold { background: var(--gradient-gold); }
+.bg-gradient-marble { background: var(--gradient-marble); }
+.bg-gradient-victory { background: var(--gradient-victory); }
+
+/* Border Colors */
+.border-gold { border-color: var(--ancient-gold); }
+.border-bronze { border-color: var(--ancient-bronze); }
+.border-glass { border-color: var(--glass-border); }
+.border-danger { border-color: var(--color-danger); }
+.border-success { border-color: var(--olympic-laurel); }
+
+/* Interactive States */
+.hover-gold:hover { 
+  background: rgba(218, 165, 32, 0.1);
+  transition: background var(--transition-normal) ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  transition: transform var(--transition-normal) ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
+  transition: box-shadow var(--transition-normal) ease;
+}
+
+/* Focus States */
+.focus-gold:focus {
+  outline: 2px solid var(--ancient-gold);
+  outline-offset: 2px;
+}
+
+/* Status Colors */
+.status-online { color: var(--olympic-laurel); }
+.status-offline { color: var(--color-text-muted); }
+.status-warning { color: var(--olympic-flame); }
+.status-error { color: var(--color-danger); }
+
+/* Semantic Colors für spezielle UI-Elemente */
+.admin-color { color: var(--color-admin); }
+.admin-bg { background: var(--color-admin); }
+.admin-border { border-color: var(--color-admin); }
+
+/* Olympic Colors für besondere Momente */
+.olympic-flame { color: var(--olympic-flame); }
+.olympic-laurel { color: var(--olympic-laurel); }
+.olympic-sky { color: var(--olympic-sky); }
+.olympic-victory { color: var(--olympic-victory); }
+
+/* Konsistente Schatten */
+.shadow-marble { box-shadow: var(--shadow-marble); }
+.shadow-gold { box-shadow: var(--shadow-gold); }
+.shadow-bronze { box-shadow: var(--shadow-bronze); }
+
+/* Glassmorphism Varianten */
+.glass-light {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(218, 165, 32, 0.2);
+}
+
+.glass-medium {
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-heavy {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(218, 165, 32, 0.4);
+}

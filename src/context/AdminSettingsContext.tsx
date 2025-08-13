@@ -311,9 +311,23 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
 
     try {
       const notification = {
+        userId,
         message,
         timestamp: serverTimestamp(),
         type: 'system',
+        read: false,
+        fromAdmin: auth.currentUser?.email || 'Admin'
+      }
+
+      // Add notification to Firebase
+      await addDoc(collection(db, 'notifications'), notification)
+      
+      console.log('✅ System notification sent:', { userId, message })
+    } catch (error) {
+      console.error('Failed to send notification:', error)
+      throw error
+    }
+  }
         read: false
       }
 

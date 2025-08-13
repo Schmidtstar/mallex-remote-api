@@ -1,10 +1,10 @@
-
 import { useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useIsAdmin } from '../context/AdminContext'
 import { menuItems } from '../config/menuItems'
+import { NotificationCenter } from './NotificationCenter'
 import { trapFocus } from '../lib/a11y'
 import styles from './HamburgerMenu.module.css'
 
@@ -108,13 +108,16 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
         tabIndex={-1}
       >
         <div className={styles.header}>
-          <button
-            className={styles.closeBtn}
-            onClick={onClose}
-            aria-label={t('menu.close')}
-          >
-            ×
-          </button>
+          <div className={styles.headerContent}>
+            <NotificationCenter />
+            <button
+              className={styles.closeBtn}
+              onClick={onClose}
+              aria-label={t('menu.close')}
+            >
+              ×
+            </button>
+          </div>
         </div>
 
         <nav className={styles.nav} role="navigation">

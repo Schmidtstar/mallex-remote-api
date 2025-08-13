@@ -27,8 +27,24 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
   console.error('Firebase config is incomplete! Check your environment variables.');
 }
 
-// HMR-sichere Initialisierung
-export const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// Validate configuration in production
+if (import.meta.env.PROD) {
+  const requiredVars = [
+    'VITE_FIREBASE_API_KEY',
+    'VITE_FIREBASE_AUTH_DOMAIN',
+    'VITE_FIREBASE_PROJECT_ID',
+    'VITE_FIREBASE_APP_ID'
+  ]
+
+  for (const varName of requiredVars) {
+    if (!import.meta.env[varName]) {
+      throw new Error(`Missing required environment variable: ${varName}`)
+    }
+  }
+}
+
+// Initialize Firebase
+const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 // Auth + persistente Sitzung
 export const auth = getAuth(app);

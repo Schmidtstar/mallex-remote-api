@@ -137,8 +137,8 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
           registrationEnabled: data.allowRegistration ?? data.registrationEnabled ?? true,
           guestAccessEnabled: data.guestAccessEnabled ?? true,
           maxTasksPerUser: data.maxUsers ?? data.maxTasksPerUser ?? 50,
-          taskCooldownMinutes: data.dailyTaskLimit ? Math.floor(24 * 60 / data.dailyTaskLimit) : data.taskCooldownMinutes ?? 5,
-          announcementActive: (data.announcements?.length > 0) ?? data.announcementActive ?? false,
+          taskCooldownMinutes: data.dailyTaskLimit ? Math.floor(24 * 60 / data.dailyTaskLimit) : (data.taskCooldownMinutes ?? 5),
+          announcementActive: (data.announcements?.length ?? 0) > 0 ? true : (data.announcementActive ?? false),
           announcementText: data.announcements?.[0] ?? data.announcementText ?? '',
           featuresEnabled: data.featuresEnabled ?? defaultSettings.featuresEnabled
         }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { listSuggestionsForAdmin, moderateSuggestion, promoteApprovedSuggestionToTask, type Suggestion } from '@/deprecated/suggestionsApi';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/context/AdminContext';

@@ -1,7 +1,7 @@
 import { db } from '@/lib/firebase';
 import { col } from '@/lib/paths';
 import {
-  addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where,
+  addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where,
 } from 'firebase/firestore';
 
 export type TaskStatus = 'approved' | 'pending' | 'rejected';

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { getUserProfile, updateUserProfile } from '../../lib/userApi';
-import { isValidDate } from '../../utils/dateUtils';
 import { calcAgeFromISO } from '../../lib/date';
 import { nationalityOptions } from '../../lib/options';
 import styles from './MenuScreen.module.css';

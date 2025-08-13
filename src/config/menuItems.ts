@@ -1,5 +1,4 @@
-import { useTranslation } from 'react-i18next'
-import { useAuth } from '../context/AuthContext'
+// Configuration file - no React hooks needed here
 import type { ReactNode } from 'react'
 
 export type MenuItem = {

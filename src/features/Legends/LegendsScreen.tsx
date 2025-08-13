@@ -7,7 +7,7 @@ import styles from './LegendsScreen.module.css'
 export function LegendsScreen() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const { players, addPlayer, removePlayer, mode, loading } = usePlayersContext()
+  const { players, addPlayer, removePlayer, loading } = usePlayersContext()
   const [newPlayerName, setNewPlayerName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 

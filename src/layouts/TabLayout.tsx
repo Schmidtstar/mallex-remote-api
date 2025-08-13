@@ -4,7 +4,7 @@ import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useTranslation } from 'react-i18next'
 import { HamburgerMenu } from '../components/HamburgerMenu'
-import styles from './TabLayout.module.css'
+// CSS modules not used in this component
 
 export function TabLayout() {
   const location = useLocation()

@@ -2,9 +2,9 @@
 import { db } from '@/lib/firebase';
 import { col } from '@/lib/paths';
 import {
-  addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where,
+  addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where,
 } from 'firebase/firestore';
-import type { CategoryKey, Task } from './tasksApi';
+import type { CategoryKey } from '../lib/tasksApi';
 
 export type SuggestionStatus = 'pending' | 'approved' | 'rejected';
 

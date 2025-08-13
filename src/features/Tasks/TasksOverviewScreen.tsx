@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { categories } from '../Arena/categories';
 import { listApprovedTasks, type Task, type CategoryKey } from '@/lib/tasksApi';
@@ -7,7 +7,7 @@ import styles from './TasksOverviewScreen.module.css';
 
 export function TasksOverviewScreen() {
   const { t } = useTranslation();
-  const [items, setItems] = useState<Task[]>([]);
+  // Items state removed - using tasks from API directly
   const [filteredItems, setFilteredItems] = useState<Task[]>([]);
   const [category, setCategory] = useState<CategoryKey | undefined>(undefined);
   const [loading, setLoading] = useState(false);

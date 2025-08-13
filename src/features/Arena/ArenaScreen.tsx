@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { doc, setDoc, getDoc, increment } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
@@ -6,7 +6,7 @@ import { categories } from './categories'
 import { challenges } from './challenges'
 import { listApprovedTasks } from '../../lib/tasksApi'
 import { usePlayersContext } from '../../context/PlayersContext'
-import { useSwipe } from '../../hooks/useSwipe'
+// Swipe functionality handled internally
 import styles from '../../layouts/TabLayout.module.css'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
@@ -27,7 +27,7 @@ export function ArenaScreen() {
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinningCategory, setSpinningCategory] = useState<string>('')
-  const [spinCounter, setSpinCounter] = useState(0)
+  // Spin counter removed - using taskCounter instead
 
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)

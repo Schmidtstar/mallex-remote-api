@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [admin, setAdmin] = useState(false);
+  // Admin state removed - handled in useAdmin hook
 
   useEffect(() => {
     // Teste Firebase-Verfügbarkeit mit Timeout

@@ -27,19 +27,7 @@ function withAuth(element: React.ReactNode) {
   return <Guard />
 }
 
-const ProtectedRoutes = () => {
-  const { user, loading } = useAuth()
-
-  if (loading) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
-  }
-
-  return (
-    <TabLayout>
-      <Outlet />
-    </TabLayout>
-  )
-}
+// ProtectedRoutes removed - using withAuth wrapper instead
 
 const routes = [
   {
@@ -121,13 +109,11 @@ const routes = [
 const router = useHash
   ? createHashRouter(routes, {
       future: {
-        v7_startTransition: true,
         v7_relativeSplatPath: true
       }
     })
   : createBrowserRouter(routes, {
       future: {
-        v7_startTransition: true,
         v7_relativeSplatPath: true
       }
     })

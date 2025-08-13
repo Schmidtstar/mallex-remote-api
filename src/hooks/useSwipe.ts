@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 
 interface SwipeConfig {
   onSwipeLeft?: () => void

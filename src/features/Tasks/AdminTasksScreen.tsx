@@ -39,7 +39,7 @@ export function AdminTasksScreen() {
   const [editDirectText, setEditDirectText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
 
-  // Task creation state  
+  // Task creation state
   const [newTaskCategory, setNewTaskCategory] = useState<string>('schicksal')
   const [newTaskText, setNewTaskText] = useState('')
   const [creating, setCreating] = useState(false)
@@ -118,7 +118,7 @@ export function AdminTasksScreen() {
               // Map German category IDs to English ones for Arena compatibility
               const categoryMapping: Record<string, string> = {
                 'schicksal': 'fate',
-                'schande': 'shame', 
+                'schande': 'shame',
                 'verfuehrung': 'seduce',
                 'eskalation': 'escalate',
                 'beichte': 'confess'
@@ -349,7 +349,7 @@ export function AdminTasksScreen() {
       // Map German category IDs to English ones for API compatibility
       const categoryMapping: Record<string, string> = {
         'schicksal': 'fate',
-        'schande': 'shame', 
+        'schande': 'shame',
         'verfuehrung': 'seduce',
         'eskalation': 'escalate',
         'beichte': 'confess'
@@ -364,7 +364,7 @@ export function AdminTasksScreen() {
 
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
-      
+
       // Reload direct tasks to show the new task
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
@@ -412,7 +412,7 @@ export function AdminTasksScreen() {
 
     try {
       await deleteDoc(doc(db, 'tasks', taskId)); // Delete from tasks collection
-      
+
       // Reload direct tasks
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
@@ -422,22 +422,7 @@ export function AdminTasksScreen() {
     }
   };
 
-  const handleDeleteAllTasks = async () => {
-    if (!confirm('ALLE Tasks löschen? Diese Aktion kann nicht rückgängig gemacht werden!')) return;
-    if (!confirm('Sind Sie sicher? Alle Demo- und echten Tasks werden gelöscht!')) return;
-
-    try {
-      const tasksSnapshot = await getDocs(collection(db, 'tasks')); // Target 'tasks' collection for all tasks
-      const deletePromises = tasksSnapshot.docs.map(doc => deleteDoc(doc.ref));
-      await Promise.all(deletePromises);
-
-      await loadApprovedTasks(); // Reload tasks after deletion
-      alert(`${tasksSnapshot.size} Tasks erfolgreich gelöscht!`);
-    } catch (error) {
-      console.error('Error deleting all tasks:', error);
-      alert('Fehler beim Löschen der Tasks!');
-    }
-  };
+  // Delete all tasks function removed - too dangerous for production
 
   const handleEditDirectTask = (task: Task) => {
     setEditingDirectId(task.id!)
@@ -451,11 +436,11 @@ export function AdminTasksScreen() {
         editedAt: serverTimestamp(),
         editedBy: user?.uid
       })
-      
+
       // Reload direct tasks
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
-      
+
       setEditingDirectId(null)
       setEditDirectText('')
       console.log('✅ Direct task updated successfully')
@@ -484,12 +469,12 @@ export function AdminTasksScreen() {
     const staticTasks: Array<{key: string, text: string, category: string}> = []
     const categoryMapping = {
       'fate': 'Schicksal',
-      'shame': 'Schande', 
+      'shame': 'Schande',
       'seduce': 'Verführung',
       'escalate': 'Eskalation',
       'confess': 'Beichte'
     }
-    
+
     Object.entries(challenges).forEach(([categoryId, tasks]) => {
       tasks.forEach((taskKey, index) => {
         staticTasks.push({
@@ -499,7 +484,7 @@ export function AdminTasksScreen() {
         })
       })
     })
-    
+
     return staticTasks
   }
 
@@ -766,7 +751,7 @@ export function AdminTasksScreen() {
                     </span>
                   </div>
                   <div className={styles.itemContent}>
-                    <p className={styles.text} style={{ 
+                    <p className={styles.text} style={{
                       opacity: hiddenStaticTasks.has(task.key) ? 0.5 : 1,
                       textDecoration: hiddenStaticTasks.has(task.key) ? 'line-through' : 'none'
                     }}>
@@ -837,7 +822,7 @@ export function AdminTasksScreen() {
           </div>
         )}
       </div>
-      
+
     </div>
   )
 }

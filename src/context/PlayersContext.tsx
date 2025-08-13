@@ -1,7 +1,7 @@
 
-import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-import { addPlayer, removePlayer, listenPlayers, Player } from '@/deprecated/playersApi'
+import { Player } from '@/deprecated/playersApi'
 
 type PlayersContextType = {
   players: Player[]
@@ -28,7 +28,7 @@ type PlayersProviderProps = {
 const STORAGE_KEY = 'mallex-players'
 
 export function PlayersProvider({ children }: PlayersProviderProps) {
-  const { user, loading: authLoading } = useAuth()
+  const { loading: authLoading } = useAuth()
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
 

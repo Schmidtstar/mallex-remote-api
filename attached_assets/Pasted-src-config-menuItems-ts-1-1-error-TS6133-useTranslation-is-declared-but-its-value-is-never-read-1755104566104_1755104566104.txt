@@ -1,0 +1,218 @@
+src/config/menuItems.ts:1:1 - error TS6133: 'useTranslation' is declared but its value is never read.
+
+1 import { useTranslation } from 'react-i18next'
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/config/menuItems.ts:2:1 - error TS6133: 'useAuth' is declared but its value is never read.
+
+2 import { useAuth } from '../context/AuthContext'
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/context/AuthContext.tsx:21:10 - error TS6133: 'admin' is declared but its value is never read.
+
+21   const [admin, setAdmin] = useState(false);
+            ~~~~~
+
+src/context/PlayersContext.tsx:2:8 - error TS6133: 'React' is declared but its value is never read.
+
+2 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
+         ~~~~~
+
+src/context/PlayersContext.tsx:4:10 - error TS6133: 'addPlayer' is declared but its value is never read.
+
+4 import { addPlayer, removePlayer, listenPlayers, Player } from '@/deprecated/playersApi'
+           ~~~~~~~~~
+
+src/context/PlayersContext.tsx:4:21 - error TS6133: 'removePlayer' is declared but its value is never read.
+
+4 import { addPlayer, removePlayer, listenPlayers, Player } from '@/deprecated/playersApi'
+                      ~~~~~~~~~~~~
+
+src/context/PlayersContext.tsx:4:35 - error TS6133: 'listenPlayers' is declared but its value is never read.
+
+4 import { addPlayer, removePlayer, listenPlayers, Player } from '@/deprecated/playersApi'
+                                    ~~~~~~~~~~~~~
+
+src/context/PlayersContext.tsx:31:11 - error TS6133: 'user' is declared but its value is never read.
+
+31   const { user, loading: authLoading } = useAuth()
+             ~~~~
+
+src/context/TaskSuggestionsContext.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+         ~~~~~
+
+src/context/TaskSuggestionsContext.tsx:3:1 - error TS6133: 'db' is declared but its value is never read.
+
+3 import { db } from '../lib/firebase'
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/context/TaskSuggestionsContext.tsx:4:1 - error TS6192: All imports in import declaration are unused.
+
+4 import { addDoc, collection, deleteDoc, doc, getDocs, query, where, serverTimestamp, updateDoc } from 'firebase/firestore'
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/deprecated/suggestionsApi.ts:5:23 - error TS6133: 'deleteDoc' is declared but its value is never read.
+
+5   addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where,
+                        ~~~~~~~~~
+
+src/deprecated/suggestionsApi.ts:7:28 - error TS6196: 'Task' is declared but never used.
+
+7 import type { CategoryKey, Task } from './tasksApi';
+                             ~~~~
+
+src/deprecated/suggestionsApi.ts:7:40 - error TS2307: Cannot find module './tasksApi' or its corresponding type declarations.
+
+7 import type { CategoryKey, Task } from './tasksApi';
+                                         ~~~~~~~~~~~~
+
+src/features/Admin/AdminSuggestionsScreen.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { useEffect, useState } from 'react';
+         ~~~~~
+
+src/features/Arena/ArenaScreen.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+         ~~~~~
+
+src/features/Arena/ArenaScreen.tsx:1:38 - error TS6133: 'useRef' is declared but its value is never read.
+
+1 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+                                       ~~~~~~
+
+src/features/Arena/ArenaScreen.tsx:1:46 - error TS6133: 'useCallback' is declared but its value is never read.
+
+1 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+                                               ~~~~~~~~~~~
+
+src/features/Arena/ArenaScreen.tsx:9:1 - error TS6133: 'useSwipe' is declared but its value is never read.
+
+9 import { useSwipe } from '../../hooks/useSwipe'
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/features/Arena/ArenaScreen.tsx:30:10 - error TS6133: 'spinCounter' is declared but its value is never read.
+
+30   const [spinCounter, setSpinCounter] = useState(0)
+            ~~~~~~~~~~~
+
+src/features/Leaderboard/LeaderboardScreen.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { useState, useEffect } from 'react'
+         ~~~~~
+
+src/features/Legends/LegendsScreen.tsx:10:45 - error TS6133: 'mode' is declared but its value is never read.
+
+10   const { players, addPlayer, removePlayer, mode, loading } = usePlayersContext()
+                                               ~~~~
+
+src/features/Menu/MenuScreen.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { useState, useEffect } from 'react';
+         ~~~~~
+
+src/features/Menu/MenuScreen.tsx:6:1 - error TS6133: 'isValidDate' is declared but its value is never read.
+
+6 import { isValidDate } from '../../utils/dateUtils';
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/features/Menu/MenuScreen.tsx:119:9 - error TS2561: Object literal may only specify known properties, but 'birthDate' does not exist in type 'Partial<UserProfile>'. Did you mean to write 'birthdate'?
+
+119         birthDate: birthDateISO,
+            ~~~~~~~~~
+
+src/features/Tasks/AdminTasksScreen.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { useState, useEffect } from 'react'
+         ~~~~~
+
+src/features/Tasks/AdminTasksScreen.tsx:111:52 - error TS7006: Parameter 's' implicitly has an 'any' type.
+
+111           const approvedTasks = suggestions.filter(s => s.status === 'approved')
+                                                       ~
+
+src/features/Tasks/AdminTasksScreen.tsx:362:9 - error TS2554: Expected 1 arguments, but got 2.
+
+362         user?.email ?? user?.uid
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/features/Tasks/AdminTasksScreen.tsx:425:9 - error TS6133: 'handleDeleteAllTasks' is declared but its value is never read.
+
+425   const handleDeleteAllTasks = async () => {
+            ~~~~~~~~~~~~~~~~~~~~
+
+src/features/Tasks/AdminTasksScreen.tsx:494:31 - error TS6133: 'index' is declared but its value is never read.
+
+494       tasks.forEach((taskKey, index) => {
+                                  ~~~~~
+
+src/features/Tasks/TasksOverviewScreen.tsx:2:8 - error TS6133: 'React' is declared but its value is never read.
+
+2 import React, { useEffect, useState } from 'react';
+         ~~~~~
+
+src/features/Tasks/TasksOverviewScreen.tsx:10:10 - error TS6133: 'items' is declared but its value is never read.
+
+10   const [items, setItems] = useState<Task[]>([]);
+            ~~~~~
+
+src/hooks/useSwipe.ts:2:23 - error TS6133: 'useEffect' is declared but its value is never read.
+
+2 import { useCallback, useEffect } from 'react'
+                        ~~~~~~~~~
+
+src/layouts/TabLayout.tsx:7:1 - error TS6133: 'styles' is declared but its value is never read.
+
+7 import styles from './TabLayout.module.css'
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/lib/firebase.ts:4:31 - error TS6133: 'FirestoreSettings' is declared but its value is never read.
+
+4 import { initializeFirestore, FirestoreSettings, enableNetwork } from 'firebase/firestore';
+                                ~~~~~~~~~~~~~~~~~
+
+src/lib/firebase.ts:4:50 - error TS6133: 'enableNetwork' is declared but its value is never read.
+
+4 import { initializeFirestore, FirestoreSettings, enableNetwork } from 'firebase/firestore';
+                                                   ~~~~~~~~~~~~~
+
+src/lib/tasksApi.ts:4:56 - error TS6133: 'orderBy' is declared but its value is never read.
+
+4   addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where,
+                                                         ~~~~~~~
+
+src/main.tsx:1:8 - error TS6133: 'React' is declared but its value is never read.
+
+1 import React, { useState } from 'react'
+         ~~~~~
+
+src/router.tsx:30:7 - error TS6133: 'ProtectedRoutes' is declared but its value is never read.
+
+30 const ProtectedRoutes = () => {
+         ~~~~~~~~~~~~~~~
+
+src/router.tsx:31:11 - error TS6133: 'user' is declared but its value is never read.
+
+31   const { user, loading } = useAuth()
+             ~~~~
+
+src/router.tsx:38:6 - error TS2559: Type '{ children: Element; }' has no properties in common with type 'IntrinsicAttributes'.
+
+38     <TabLayout>
+        ~~~~~~~~~
+
+src/router.tsx:124:9 - error TS2353: Object literal may only specify known properties, and 'v7_startTransition' does not exist in type 'Partial<FutureConfig>'.
+
+124         v7_startTransition: true,
+            ~~~~~~~~~~~~~~~~~~
+
+src/router.tsx:130:9 - error TS2353: Object literal may only specify known properties, and 'v7_startTransition' does not exist in type 'Partial<FutureConfig>'.
+
+130         v7_startTransition: true,
+            ~~~~~~~~~~~~~~~~~~
+
+
+Found 43 errors.
+

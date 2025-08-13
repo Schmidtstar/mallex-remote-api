@@ -171,6 +171,14 @@ export function MenuScreen() {
         >
           {t('menu.settings')}
         </button>
+        {user && !user.isAnonymous && (
+          <button
+            className={`${styles.tab} ${currentTab === 'admin' ? styles.active : ''}`}
+            onClick={() => handleTabChange('admin')}
+          >
+            🔧 Admin
+          </button>
+        )}
       </div>
 
       <div className={styles.content}>
@@ -282,6 +290,26 @@ export function MenuScreen() {
                   </>
                 )}
 
+                {!user.isAnonymous && userProfile && (
+                  <div className={styles.userStats}>
+                    <h3>📊 Meine Statistiken</h3>
+                    <div className={styles.statsGrid}>
+                      <div className={styles.statItem}>
+                        <span className={styles.statValue}>🎯</span>
+                        <span className={styles.statLabel}>Tasks absolviert</span>
+                      </div>
+                      <div className={styles.statItem}>
+                        <span className={styles.statValue}>🏆</span>
+                        <span className={styles.statLabel}>Arena-Siege</span>
+                      </div>
+                      <div className={styles.statItem}>
+                        <span className={styles.statValue}>⭐</span>
+                        <span className={styles.statLabel}>Legenden-Status</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {user.isAnonymous && (
                   <p className={styles.guestInfo}>{t('profile.anonymous')}</p>
                 )}
@@ -327,6 +355,38 @@ export function MenuScreen() {
             <div className={styles.settingGroup}>
               <h3>{t('settings.theme')}</h3>
               <p>Über MALLEX - Das ultimative Party-Spiel für unvergessliche Abende! Entwickelt von JPS</p>
+            </div>
+          </div>
+        )}
+
+        {currentTab === 'admin' && user && (
+          <div className={styles.adminSection}>
+            <h2>🔧 Admin Panel</h2>
+            
+            <div className={styles.adminQuickActions}>
+              <button 
+                onClick={() => navigate('/admin/dashboard')}
+                className={styles.adminButton}
+              >
+                📊 Dashboard
+              </button>
+              <button 
+                onClick={() => navigate('/admin/tasks')}
+                className={styles.adminButton}
+              >
+                📋 Tasks verwalten
+              </button>
+              <button 
+                onClick={() => navigate('/admin/users')}
+                className={styles.adminButton}
+              >
+                👥 Benutzer verwalten
+              </button>
+            </div>
+
+            <div className={styles.adminStats}>
+              <p><strong>Status:</strong> Admin-Zugriff aktiv</p>
+              <p><strong>Berechtigung:</strong> Vollzugriff</p>
             </div>
           </div>
         )}

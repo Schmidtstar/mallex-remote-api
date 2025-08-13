@@ -83,7 +83,15 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
     onClose()
   }
 
-  
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/auth')
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+    onClose()
+  }
 
   if (!open) return null
 

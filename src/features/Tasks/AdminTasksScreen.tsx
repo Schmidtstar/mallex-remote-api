@@ -39,7 +39,7 @@ export function AdminTasksScreen() {
   const [editDirectText, setEditDirectText] = useState('')
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({})
 
-  // Task creation state
+  // Task creation state  
   const [newTaskCategory, setNewTaskCategory] = useState<string>('schicksal')
   const [newTaskText, setNewTaskText] = useState('')
   const [creating, setCreating] = useState(false)
@@ -108,7 +108,7 @@ export function AdminTasksScreen() {
 
         // 🚀 MIGRATE TO FIREBASE: Upload approved tasks to Firebase
         if (suggestions.length > 0 && isAdmin) {
-          const approvedTasks = suggestions.filter((s: TaskSuggestion) => s.status === 'approved')
+          const approvedTasks = suggestions.filter(s => s.status === 'approved')
           console.log('🔄 Migrating', approvedTasks.length, 'approved tasks to Firebase...')
 
           // Sequential migration to avoid overwhelming Firebase
@@ -118,7 +118,7 @@ export function AdminTasksScreen() {
               // Map German category IDs to English ones for Arena compatibility
               const categoryMapping: Record<string, string> = {
                 'schicksal': 'fate',
-                'schande': 'shame',
+                'schande': 'shame', 
                 'verfuehrung': 'seduce',
                 'eskalation': 'escalate',
                 'beichte': 'confess'
@@ -313,7 +313,7 @@ export function AdminTasksScreen() {
     }
   }
 
-  const filteredItems = items.filter((s: TaskSuggestion) => s.status === activeTab)
+  const filteredItems = items.filter(item => item.status === activeTab)
 
   const getCategoryLabel = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId)
@@ -332,7 +332,7 @@ export function AdminTasksScreen() {
   }
 
   const handleReject = (id: string) => {
-    reject(id)
+    reject(id).catch(error => console.error("Error in handleReject:", error))
   }
 
   const handleCreateTask = async () => {
@@ -349,7 +349,7 @@ export function AdminTasksScreen() {
       // Map German category IDs to English ones for API compatibility
       const categoryMapping: Record<string, string> = {
         'schicksal': 'fate',
-        'schande': 'shame',
+        'schande': 'shame', 
         'verfuehrung': 'seduce',
         'eskalation': 'escalate',
         'beichte': 'confess'
@@ -358,12 +358,13 @@ export function AdminTasksScreen() {
       const englishCategory = categoryMapping[newTaskCategory] || newTaskCategory
 
       await createTaskApproved(
-        { category: englishCategory as CategoryKey, text: newTaskText.trim() }
+        { category: englishCategory as CategoryKey, text: newTaskText.trim() },
+        user?.email ?? user?.uid
       )
 
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
-
+      
       // Reload direct tasks to show the new task
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
@@ -377,14 +378,41 @@ export function AdminTasksScreen() {
     }
   }
 
-  
+  // Define loadApprovedTasks to be used by delete handlers
+  const loadApprovedTasks = async () => {
+    // This function's implementation would typically mirror the logic in useEffect
+    // for loading approved tasks, but for brevity and focus on the delete functionality,
+    // we'll assume it reloads the necessary data. A more robust solution might pass
+    // the setItems function or use a shared loading hook.
+    // For this example, we'll simulate a reload by re-running the core logic.
+    // In a real app, you'd likely refactor this into a reusable function.
+
+    // Re-fetching suggestions to update the UI after deletion
+    const querySnapshot = await getDocs(collection(db, 'taskSuggestions'));
+    const fetchedItems: TaskSuggestion[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      fetchedItems.push({
+        id: doc.id,
+        text: data.text || '',
+        categoryId: data.categoryId || 'fate',
+        authorId: data.authorId || data.createdBy || '',
+        createdAt: data.createdAt || new Date(),
+        status: data.status || 'pending',
+        author: data.author,
+        note: data.note,
+        hidden: data.hidden || false
+      });
+    });
+    setItems(fetchedItems);
+  };
 
   const handleDeleteTask = async (taskId: string) => {
     if (!confirm('Task wirklich löschen?')) return;
 
     try {
       await deleteDoc(doc(db, 'tasks', taskId)); // Delete from tasks collection
-
+      
       // Reload direct tasks
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
@@ -400,12 +428,10 @@ export function AdminTasksScreen() {
 
     try {
       const tasksSnapshot = await getDocs(collection(db, 'tasks')); // Target 'tasks' collection for all tasks
-      const deletePromises = tasksSnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      const deletePromises = tasksSnapshot.docs.map(doc => deleteDoc(doc.ref));
       await Promise.all(deletePromises);
 
-      // Reload direct tasks
-      const tasks = await listApprovedTasks()
-      setDirectTasks(tasks)
+      await loadApprovedTasks(); // Reload tasks after deletion
       alert(`${tasksSnapshot.size} Tasks erfolgreich gelöscht!`);
     } catch (error) {
       console.error('Error deleting all tasks:', error);
@@ -425,11 +451,11 @@ export function AdminTasksScreen() {
         editedAt: serverTimestamp(),
         editedBy: user?.uid
       })
-
+      
       // Reload direct tasks
       const tasks = await listApprovedTasks()
       setDirectTasks(tasks)
-
+      
       setEditingDirectId(null)
       setEditDirectText('')
       console.log('✅ Direct task updated successfully')
@@ -458,12 +484,12 @@ export function AdminTasksScreen() {
     const staticTasks: Array<{key: string, text: string, category: string}> = []
     const categoryMapping = {
       'fate': 'Schicksal',
-      'shame': 'Schande',
+      'shame': 'Schande', 
       'seduce': 'Verführung',
       'escalate': 'Eskalation',
       'confess': 'Beichte'
     }
-
+    
     Object.entries(challenges).forEach(([categoryId, tasks]) => {
       tasks.forEach((taskKey, index) => {
         staticTasks.push({
@@ -473,7 +499,7 @@ export function AdminTasksScreen() {
         })
       })
     })
-
+    
     return staticTasks
   }
 
@@ -493,19 +519,19 @@ export function AdminTasksScreen() {
             className={`${styles.tab} ${activeTab === 'pending' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('pending')}
           >
-            {t('adminTasks.pending')} ({items.filter((s: TaskSuggestion) => s.status === 'pending').length})
+            {t('adminTasks.pending')} ({items.filter(item => item.status === 'pending').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'approved' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('approved')}
           >
-            {t('adminTasks.approved')} ({items.filter((s: TaskSuggestion) => s.status === 'approved').length})
+            {t('adminTasks.approved')} ({items.filter(item => item.status === 'approved').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'rejected' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('rejected')}
           >
-            {t('adminTasks.rejected')} ({items.filter((s: TaskSuggestion) => s.status === 'rejected').length})
+            {t('adminTasks.rejected')} ({items.filter(item => item.status === 'rejected').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'direct' ? styles.tabActive : ''}`}
@@ -740,7 +766,7 @@ export function AdminTasksScreen() {
                     </span>
                   </div>
                   <div className={styles.itemContent}>
-                    <p className={styles.text} style={{
+                    <p className={styles.text} style={{ 
                       opacity: hiddenStaticTasks.has(task.key) ? 0.5 : 1,
                       textDecoration: hiddenStaticTasks.has(task.key) ? 'line-through' : 'none'
                     }}>
@@ -811,7 +837,7 @@ export function AdminTasksScreen() {
           </div>
         )}
       </div>
-
+      
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { col } from '@/lib/paths';
 import {
   addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where,
 } from 'firebase/firestore';
-import type { CategoryKey } from '../features/Arena/categories';
+import type { CategoryKey, Task } from './tasksApi';
 
 export type SuggestionStatus = 'pending' | 'approved' | 'rejected';
 

@@ -11,7 +11,7 @@ import styles from './MenuScreen.module.css';
 interface UserProfile {
   email: string | null;
   displayName: string | null;
-  birthdate: string | null;
+  birthDate: string | null;
   gender: 'male'|'female'|'diverse'|null;
   nationality: string | null;
 }
@@ -92,13 +92,13 @@ export function MenuScreen() {
       setUserProfile({
         email: profile?.email || user.email || null,
         displayName: profile?.displayName || null,
-        birthdate: profile?.birthdate || null,
+        birthDate: profile?.birthDate || null,
         gender: profile?.gender || null,
         nationality: profile?.nationality || null
       });
       setEditForm({
         displayName: profile?.displayName || '',
-        birthDate: profile?.birthdate ? formatISOToDob(profile.birthdate) : '',
+        birthDate: profile?.birthDate ? formatISOToDob(profile.birthDate) : '',
         gender: profile?.gender || '',
         nationality: profile?.nationality || ''
       });
@@ -116,16 +116,16 @@ export function MenuScreen() {
 
       await updateUserProfile(user.uid, {
         displayName: editForm.displayName || null,
-        birthdate: birthDateISO,
-        gender: editForm.gender || undefined,
-        nationality: editForm.nationality || undefined
+        birthDate: birthDateISO,
+        gender: editForm.gender || null,
+        nationality: editForm.nationality || null
       });
 
       setUserProfile(prev => prev ? {
         ...prev,
         displayName: editForm.displayName || null,
-        birthdate: birthDateISO,
-        gender: editForm.gender || undefined,
+        birthDate: birthDateISO,
+        gender: editForm.gender || null,
         nationality: editForm.nationality || null
       } : null);
 
@@ -146,7 +146,7 @@ export function MenuScreen() {
     if (userProfile) {
       setEditForm({
         displayName: userProfile.displayName || '',
-        birthDate: userProfile.birthdate ? formatISOToDob(userProfile.birthdate) : '',
+        birthDate: userProfile.birthDate ? formatISOToDob(userProfile.birthDate) : '',
         gender: userProfile.gender || '',
         nationality: userProfile.nationality || ''
       });
@@ -187,12 +187,12 @@ export function MenuScreen() {
                     {!isEditing ? (
                       <div className={styles.profileData}>
                         <p><strong>{t('profile.displayName')}:</strong> {userProfile.displayName || '-'}</p>
-                        {userProfile.birthdate && (
+                        {userProfile.birthDate && (
                           <p>
-                            <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthdate)}
-                            {calcAgeFromISO(userProfile.birthdate) && (
+                            <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthDate)}
+                            {calcAgeFromISO(userProfile.birthDate) && (
                               <span className={styles.age}>
-                                ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthdate) || 0 })})
+                                ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthDate) })})
                               </span>
                             )}
                           </p>

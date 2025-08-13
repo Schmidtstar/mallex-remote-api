@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.warn('Firebase auth not initialized - switching to guest mode');
           setLoading(false);
           setUser(null);
+          setAdmin(false);
           return false;
         }
 

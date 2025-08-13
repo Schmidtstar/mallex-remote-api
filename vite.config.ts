@@ -8,19 +8,10 @@ export default defineConfig({
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
   server: {
     host: true,
-    port: Number(process.env.PORT) || 5173,
+    port: Number(process.env.PORT) || 3000,
     strictPort: false,
     hmr: { clientPort: 443 },
     allowedHosts: true
   },
-  preview: { 
-    host: true, 
-    port: Number(process.env.PORT) || 4173,
-    strictPort: false 
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    minify: 'terser'
-  }
+  preview: { host: true, port: 4173 }
 })

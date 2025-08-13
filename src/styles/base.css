@@ -109,21 +109,7 @@ button:hover {
 }
 
 button:active {
-  transform: translateY(0) scale(0.98);
-}
-
-/* Touch-optimierte Buttons */
-@media (hover: none) and (pointer: coarse) {
-  button {
-    padding: var(--space-5) var(--space-7);
-    min-height: 48px;
-    font-size: 1.1rem;
-  }
-  
-  button:active {
-    transform: scale(0.96);
-    transition: transform 0.1s ease;
-  }
+  transform: translateY(0);
 }
 
 button:disabled {

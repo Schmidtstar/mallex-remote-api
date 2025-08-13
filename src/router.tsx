@@ -15,7 +15,7 @@ import { AuthScreen } from './features/Auth/AuthScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { useAuth } from './context/AuthContext'
 
-const useHash = import.meta.env.VITE_HASH_ROUTER === 'true'
+const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
@@ -35,7 +35,9 @@ const ProtectedRoutes = () => {
   }
 
   return (
-    <TabLayout />
+    <TabLayout>
+      <Outlet />
+    </TabLayout>
   )
 }
 
@@ -117,7 +119,17 @@ const routes = [
 ]
 
 const router = useHash
-  ? createHashRouter(routes)
-  : createBrowserRouter(routes)
+  ? createHashRouter(routes, {
+      future: {
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }
+    })
+  : createBrowserRouter(routes, {
+      future: {
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }
+    })
 
 export { router }

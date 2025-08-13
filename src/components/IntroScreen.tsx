@@ -10,11 +10,11 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
   const [stage, setStage] = useState(0)
   
   useEffect(() => {
-    const timer1 = setTimeout(() => setStage(1), 500)    // Kolosseum erscheint
-    const timer2 = setTimeout(() => setStage(2), 1500)   // Logo erscheint
-    const timer3 = setTimeout(() => setStage(3), 2500)   // Olympische Trinkspiele EXPLOSION
-    const timer4 = setTimeout(() => setStage(4), 4000)   // Tagline erscheint
-    const timer5 = setTimeout(() => onComplete(), 6000)  // Ende
+    const timer1 = setTimeout(() => setStage(1), 800)    // Kolosseum erscheint
+    const timer2 = setTimeout(() => setStage(2), 2500)   // Logo erscheint
+    const timer3 = setTimeout(() => setStage(3), 4500)   // Olympische Trinkspiele EXPLOSION
+    const timer4 = setTimeout(() => setStage(4), 7500)   // Tagline erscheint
+    const timer5 = setTimeout(() => onComplete(), 12000) // Ende nach 12 Sekunden
     
     return () => {
       clearTimeout(timer1)

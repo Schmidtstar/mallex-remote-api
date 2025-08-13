@@ -393,17 +393,23 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 4rem;
-  animation: tiltAndPour 6s ease-in-out infinite;
+  animation: tiltAndPour 8s ease-in-out infinite;
   transform-origin: bottom center;
   filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
 }
 
 @keyframes tiltAndPour {
-  0%, 30% { 
+  0%, 20% { 
     transform: translateX(-50%) rotate(0deg);
   }
-  50%, 70% { 
+  25% {
+    transform: translateX(-50%) rotate(-15deg);
+  }
+  35%, 65% { 
     transform: translateX(-50%) rotate(-45deg);
+  }
+  75% {
+    transform: translateX(-50%) rotate(-15deg);
   }
   100% { 
     transform: translateX(-50%) rotate(0deg);
@@ -415,37 +421,54 @@
   top: 60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 30px;
-  height: 200px;
+  width: 35px;
+  height: 250px;
   background: linear-gradient(
     to bottom,
-    rgba(255, 193, 7, 0.9) 0%,
-    rgba(255, 235, 59, 0.8) 30%,
-    rgba(255, 255, 255, 0.6) 70%,
+    rgba(255, 193, 7, 0.95) 0%,
+    rgba(255, 235, 59, 0.9) 20%,
+    rgba(255, 215, 0, 0.8) 50%,
+    rgba(255, 255, 255, 0.6) 80%,
     transparent 100%
   );
-  border-radius: 15px;
+  border-radius: 18px;
   opacity: 0;
-  animation: beerFlow 6s ease-in-out infinite;
-  box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+  animation: beerFlow 8s ease-in-out infinite;
+  box-shadow: 
+    0 0 25px rgba(255, 193, 7, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.4);
 }
 
 @keyframes beerFlow {
-  0%, 30%, 100% { 
+  0%, 20%, 100% { 
     opacity: 0;
     height: 0;
+    transform: translateX(-50%) scaleX(1);
   }
-  35% {
-    opacity: 1;
-    height: 50px;
+  25% {
+    opacity: 0.3;
+    height: 30px;
+    transform: translateX(-50%) scaleX(0.8);
   }
-  50%, 70% { 
-    opacity: 1;
-    height: 200px;
-  }
-  75% {
+  30% {
     opacity: 0.7;
-    height: 150px;
+    height: 80px;
+    transform: translateX(-50%) scaleX(1.2);
+  }
+  35%, 65% { 
+    opacity: 1;
+    height: 250px;
+    transform: translateX(-50%) scaleX(1);
+  }
+  70% {
+    opacity: 0.8;
+    height: 180px;
+    transform: translateX(-50%) scaleX(0.9);
+  }
+  80% {
+    opacity: 0.4;
+    height: 60px;
+    transform: translateX(-50%) scaleX(0.6);
   }
 }
 
@@ -462,8 +485,8 @@
 
 .cheeringPlayer {
   font-size: 2.5rem;
-  animation: playerCheer 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+  animation: playerCheer 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
 }
 
 .cheeringPlayer:nth-child(1) { 
@@ -517,7 +540,7 @@
   transform: translate(-50%, -50%);
   width: 300px;
   height: 300px;
-  animation: ringOfDrinks 12s linear infinite;
+  animation: ringOfDrinks 15s linear infinite;
 }
 
 @keyframes ringOfDrinks {

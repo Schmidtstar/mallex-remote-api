@@ -1,27 +1,14 @@
-language = "nodejs"
-entrypoint = "index.html"
+entrypoint = "index.js"
+modules = ["nodejs-22"]
+hidden = [".config", "package-lock.json"]
 
-run = "npm run dev -- --host"
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
-[env]
-VITE_HASH_ROUTER = "true"
+[nix]
+channel = "stable-24_11"
 
 [deployment]
-build = ["npm", "run", "build"]
-run = ["sh", "-c", "npm run start"]
-
-[[ports]]
-localPort = 5173
-externalPort = 80
-
-[workflows]
-runButton = "Run"
-
-[[workflows.workflow]]
-name = "Run"
-author = 45411998
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev -- --host"
+run = ["node", "index.js"]
+deploymentTarget = "autoscale"
+ignorePorts = false

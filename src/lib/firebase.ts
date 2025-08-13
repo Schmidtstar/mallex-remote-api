@@ -1,7 +1,40 @@
 // src/lib/firebase.ts
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
-import { initializeFirestore, getDoc, doc, getFirestore, enableNetwork } from 'firebase/firestore';
+
+// Lazy loading für bessere Performance
+let auth: any = null
+let db: any = null
+
+const getFirebaseAuth = async () => {
+  if (!auth) {
+    const { getAuth, browserLocalPersistence, setPersistence } = await import('firebase/auth')
+    auth = getAuth(app)
+    await setPersistence(auth, browserLocalPersistence).catch((e) =>
+      console.warn('Auth persistence warning:', e?.message || e)
+    )
+  }
+  return auth
+}
+
+const getFirestore = async () => {
+  if (!db) {
+    const { initializeFirestore, enableNetwork } = await import('firebase/firestore')
+    db = initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true,
+      cacheSizeBytes: 40000000,
+      ignoreUndefinedProperties: true,
+      localCache: {
+        kind: 'persistent',
+        tabManager: 'optimistic'
+      }
+    })
+    
+    if (typeof window !== 'undefined') {
+      await enableNetwork(db).catch(console.warn)
+    }
+  }
+  return db
+}
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

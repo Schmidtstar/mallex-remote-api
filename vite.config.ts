@@ -22,9 +22,14 @@ export default defineConfig(({ mode }) => {
         'localhost'            // Local development
       ],
       hmr: {
-        port: 5000,           // Use same port for HMR
-        host: '0.0.0.0'       // Bind to all interfaces
-      }
+        port: 5001,           // Use same port for HMR
+        overlay: false, // Reduziert Reconnection-Spam
+        timeout: 60000,
+      },
+      watch: {
+        usePolling: false, // Bessere Performance in Replit
+        interval: 1000,
+      },
     },
     preview: {
       host: true,
@@ -43,6 +48,7 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom'],
+            router: ['react-router-dom'],
             firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
           }
         }

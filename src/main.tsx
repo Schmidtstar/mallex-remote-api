@@ -26,7 +26,7 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ))
 ContextProviders.displayName = 'ContextProviders'
 
-const App: React.FC = () => {
+function App() {
   const [showIntro, setShowIntro] = useState(true)
   
   const handleIntroComplete = React.useCallback(() => {
@@ -43,6 +43,8 @@ const App: React.FC = () => {
     </ContextProviders>
   )
 }
+
+export default App
 
 const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root')) {

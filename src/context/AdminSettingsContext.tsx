@@ -9,7 +9,8 @@ import {
   orderBy,
   serverTimestamp,
   deleteDoc,
-  updateDoc
+  updateDoc,
+  getDoc
 } from 'firebase/firestore'
 import { db, auth } from '../lib/firebase'
 
@@ -121,11 +122,33 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   const [error, setError] = useState<string | null>(null)
   const user = auth.currentUser // Get the current authenticated user
 
+  // Helper function to check user roles with retry logic
+  const checkUserRoles = async (userId: string, retryCount = 0): Promise<string[]> => {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId))
+      return userDoc.exists() ? (userDoc.data().roles || []) : []
+    } catch (error: any) {
+      console.warn('Failed to check user roles:', error)
+
+      // Exponential backoff retry für Firebase-Verbindungsprobleme
+      if (retryCount < 3 && error?.code !== 'permission-denied') {
+        const delay = Math.pow(2, retryCount) * 1000 // 1s, 2s, 4s
+        console.log(`🔄 Retrying user roles check in ${delay}ms...`)
+        await new Promise(resolve => setTimeout(resolve, delay))
+        return checkUserRoles(userId, retryCount + 1)
+      }
+
+      return []
+    }
+  }
+
+
   // Load settings from Firebase on component mount
   useEffect(() => {
     const settingsRef = doc(db, 'adminSettings', 'app')
+    const abortController = new AbortController()
 
-    const unsubscribe = onSnapshot(settingsRef, (doc) => {
+    const unsubscribe = onSnapshot(settingsRef, { signal: abortController.signal }, (doc) => {
       if (doc.exists()) {
         const data = doc.data()
 
@@ -158,7 +181,10 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
       // Keine weitere Fehlerbehandlung nötig - Default Settings sind OK
     })
 
-    return unsubscribe // Cleanup subscription on unmount
+    return () => {
+      abortController.abort() // Cleanup subscription on unmount
+      unsubscribe() // Explicitly call unsubscribe
+    }
   }, [])
 
   // Refresh users from Firebase

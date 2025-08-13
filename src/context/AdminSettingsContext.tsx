@@ -151,9 +151,11 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
       }
       setLoading(false)
     }, (error) => {
-      console.log('📋 Admin settings not accessible - using defaults:', error?.code)
-      setAppSettings(defaultSettings)
-      setLoading(false)
+      console.error('❌ Failed to load admin settings:', error);
+      console.log('📋 Admin settings not accessible - using defaults');
+      setAppSettings(defaultSettings);
+      setLoading(false);
+      // Keine weitere Fehlerbehandlung nötig - Default Settings sind OK
     })
 
     return unsubscribe // Cleanup subscription on unmount
@@ -456,3 +458,7 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     </AdminSettingsContext.Provider>
   )
 }
+
+// Export hooks und Provider korrekt
+export { useAdminSettings, AdminSettingsProvider };
+export default AdminSettingsProvider;

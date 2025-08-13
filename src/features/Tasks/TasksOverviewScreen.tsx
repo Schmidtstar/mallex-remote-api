@@ -27,11 +27,9 @@ export function TasksOverviewScreen() {
         }
 
         console.log('✅ Tasks loaded successfully:', tasks.length);
-        setItems(tasks);
         setFilteredItems(tasks);
       } catch (error) {
         console.error('❌ Tasks loading failed:', error);
-        setItems([]);
         setFilteredItems([]);
       } finally {
         setLoading(false);

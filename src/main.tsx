@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
@@ -6,7 +5,7 @@ import { router } from './router'
 import './styles/index.css'
 import './i18n'
 import { AuthProvider } from './context/AuthContext'
-import { AdminProvider } from './context/AdminContext'
+import { AdminProvider } from './context/AdminProvider'
 import { AdminSettingsProvider } from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
@@ -29,7 +28,7 @@ ContextProviders.displayName = 'ContextProviders'
 
 const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true)
-  
+
   const handleIntroComplete = React.useCallback(() => {
     setShowIntro(false)
   }, [])

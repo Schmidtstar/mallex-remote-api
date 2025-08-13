@@ -72,14 +72,14 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
         <div className={`${styles.olympicDrinkingGames} ${stage >= 3 ? styles.explosion : ''}`}>
           {/* Bier und Wein Animation rings um den Text */}
           <div className={styles.drinkingRing}>
-            <div className={styles.drinkItem} style={{transform: 'rotate(0deg) translateX(120px)'}}>🍺</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(45deg) translateX(120px)'}}>🍷</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(90deg) translateX(120px)'}}>🍻</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(135deg) translateX(120px)'}}>🥂</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(180deg) translateX(120px)'}}>🍾</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(225deg) translateX(120px)'}}>🍸</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(270deg) translateX(120px)'}}>🥃</div>
-            <div className={styles.drinkItem} style={{transform: 'rotate(315deg) translateX(120px)'}}>🍺</div>
+            <div className={styles.drinkItem}>🍺</div>
+            <div className={styles.drinkItem}>🍷</div>
+            <div className={styles.drinkItem}>🍻</div>
+            <div className={styles.drinkItem}>🥂</div>
+            <div className={styles.drinkItem}>🍾</div>
+            <div className={styles.drinkItem}>🍸</div>
+            <div className={styles.drinkItem}>🥃</div>
+            <div className={styles.drinkItem}>🍺</div>
           </div>
           
           {/* Der Haupttext mit EXPLOSION */}

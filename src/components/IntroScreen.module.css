@@ -419,14 +419,38 @@
   filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
 }
 
-.drinkItem:nth-child(1) { animation-delay: 0s; }
-.drinkItem:nth-child(2) { animation-delay: 0.2s; }
-.drinkItem:nth-child(3) { animation-delay: 0.4s; }
-.drinkItem:nth-child(4) { animation-delay: 0.6s; }
-.drinkItem:nth-child(5) { animation-delay: 0.8s; }
-.drinkItem:nth-child(6) { animation-delay: 1s; }
-.drinkItem:nth-child(7) { animation-delay: 1.2s; }
-.drinkItem:nth-child(8) { animation-delay: 1.4s; }
+.drinkItem:nth-child(1) { 
+  animation-delay: 0s; 
+  --rotation: 0deg;
+}
+.drinkItem:nth-child(2) { 
+  animation-delay: 0.2s; 
+  --rotation: 45deg;
+}
+.drinkItem:nth-child(3) { 
+  animation-delay: 0.4s; 
+  --rotation: 90deg;
+}
+.drinkItem:nth-child(4) { 
+  animation-delay: 0.6s; 
+  --rotation: 135deg;
+}
+.drinkItem:nth-child(5) { 
+  animation-delay: 0.8s; 
+  --rotation: 180deg;
+}
+.drinkItem:nth-child(6) { 
+  animation-delay: 1s; 
+  --rotation: 225deg;
+}
+.drinkItem:nth-child(7) { 
+  animation-delay: 1.2s; 
+  --rotation: 270deg;
+}
+.drinkItem:nth-child(8) { 
+  animation-delay: 1.4s; 
+  --rotation: 315deg;
+}
 
 @keyframes drinkBounce {
   0%, 100% { 

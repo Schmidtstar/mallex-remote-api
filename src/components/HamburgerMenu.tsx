@@ -181,6 +181,9 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
 
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>{t('profile.title')}</h3>
+            <div className={styles.notificationItem}>
+              <NotificationCenter />
+            </div>
             <button
               className={styles.itemBtn}
               onClick={() => handleItemClick({ path: '/menu?tab=profile' })}

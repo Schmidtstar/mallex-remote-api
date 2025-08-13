@@ -1,18 +1,23 @@
-
 .notificationCenter {
   position: relative;
 }
 
 .notificationButton {
-  position: relative;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  color: var(--ancient-gold);
+  position: relative;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
   transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  background: var(--surface-secondary);
 }
 
 .notificationButton:hover {

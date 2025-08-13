@@ -54,6 +54,10 @@
   font-weight: bold;
 }
 
+.notificationItem {
+  margin-bottom: 0.5rem;
+}
+
 .closeBtn {
   background: none;
   border: none;

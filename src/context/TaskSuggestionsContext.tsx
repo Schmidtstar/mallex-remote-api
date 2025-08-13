@@ -90,10 +90,13 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export const useTaskSuggestions = () => {
+// Hook mit konsistentem Export für Fast Refresh
+function useTaskSuggestions() {
   const context = useContext(TaskSuggestionsContext)
   if (!context) {
     throw new Error('useTaskSuggestions must be used within TaskSuggestionsProvider')
   }
   return context
 }
+
+export { useTaskSuggestions }

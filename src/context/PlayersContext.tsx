@@ -18,13 +18,16 @@ type PlayersContextType = {
 
 const PlayersContext = createContext<PlayersContextType | undefined>(undefined)
 
-export const usePlayersContext = () => {
+// Hook mit konsistentem Export für Fast Refresh
+function usePlayersContext() {
   const context = useContext(PlayersContext)
   if (!context) {
     throw new Error('usePlayersContext must be used within a PlayersProvider')
   }
   return context
 }
+
+export { usePlayersContext }
 
 type PlayersProviderProps = {
   children: ReactNode

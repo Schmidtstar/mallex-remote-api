@@ -35,5 +35,9 @@ const App = () => {
 }
 
 const rootElement = document.getElementById('root')!
-const root = createRoot(rootElement)
-root.render(<App />)
+
+// Verhindere doppelte Root-Erstellung
+if (!rootElement._reactRootContainer) {
+  const root = createRoot(rootElement)
+  root.render(<App />)
+}

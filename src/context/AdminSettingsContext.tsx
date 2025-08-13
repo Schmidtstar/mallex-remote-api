@@ -77,13 +77,16 @@ const defaultAppSettings: AppSettings = {
 
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
-export const useAdminSettings = () => {
+// Hook mit konsistentem Export für Fast Refresh
+function useAdminSettings() {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')
   }
   return context
 }
+
+export { useAdminSettings }
 
 export function AdminSettingsProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()

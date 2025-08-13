@@ -12,7 +12,7 @@ ignoredPackages = ["nodejs-22"]
 
 [deployment]
 build = ["npm", "run", "build"]
-run = ["npm", "run", "preview", "--", "--port", "$PORT"]
+run = ["sh", "-c", "npx serve -s dist -l $PORT"]
 deploymentTarget = "autoscale"
 ignorePorts = false
 

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { categories } from '../Arena/categories';
@@ -11,21 +10,24 @@ export function TasksOverviewScreen() {
   const [filteredItems, setFilteredItems] = useState<Task[]>([]);
   const [category, setCategory] = useState<CategoryKey | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState(categories[0])
+  const [items, setItems] = useState<any[]>([])
+  const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right' | null>(null)
 
   useEffect(() => {
     const loadTasks = async () => {
       setLoading(true);
       try {
         console.log('🔄 Loading approved tasks, category:', category);
-        
+
         // Use the working tasksApi instead of direct Firebase queries
         let tasks = await listApprovedTasks(category);
-        
+
         // No localStorage fallback - only use Firebase tasks
         if (tasks.length === 0) {
           console.log('📝 No approved tasks found in Firebase');
         }
-        
+
         console.log('✅ Tasks loaded successfully:', tasks.length);
         setItems(tasks);
         setFilteredItems(tasks);

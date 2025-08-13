@@ -1,5 +1,5 @@
 import React from 'react'
-import { createHashRouter, createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
+import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { TabLayout } from './layouts/TabLayout'
 import { ArenaScreen } from './features/Arena/ArenaScreen'
 import { LegendsScreen } from './features/Legends/LegendsScreen'
@@ -107,15 +107,7 @@ const routes = [
 ]
 
 const router = useHash
-  ? createHashRouter(routes, {
-      future: {
-        v7_relativeSplatPath: true
-      }
-    })
-  : createBrowserRouter(routes, {
-      future: {
-        v7_relativeSplatPath: true
-      }
-    })
+  ? createHashRouter(routes)
+  : createBrowserRouter(routes)
 
 export { router }

@@ -111,9 +111,6 @@ interface AdminSettingsProviderProps {
   children: ReactNode
 }
 
-// Export the hook and the provider component
-export { useAdminSettings }
-
 export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ children }) => {
   // State variables for app settings, user management, loading, and errors
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultSettings)

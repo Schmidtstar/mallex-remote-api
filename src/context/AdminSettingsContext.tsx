@@ -1,101 +1,63 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useAuth } from './AuthContext'
-import { useIsAdmin } from './AdminContext'
-import { db } from '../lib/firebase'
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
-  collection, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
-  serverTimestamp, 
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import {
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  getDocs,
+  query,
+  orderBy,
+  serverTimestamp,
   deleteDoc,
-  updateDoc,
-  addDoc
+  updateDoc
 } from 'firebase/firestore'
-import { auth } from '../lib/firebase'
+import { db, auth } from '../lib/firebase'
 
 interface AppSettings {
   maintenanceMode: boolean
-  registrationEnabled: true
-  guestAccessEnabled: true
-  maxTasksPerUser: number
-  taskCooldownMinutes: number
-  leaderboardVisible: boolean
-  announcementText: string
-  announcementActive: boolean
-  appTheme: 'dark' | 'light' | 'auto'
-  featuresEnabled: {
-    arena: boolean
-    tasks: boolean
-    leaderboard: boolean
-    suggestions: boolean
-    legends: boolean
-  }
+  allowRegistration: boolean
+  maxUsers: number
+  minTasksForReward: number
+  dailyTaskLimit: number
+  announcements: string[]
 }
 
-interface UserManagement {
-  users: AdminUser[]
-  bannedUsers: Set<string>
-  moderators: Set<string>
-}
-
-interface AdminUser {
+interface UserStats {
   uid: string
-  email?: string
-  displayName?: string
-  createdAt?: any
-  lastActive?: any
-  tasksCompleted?: number
-  rank?: number
-  status: 'active' | 'banned' | 'suspended'
-  roles: string[]
+  email: string
+  displayName: string
+  isAdmin: boolean
+  createdAt: any
+  lastActive: any
+  totalTasks: number
+  totalPoints: number
+  level: number
 }
 
 interface AdminSettingsContextType {
-  appSettings: AppSettings
-  userManagement: UserManagement
+  settings: AppSettings
+  users: UserStats[]
   loading: boolean
-  updateAppSettings: (settings: Partial<AppSettings>) => Promise<void>
-  banUser: (uid: string, reason?: string) => Promise<void>
-  unbanUser: (uid: string) => Promise<void>
-  suspendUser: (uid: string, reason?: string) => Promise<void>
-  promoteToModerator: (uid: string) => Promise<void>
-  demoteFromModerator: (uid: string) => Promise<void>
-  deleteUser: (uid: string) => Promise<void>
-  sendSystemNotification: (userId: string, message: string) => Promise<void>
+  error: string | null
+  updateSettings: (newSettings: Partial<AppSettings>) => Promise<void>
   refreshUsers: () => Promise<void>
-  promoteToAdmin: (userIdOrEmail: string) => Promise<void>
-  revokeAdmin: (userIdOrEmail: string) => Promise<void>
-  getAdminList: () => Promise<any[]>
+  sendSystemNotification: (userId: string, message: string) => Promise<void>
+  deleteUser: (userId: string) => Promise<void>
+  toggleUserAdmin: (userId: string, isAdmin: boolean) => Promise<void>
 }
 
-const defaultAppSettings: AppSettings = {
+const defaultSettings: AppSettings = {
   maintenanceMode: false,
-  registrationEnabled: true,
-  guestAccessEnabled: true,
-  maxTasksPerUser: 50,
-  taskCooldownMinutes: 5,
-  leaderboardVisible: true,
-  announcementText: '',
-  announcementActive: false,
-  appTheme: 'dark',
-  featuresEnabled: {
-    arena: true,
-    tasks: true,
-    leaderboard: true,
-    suggestions: true,
-    legends: true
-  }
+  allowRegistration: true,
+  maxUsers: 100,
+  minTasksForReward: 5,
+  dailyTaskLimit: 10,
+  announcements: []
 }
 
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
-// Hook mit konsistentem Export für Fast Refresh
-export function useAdminSettings() {
+export const useAdminSettings = () => {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')
@@ -103,212 +65,87 @@ export function useAdminSettings() {
   return context
 }
 
-export function AdminSettingsProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
-  const isAdmin = useIsAdmin()
-  const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings)
-  const [userManagement, setUserManagement] = useState<UserManagement>({
-    users: [],
-    bannedUsers: new Set(),
-    moderators: new Set()
-  })
+interface AdminSettingsProviderProps {
+  children: ReactNode
+}
+
+export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ children }) => {
+  const [settings, setSettings] = useState<AppSettings>(defaultSettings)
+  const [users, setUsers] = useState<UserStats[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
+  // Load settings from Firebase
   useEffect(() => {
-    if (!isAdmin || !user?.uid) {
+    const settingsRef = doc(db, 'adminSettings', 'app')
+
+    const unsubscribe = onSnapshot(settingsRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data()
+        setSettings({ ...defaultSettings, ...data })
+        console.log('✅ Admin settings loaded:', data)
+      } else {
+        console.log('📋 Admin settings not accessible - using defaults')
+        setSettings(defaultSettings)
+      }
       setLoading(false)
-      return
-    }
+    }, (error) => {
+      console.log('📋 Admin settings not accessible - using defaults')
+      setSettings(defaultSettings)
+      setLoading(false)
+    })
 
-    loadAdminData()
-  }, [isAdmin, user?.uid])
+    return unsubscribe
+  }, [])
 
-  const loadAdminData = async () => {
-    setLoading(true)
+  // Load users from Firebase
+  const refreshUsers = async () => {
     try {
-      // Load app settings with error handling
-      try {
-        const settingsDoc = await getDoc(doc(db, 'adminSettings', 'appConfig'))
-        if (settingsDoc.exists()) {
-          setAppSettings({ ...defaultAppSettings, ...settingsDoc.data() })
-        }
-      } catch (settingsError: any) {
-        if (settingsError?.code === 'permission-denied') {
-          console.log('📋 Admin settings not accessible - using defaults')
-        } else {
-          console.warn('Settings load error:', settingsError?.code)
-        }
-      }
+      setLoading(true)
+      const usersRef = collection(db, 'users')
+      const usersQuery = query(usersRef, orderBy('createdAt', 'desc'))
+      const snapshot = await getDocs(usersQuery)
 
-      // Load users with error handling
-      try {
-        await refreshUsers()
-      } catch (usersError: any) {
-        if (usersError?.code === 'permission-denied') {
-          console.log('👥 User management not accessible')
-        } else {
-          console.warn('Users load error:', usersError?.code)
-        }
-      }
+      const usersData: UserStats[] = []
+      snapshot.forEach((doc) => {
+        const data = doc.data()
+        usersData.push({
+          uid: doc.id,
+          email: data.email || 'Unbekannt',
+          displayName: data.displayName || 'Unbekannt',
+          isAdmin: data.isAdmin || false,
+          createdAt: data.createdAt || null,
+          lastActive: data.lastActive || null,
+          totalTasks: data.totalTasks || 0,
+          totalPoints: data.totalPoints || 0,
+          level: data.level || 1
+        })
+      })
+
+      setUsers(usersData)
+      console.log('✅ Users loaded successfully:', usersData.length)
     } catch (error) {
-      console.error('Unexpected admin data load error:', error)
+      console.error('Failed to refresh users:', error)
+      setError('Fehler beim Laden der Benutzer')
     } finally {
       setLoading(false)
     }
   }
 
-  const refreshUsers = async () => {
+  // Update settings
+  const updateSettings = async (newSettings: Partial<AppSettings>) => {
     try {
-      const usersSnapshot = await getDocs(collection(db, 'users'))
-      const bannedSnapshot = await getDocs(collection(db, 'bannedUsers'))
-      const moderatorsSnapshot = await getDocs(collection(db, 'moderators'))
-
-      const users: AdminUser[] = []
-      usersSnapshot.forEach(doc => {
-        const data = doc.data()
-        users.push({
-          uid: doc.id,
-          email: data.email,
-          displayName: data.displayName,
-          createdAt: data.createdAt,
-          lastActive: data.lastActive,
-          tasksCompleted: data.tasksCompleted || 0,
-          rank: data.rank || 0,
-          status: 'active',
-          roles: data.roles || ['user']
-        })
-      })
-
-      const bannedUsers = new Set<string>()
-      bannedSnapshot.forEach(doc => bannedUsers.add(doc.id))
-
-      const moderators = new Set<string>()
-      moderatorsSnapshot.forEach(doc => moderators.add(doc.id))
-
-      setUserManagement({ users, bannedUsers, moderators })
+      const settingsRef = doc(db, 'adminSettings', 'app')
+      await setDoc(settingsRef, { ...settings, ...newSettings }, { merge: true })
+      console.log('✅ Settings updated:', newSettings)
     } catch (error) {
-      console.error('Failed to refresh users:', error)
+      console.error('Failed to update settings:', error)
+      setError('Fehler beim Aktualisieren der Einstellungen')
     }
   }
 
-  const updateAppSettings = async (newSettings: Partial<AppSettings>) => {
-    try {
-      const updatedSettings = { ...appSettings, ...newSettings }
-      await setDoc(doc(db, 'adminSettings', 'appConfig'), {
-        ...updatedSettings,
-        updatedBy: user?.uid,
-        updatedAt: serverTimestamp()
-      })
-      setAppSettings(updatedSettings)
-      console.log('✅ App settings updated')
-    } catch (error) {
-      console.error('Failed to update app settings:', error)
-      throw error
-    }
-  }
-
-  const banUser = async (uid: string, reason?: string) => {
-    try {
-      await setDoc(doc(db, 'bannedUsers', uid), {
-        bannedBy: user?.uid,
-        bannedAt: serverTimestamp(),
-        reason: reason || 'Verstoß gegen Nutzungsbedingungen'
-      })
-
-      // Update user status
-      await updateDoc(doc(db, 'users', uid), {
-        status: 'banned',
-        bannedAt: serverTimestamp()
-      })
-
-      await refreshUsers()
-      console.log('✅ User banned:', uid)
-    } catch (error) {
-      console.error('Failed to ban user:', error)
-      throw error
-    }
-  }
-
-  const unbanUser = async (uid: string) => {
-    try {
-      await deleteDoc(doc(db, 'bannedUsers', uid))
-      await updateDoc(doc(db, 'users', uid), {
-        status: 'active',
-        unbannedAt: serverTimestamp()
-      })
-      await refreshUsers()
-      console.log('✅ User unbanned:', uid)
-    } catch (error) {
-      console.error('Failed to unban user:', error)
-      throw error
-    }
-  }
-
-  const suspendUser = async (uid: string, reason?: string) => {
-    try {
-      await updateDoc(doc(db, 'users', uid), {
-        status: 'suspended',
-        suspendedBy: user?.uid,
-        suspendedAt: serverTimestamp(),
-        suspensionReason: reason
-      })
-      await refreshUsers()
-      console.log('✅ User suspended:', uid)
-    } catch (error) {
-      console.error('Failed to suspend user:', error)
-      throw error
-    }
-  }
-
-  const promoteToModerator = async (uid: string) => {
-    try {
-      await setDoc(doc(db, 'moderators', uid), {
-        promotedBy: user?.uid,
-        promotedAt: serverTimestamp()
-      })
-      await updateDoc(doc(db, 'users', uid), {
-        roles: ['user', 'moderator']
-      })
-      await refreshUsers()
-      console.log('✅ User promoted to moderator:', uid)
-    } catch (error) {
-      console.error('Failed to promote user:', error)
-      throw error
-    }
-  }
-
-  const demoteFromModerator = async (uid: string) => {
-    try {
-      await deleteDoc(doc(db, 'moderators', uid))
-      await updateDoc(doc(db, 'users', uid), {
-        roles: ['user']
-      })
-      await refreshUsers()
-      console.log('✅ User demoted from moderator:', uid)
-    } catch (error) {
-      console.error('Failed to demote user:', error)
-      throw error
-    }
-  }
-
-  const deleteUser = async (uid: string) => {
-    try {
-      // This is a dangerous operation - should be used carefully
-      await deleteDoc(doc(db, 'users', uid))
-      await deleteDoc(doc(db, 'bannedUsers', uid)).catch(() => {}) // Ignore if doesn't exist
-      await deleteDoc(doc(db, 'moderators', uid)).catch(() => {}) // Ignore if doesn't exist
-
-      await refreshUsers()
-      console.log('✅ User deleted:', uid)
-    } catch (error) {
-      console.error('Failed to delete user:', error)
-      throw error
-    }
-  }
-
+  // Send system notification
   const sendSystemNotification = async (userId: string, message: string) => {
-    if (!isAdmin) throw new Error('Only admins can send notifications')
-
     try {
       const notification = {
         message,
@@ -320,7 +157,7 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
 
       if (userId === 'all') {
         // Send to all users
-        for (const targetUser of userManagement.users) {
+        for (const targetUser of users) {
           await setDoc(doc(db, 'notifications', `${targetUser.uid}_${Date.now()}`), {
             ...notification,
             userId: targetUser.uid
@@ -330,7 +167,7 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
         // Send to specific user
         await setDoc(doc(db, 'notifications', `${userId}_${Date.now()}`), {
           ...notification,
-          userId
+          userId: userId
         })
       }
 
@@ -341,108 +178,46 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const promoteToAdmin = async (userIdOrEmail: string) => {
-    if (!isAdmin) throw new Error('Only admins can promote other admins')
-
+  // Delete user
+  const deleteUser = async (userId: string) => {
     try {
-      // Find user by email or UID
-      let targetUser = userManagement.users.find(u => 
-        u.uid === userIdOrEmail || u.email === userIdOrEmail
-      )
-
-      if (!targetUser && userIdOrEmail.includes('@')) {
-        // If email provided but user not found, create admin entry anyway
-        await setDoc(doc(db, 'admins', userIdOrEmail), {
-          email: userIdOrEmail,
-          promotedBy: user?.uid,
-          promotedAt: serverTimestamp(),
-          type: 'email_based'
-        })
-        console.log('✅ Email added to admin list:', userIdOrEmail)
-        return
-      }
-
-      if (!targetUser) {
-        throw new Error('User not found')
-      }
-
-      // Add to admins collection
-      await setDoc(doc(db, 'admins', targetUser.uid), {
-        email: targetUser.email,
-        displayName: targetUser.displayName,
-        promotedBy: user?.uid,
-        promotedAt: serverTimestamp(),
-        type: 'user_based'
-      })
-
-      console.log('✅ User promoted to admin:', targetUser.email)
-      await refreshUsers()
+      await deleteDoc(doc(db, 'users', userId))
+      console.log('✅ User deleted:', userId)
+      refreshUsers()
     } catch (error) {
-      console.error('Failed to promote to admin:', error)
-      throw error
+      console.error('Failed to delete user:', error)
+      setError('Fehler beim Löschen des Benutzers')
     }
   }
 
-  const revokeAdmin = async (userIdOrEmail: string) => {
-    if (!isAdmin) throw new Error('Only admins can revoke admin access')
-
+  // Toggle user admin status
+  const toggleUserAdmin = async (userId: string, isAdmin: boolean) => {
     try {
-      // Try to delete by UID first, then by email
-      try {
-        await deleteDoc(doc(db, 'admins', userIdOrEmail))
-      } catch {
-        // If UID fails, try finding by email
-        const adminQuery = query(
-          collection(db, 'admins'),
-          where('email', '==', userIdOrEmail)
-        )
-        const adminSnap = await getDocs(adminQuery)
-
-        if (!adminSnap.empty) {
-          await deleteDoc(adminSnap.docs[0].ref)
-        }
-      }
-
-      console.log('✅ Admin access revoked for:', userIdOrEmail)
-      await refreshUsers()
+      const userRef = doc(db, 'users', userId)
+      await updateDoc(userRef, { isAdmin })
+      console.log('✅ User admin status updated:', { userId, isAdmin })
+      refreshUsers()
     } catch (error) {
-      console.error('Failed to revoke admin:', error)
-      throw error
+      console.error('Failed to update user admin status:', error)
+      setError('Fehler beim Aktualisieren des Admin-Status')
     }
   }
 
-  const getAdminList = async () => {
-    if (!isAdmin) return []
-
-    try {
-      const adminSnap = await getDocs(collection(db, 'admins'))
-      return adminSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-    } catch (error) {
-      console.error('Failed to load admin list:', error)
-      return []
-    }
-  }
-
+  // Load users on mount
+  useEffect(() => {
+    refreshUsers()
+  }, [])
 
   const value: AdminSettingsContextType = {
-    appSettings,
-    userManagement,
+    settings,
+    users,
     loading,
-    updateAppSettings,
-    banUser,
-    unbanUser,
-    suspendUser,
-    promoteToModerator,
-    demoteFromModerator,
-    deleteUser,
-    sendSystemNotification,
+    error,
+    updateSettings,
     refreshUsers,
-    promoteToAdmin,
-    revokeAdmin,
-    getAdminList
+    sendSystemNotification,
+    deleteUser,
+    toggleUserAdmin
   }
 
   return (

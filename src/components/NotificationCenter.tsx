@@ -144,6 +144,12 @@ export function NotificationCenter() {
     }
   }
 
+  // Calculate unread count here
+  useEffect(() => {
+    setUnreadCount(notifications.filter(n => !n.read).length);
+  }, [notifications]);
+
+
   return (
     <button 
       className={styles.notificationButton}
@@ -159,7 +165,7 @@ export function NotificationCenter() {
 }
 
 // Separate Postfach Screen Component
-export function PostfachScreen() {
+const PostfachScreenComponent: React.FC = () => {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true) // Added loading state
@@ -306,3 +312,6 @@ export function PostfachScreen() {
     </div>
   )
 }
+
+export { PostfachScreenComponent as PostfachScreen }
+export default PostfachScreenComponent

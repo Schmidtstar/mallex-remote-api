@@ -1,11 +1,10 @@
-
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig(({ mode }) => {
   console.log('[vite] 🚀 Config loaded – mode:', mode)
-  
+
   return {
     plugins: [react()],
     resolve: {
@@ -14,9 +13,9 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
-      host: true,              // Allow external hosts
-      port: 3000,              // Your current port
-      strictPort: false,       // Auto-increment if port busy
+      port: 5000,
+      host: '0.0.0.0',
+      strictPort: true,
       allowedHosts: [
         '.replit.dev',         // Wildcard for all Replit subdomains
         '.riker.replit.dev',   // Specific Replit infrastructure

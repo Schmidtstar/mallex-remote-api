@@ -45,7 +45,5 @@ if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
 }
 
-// Default export for Fast Refresh compatibility
-export default function App() {
-  return null // This component is not used, just for Fast Refresh
-}
+// Export for Fast Refresh compatibility - remove problematic default
+export { App }

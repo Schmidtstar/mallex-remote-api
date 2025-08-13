@@ -97,7 +97,8 @@ const defaultSettings: AppSettings = {
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
 // Custom hook to use the context
-function useAdminSettings() {
+// Consistent export for Fast Refresh
+export const useAdminSettings = () => {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')

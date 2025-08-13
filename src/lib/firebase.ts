@@ -13,24 +13,10 @@ const firebaseConfig = {
   // measurementId optional
 };
 
-// Minimal logging - only once
+// Firebase ready indicator - development only
 if (import.meta.env.DEV && !window._firebaseConfigLogged) {
-  console.log('🔥 Firebase ready')
-    console.log('🟢 Firebase online - normal auth mode')
-
-    // Test Firestore connection
-    try {
-      // The original code had 'db' which was not defined yet. It should be defined after initialization.
-      // This block is for logging purposes in development, and the actual db initialization will happen later.
-      // For the purpose of this edit, we will assume a stub or that this block might be adjusted by the user.
-      // However, to make the provided code runnable as is, we need to ensure db is available or this block is conditional.
-      // Since this is a logging block and not critical for the core functionality of the edit, and `db` isn't defined here,
-      // we will comment it out to prevent errors, assuming the user will handle this logging appropriately or that it's not essential for the edit.
-      // await getDoc(doc(db, 'test', 'connection'))
-      // console.log('✅ Firestore connection successful')
-    } catch (error: any) {
-      console.warn('⚠️ Firestore connection issue:', error?.code || error?.message)
-    }
+  console.log('🔥 Firebase initialized')
+  window._firebaseConfigLogged = true
 }
 
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {

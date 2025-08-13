@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 import { useIsAdmin } from './AdminContext'
@@ -197,7 +196,7 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
         bannedAt: serverTimestamp(),
         reason: reason || 'Verstoß gegen Nutzungsbedingungen'
       })
-      
+
       // Update user status
       await updateDoc(doc(db, 'users', uid), {
         status: 'banned',
@@ -280,7 +279,7 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
       await deleteDoc(doc(db, 'users', uid))
       await deleteDoc(doc(db, 'bannedUsers', uid)).catch(() => {}) // Ignore if doesn't exist
       await deleteDoc(doc(db, 'moderators', uid)).catch(() => {}) // Ignore if doesn't exist
-      
+
       await refreshUsers()
       console.log('✅ User deleted:', uid)
     } catch (error) {

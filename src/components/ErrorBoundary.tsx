@@ -1,3 +1,4 @@
+
 import React, { Component, ReactNode } from 'react'
 
 interface Props {
@@ -53,16 +54,6 @@ export class ErrorBoundary extends Component<Props, State> {
               }}
             >
               Seite neu laden
-            </button>
-          </div>
-        </div>
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'
-              }}
-            >
-              Neu laden
             </button>
           </div>
         </div>

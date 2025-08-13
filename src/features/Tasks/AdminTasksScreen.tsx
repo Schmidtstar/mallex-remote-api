@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
 import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc, addDoc } from 'firebase/firestore'
@@ -108,7 +108,7 @@ export function AdminTasksScreen() {
 
         // 🚀 MIGRATE TO FIREBASE: Upload approved tasks to Firebase
         if (suggestions.length > 0 && isAdmin) {
-          const approvedTasks = suggestions.filter(s => s.status === 'approved')
+          const approvedTasks = suggestions.filter((s: any) => s.status === 'approved')
           console.log('🔄 Migrating', approvedTasks.length, 'approved tasks to Firebase...')
 
           // Sequential migration to avoid overwhelming Firebase
@@ -359,7 +359,7 @@ export function AdminTasksScreen() {
 
       await createTaskApproved(
         { category: englishCategory as CategoryKey, text: newTaskText.trim() },
-        user?.email ?? user?.uid
+        user?.email || user?.uid || ''
       )
 
       setNewTaskText('')
@@ -447,7 +447,7 @@ export function AdminTasksScreen() {
     }
 
     Object.entries(challenges).forEach(([categoryId, tasks]) => {
-      tasks.forEach((taskKey, index) => {
+      tasks.forEach((taskKey) => {
         staticTasks.push({
           key: taskKey,
           text: t(taskKey),

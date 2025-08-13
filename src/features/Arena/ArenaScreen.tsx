@@ -26,9 +26,7 @@ export function ArenaScreen() {
 
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
-  const [spinCounter, setSpinCounter] = useState(0)
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
-  const [showResult, setShowResult] = useState(false)
+  const [spinningCategory, setSpinningCategory] = useState<string>('')
 
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)
@@ -107,24 +105,20 @@ export function ArenaScreen() {
 
   const revealTask = () => {
     setIsSpinning(true)
-    setSpinCounter(0)
+    let spinCounter = 0
 
     // Start the spinning animation
     const spinInterval = setInterval(() => {
-      setSpinCounter(prev => {
-        const newCounter = prev + 1
-        const categoryIndex = (newCounter - 1) % categories.length
-        setSpinningCategory(categories[categoryIndex].id)
+      spinCounter += 1
+      const categoryIndex = (spinCounter - 1) % categories.length
+      setSpinningCategory(categories[categoryIndex].id)
 
-        // Stop after 10 spins (5 seconds with 0.5s intervals)
-        if (newCounter >= 10) {
-          clearInterval(spinInterval)
-          setIsSpinning(false)
-          setGameState('waiting-action')
-        }
-
-        return newCounter
-      })
+      // Stop after 10 spins (5 seconds with 0.5s intervals)
+      if (spinCounter >= 10) {
+        clearInterval(spinInterval)
+        setIsSpinning(false)
+        setGameState('waiting-action')
+      }
     }, 500) // Change category every 0.5 seconds
   }
 

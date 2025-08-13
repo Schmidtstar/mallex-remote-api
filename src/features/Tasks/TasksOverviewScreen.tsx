@@ -10,9 +10,7 @@ export function TasksOverviewScreen() {
   const [filteredItems, setFilteredItems] = useState<Task[]>([]);
   const [category, setCategory] = useState<CategoryKey | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(categories[0])
-  const [items, setItems] = useState<any[]>([])
-  const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right' | null>(null)
+  
 
   useEffect(() => {
     const loadTasks = async () => {

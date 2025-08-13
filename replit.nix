@@ -1,7 +1,2 @@
 
-{ pkgs }: {
-  deps = [
-    pkgs.nodejs-18_x
-    pkgs.nodePackages.npm
-  ];
-}
+# Nix configuration removed - using default Node.js environment

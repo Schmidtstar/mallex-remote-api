@@ -2,25 +2,16 @@ language = "nodejs"
 entrypoint = "index.html"
 
 run = "npm run dev -- --host"
-modules = ["nodejs-20"]
 
 [env]
-VITE_HASH_ROUTER = "1"
-REPLIT_DISABLE_PACKAGE_LAYER = "1"
-NIXPACKS_BUILD_CACHE = "false"
-NPM_CONFIG_AUDIT = "false"
-
-[packager]
-ignoredPackages = ["nodejs-22"]
+VITE_HASH_ROUTER = "true"
 
 [deployment]
 build = ["npm", "run", "build"]
 run = ["sh", "-c", "npm run start"]
-deploymentTarget = "autoscale"
-ignorePorts = false
 
 [[ports]]
-localPort = 3000
+localPort = 5173
 externalPort = 80
 
 [workflows]
@@ -34,6 +25,3 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev -- --host"
-
-[nix]
-channel = "stable-25_05"

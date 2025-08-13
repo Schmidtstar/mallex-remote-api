@@ -130,17 +130,32 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
     const unsubscribe = onSnapshot(settingsRef, (doc) => {
       if (doc.exists()) {
         const data = doc.data()
-        setAppSettings({ ...defaultSettings, ...data })
-        console.log('✅ Admin settings loaded:', data)
+        
+        // Migration: Map old settings to new structure
+        const migratedSettings = {
+          ...defaultSettings,
+          ...data,
+          // Map old fields to new structure
+          registrationEnabled: data.allowRegistration ?? data.registrationEnabled ?? true,
+          guestAccessEnabled: data.guestAccessEnabled ?? true,
+          maxTasksPerUser: data.maxUsers ?? data.maxTasksPerUser ?? 50,
+          taskCooldownMinutes: data.dailyTaskLimit ? Math.floor(24 * 60 / data.dailyTaskLimit) : data.taskCooldownMinutes ?? 5,
+          announcementActive: data.announcements?.length > 0 ?? data.announcementActive ?? false,
+          announcementText: data.announcements?.[0] ?? data.announcementText ?? '',
+          featuresEnabled: data.featuresEnabled ?? defaultSettings.featuresEnabled
+        }
+        
+        setAppSettings(migratedSettings)
+        console.log('✅ Admin settings loaded and migrated:', migratedSettings)
       } else {
         console.log('📋 Admin settings not accessible - using defaults')
         setAppSettings(defaultSettings)
       }
-      setLoading(false) // Set loading to false after settings are loaded or not found
+      setLoading(false)
     }, (error) => {
-      console.log('📋 Admin settings not accessible - using defaults')
+      console.log('📋 Admin settings not accessible - using defaults:', error?.code)
       setAppSettings(defaultSettings)
-      setLoading(false) // Set loading to false even if there's an error
+      setLoading(false)
     })
 
     return unsubscribe // Cleanup subscription on unmount

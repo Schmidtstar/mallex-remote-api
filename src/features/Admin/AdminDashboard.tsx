@@ -55,6 +55,21 @@ export function AdminDashboard() {
     )
   }
 
+  if (!appSettings) {
+    return (
+      <div className={styles.dashboard}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>🔧 Admin Dashboard</h1>
+        </div>
+        <div className={styles.content}>
+          <div className={styles.errorBanner}>
+            ⚠️ Fehler beim Laden der Admin-Einstellungen
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!isAdmin) {
     return <Navigate to="/arena" replace />
   }

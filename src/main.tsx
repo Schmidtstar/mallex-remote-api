@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
@@ -26,7 +27,7 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ))
 ContextProviders.displayName = 'ContextProviders'
 
-function App() {
+const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true)
   
   const handleIntroComplete = React.useCallback(() => {
@@ -44,8 +45,6 @@ function App() {
   )
 }
 
-export default App
-
 const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
@@ -53,10 +52,9 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   root.render(<App />)
 }
 
-// Expose a global boolean for debugging
+// Development debugging
 if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
 }
 
-// Export for Fast Refresh compatibility - remove problematic default
-export { App }
+export default App

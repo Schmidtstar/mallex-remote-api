@@ -22,9 +22,11 @@ export default defineConfig(({ mode }) => {
         'localhost'            // Local development
       ],
       hmr: {
-        port: 5001,           // Use same port for HMR
-        overlay: false, // Reduziert Reconnection-Spam
+        port: 5001,
+        overlay: false,
         timeout: 60000,
+        clientErrorOverlay: false, // Weniger Overlay-Störungen
+        reconnectionAttempts: 3,   // Begrenzte Reconnect-Versuche
       },
       watch: {
         usePolling: false, // Bessere Performance in Replit

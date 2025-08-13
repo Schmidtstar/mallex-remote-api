@@ -1,40 +1,4 @@
-// src/lib/firebase.ts
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
-
-// Lazy loading für bessere Performance
-let auth: any = null
-let db: any = null
-
-const getFirebaseAuth = async () => {
-  if (!auth) {
-    const { getAuth, browserLocalPersistence, setPersistence } = await import('firebase/auth')
-    auth = getAuth(app)
-    await setPersistence(auth, browserLocalPersistence).catch((e) =>
-      console.warn('Auth persistence warning:', e?.message || e)
-    )
-  }
-  return auth
-}
-
-const getFirestore = async () => {
-  if (!db) {
-    const { initializeFirestore, enableNetwork } = await import('firebase/firestore')
-    db = initializeFirestore(app, {
-      experimentalAutoDetectLongPolling: true,
-      cacheSizeBytes: 40000000,
-      ignoreUndefinedProperties: true,
-      localCache: {
-        kind: 'persistent',
-        tabManager: 'optimistic'
-      }
-    })
-    
-    if (typeof window !== 'undefined') {
-      await enableNetwork(db).catch(console.warn)
-    }
-  }
-  return db
-}
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -43,18 +7,7 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  // measurementId optional
 };
-
-// Firebase ready indicator - development only
-if (import.meta.env.DEV && !window._firebaseConfigLogged) {
-  console.log('🔥 Firebase initialized')
-  window._firebaseConfigLogged = true
-}
-
-if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {
-  console.error('Firebase config is incomplete! Check your environment variables.');
-}
 
 // Validate configuration in production
 if (import.meta.env.PROD) {
@@ -72,30 +25,50 @@ if (import.meta.env.PROD) {
   }
 }
 
-// Initialize Firebase
+// Initialize Firebase app once
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Auth + persistente Sitzung
-export const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence).catch((e) =>
-  console.warn('Auth persistence warning:', e?.message || e)
-);
+// Lazy loading für bessere Performance
+let auth: any = null
+let db: any = null
 
-// Firestore mit Auto-Long-Polling (replit/proxy-freundlich) + optimiert
-export const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true, // Automatische Erkennung für Replit
-  cacheSizeBytes: 40000000, // 40MB Cache für bessere Performance
-  ignoreUndefinedProperties: true, // Bessere Performance bei undefined values
-  localCache: {
-    kind: 'persistent',
-    tabManager: 'optimistic'
+export const getFirebaseAuth = async () => {
+  if (!auth) {
+    const { getAuth, browserLocalPersistence, setPersistence } = await import('firebase/auth')
+    auth = getAuth(app)
+    await setPersistence(auth, browserLocalPersistence).catch((e) =>
+      console.warn('Auth persistence warning:', e?.message || e)
+    )
   }
-});
-
-// Mobile-specific settings
-if (typeof window !== 'undefined') {
-  // Enable offline persistence for mobile
-  enableNetwork(db).catch(console.warn);
+  return auth
 }
 
-// keine Default-Exporte → vermeidet Barrel-/Star-Export-Probleme
+export const getFirestore = async () => {
+  if (!db) {
+    const { initializeFirestore, enableNetwork } = await import('firebase/firestore')
+    db = initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true,
+      cacheSizeBytes: 40000000,
+      ignoreUndefinedProperties: true,
+      localCache: {
+        kind: 'persistent',
+        tabManager: 'optimistic'
+      }
+    })
+
+    if (typeof window !== 'undefined') {
+      await enableNetwork(db).catch(console.warn)
+    }
+  }
+  return db
+}
+
+// Legacy exports für Backward Compatibility
+export const auth = await getFirebaseAuth()
+export const db = await getFirestore()
+
+// Firebase ready indicator - development only
+if (import.meta.env.DEV && !window._firebaseConfigLogged) {
+  console.log('🔥 Firebase ready')
+  window._firebaseConfigLogged = true
+}

@@ -1,4 +1,6 @@
 
+modules = ["nodejs-20"]
+
 entrypoint = "index.html"
 
 run = "npm run dev -- --host"

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 import { collection, query, orderBy, getDocs } from 'firebase/firestore'
-import { db } from '../firebase' // Assuming db is initialized and exported from firebase.ts
+import { db } from '../lib/firebase'
 
 export interface TaskSuggestion {
   id: string

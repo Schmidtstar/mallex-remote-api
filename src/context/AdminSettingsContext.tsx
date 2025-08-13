@@ -98,8 +98,7 @@ const defaultSettings: AppSettings = {
 const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
 // Custom hook to use the context
-// Consistent export for Fast Refresh
-export const useAdminSettings = () => {
+const useAdminSettings = () => {
   const context = useContext(AdminSettingsContext)
   if (!context) {
     throw new Error('useAdminSettings must be used within AdminSettingsProvider')
@@ -485,5 +484,5 @@ export const AdminSettingsProvider: React.FC<AdminSettingsProviderProps> = ({ ch
   )
 }
 
-// Export only what's needed for Fast Refresh compatibility
-export { useAdminSettings, AdminSettingsProvider };
+// Single export for Fast Refresh compatibility
+export { useAdminSettings, AdminSettingsProvider }

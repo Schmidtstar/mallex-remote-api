@@ -68,7 +68,5 @@ export const menuItems: MenuItem[] = [
     icon: '🔧',
     requiresAuth: true,
     adminOnly: true
-  }e,
-    adminOnly: true
   }
 ]

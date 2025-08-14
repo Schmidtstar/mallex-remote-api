@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
-import { useAdminSettings } from '../../context/AdminSettingsContext'
+import AdminSettingsProvider, { useAdminSettings } from '../../context/AdminSettingsContext'
 import styles from './AdminDashboard.module.css'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
@@ -28,22 +28,74 @@ export function AdminDashboard() {
     return 'overview'
   }
   const {
-    appSettings,
-    userManagement,
+    settings: appSettings,
     loading,
-    updateAppSettings,
-    banUser,
-    unbanUser,
-    suspendUser,
-    promoteToModerator,
-    demoteFromModerator,
-    sendSystemNotification,
-    refreshUsers,
-    promoteToAdmin,
-    revokeAdmin,
-    getAdminList,
-    loadUsers
+    updateSettings: updateAppSettings,
+    error: settingsError
   } = useAdminSettings()
+
+  // Mock user management functions for now - these would need to be implemented
+  const userManagement = {
+    users: registeredUsers,
+    bannedUsers: new Set(),
+    moderators: new Set(),
+    error: null
+  }
+
+  const banUser = async (uid: string, reason?: string) => {
+    console.log('Ban user:', uid, reason)
+    // TODO: Implement ban functionality
+  }
+
+  const unbanUser = async (uid: string) => {
+    console.log('Unban user:', uid)
+    // TODO: Implement unban functionality
+  }
+
+  const suspendUser = async (uid: string, reason?: string) => {
+    console.log('Suspend user:', uid, reason)
+    // TODO: Implement suspend functionality
+  }
+
+  const promoteToModerator = async (uid: string) => {
+    console.log('Promote to moderator:', uid)
+    // TODO: Implement promotion functionality
+  }
+
+  const demoteFromModerator = async (uid: string) => {
+    console.log('Demote from moderator:', uid)
+    // TODO: Implement demotion functionality
+  }
+
+  const sendSystemNotification = async (uid: string, message: string) => {
+    console.log('Send notification:', uid, message)
+    // TODO: Implement notification functionality
+  }
+
+  const refreshUsers = async () => {
+    console.log('Refresh users')
+    await loadRegisteredUsers()
+  }
+
+  const promoteToAdmin = async (email: string) => {
+    console.log('Promote to admin:', email)
+    // TODO: Implement admin promotion functionality
+  }
+
+  const revokeAdmin = async (userIdOrEmail: string) => {
+    console.log('Revoke admin:', userIdOrEmail)
+    // TODO: Implement admin revocation functionality
+  }
+
+  const getAdminList = async () => {
+    console.log('Get admin list')
+    // TODO: Implement admin list functionality
+    return []
+  }
+
+  const loadUsers = async () => {
+    await loadRegisteredUsers()
+  }
 
   const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
@@ -57,7 +109,7 @@ export function AdminDashboard() {
     online: 0,
     admins: 0
   })
-  const { error } = appSettings || {}
+  const error = settingsError
 
   if (loading) {
     return (
@@ -292,7 +344,7 @@ export function AdminDashboard() {
               <div className={styles.statCard}>
                 <h3>🔧 Wartungsmodus</h3>
                 <div className={styles.statValue}>
-                  {appSettings.maintenanceMode ? '🔴 AN' : '🟢 AUS'}
+                  {appSettings?.maintenanceMode ? '🔴 AN' : '🟢 AUS'}
                 </div>
               </div>
             </div>
@@ -302,9 +354,9 @@ export function AdminDashboard() {
               <div className={styles.actionButtons}>
                 <button
                   className={styles.actionButton}
-                  onClick={() => handleSettingChange('maintenanceMode', !appSettings.maintenanceMode)}
+                  onClick={() => handleSettingChange('maintenanceMode', !appSettings?.maintenanceMode)}
                 >
-                  {appSettings.maintenanceMode ? '🟢 Wartung beenden' : '🔴 Wartung aktivieren'}
+                  {appSettings?.maintenanceMode ? '🟢 Wartung beenden' : '🔴 Wartung aktivieren'}
                 </button>
                 <button
                   className={styles.actionButton}
@@ -428,35 +480,35 @@ export function AdminDashboard() {
                 <label className={styles.settingItem}>
                   <input
                     type="checkbox"
-                    checked={appSettings.maintenanceMode}
-                    onChange={(e) => handleSettingChange('maintenanceMode', e.target.checked)}
+                    checked={appSettings?.moderationEnabled || false}
+                    onChange={(e) => handleSettingChange('moderationEnabled', e.target.checked)}
                   />
-                  Wartungsmodus
+                  Moderation aktiviert
                 </label>
 
                 <label className={styles.settingItem}>
                   <input
                     type="checkbox"
-                    checked={appSettings.registrationEnabled}
-                    onChange={(e) => handleSettingChange('registrationEnabled', e.target.checked)}
+                    checked={appSettings?.autoApproveFromTrustedUsers || false}
+                    onChange={(e) => handleSettingChange('autoApproveFromTrustedUsers', e.target.checked)}
                   />
-                  Registrierung aktiviert
+                  Auto-Genehmigung für vertrauenswürdige Benutzer
                 </label>
 
                 <label className={styles.settingItem}>
                   <input
                     type="checkbox"
-                    checked={appSettings.guestAccessEnabled}
-                    onChange={(e) => handleSettingChange('guestAccessEnabled', e.target.checked)}
+                    checked={appSettings?.allowAnonymousSubmissions || false}
+                    onChange={(e) => handleSettingChange('allowAnonymousSubmissions', e.target.checked)}
                   />
-                  Gastzugang aktiviert
+                  Anonyme Einreichungen erlauben
                 </label>
 
                 <label className={styles.settingItem}>
                   Max. Aufgaben pro Benutzer:
                   <input
                     type="number"
-                    value={appSettings.maxTasksPerUser}
+                    value={appSettings?.maxTasksPerUser || 5}
                     onChange={(e) => handleSettingChange('maxTasksPerUser', parseInt(e.target.value))}
                     min="1"
                     max="1000"
@@ -464,54 +516,90 @@ export function AdminDashboard() {
                 </label>
 
                 <label className={styles.settingItem}>
-                  Aufgaben-Abklingzeit (Minuten):
+                  Punkte pro Aufgabe:
                   <input
                     type="number"
-                    value={appSettings.taskCooldownMinutes}
-                    onChange={(e) => handleSettingChange('taskCooldownMinutes', parseInt(e.target.value))}
-                    min="0"
-                    max="60"
+                    value={appSettings?.pointsPerTask || 10}
+                    onChange={(e) => handleSettingChange('pointsPerTask', parseInt(e.target.value))}
+                    min="1"
+                    max="100"
                   />
                 </label>
               </div>
 
               <div className={styles.settingGroup}>
-                <h3>Funktionen</h3>
-
-                {Object.entries(appSettings.featuresEnabled).map(([feature, enabled]) => (
-                  <label key={feature} className={styles.settingItem}>
-                    <input
-                      type="checkbox"
-                      checked={enabled}
-                      onChange={(e) => handleSettingChange('featuresEnabled', {
-                        ...appSettings.featuresEnabled,
-                        [feature]: e.target.checked
-                      })}
-                    />
-                    {feature.charAt(0).toUpperCase() + feature.slice(1)} aktiviert
-                  </label>
-                ))}
-              </div>
-
-              <div className={styles.settingGroup}>
-                <h3>Ankündigung</h3>
+                <h3>Benachrichtigungen</h3>
 
                 <label className={styles.settingItem}>
                   <input
                     type="checkbox"
-                    checked={appSettings.announcementActive}
-                    onChange={(e) => handleSettingChange('announcementActive', e.target.checked)}
+                    checked={appSettings?.notificationSettings?.newTaskSubmissions || false}
+                    onChange={(e) => handleSettingChange('notificationSettings', {
+                      ...appSettings?.notificationSettings,
+                      newTaskSubmissions: e.target.checked
+                    })}
                   />
-                  Ankündigung anzeigen
+                  Neue Aufgaben-Einreichungen
                 </label>
 
-                <textarea
-                  value={appSettings.announcementText}
-                  onChange={(e) => handleSettingChange('announcementText', e.target.value)}
-                  placeholder="Ankündigungstext eingeben..."
-                  className={styles.announcementText}
-                  rows={3}
-                />
+                <label className={styles.settingItem}>
+                  <input
+                    type="checkbox"
+                    checked={appSettings?.notificationSettings?.userReports || false}
+                    onChange={(e) => handleSettingChange('notificationSettings', {
+                      ...appSettings?.notificationSettings,
+                      userReports: e.target.checked
+                    })}
+                  />
+                  Benutzer-Meldungen
+                </label>
+
+                <label className={styles.settingItem}>
+                  <input
+                    type="checkbox"
+                    checked={appSettings?.notificationSettings?.systemAlerts || false}
+                    onChange={(e) => handleSettingChange('notificationSettings', {
+                      ...appSettings?.notificationSettings,
+                      systemAlerts: e.target.checked
+                    })}
+                  />
+                  System-Warnungen
+                </label>
+              </div>
+
+              <div className={styles.settingGroup}>
+                <h3>Aufgaben-Beschränkungen</h3>
+
+                <label className={styles.settingItem}>
+                  Tägliches Aufgaben-Limit:
+                  <input
+                    type="number"
+                    value={appSettings?.dailyTaskLimit || 3}
+                    onChange={(e) => handleSettingChange('dailyTaskLimit', parseInt(e.target.value))}
+                    min="1"
+                    max="50"
+                  />
+                </label>
+
+                <label className={styles.settingItem}>
+                  Wöchentliches Aufgaben-Limit:
+                  <input
+                    type="number"
+                    value={appSettings?.weeklyTaskLimit || 15}
+                    onChange={(e) => handleSettingChange('weeklyTaskLimit', parseInt(e.target.value))}
+                    min="1"
+                    max="200"
+                  />
+                </label>
+
+                <label className={styles.settingItem}>
+                  <input
+                    type="checkbox"
+                    checked={appSettings?.requireImageForTasks || false}
+                    onChange={(e) => handleSettingChange('requireImageForTasks', e.target.checked)}
+                  />
+                  Bild für Aufgaben erforderlich
+                </label>
               </div>
             </div>
           </div>

@@ -41,9 +41,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <ContextProviders>
-      <RouterProvider router={router} />
-    </ContextProviders>
+    <React.StrictMode>
+      <ContextProviders>
+        <RouterProvider router={router} />
+      </ContextProviders>
+    </React.StrictMode>
   )
 }
 

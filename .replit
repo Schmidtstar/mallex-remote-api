@@ -19,7 +19,7 @@ from = "/*"
 to = "/index.html"
 
 [workflows]
-runButton = "Dev Server"
+runButton = "Dev Server (Optimized)"
 
 [[workflows.workflow]]
 name = "Dev Server"
@@ -29,6 +29,32 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Dev Server (Optimized)"
+author = 45411998
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run typecheck"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Build & Preview"
+author = 45411998
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run preview"
 
 [[ports]]
 localPort = 3000

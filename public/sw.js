@@ -1,96 +1,103 @@
 
-// Service Worker für bessere Performance und Offline-Support
-const CACHE_NAME = 'mallex-v1.3'
-const MAX_CACHE_SIZE = 50 * 1024 * 1024 // 50MB Cache Limit
-const urlsToCache = [
+const CACHE_NAME = 'mallex-v1.2'
+const STATIC_CACHE = 'mallex-static-v1.2'
+const DYNAMIC_CACHE = 'mallex-dynamic-v1.2'
+
+// Cache essential static assets
+const STATIC_ASSETS = [
   '/',
-  '/manifest.json',
-  '/index.html'
+  '/index.html',
+  '/manifest.json'
 ]
 
-// Installierung des Service Workers
+// Install event - cache static assets
 self.addEventListener('install', event => {
+  console.log('SW: Installing...')
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then(cache => {
-        return cache.addAll(urlsToCache)
+        console.log('SW: Caching static assets')
+        return cache.addAll(STATIC_ASSETS)
       })
+      .then(() => self.skipWaiting())
   )
-  self.skipWaiting()
 })
 
-// Aktivierung und Cache-Management
+// Activate event - clean old caches
 self.addEventListener('activate', event => {
+  console.log('SW: Activating...')
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName)
-          }
-        })
-      )
-    })
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames
+            .filter(cacheName => 
+              cacheName !== STATIC_CACHE && 
+              cacheName !== DYNAMIC_CACHE
+            )
+            .map(cacheName => caches.delete(cacheName))
+        )
+      })
+      .then(() => self.clients.claim())
   )
-  event.waitUntil(self.clients.claim())
 })
 
-// Cache-Größe verwalten
-async function manageCacheSize(cacheName, maxSize) {
-  const cache = await caches.open(cacheName)
-  const keys = await cache.keys()
-  
-  let totalSize = 0
-  for (const key of keys) {
-    const response = await cache.match(key)
-    if (response) {
-      const blob = await response.blob()
-      totalSize += blob.size
-    }
-  }
-  
-  if (totalSize > maxSize) {
-    // Älteste Einträge löschen
-    await cache.delete(keys[0])
-    await manageCacheSize(cacheName, maxSize)
-  }
-}
-
-// Fetch-Events abfangen
+// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
-  // Nur GET-Requests cachen
-  if (event.request.method !== 'GET') return
-  
-  // Firebase-Requests nicht cachen
-  if (event.request.url.includes('firebaseapp.com') || 
-      event.request.url.includes('googleapis.com')) {
+  const { request } = event
+  const url = new URL(request.url)
+
+  // Skip non-GET requests and Chrome extensions
+  if (request.method !== 'GET' || url.protocol === 'chrome-extension:') {
     return
   }
-  
+
+  // Firebase/Firestore requests - always go to network
+  if (url.hostname.includes('firebase') || url.hostname.includes('firestore')) {
+    return
+  }
+
+  // Static assets - cache first
+  if (STATIC_ASSETS.some(asset => url.pathname === asset)) {
+    event.respondWith(
+      caches.match(request)
+        .then(response => response || fetch(request))
+    )
+    return
+  }
+
+  // Dynamic content - network first, cache fallback
   event.respondWith(
-    caches.match(event.request)
+    fetch(request)
       .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response
+        // Only cache successful responses
+        if (response.status === 200) {
+          const responseClone = response.clone()
+          caches.open(DYNAMIC_CACHE)
+            .then(cache => cache.put(request, responseClone))
         }
-        
-        // Netzwerk-Request mit Cache-Verwaltung
-        return fetch(event.request).then(fetchResponse => {
-          // Nur erfolgreiche Responses cachen
-          if (fetchResponse.status === 200) {
-            const responseClone = fetchResponse.clone()
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone)
-              manageCacheSize(CACHE_NAME, MAX_CACHE_SIZE)
-            })
-          }
-          return fetchResponse
-        })
+        return response
       })
       .catch(() => {
-        // Fallback für Offline-Modus
-        return caches.match('/')
+        // Fallback to cache for offline support
+        return caches.match(request)
+          .then(response => {
+            if (response) {
+              return response
+            }
+            // Ultimate fallback for navigation requests
+            if (request.destination === 'document') {
+              return caches.match('/index.html')
+            }
+            throw new Error('No cached version available')
+          })
       })
   )
+})
+
+// Handle messages from main thread
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
 })

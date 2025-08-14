@@ -49,10 +49,7 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 const db = initializeFirestore(app, {
   ignoreUndefinedProperties: true,
   experimentalAutoDetectLongPolling: true,
-  localCache: persistentLocalCache({
-    tabManager: undefined, // Use default tab manager
-    cacheSizeBytes: undefined // Remove deprecated parameter
-  })
+  localCache: persistentLocalCache()
 })
 
 // Auth-Persistenz

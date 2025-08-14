@@ -4,6 +4,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -16,110 +17,93 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isValidUserUpdate() {
+      return request.resource.data.keys().hasOnly([
+        'displayName', 'photoURL', 'locale', 'settings', 'preferences'
+      ]);
+    }
+
+    function isValidPlayerUpdate() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly([
+        'avatar', 'nickname', 'displayName'
+      ]);
+    }
+
     // ---- USERS --------------------------------------------------------------
     match /users/{userId} {
-      // Nur der eigene User-Datensatz kann erstellt werden
       allow create: if isOwner(userId);
-      allow read:   if isOwner(userId) || isAdmin();
-
-      // Updates nur für erlaubte Felder (verhindert Rollen-Escalation)
-      allow update: if isOwner(userId)
-                    && request.resource.data.keys().hasOnly([
-                      'displayName', 'photoURL', 'locale', 'settings', 'preferences'
-                    ])
-                    && request.resource.data.diff(resource.data).changedKeys().hasOnly([
-                      'displayName', 'photoURL', 'locale', 'settings', 'preferences'
-                    ]);
-
-      // Admins dürfen alles (inkl. Rollenpflege)
+      allow read: if isOwner(userId) || isAdmin();
+      allow update: if isOwner(userId) && isValidUserUpdate();
       allow write: if isAdmin();
     }
 
     // ---- ADMINS -------------------------------------------------------------
     match /admins/{userId} {
-      allow read, write: if isAdmin();
-      // Selbstauskunft erlaubt (User kann prüfen ob Admin)
-      allow read: if isOwner(userId);
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
     }
 
-    // ---- TASKS --------------------------------------------------------------
+    // ---- TASKS & CATEGORIES ------------------------------------------------
     match /tasks/{taskId} {
-      allow read:  if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
     // ---- TASK SUGGESTIONS ---------------------------------------------------
     match /taskSuggestions/{suggestionId} {
-      allow read:   if isAuthenticated();
+      allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
 
-    // ---- CATEGORIES / STATIC ------------------------------------------------
-    match /categories/{categoryId} {
-      allow read:  if isAuthenticated();
-      allow write: if isAdmin();
-    }
-
     // ---- USER PROGRESS ------------------------------------------------------
     match /userProgress/{userId} {
-      allow create: if isOwner(userId);
-      allow read:   if isOwner(userId) || isAdmin();
-      // Updates nur Eigendaten, kein Fremdschreiben
-      allow update: if isOwner(userId);
-      // Admin-Full-Access:
-      allow write:  if isAdmin();
+      allow read, create, update: if isOwner(userId);
+      allow write: if isAdmin();
     }
 
     // ---- PLAYERS (Leaderboard) ---------------------------------------------
     match /players/{playerId} {
       allow read: if isAuthenticated();
-
-      // Verhindert Cheating: nur bestimmte Felder editierbar
-      allow update: if isOwner(playerId)
-                    && request.resource.data.diff(resource.data).changedKeys().hasOnly([
-                      'avatar', 'nickname', 'displayName'
-                    ]);
-
-      // Neue Player-Docs nur für sich selbst
       allow create: if isOwner(playerId);
-
-      // Admins dürfen alles
+      allow update: if isOwner(playerId) && isValidPlayerUpdate();
       allow write: if isAdmin();
     }
 
-    // ---- SETTINGS -----------------------------------------------------------
+    // ---- SETTINGS & NOTIFICATIONS -------------------------------------------
     match /settings/{settingId} {
       allow read, write: if isAdmin();
     }
     
     match /publicSettings/{settingId} {
-      allow read:  if isAuthenticated();
+      allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // ---- NOTIFICATIONS ------------------------------------------------------
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated()
-                  && (resource.data.targetUserId == request.auth.uid || isAdmin());
+      allow read: if isAuthenticated() && 
+                  (resource.data.targetUserId == request.auth.uid || isAdmin());
       allow write: if isAdmin();
     }
 
     match /globalNotifications/{notificationId} {
-      allow read:  if isAuthenticated();
+      allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
     // ---- ADMIN-ONLY COLLECTIONS --------------------------------------------
-    match /analytics/{docId} {
-      allow read, write: if isAdmin();
-    }
-    
-    match /systemLogs/{logId} {
-      allow read, write: if isAdmin();
+    match /{adminPath=**} {
+      allow read, write: if isAdmin() && adminPath in [
+        'analytics', 'systemLogs'
+      ];
     }
 
-    // Default deny
+    // Default deny all other documents
     match /{document=**} {
       allow read, write: if false;
     }

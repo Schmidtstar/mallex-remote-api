@@ -3,17 +3,21 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
+    // Helper functions - optimized for performance
     function isAuthenticated() {
       return request.auth != null;
     }
     
     function isAdmin() {
       return isAuthenticated() && 
-             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+             request.auth.token.admin == true;
     }
     
     function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function belongsToUser(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
@@ -51,8 +55,9 @@ service cloud.firestore {
 
     // User progress/points - users own their data
     match /userProgress/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if belongsToUser(userId);
       allow read: if isAdmin();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
     }
 
     // Players collection for leaderboard

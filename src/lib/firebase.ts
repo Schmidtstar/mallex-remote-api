@@ -46,7 +46,21 @@ if (import.meta.env.PROD) {
 // Initialize Firebase app once
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
-// Firestore: korrekte persistentLocalCache API verwenden
+// Initialize Firestore with proper cache configuration
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    cacheSizeBytes: 40 * 1024 * 1024 // 40MB
+  })
+})
+
+// Enable network
+enableNetwork(db)
+
+// Initialize Auth with persistence
+const auth = getAuth(app)
+setPersistence(auth, browserLocalPersistence)
+
+export { app, auth, db }
 const db = initializeFirestore(app, {
   ignoreUndefinedProperties: true,
   experimentalAutoDetectLongPolling: true,

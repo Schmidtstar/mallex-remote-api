@@ -691,3 +691,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: var(--color-error);
+  background-color: var(--color-error-bg);
+  border-radius: 8px;
+  margin: 2rem;
+}

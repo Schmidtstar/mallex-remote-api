@@ -48,7 +48,7 @@ interface TaskSuggestionsProviderProps {
 
 export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderProps) {
   const { user } = useAuth()
-  const isAdmin = useIsAdmin() // Get admin status
+  // Admin check removed - handled by parent components
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -87,7 +87,7 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
     }
 
     // If user is logged in, proceed only if they are an admin
-    if (user?.uid && isAdmin) {
+    if (user?.uid && useIsAdmin()) { // Re-evaluating isAdmin here as it was removed from top level
       const loadSuggestions = async () => {
         setLoading(true)
         setError(null) // Clear previous errors
@@ -123,17 +123,17 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
         }
       }
       loadSuggestions()
-    } else if (user?.uid && !isAdmin) {
+    } else if (user?.uid && !useIsAdmin()) { // Re-evaluating isAdmin here as it was removed from top level
       // If user is logged in but not admin, clear suggestions and set error
       setSuggestions([])
       setError('Access denied: Only admins can view task suggestions.')
       setLoading(false)
     }
-  }, [user?.uid, isAdmin]) // Re-run when auth state or admin status changes
+  }, [user?.uid]) // Re-run when auth state changes. isAdmin removed from dependency array.
 
   const addSuggestion = async (text: string, category: string) => {
     // Only allow adding suggestions if user is logged in and is an admin
-    if (!user?.uid || !isAdmin) {
+    if (!user?.uid || !useIsAdmin()) { // Re-evaluating isAdmin here as it was removed from top level
       // Optionally, inform the user they don't have permission
       console.warn('Operation not permitted: Only admins can add task suggestions.')
       return;
@@ -165,7 +165,7 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
 
   const updateSuggestionStatus = async (id: string, status: 'approved' | 'rejected') => {
     // Only allow updating status if user is logged in and is an admin
-    if (!user?.uid || !isAdmin) {
+    if (!user?.uid || !useIsAdmin()) { // Re-evaluating isAdmin here as it was removed from top level
       // Optionally, inform the user they don't have permission
       console.warn('Operation not permitted: Only admins can update suggestion status.')
       return;
@@ -195,7 +195,7 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
 
   const loadApprovedTasks = async (category?: string) => {
     // This function should only be callable by admins.
-    if (!isAdmin) {
+    if (!useIsAdmin()) { // Re-evaluating isAdmin here as it was removed from top level
       console.warn('Operation not permitted: Only admins can load approved tasks.')
       setApprovedTasks([]) // Clear tasks if not admin
       setApprovedTasksError('Access denied: Only admins can view approved tasks.')

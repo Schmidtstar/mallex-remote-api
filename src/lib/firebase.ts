@@ -30,50 +30,17 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 
 // Synchrone Initialisierung für bessere Performance
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
-import { initializeFirestore, enableNetwork, connectFirestoreEmulator } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 
 // Initialize Firebase services synchronously
 const auth = getAuth(app)
-const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true,
-  ignoreUndefinedProperties: true,
-  localCache: {
-    kind: 'persistent',
-    tabManager: 'optimistic',
-    sizeBytes: 40000000  // Korrigierter Cache-Parameter
-  }
-})
+const db = getFirestore(app)
 
 // Setup auth persistence
-setPersistence(auth, browserLocalPersistence).catch((e) =>
-  console.warn('Auth persistence warning:', e?.message || e)
-)
-
-// Enable network for Firestore
 if (typeof window !== 'undefined') {
-  enableNetwork(db).catch(console.warn)
-}
-
-// Connection retry logic
-let connectionAttempts = 0
-const maxRetries = 3
-
-const ensureConnection = async () => {
-  try {
-    await enableNetwork(db)
-    connectionAttempts = 0
-  } catch (error) {
-    if (connectionAttempts < maxRetries) {
-      connectionAttempts++
-      const delay = Math.pow(2, connectionAttempts) * 1000
-      setTimeout(ensureConnection, delay)
-    }
-  }
-}
-
-// Auto-retry connection on network issues
-if (typeof window !== 'undefined') {
-  window.addEventListener('online', ensureConnection)
+  setPersistence(auth, browserLocalPersistence).catch((e) =>
+    console.warn('Auth persistence warning:', e?.message || e)
+  )
 }
 
 export { auth, db }

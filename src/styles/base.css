@@ -114,51 +114,13 @@ input::placeholder, textarea::placeholder {
   font-style: italic;
 }
 
-/* Buttons - Olympischer Stil */
+/* Basic button reset - detailed styling in design-system.css */
 button {
-  background: var(--gradient-gold);
-  color: var(--ancient-night);
+  font: inherit;
   border: none;
-  padding: var(--space-4) var(--space-6);
-  font-weight: var(--font-weight-bold);
+  background: none;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-gold);
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-gold), 0 6px 20px rgba(218, 165, 32, 0.4);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-button:disabled {
-  background: var(--color-text-muted);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Button Varianten */
-button.secondary {
-  background: transparent;
-  color: var(--ancient-gold);
-  border: 2px solid var(--ancient-gold);
-  box-shadow: none;
-}
-
-button.secondary:hover {
-  background: var(--ancient-gold);
-  color: var(--ancient-night);
-}
-
-button.danger {
-  background: linear-gradient(135deg, var(--ancient-wine), #B22222);
-  color: var(--ancient-marble);
+  transition: all var(--transition-normal) ease;
 }
 
 /* Utility Classes */

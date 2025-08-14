@@ -14,13 +14,13 @@ import { IntroScreen } from './components/IntroScreen'
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
     <AdminProvider>
-      <TaskSuggestionsProvider>
-        <AdminSettingsProvider>
+      <AdminSettingsProvider>
+        <TaskSuggestionsProvider>
           <PlayersProvider>
             {children}
           </PlayersProvider>
-        </AdminSettingsProvider>
-      </TaskSuggestionsProvider>
+        </TaskSuggestionsProvider>
+      </AdminSettingsProvider>
     </AdminProvider>
   </AuthProvider>
 ))

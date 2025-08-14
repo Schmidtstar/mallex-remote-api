@@ -1,16 +1,31 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import './styles/index.css'
 import './i18n'
 import { AuthProvider } from './context/AuthContext'
-import { AdminProvider } from './context/AdminContext'
+import { AdminProvider } from './context/AdminProvider'
 import AdminSettingsProvider from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import { IntroScreen } from './components/IntroScreen'
 import { ErrorBoundary } from './components/ErrorBoundary'
+
+// Fix for Safari viewport height issues
+function setVH() {
+  const vh = window.innerHeight * 0.01
+  document.documentElement.style.setProperty('--vh', `${vh}px`)
+}
+
+// Set initial values
+setVH()
+
+// Re-calculate on resize and orientation change
+window.addEventListener('resize', setVH)
+window.addEventListener('orientationchange', () => {
+  setTimeout(setVH, 100) // Delay to ensure orientation change is complete
+})
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>

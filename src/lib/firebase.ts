@@ -30,7 +30,7 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 
 // Synchrone Initialisierung für bessere Performance
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
-import { initializeFirestore, enableNetwork, connectFirestoreEmulator } from 'firebase/firestore'
+import { initializeFirestore, enableNetwork, connectFirestoreEmulator, persistentLocalCache } from 'firebase/firestore'
 
 // Initialize Firebase services synchronously
 const auth = getAuth(app)

@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useIsAdmin } from '../../context/AdminContext'
 import AdminSettingsProvider, { useAdminSettings } from '../../context/AdminSettingsContext'
 import styles from './AdminDashboard.module.css'
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
@@ -9,62 +11,16 @@ import { db } from '../../lib/firebase'
 
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 
-// Independent admin check function like in AdminTasksScreen
-const useIndependentAdminCheck = () => {
-  const { user } = useAuth()
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user?.uid) {
-        setIsAdmin(false)
-        setLoading(false)
-        return
-      }
-
-      try {
-        // Check localStorage first for dev testing
-        const localAdmin = localStorage.getItem('mallex_dev_admin')
-        if (localAdmin === user.uid) {
-          console.log('🔧 Dev Admin mode active for dashboard:', user.uid)
-          setIsAdmin(true)
-          setLoading(false)
-          return
-        }
-
-        // Try Firebase
-        const snap = await getDoc(doc(db, 'admins', user.uid))
-        const isFirebaseAdmin = snap.exists()
-        setIsAdmin(isFirebaseAdmin)
-        if (isFirebaseAdmin) {
-          console.log('✅ Dashboard admin verified via Firebase')
-        }
-      } catch (error: any) {
-        if (error?.code !== 'permission-denied') {
-          console.warn('Dashboard admin check error:', error?.code || error?.message)
-        }
-        setIsAdmin(false)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    checkAdmin()
-  }, [user?.uid])
-
-  return { isAdmin, loading }
-}
-
-// Separate the main dashboard content into its own component
+// Main dashboard content component
 function AdminDashboardContent() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const { isAdmin, loading: adminLoading } = useIndependentAdminCheck()
+  const isAdmin = useIsAdmin()
+  const { appSettings, updateAppSettings, loading, error: settingsError } = useAdminSettings()
   const location = useLocation()
   const navigate = useNavigate()
 
-  // State definitions first
+  // State definitions
   const [activeTab, setActiveTab] = useState<AdminTab>(() => {
     const path = location.pathname
     if (path.includes('/admin/users')) return 'users'
@@ -149,14 +105,12 @@ function AdminDashboardContent() {
     await loadRegisteredUsers()
   }
 
-  const error = settingsError
-
-  // Redirect if not admin
-  if (!isAdmin && !adminLoading) {
+  // Redirect if not admin (same logic as AdminTasksScreen)
+  if (!isAdmin) {
     return <Navigate to="/arena" replace />
   }
 
-  if (adminLoading || loading) {
+  if (loading) {
     return (
       <div className={styles.dashboard}>
         <div className={styles.header}>
@@ -246,7 +200,7 @@ function AdminDashboardContent() {
     try {
       const admins = await getAdminList()
       setAdminList(admins)
-    } catch (error) {
+    } catch (error: any) {
       if (error.code !== 'permission-denied') {
         console.error('Failed to load admin list:', error)
       } else {
@@ -287,7 +241,7 @@ function AdminDashboardContent() {
         }).length,
         admins: adminCount
       })
-    } catch (error) {
+    } catch (error: any) {
       if (error.code !== 'permission-denied') {
         console.error('Error loading registered users:', error)
       } else {
@@ -508,7 +462,7 @@ function AdminDashboardContent() {
                     </div>
                     <div className={styles.userMeta}>
                       Status: {targetUser.status} | 
-                      Rollen: {targetUser.roles.join(', ')} |
+                      Rollen: {targetUser.roles?.join(', ')} |
                       Erstellt: {targetUser.createdAt?.toDate?.()?.toLocaleDateString() || 'Unbekannt'}
                     </div>
                   </div>

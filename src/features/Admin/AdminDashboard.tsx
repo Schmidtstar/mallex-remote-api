@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
@@ -29,17 +30,78 @@ function AdminDashboardContent() {
     return 'overview'
   }
 
+  // ALL STATE VARIABLES FIRST
   const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
+  const [notificationMessage, setNotificationMessage] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [adminList, setAdminList] = useState<any[]>([])
+  const [newAdminEmail, setNewAdminEmail] = useState('')
+  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
+  const [userStats, setUserStats] = useState({
+    total: 0,
+    online: 0,
+    admins: 0
+  })
 
   // Now we can safely use useAdminSettings here because we're inside the provider
   const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
-  // Mock user management functions for now - these would need to be implemented
-  const userManagement = {
-    users: registeredUsers,
-    bannedUsers: new Set(),
-    moderators: new Set(),
-    error: null
+  // THEN ALL FUNCTIONS
+  const loadRegisteredUsers = async () => {
+    try {
+      const usersRef = collection(db, 'users')
+      const usersSnapshot = await getDocs(usersRef)
+
+      const usersList = usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        lastLoginAt: doc.data().lastLoginAt?.toDate?.() || null
+      }))
+
+      setRegisteredUsers(usersList)
+      // Count admins from the admin list
+      const adminCount = adminList.length
+
+      setUserStats({
+        total: usersList.length,
+        online: usersList.filter(u => {
+          const lastLogin = u.lastLoginAt
+          return lastLogin && (Date.now() - lastLogin.getTime()) < 30 * 60 * 1000 // 30 min
+        }).length,
+        admins: adminCount
+      })
+    } catch (error: any) {
+      if (error.code !== 'permission-denied') {
+        console.error('Error loading registered users:', error)
+      } else {
+        console.log('📋 Registered users not accessible - using defaults')
+      }
+      setRegisteredUsers([])
+    }
+  }
+
+  const loadAdminList = async () => {
+    try {
+      const admins = await getAdminList()
+      setAdminList(admins)
+    } catch (error: any) {
+      if (error.code !== 'permission-denied') {
+        console.error('Failed to load admin list:', error)
+      } else {
+        console.log('📋 Admin list not accessible - using local fallback')
+      }
+    }
+  }
+
+  const loadUsers = async () => {
+    await loadRegisteredUsers()
+  }
+
+  const getAdminList = async () => {
+    console.log('Get admin list')
+    // TODO: Implement admin list functionality
+    return []
   }
 
   const banUser = async (uid: string, reason?: string) => {
@@ -87,27 +149,14 @@ function AdminDashboardContent() {
     // TODO: Implement admin revocation functionality
   }
 
-  const getAdminList = async () => {
-    console.log('Get admin list')
-    // TODO: Implement admin list functionality
-    return []
+  // Mock user management object
+  const userManagement = {
+    users: registeredUsers,
+    bannedUsers: new Set(),
+    moderators: new Set(),
+    error: null
   }
 
-  const loadUsers = async () => {
-    await loadRegisteredUsers()
-  }
-
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
-  const [notificationMessage, setNotificationMessage] = useState('')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [adminList, setAdminList] = useState<any[]>([])
-  const [newAdminEmail, setNewAdminEmail] = useState('')
-  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
-  const [userStats, setUserStats] = useState({
-    total: 0,
-    online: 0,
-    admins: 0
-  })
   const error = settingsError
 
   // Redirect if not admin
@@ -201,58 +250,12 @@ function AdminDashboardContent() {
     setSelectedUsers(newSelection)
   }
 
-  const loadAdminList = async () => {
-    try {
-      const admins = await getAdminList()
-      setAdminList(admins)
-    } catch (error) {
-      if (error.code !== 'permission-denied') {
-        console.error('Failed to load admin list:', error)
-      } else {
-        console.log('📋 Admin list not accessible - using local fallback')
-      }
-    }
-  }
-
   const loadSettings = async () => {
     try {
       // Admin settings are already loaded via useAdminSettings hook
       console.log('Admin settings loaded via context')
     } catch (error) {
       console.error('Error loading settings:', error)
-    }
-  }
-
-  const loadRegisteredUsers = async () => {
-    try {
-      const usersRef = collection(db, 'users')
-      const usersSnapshot = await getDocs(usersRef)
-
-      const usersList = usersSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        lastLoginAt: doc.data().lastLoginAt?.toDate?.() || null
-      }))
-
-      setRegisteredUsers(usersList)
-      // Count admins from the admin list
-      const adminCount = adminList.length
-
-      setUserStats({
-        total: usersList.length,
-        online: usersList.filter(u => {
-          const lastLogin = u.lastLoginAt
-          return lastLogin && (Date.now() - lastLogin.getTime()) < 30 * 60 * 1000 // 30 min
-        }).length,
-        admins: adminCount
-      })
-    } catch (error) {
-      if (error.code !== 'permission-denied') {
-        console.error('Error loading registered users:', error)
-      } else {
-        console.log('📋 Registered users not accessible - using defaults')
-      }
-      setRegisteredUsers([])
     }
   }
 

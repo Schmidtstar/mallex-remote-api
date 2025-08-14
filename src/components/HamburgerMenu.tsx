@@ -87,8 +87,9 @@ export function HamburgerMenu({ open, onClose, triggerRef }: HamburgerMenuProps)
   if (!open) return null
 
   const visibleItems = menuItems.filter(item => {
-    if (item.adminOnly && !isAdmin) return false
     if (item.requiresAuth && !user) return false
+    // Striktere Admin-Prüfung - nur echte Admins sehen Admin-Items
+    if (item.adminOnly && (!user || !isAdmin)) return false
     return true
   })
 

@@ -113,11 +113,6 @@ const routes = [
             path: 'tasks',
             element: <AdminTasksScreen />,
             errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>
-          },
-          {
-            path: 'suggestions',
-            element: <AdminSuggestionsScreen />,
-            errorElement: <ErrorBoundary><div>Fehler bei Vorschlag-Moderation</div></ErrorBoundary>
           }
         ]
       },

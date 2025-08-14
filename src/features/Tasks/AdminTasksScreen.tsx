@@ -48,7 +48,7 @@ export function AdminTasksScreen() {
 
   // Admin-specific data loading with Firebase fallback
   useEffect(() => {
-    if (!isAdmin || !user?.uid) return
+    if (!user?.uid || !isAdmin) return
 
     const loadSuggestions = async () => {
       setLoading(true)

@@ -69,7 +69,7 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
   const { user, isAdmin } = useAuth()
 
   useEffect(() => {
-    if (!user || !isAdmin) {
+    if (!user?.uid || !isAdmin) {
       console.log('📋 Admin settings not accessible - using defaults')
       setSettings(defaultSettings)
       setLoading(false)
@@ -99,7 +99,7 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
     )
 
     return unsubscribe
-  }, [user, isAdmin])
+  }, [user?.uid, isAdmin])
 
   const updateSettings = async (newSettings: Partial<AdminSettings>) => {
     if (!user || !isAdmin) {

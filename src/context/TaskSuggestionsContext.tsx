@@ -48,7 +48,17 @@ interface TaskSuggestionsProviderProps {
 
 export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderProps) {
   const { user } = useAuth()
-  const { isAdmin } = useAdmin() // Get admin status from context
+  
+  // Safely get admin status with error handling
+  let isAdmin = false
+  try {
+    const adminContext = useAdmin()
+    isAdmin = adminContext?.isAdmin || false
+  } catch (error) {
+    console.warn('Admin context not available, defaulting to false')
+    isAdmin = false
+  }
+  
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -61,7 +71,7 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
 
   useEffect(() => {
     // Only load suggestions if the user is an admin or if no user is logged in (for fallback)
-    if (!user?.uid && !user) { // Allow loading if no user for local fallback
+    if (!user?.uid) { // Allow loading if no user for local fallback
       const loadSuggestions = async () => {
         setLoading(true)
         setError(null) // Clear previous errors

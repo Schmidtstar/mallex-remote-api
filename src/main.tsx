@@ -31,13 +31,13 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
   <ErrorBoundary>
     <AuthProvider>
       <AdminProvider>
-        <TaskSuggestionsProvider>
-          <AdminSettingsProvider>
+        <AdminSettingsProvider>
+          <TaskSuggestionsProvider>
             <PlayersProvider>
               {children}
             </PlayersProvider>
-          </AdminSettingsProvider>
-        </TaskSuggestionsProvider>
+          </TaskSuggestionsProvider>
+        </AdminSettingsProvider>
       </AdminProvider>
     </AuthProvider>
   </ErrorBoundary>

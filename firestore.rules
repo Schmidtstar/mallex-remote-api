@@ -24,13 +24,13 @@ service cloud.firestore {
       allow create: if isAuthenticated(); // Anyone can create their profile
     }
 
-    // Admins collection - only admins can read
+    // Admins collection - only admins can read/write
     match /admins/{userId} {
-      allow read: if isAdmin() || isOwner(userId);
-      allow write: if isAdmin();
+      allow read, write: if isAdmin();
+      allow read: if isOwner(userId); // Users can check if they are admin
     }
 
-    // Tasks collection - read for authenticated users
+    // Tasks collection - read for authenticated users, write for admins
     match /tasks/{taskId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
@@ -49,7 +49,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // User progress/points
+    // User progress/points - users own their data
     match /userProgress/{userId} {
       allow read, write: if isOwner(userId);
       allow read: if isAdmin();
@@ -61,31 +61,35 @@ service cloud.firestore {
       allow write: if isOwner(playerId) || isAdmin();
     }
 
-    // App settings - admins only
+    // App settings - FIXED: Only admins can access
     match /settings/{settingId} {
       allow read, write: if isAdmin();
-      allow read: if isAuthenticated(); // Allow users to read some settings
     }
 
-    // Notifications - FIXED for admin access
+    // Public settings that users can read
+    match /publicSettings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Notifications - SIMPLIFIED and SECURE
     match /notifications/{notificationId} {
-      allow read, write: if isAdmin();
-      allow read: if isAuthenticated() && resource.data.targetUserId == request.auth.uid;
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && 
+                     (resource.data.targetUserId == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
     }
 
-    // Global notifications (system-wide)
+    // Global notifications (system-wide) - read-only for users
     match /globalNotifications/{notificationId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Admin statistics and analytics
+    // Admin-only collections
     match /analytics/{docId} {
       allow read, write: if isAdmin();
     }
 
-    // System logs for admin debugging
     match /systemLogs/{logId} {
       allow read, write: if isAdmin();
     }

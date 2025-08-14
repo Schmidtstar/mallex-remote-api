@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
@@ -28,8 +28,8 @@ window.addEventListener('orientationchange', () => {
 })
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
-  <AuthProvider>
-    <ErrorBoundary>
+  <ErrorBoundary>
+    <AuthProvider>
       <AdminProvider>
         <AdminSettingsProvider>
           <PlayersProvider>
@@ -39,12 +39,12 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
           </PlayersProvider>
         </AdminSettingsProvider>
       </AdminProvider>
-    </ErrorBoundary>
-  </AuthProvider>
+    </AuthProvider>
+  </ErrorBoundary>
 ))
 ContextProviders.displayName = 'ContextProviders'
 
-const App: React.FC = () => {
+const App: React.FC = React.memo(() => {
   const [showIntro, setShowIntro] = useState(true)
 
   const handleIntroComplete = React.useCallback(() => {
@@ -56,19 +56,22 @@ const App: React.FC = () => {
   }
 
   return (
-    <React.StrictMode>
-      <ContextProviders>
-        <RouterProvider router={router} />
-      </ContextProviders>
-    </React.StrictMode>
+    <ContextProviders>
+      <RouterProvider router={router} />
+    </ContextProviders>
   )
-}
+})
+App.displayName = 'App'
 
 const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
   const root = createRoot(rootElement)
-  root.render(<App />)
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
 }
 
 // Development debugging

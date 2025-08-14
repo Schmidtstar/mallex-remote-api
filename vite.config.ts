@@ -21,16 +21,17 @@ export default defineConfig(({ mode }) => {
         '.riker.replit.dev',   // Specific Replit infrastructure
         'localhost'            // Local development
       ],
-      hmr: {
+      hmr: process.env.NODE_ENV === 'development' ? {
         port: 5001,
         host: '0.0.0.0',
         overlay: false,
-        timeout: 60000,              // Längerer Timeout für Replit
+        timeout: 60000,
         clientErrorOverlay: false,
-        reconnectionDelay: 1000,     // Delay zwischen Reconnects
-        reconnectionAttempts: 5,     // Mehr Versuche für Replit
-        skipSSLVerification: true
-      },
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5,
+        skipSSLVerification: true,
+        protocol: 'ws'
+      } : false,
       watch: {
         usePolling: true,              // Aktiviere Polling für Replit
         interval: 2000,                // Längeres Intervall

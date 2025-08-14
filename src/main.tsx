@@ -30,22 +30,22 @@ window.addEventListener('orientationchange', () => {
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <ErrorBoundary>
     <AuthProvider>
-      <AdminProvider>
-        <AdminSettingsProvider>
-          <TaskSuggestionsProvider>
+      <TaskSuggestionsProvider>
+        <AdminProvider>
+          <AdminSettingsProvider>
             <PlayersProvider>
               {children}
             </PlayersProvider>
-          </TaskSuggestionsProvider>
-        </AdminSettingsProvider>
-      </AdminProvider>
+          </AdminSettingsProvider>
+        </AdminProvider>
+      </TaskSuggestionsProvider>
     </AuthProvider>
   </ErrorBoundary>
 ))
 ContextProviders.displayName = 'ContextProviders'
 
 const App: React.FC = React.memo(() => {
-  const [showIntro, setShowIntro] = useState(true)
+  const [showIntro, setShowIntro] = useState(false) // Temporarily disabled for debugging
 
   const handleIntroComplete = React.useCallback(() => {
     setShowIntro(false)

@@ -1,89 +1,50 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth'
-import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore'
+import { getAuth, connectAuthEmulator } from 'firebase/auth'
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDqZv3qF_tH4Y8K8K8K8K8K8K8K8K8K8K8",
+  authDomain: import.meta.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mallex-1b745.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "mallex-1b745",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mallex-1b745.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "461634733593",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:461634733593:web:033d22b5c9c677209b4c88",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-SQW96VK7S9"
 }
 
-// Validierung der Firebase-Konfiguration
-const isConfigValid = firebaseConfig.apiKey &&
-                     firebaseConfig.authDomain &&
-                     firebaseConfig.projectId
+console.log('🔧 Firebase Config:', {
+  ...firebaseConfig,
+  apiKey: '[HIDDEN]'
+})
 
-if (!isConfigValid) {
-  throw new Error('🚨 Firebase configuration is incomplete. Please check your environment variables.')
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig)
 
-// Global declarations für bessere Module-Resolution
-declare global {
-  interface Window {
-    _firebaseConfigLogged?: boolean;
-  }
-}
+// Initialize Firebase services
+export const auth = getAuth(app)
+export const db = getFirestore(app)
 
-// Debug Firebase Config nur einmal loggen
-if (import.meta.env.DEV && !window._firebaseConfigLogged) {
-  console.log('🔧 Firebase Config:', {
-    ...firebaseConfig,
-    apiKey: firebaseConfig.apiKey ? '[HIDDEN]' : '[MISSING]'
-  })
-  window._firebaseConfigLogged = true
-}
-
-// Firebase initialisieren
-export const app = initializeApp(firebaseConfig)
-
-// Auth und DB mit expliziter Typisierung
-let auth: Auth
-let db: Firestore
-
-try {
-  auth = getAuth(app)
-  db = getFirestore(app)
-} catch (error) {
-  console.error('🚨 Firebase initialization failed:', error)
-  throw error
-}
-
-// Emulator nur im Development und falls nicht bereits verbunden
+// Connect to emulators in development
 if (import.meta.env.DEV) {
   try {
-    // Auth Emulator
-    if (!(auth as any)._config?.emulator) {
-      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
-      console.log('🔧 Auth Emulator connected')
-    }
+    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
+    console.log('🔧 Auth Emulator connected')
   } catch (error) {
-    console.log('🟢 Firebase Auth online - production mode')
+    console.log('Auth Emulator already connected or not available')
   }
 
   try {
-    // Firestore Emulator
-    if (!(db as any)._delegate?._databaseId?.projectId?.includes('demo-')) {
-      connectFirestoreEmulator(db, 'localhost', 8080)
-      console.log('🔧 Firestore Emulator connected')
-    }
+    connectFirestoreEmulator(db, 'localhost', 8080)
+    console.log('🔧 Firestore Emulator connected')
   } catch (error) {
-    console.log('🟢 Firestore online - production mode')
+    console.log('Firestore Emulator already connected or not available')
   }
 }
 
-// Explizite Exports
-export { auth, db }
+// Clean exports
+export { auth as firebaseAuth }
+export { db as firestore }
 
-// Alternative Namen für Kompatibilität
-export const firebaseAuth = auth
-export const firestore = db
-
-// Named exports für bessere Kompatibilität
-export const firebase = { auth, db }
+export default { auth, db }
 
 console.log('🔥 Firebase ready')

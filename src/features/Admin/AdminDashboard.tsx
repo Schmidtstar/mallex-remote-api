@@ -22,8 +22,8 @@ function AdminDashboardContent() {
   // Now we can safely use useAdminSettings here because we're inside the provider
   const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
-  // Determine initial tab from URL path
-  const getInitialTab = (): AdminTab => {
+  // State definitions - move these to the top
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => {
     const path = location.pathname
     if (path.includes('/admin/users')) return 'users'
     if (path.includes('/admin/dashboard')) return 'overview'
@@ -31,7 +31,18 @@ function AdminDashboardContent() {
     if (path.includes('/admin/admins')) return 'admins'
     if (path.includes('/admin/notifications')) return 'notifications'
     return 'overview'
-  }
+  })
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
+  const [notificationMessage, setNotificationMessage] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [adminList, setAdminList] = useState<any[]>([])
+  const [newAdminEmail, setNewAdminEmail] = useState('')
+  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
+  const [userStats, setUserStats] = useState({
+    total: 0,
+    online: 0,
+    admins: 0
+  })
 
   // Mock user management functions for now - these would need to be implemented
   const userManagement = {
@@ -96,18 +107,6 @@ function AdminDashboardContent() {
     await loadRegisteredUsers()
   }
 
-  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
-  const [notificationMessage, setNotificationMessage] = useState('')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [adminList, setAdminList] = useState<any[]>([])
-  const [newAdminEmail, setNewAdminEmail] = useState('')
-  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
-  const [userStats, setUserStats] = useState({
-    total: 0,
-    online: 0,
-    admins: 0
-  })
   const error = settingsError
 
   // Redirect if not admin

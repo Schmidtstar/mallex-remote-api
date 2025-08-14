@@ -1,4 +1,3 @@
-
 import { firestore, firebaseAuth } from './firebase';
 import { collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
@@ -11,7 +10,7 @@ interface ApiResponse<T> {
 class ApiService {
   private handleError(error: any): string {
     console.error('API Error:', error);
-    
+
     if (error.code === 'permission-denied') {
       return 'Zugriff verweigert. Bitte überprüfen Sie Ihre Berechtigung.';
     }
@@ -21,23 +20,23 @@ class ApiService {
     if (error.code === 'unavailable') {
       return 'Service temporär nicht verfügbar.';
     }
-    
+
     return error.message || 'Ein unbekannter Fehler ist aufgetreten.';
   }
 
   async getCollection<T>(collectionName: string, conditions?: any[]): Promise<ApiResponse<T[]>> {
     try {
       let q = collection(firestore, collectionName);
-      
+
       if (conditions) {
         conditions.forEach(condition => {
-          q = query(q as any, condition);
+          q = query(q, condition);
         });
       }
-      
+
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as T);
-      
+
       return { success: true, data };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -48,11 +47,11 @@ class ApiService {
     try {
       const docRef = doc(firestore, collectionName, docId);
       const docSnap = await getDoc(docRef);
-      
+
       if (!docSnap.exists()) {
         return { success: false, error: 'Dokument nicht gefunden' };
       }
-      
+
       const data = { id: docSnap.id, ...docSnap.data() } as T;
       return { success: true, data };
     } catch (error) {
@@ -96,10 +95,10 @@ class ApiService {
     conditions?: any[]
   ): () => void {
     let q = collection(firestore, collectionName);
-    
+
     if (conditions) {
       conditions.forEach(condition => {
-        q = query(q as any, condition);
+        q = query(q, condition);
       });
     }
 

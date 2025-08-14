@@ -76,8 +76,10 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Explizite Exports mit Fallback
+// Explizite Exports
 export { auth, db }
+export { auth as firebaseAuth }
+export { db as firestore }
 
 // Named exports für bessere Kompatibilität
 export const firebase = { auth, db }

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { firebaseAuth } from '../lib/firebase';
 import { apiService } from '../lib/api';
@@ -44,26 +43,21 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       const result = await apiService.getCollection('admins', [
         where('email', '==', user.email)
       ]);
-      
+
       const adminStatus = result.success && result.data && result.data.length > 0;
-      setIsAdmin(adminStatus);
-      
-      if (adminStatus) {
-        console.log('✅ Admin verified via Firebase');
-      }
-      
-      return adminStatus;
+      setIsAdmin(adminStatus || false);
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      console.error('Admin-Status Fehler:', error);
       setIsAdmin(false);
-      return false;
     }
+
+    return isAdmin;
   };
 
   const loadSettings = async () => {
     try {
       const result = await apiService.getDocument<AdminSettings>('settings', 'admin');
-      
+
       if (result.success && result.data) {
         setSettings(result.data);
       } else {
@@ -84,7 +78,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     try {
       const updatedSettings = { ...settings, ...newSettings };
       const result = await apiService.setDocument('settings', 'admin', updatedSettings);
-      
+
       if (result.success) {
         setSettings(updatedSettings as AdminSettings);
       } else {
@@ -128,8 +122,13 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
 export function useAdmin() {
   const context = useContext(AdminContext);
-  if (context === undefined) {
-    throw new Error('useAdmin must be used within an AdminProvider');
+  if (!context) {
+    throw new Error('useAdmin muss innerhalb von AdminProvider verwendet werden');
   }
   return context;
+}
+
+export function useIsAdmin() {
+  const { isAdmin } = useAdmin();
+  return isAdmin;
 }

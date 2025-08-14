@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, updateProfile, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { ensureUserProfile } from '@/lib/userApi';
+import { ensureUserProfile } from '../lib/userApi';
 
 interface AuthContextType {
   user: User | null;

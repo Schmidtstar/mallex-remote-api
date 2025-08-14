@@ -19,7 +19,10 @@ function AdminDashboardContent() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  // Determine initial tab from URL path
+  // Use useAdminSettings hook early, before state declarations
+  const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
+
+  // Helper function to determine initial tab from URL path
   const getInitialTab = (): AdminTab => {
     const path = location.pathname
     if (path.includes('/admin/users')) return 'users'
@@ -30,8 +33,8 @@ function AdminDashboardContent() {
     return 'overview'
   }
 
-  // ALL STATE VARIABLES FIRST
-  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
+  // ALL STATE VARIABLES AFTER HOOKS
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => getInitialTab())
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [notificationMessage, setNotificationMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -43,9 +46,6 @@ function AdminDashboardContent() {
     online: 0,
     admins: 0
   })
-
-  // Now we can safely use useAdminSettings here because we're inside the provider
-  const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
   // THEN ALL FUNCTIONS
   const loadRegisteredUsers = async () => {

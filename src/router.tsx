@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
@@ -34,30 +35,6 @@ const LoadingSpinner = () => (
   </div>
 )
 
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    children: [
-      { index: true, element: <Navigate to="/arena" replace /> },
-      { path: 'arena', element: <ArenaScreen /> },
-      { path: 'auth', element: <AuthScreen /> },
-      { path: 'postfach', element: <PostfachScreen /> },
-      {
-        path: 'admin',
-        element: <RequireAdmin />,
-        children: [
-          { index: true, element: <AdminDashboard /> },
-          { path: 'users', element: <AdminDashboard /> },
-          { path: 'dashboard', element: <AdminDashboard /> }
-        ]
-      }
-    ]
-  }
-])
-
-const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
-
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
     const { user, loading } = useAuth()
@@ -67,8 +44,6 @@ function withAuth(element: React.ReactNode) {
   }
   return <Guard />
 }
-
-// ProtectedRoutes removed - using withAuth wrapper instead
 
 const routes = [
   {
@@ -132,6 +107,16 @@ const routes = [
             errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
           },
           {
+            path: 'dashboard',
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
+          },
+          {
+            path: 'users',
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler in Benutzerverwaltung</div></ErrorBoundary>
+          },
+          {
             path: 'tasks',
             element: <AdminTasksScreen />,
             errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>
@@ -156,6 +141,8 @@ const routes = [
     ]
   }
 ]
+
+const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
 
 export const router = useHash
   ? createHashRouter(routes)

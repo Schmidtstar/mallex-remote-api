@@ -73,11 +73,12 @@ function NotificationCenter() {
           setLoading(false)
         }, (error) => {
           // Only log unexpected errors, not permission-denied which is normal
-        if (error.code !== 'failed-precondition' && error.code !== 'permission-denied') {
-          console.error('Fehler beim Laden der Benachrichtigungen:', error)
-        } else {
-          console.log('📋 Benachrichtigungen nicht verfügbar - Firebase Regeln oder Offline-Modus')
-        }
+          if (error.code !== 'failed-precondition' && error.code !== 'permission-denied') {
+            console.error('Fehler beim Laden der Benachrichtigungen:', error)
+          } else {
+            console.log('📋 Benachrichtigungen nicht verfügbar - Firebase Regeln oder Offline-Modus')
+          }
+          setLoading(false)
         })
 
         return unsubscribe

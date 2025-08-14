@@ -21,32 +21,25 @@ export default defineConfig(({ mode }) => {
         '.riker.replit.dev',   // Specific Replit infrastructure
         'localhost'            // Local development
       ],
-      hmr: process.env.NODE_ENV === 'development' ? {
+      hmr: {
         port: 5001,
-        host: '0.0.0.0',
+        host: '0.0.0.0',           // Wichtig für Replit WebSocket-Zugriff
         overlay: false,
-        timeout: 60000,
+        timeout: 30000,            // Reduzierter Timeout
         clientErrorOverlay: false,
-        reconnectionDelay: 1000,
-        reconnectionAttempts: 5,
-        skipSSLVerification: true,
-        protocol: 'ws'
-      } : false,
+        reconnectionAttempts: 2,   // Weniger Reconnect-Versuche
+        skipSSLVerification: true, // Für Replit SSL-Probleme
+      },
       watch: {
-        usePolling: true,              // Aktiviere Polling für Replit
-        interval: 2000,                // Längeres Intervall
-        ignored: [
-          '**/node_modules/**',
-          '**/.git/**',
-          '**/dist/**',
-          '**/*.log'
-        ]
+        usePolling: false,
+        interval: 1000,
+        ignored: ['**/node_modules/**', '**/.git/**'], // Weniger File-Watching
       },
       cors: true, // CORS für WebSocket-Verbindungen
     },
     preview: {
       host: true,
-      port: 5000,
+      port: 3000,
       allowedHosts: [
         '.replit.dev',
         '.riker.replit.dev'

@@ -1,134 +1,86 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { auth as firebaseAuth } from '../lib/firebase';
-import { apiService } from '../lib/api';
-import { where } from 'firebase/firestore';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { useAuth } from './AuthContext'
+import { db } from '../lib/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 
-interface AdminSettings {
-  maxTasksPerCategory: number;
-  allowUserSuggestions: boolean;
-  moderationEnabled: boolean;
-  pointsPerTask: number;
-}
-
-interface AdminContextType {
-  isAdmin: boolean;
-  isLoading: boolean;
-  settings: AdminSettings | null;
-  updateSettings: (newSettings: Partial<AdminSettings>) => Promise<void>;
-  checkAdminStatus: () => Promise<boolean>;
-}
-
-const defaultSettings: AdminSettings = {
-  maxTasksPerCategory: 10,
-  allowUserSuggestions: true,
-  moderationEnabled: true,
-  pointsPerTask: 10,
-};
-
-const AdminContext = createContext<AdminContextType | undefined>(undefined);
-
-export function AdminProvider({ children }: { children: ReactNode }) {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [settings, setSettings] = useState<AdminSettings | null>(null);
-
-  const checkAdminStatus = async (): Promise<boolean> => {
-    const user = firebaseAuth.currentUser;
-    if (!user) {
-      setIsAdmin(false);
-      return false;
-    }
-
-    try {
-      const result = await apiService.getCollection('admins', [
-        where('email', '==', user.email)
-      ]);
-
-      const adminStatus = result.success && result.data && result.data.length > 0;
-      setIsAdmin(adminStatus || false);
-    } catch (error) {
-      console.error('Admin-Status Fehler:', error);
-      setIsAdmin(false);
-    }
-
-    return isAdmin;
-  };
-
-  const loadSettings = async () => {
-    try {
-      const result = await apiService.getDocument<AdminSettings>('settings', 'admin');
-
-      if (result.success && result.data) {
-        setSettings(result.data);
-      } else {
-        console.log('📋 Admin settings not accessible - using defaults');
-        setSettings(defaultSettings);
-      }
-    } catch (error) {
-      console.error('Error loading admin settings:', error);
-      setSettings(defaultSettings);
-    }
-  };
-
-  const updateSettings = async (newSettings: Partial<AdminSettings>) => {
-    if (!isAdmin) {
-      throw new Error('Nur Admins können Einstellungen ändern');
-    }
-
-    try {
-      const updatedSettings = { ...settings, ...newSettings };
-      const result = await apiService.setDocument('settings', 'admin', updatedSettings);
-
-      if (result.success) {
-        setSettings(updatedSettings as AdminSettings);
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error) {
-      console.error('Error updating settings:', error);
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    const initializeAdmin = async () => {
-      setIsLoading(true);
-      await checkAdminStatus();
-      await loadSettings();
-      setIsLoading(false);
-    };
-
-    const unsubscribe = firebaseAuth.onAuthStateChanged(() => {
-      initializeAdmin();
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const value: AdminContextType = {
-    isAdmin,
-    isLoading,
-    settings,
-    updateSettings,
-    checkAdminStatus,
-  };
-
-  return (
-    <AdminContext.Provider value={value}>
-      {children}
-    </AdminContext.Provider>
-  );
-}
+type AdminCtx = { isAdmin: boolean; loading: boolean }
+const AdminContext = createContext<AdminCtx>({ isAdmin: false, loading: true })
 
 export function useAdmin() {
-  const context = useContext(AdminContext);
+  const context = useContext(AdminContext)
   if (!context) {
-    throw new Error('useAdmin muss innerhalb von AdminProvider verwendet werden');
+    throw new Error('useAdmin must be used within AdminProvider')
   }
-  return context;
+  return context
 }
+export const useIsAdmin = () => useAdmin().isAdmin
 
-export function useIsAdmin() {
-  const { isAdmin } = useAdmin();
-  return isAdmin;
+export function AdminProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+
+    const checkAdmin = async () => {
+      if (cancelled) return
+
+      setLoading(true)
+      setIsAdmin(false)
+
+      if (!user?.uid) {
+        if (!cancelled) setLoading(false)
+        return
+      }
+
+      try {
+        // Check localStorage first for dev testing
+        const localAdmin = localStorage.getItem('mallex_dev_admin')
+        if (localAdmin === user.uid) {
+          console.log('🔧 Dev Admin mode active for:', user.uid)
+          if (!cancelled) {
+            setIsAdmin(true)
+            setLoading(false)
+          }
+          return
+        }
+
+        // Try Firebase with comprehensive error handling
+        const snap = await getDoc(doc(db, 'admins', user.uid))
+        if (!cancelled) {
+          const isFirebaseAdmin = snap.exists()
+          setIsAdmin(isFirebaseAdmin)
+          if (isFirebaseAdmin) {
+            console.log('✅ Admin verified via Firebase')
+          }
+        }
+      } catch (error: any) {
+        // Permission denied is EXPECTED for non-admins - don't log as error
+        if (error?.code === 'permission-denied') {
+          // This is normal - user is simply not an admin
+          if (!cancelled) setIsAdmin(false)
+          return // Silent exit for permission-denied
+        }
+
+        // Only log actual unexpected errors
+        console.warn('Unexpected Firebase admin check error:', error?.code || error?.message)
+        if (!cancelled) setIsAdmin(false)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    checkAdmin().catch(error => {
+      console.error('Admin check promise caught:', error)
+      if (!cancelled) {
+        setIsAdmin(false)
+        setLoading(false)
+      }
+    })
+
+    return () => { cancelled = true }
+  }, [user?.uid])
+
+  return <AdminContext.Provider value={{ isAdmin, loading }}>{children}</AdminContext.Provider>
 }

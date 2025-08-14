@@ -105,20 +105,12 @@
   --z-toast: 1002;
   --z-intro: 9999;
 
-  /* Mobile optimizations */
+  /* Performance optimized */
   --mobile-padding: var(--space-5);
   --mobile-gap: var(--space-4);
   --mobile-touch-target: 48px;
   --mobile-blur: blur(8px);
   --desktop-blur: blur(12px);
-  
-  /* Consistent transitions */
-  --transition-base: var(--transition-normal);
-  
-  /* Consistent borders */
-  --border-radius-sm: var(--radius-small);
-  --border-radius-md: var(--radius);
-  --border-radius-lg: var(--radius-large);
 
   /* Animation Zeiten */
   --transition-fast: 0.15s;

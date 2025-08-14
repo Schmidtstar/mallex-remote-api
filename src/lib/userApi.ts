@@ -1,141 +1,97 @@
-import { apiService } from './api';
-import { firebaseAuth } from './firebase';
-import { db } from './firebase'; // Assuming db is exported from firebase.ts
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'; // Import necessary Firestore functions
+import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 export interface UserProfile {
-  id: string;
-  email: string;
+  uid: string;
+  email?: string;
   displayName?: string;
-  photoURL?: string;
-  createdAt?: any;
-  lastLogin?: any;
-  isAdmin?: boolean;
-  points: number;
-  level: number;
-  completedTasks: string[];
-  lastActive: Date;
+  birthdate?: string;
+  gender?: 'male' | 'female' | 'diverse';
+  nationality?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLoginAt?: Date;
 }
 
-export async function ensureUserProfile(user: any): Promise<UserProfile> {
-  const userRef = doc(db, 'users', user.uid);
-  const userDoc = await getDoc(userRef);
+export async function createUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
+  const userRef = doc(db, 'users', uid);
+  await setDoc(userRef, {
+    uid,
+    ...data,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+}
 
-  if (!userDoc.exists()) {
-    const profile: UserProfile = {
-      id: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      createdAt: new Date(),
-      lastLogin: new Date(),
-      isAdmin: false,
-      points: 0,
-      level: 1,
-      completedTasks: [],
-      lastActive: new Date()
-    };
-    await setDoc(userRef, profile);
-    return profile;
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const userRef = doc(db, 'users', uid);
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    return userSnap.data() as UserProfile;
   }
-
-  // Update last active when ensuring profile
-  await updateDoc(userRef, { lastActive: new Date() });
-  return userDoc.data() as UserProfile;
+  return null;
 }
 
-export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  try {
-    const userRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(userRef);
-    return userDoc.exists() ? userDoc.data() as UserProfile : null;
-  } catch (error) {
-    console.error('Error getting user profile:', error);
-    return null;
-  }
+export async function updateUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
+  const userRef = doc(db, 'users', uid);
+  await updateDoc(userRef, {
+    ...data,
+    updatedAt: new Date()
+  });
 }
 
-export async function updateUserProfile(userId: string, updates: Partial<UserProfile>): Promise<void> {
-  try {
-    const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, { ...updates, lastActive: new Date() });
-  } catch (error) {
-    console.error('Error updating user profile:', error);
-    throw error;
-  }
-}
-
-export const userApi = {
-  async ensureUserProfile(userId: string, userData: Partial<UserProfile>) {
-    // This function is now replaced by the standalone ensureUserProfile
-    // Keeping it here for now to avoid breaking if it's used elsewhere,
-    // but ideally it should be refactored or removed if not needed.
-    const existingUser = await getUserProfile(userId); // Use the new getUserProfile
-
-    if (!existingUser) {
-      const newUser: Omit<UserProfile, 'id'> = {
-        displayName: userData.displayName || 'Unbekannt',
-        email: userData.email || '',
-        points: 0,
-        level: 1,
-        completedTasks: [],
-        createdAt: new Date(),
-        lastActive: new Date(),
-        ...userData
-      };
-
-      // Ensure the standalone ensureUserProfile is called with the correct user object structure
-      // This might require adapting the user object format or calling the standalone function directly
-      // For now, let's assume we need to create a mock user object if the standalone function expects it.
-      const mockUser = { uid: userId, email: userData.email, displayName: userData.displayName };
-      return ensureUserProfile(mockUser);
-    }
-
-    // Update last active
-    return updateUserProfile(userId, {
-      lastActive: new Date()
+export async function ensureUserProfile(uid: string, data: {
+  email?: string;
+  displayName?: string;
+  birthDate?: string | null;    // ISO YYYY-MM-DD
+  gender?: 'male'|'female'|'diverse'|null;
+  nationality?: string | null;  // ISO country code
+}) {
+  const ref = doc(db, 'users', uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      email: data.email ?? null,
+      displayName: data.displayName ?? null,
+      birthDate: data.birthDate ?? null,
+      gender: data.gender ?? null,
+      nationality: data.nationality ?? null,
+      createdAt: serverTimestamp(),
+      lastLoginAt: serverTimestamp(),
     });
-  },
-
-  async getUserProfile(userId: string) {
-    return getUserProfile(userId); // Use the new standalone function
-  },
-
-  async updateUserProfile(userId: string, updates: Partial<UserProfile>) {
-    return updateUserProfile(userId, updates); // Use the new standalone function
-  },
-
-  async addPoints(userId: string, points: number) {
-    const user = await this.getUserProfile(userId);
-    if (user) { // Check if user is not null
-      const newPoints = user.points + points;
-      const newLevel = Math.floor(newPoints / 100) + 1;
-
-      return this.updateUserProfile(userId, {
-        points: newPoints,
-        level: newLevel
-      });
-    }
-    return Promise.resolve({ success: false, error: 'Benutzer nicht gefunden' }); // Return a promise to match the original return type
-  },
-
-  async completeTask(userId: string, taskId: string, points: number) {
-    const user = await this.getUserProfile(userId);
-    if (user) { // Check if user is not null
-      const completedTasks = [...user.completedTasks, taskId];
-      const newPoints = user.points + points;
-      const newLevel = Math.floor(newPoints / 100) + 1;
-
-      return this.updateUserProfile(userId, {
-        completedTasks,
-        points: newPoints,
-        level: newLevel
-      });
-    }
-    return Promise.resolve({ success: false, error: 'Benutzer nicht gefunden' }); // Return a promise to match the original return type
-  },
-
-  getCurrentUser() {
-    return firebaseAuth.currentUser;
+  } else {
+    await setDoc(ref, {
+      lastLoginAt: serverTimestamp(),
+      // merge optional Felder nur wenn übergeben
+      ...(data.birthDate !== undefined ? { birthDate: data.birthDate } : {}),
+      ...(data.gender !== undefined ? { gender: data.gender } : {}),
+      ...(data.nationality !== undefined ? { nationality: data.nationality } : {}),
+      ...(data.displayName !== undefined ? { displayName: data.displayName } : {}),
+    }, { merge: true });
   }
-};
+  return ref;
+}
+
+export const nationalities = [
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+  'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina',
+  'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde',
+  'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba',
+  'Cyprus', 'Czech Republic', 'Democratic Republic of the Congo', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+  'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland',
+  'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau',
+  'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy',
+  'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon',
+  'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia',
+  'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco',
+  'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand',
+  'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea',
+  'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis',
+  'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles',
+  'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'Spain',
+  'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania',
+  'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine',
+  'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela',
+  'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
+];

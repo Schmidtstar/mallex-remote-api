@@ -46,21 +46,12 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onComplete }) => {
         </div>
       </div>
       
-      {/* EPISCHE Atmosphäre mit Partikel-System */}
+      {/* Verstärkte Atmosphäre */}
       <div className={styles.atmosphere}>
         <div className={styles.torchFlames}></div>
         <div className={styles.goldDust}></div>
         <div className={styles.wine}></div>
         <div className={styles.lightningBolts}></div>
-        <div className={styles.epicParticles}>
-          <div className={styles.goldParticle} style={{left: '10%', top: '20%', animationDelay: '0s'}}>✨</div>
-          <div className={styles.goldParticle} style={{left: '80%', top: '15%', animationDelay: '0.5s'}}>💫</div>
-          <div className={styles.goldParticle} style={{left: '15%', top: '70%', animationDelay: '1s'}}>⭐</div>
-          <div className={styles.goldParticle} style={{left: '85%', top: '75%', animationDelay: '1.5s'}}>✨</div>
-          <div className={styles.goldParticle} style={{left: '50%', top: '10%', animationDelay: '2s'}}>🌟</div>
-          <div className={styles.goldParticle} style={{left: '30%', top: '85%', animationDelay: '2.5s'}}>💫</div>
-          <div className={styles.goldParticle} style={{left: '70%', top: '45%', animationDelay: '3s'}}>⭐</div>
-        </div>
       </div>
       
       <div className={styles.content}>

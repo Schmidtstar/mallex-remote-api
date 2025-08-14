@@ -1,52 +1,85 @@
-import { initializeApp } from 'firebase/app'
-import { getAuth, connectAuthEmulator } from 'firebase/auth'
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
+import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDqZv3qF_tH4Y8K8K8K8K8K8K8K8K8K8K8",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mallex-1b745.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "mallex-1b745",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mallex-1b745.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "461634733593",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:461634733593:web:033d22b5c9c677209b4c88",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-SQW96VK7S9"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+// Validate configuration in production
+if (import.meta.env.PROD) {
+  const requiredVars = [
+    'VITE_FIREBASE_API_KEY',
+    'VITE_FIREBASE_AUTH_DOMAIN',
+    'VITE_FIREBASE_PROJECT_ID',
+    'VITE_FIREBASE_APP_ID'
+  ]
+
+  for (const varName of requiredVars) {
+    if (!import.meta.env[varName]) {
+      throw new Error(`Missing required environment variable: ${varName}`)
+    }
+  }
 }
 
-console.log('🔧 Firebase Config:', {
-  ...firebaseConfig,
-  apiKey: '[HIDDEN]'
+// Initialize Firebase app once
+const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+// Synchrone Initialisierung für bessere Performance
+import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
+import { initializeFirestore, enableNetwork, connectFirestoreEmulator } from 'firebase/firestore'
+
+// Initialize Firebase services synchronously
+const auth = getAuth(app)
+const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  ignoreUndefinedProperties: true,
+  localCache: {
+    kind: 'persistent',
+    tabManager: 'optimistic',
+    sizeBytes: 40000000  // Korrigierter Cache-Parameter
+  }
 })
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
+// Setup auth persistence
+setPersistence(auth, browserLocalPersistence).catch((e) =>
+  console.warn('Auth persistence warning:', e?.message || e)
+)
 
-// Initialize Firebase services
-export const auth = getAuth(app)
-export const db = getFirestore(app)
+// Enable network for Firestore
+if (typeof window !== 'undefined') {
+  enableNetwork(db).catch(console.warn)
+}
 
-// Connect to emulators in development
-if (import.meta.env.DEV) {
+// Connection retry logic
+let connectionAttempts = 0
+const maxRetries = 3
+
+const ensureConnection = async () => {
   try {
-    connectAuthEmulator(auth, 'http://0.0.0.0:9099', { disableWarnings: true })
-    console.log('🔧 Auth Emulator connected')
+    await enableNetwork(db)
+    connectionAttempts = 0
   } catch (error) {
-    console.log('⚠️ Auth Emulator not available - using production Firebase')
-  }
-
-  try {
-    connectFirestoreEmulator(db, '0.0.0.0', 8080)
-    console.log('🔧 Firestore Emulator connected')
-  } catch (error) {
-    console.log('⚠️ Firestore Emulator not available - using production Firebase')
+    if (connectionAttempts < maxRetries) {
+      connectionAttempts++
+      const delay = Math.pow(2, connectionAttempts) * 1000
+      setTimeout(ensureConnection, delay)
+    }
   }
 }
 
-// Clean exports - NO duplicates
-export { auth }
-export { db }
-export { auth as firebaseAuth }
-export { db as firestore }
+// Auto-retry connection on network issues
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', ensureConnection)
+}
 
-export default { auth, db }
+export { auth, db }
 
-console.log('🔥 Firebase ready')
+// Firebase ready indicator - development only
+if (import.meta.env.DEV && !window._firebaseConfigLogged) {
+  console.log('🔥 Firebase ready')
+  window._firebaseConfigLogged = true
+}

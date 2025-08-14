@@ -65,11 +65,3 @@ interface ImportMeta {
 }
 
 export {};
-declare global {
-  interface Window {
-    _firebaseConfigLogged?: boolean;
-    __MALLEX_DEV__?: boolean;
-  }
-}
-
-export {};

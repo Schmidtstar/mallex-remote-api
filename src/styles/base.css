@@ -6,10 +6,6 @@
 
 html, body, #root {
   height: 100%;
-  height: 100vh; /* Fallback for older browsers */
-  height: calc(var(--vh, 1vh) * 100); /* Custom property for mobile viewport */
-  height: 100dvh; /* Dynamic viewport height for newer browsers */
-  overflow-x: hidden;
 }
 
 body {
@@ -21,26 +17,6 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  /* Safari fullscreen optimizations */
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: none;
-  
-  /* Prevent Safari bounce/overscroll */
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-#root {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Antike Schriftarten Hierarchie */
@@ -114,13 +90,51 @@ input::placeholder, textarea::placeholder {
   font-style: italic;
 }
 
-/* Basic button reset - detailed styling in design-system.css */
+/* Buttons - Olympischer Stil */
 button {
-  font: inherit;
+  background: var(--gradient-gold);
+  color: var(--ancient-night);
   border: none;
-  background: none;
+  padding: var(--space-4) var(--space-6);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
-  transition: all var(--transition-normal) ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-gold);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold), 0 6px 20px rgba(218, 165, 32, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background: var(--color-text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Button Varianten */
+button.secondary {
+  background: transparent;
+  color: var(--ancient-gold);
+  border: 2px solid var(--ancient-gold);
+  box-shadow: none;
+}
+
+button.secondary:hover {
+  background: var(--ancient-gold);
+  color: var(--ancient-night);
+}
+
+button.danger {
+  background: linear-gradient(135deg, var(--ancient-wine), #B22222);
+  color: var(--ancient-marble);
 }
 
 /* Utility Classes */

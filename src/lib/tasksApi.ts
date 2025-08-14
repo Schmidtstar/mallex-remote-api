@@ -1,144 +1,72 @@
-import { apiService } from './api';
-import { where, orderBy, collection, query, getDocs, addDoc } from 'firebase/firestore';
-import { db } from './firebase'; // Annahme: db ist hier exportiert
+import { db } from '@/lib/firebase';
+import { col } from '@/lib/paths';
+import {
+  addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where,
+} from 'firebase/firestore';
+
+export type TaskStatus = 'approved' | 'pending' | 'rejected';
+export type CategoryKey = 'fate' | 'shame' | 'seduce' | 'escalate' | 'confess';
 
 export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  difficulty: number;
-  points: number;
-  createdAt: Date;
-  isActive: boolean;
+  id?: string;
+  category: CategoryKey;
+  text: string;
+  status: TaskStatus;
+  createdBy?: string | 'system';
+  createdAt?: any; // Timestamp
+  hidden?: boolean;
 }
 
 export interface TaskSuggestion {
   id: string;
-  title: string;
-  description: string;
-  category: string;
-  suggestedBy: string;
+  text: string;
+  categoryId: string;
+  authorId: string;
+  createdAt: any;
   status: 'pending' | 'approved' | 'rejected';
-  createdAt: Date;
+  author?: { email?: string; uid?: string };
+  note?: string;
+  hidden?: boolean;
 }
 
-// Neue Schnittstelle und Funktionen basierend auf der Analyse
-export interface Task {
-  id: string;
-  category: string;
-  description: string;
-  text: string; // Legacy field für Kompatibilität
-  approved: boolean;
-  createdAt: Date | any; // Für Firebase Timestamp
-  createdBy?: string;
+export async function listApprovedTasks(category?: CategoryKey): Promise<Task[]> {
+  const base = collection(db, col.tasks);
+  const q = category
+    ? query(base, where('status', '==', 'approved'), where('category', '==', category))
+    : query(base, where('status', '==', 'approved'));
+  const snap = await getDocs(q);
+  
+  // Filter hidden tasks client-side until index is ready
+  return snap.docs
+    .map(d => ({ id: d.id, ...(d.data() as Task) }))
+    .filter(task => !task.hidden);
 }
 
-export type CategoryKey = string;
-
-export async function listApprovedTasks(): Promise<Task[]> {
-  try {
-    const tasksRef = collection(db, 'tasks');
-    const q = query(tasksRef, where('approved', '==', true));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      text: doc.data().description || doc.data().text // Fallback
-    } as Task));
-  } catch (error) {
-    console.error('Error listing approved tasks:', error);
-    return [];
-  }
+export async function createTask(task: Omit<Task, 'id'|'createdAt'>) {
+  return addDoc(collection(db, col.tasks), { ...task, createdAt: serverTimestamp() });
 }
 
-export async function createTaskApproved(task: Omit<Task, 'id' | 'createdAt'>): Promise<string> {
-  try {
-    const tasksRef = collection(db, 'tasks');
-    const docRef = await addDoc(tasksRef, {
-      ...task,
-      createdAt: new Date(),
-      approved: true
-    });
-    return docRef.id;
-  } catch (error) {
-    console.error('Error creating approved task:', error);
-    throw error;
-  }
+export async function updateTask(id: string, patch: Partial<Task>) {
+  return updateDoc(doc(db, col.tasks, id), patch);
 }
 
-// Bestehende apiService-Funktionen
-export const tasksApi = {
-  async getTasks(category?: string) {
-    const conditions = [
-      where('isActive', '==', true),
-      orderBy('createdAt', 'desc')
-    ];
+export async function deleteTask(id: string) {
+  return deleteDoc(doc(db, col.tasks, id));
+}
 
-    if (category) {
-      conditions.unshift(where('category', '==', category));
-    }
+export async function getTask(id: string): Promise<Task | null> {
+  const snap = await getDoc(doc(db, col.tasks, id));
+  return snap.exists() ? { id: snap.id, ...(snap.data() as Task) } : null;
+}
 
-    return apiService.getCollection<Task>('tasks', conditions);
-  },
+// Alias for consistency
+export const fetchApprovedTasks = listApprovedTasks;
+export const fetchApprovedTasksByCategory = listApprovedTasks;
 
-  async getTasksByCategory(category: string) {
-    return this.getTasks(category);
-  },
-
-  async createTask(task: Omit<Task, 'id' | 'createdAt'>) {
-    const newTask = {
-      ...task,
-      createdAt: new Date(),
-    };
-
-    const taskId = `task_${Date.now()}`;
-    return apiService.setDocument<Task>('tasks', taskId, newTask);
-  },
-
-  async updateTask(taskId: string, updates: Partial<Task>) {
-    return apiService.updateDocument<Task>('tasks', taskId, updates);
-  },
-
-  async deleteTask(taskId: string) {
-    return apiService.updateDocument<Task>('tasks', taskId, { isActive: false });
-  },
-
-  async getSuggestions() {
-    const conditions = [orderBy('createdAt', 'desc')];
-    return apiService.getCollection<TaskSuggestion>('taskSuggestions', conditions);
-  },
-
-  async createSuggestion(suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'>) {
-    const newSuggestion = {
-      ...suggestion,
-      createdAt: new Date(),
-      status: 'pending' as const,
-    };
-
-    const suggestionId = `suggestion_${Date.now()}`;
-    return apiService.setDocument<TaskSuggestion>('taskSuggestions', suggestionId, newSuggestion);
-  },
-
-  async updateSuggestion(suggestionId: string, updates: Partial<TaskSuggestion>) {
-    return apiService.updateDocument<TaskSuggestion>('taskSuggestions', suggestionId, updates);
-  },
-
-  subscribeToTasks(callback: (tasks: Task[]) => void, category?: string) {
-    const conditions = [
-      where('isActive', '==', true),
-      orderBy('createdAt', 'desc')
-    ];
-
-    if (category) {
-      conditions.unshift(where('category', '==', category));
-    }
-
-    return apiService.subscribeToCollection<Task>('tasks', callback, conditions);
-  },
-
-  subscribeToSuggestions(callback: (suggestions: TaskSuggestion[]) => void) {
-    const conditions = [orderBy('createdAt', 'desc')];
-    return apiService.subscribeToCollection<TaskSuggestion>('taskSuggestions', callback, conditions);
-  }
-};
+export async function createTaskApproved(task: Omit<Task, 'id'|'createdAt'|'status'>) {
+  return addDoc(collection(db, col.tasks), { 
+    ...task, 
+    status: 'approved' as TaskStatus, 
+    createdAt: serverTimestamp() 
+  });
+}

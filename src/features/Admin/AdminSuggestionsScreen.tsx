@@ -1,30 +1,10 @@
 import { useEffect, useState } from 'react';
-// Fixed suggestion interface
+// Deprecated API entfernt - lokale Typen
 interface Suggestion {
   id: string;
-  text: string;
-  category: string;
+  content: string;
   status: 'pending' | 'approved' | 'rejected';
-  createdBy: string;
-  createdAt: Date;
 }
-
-// Placeholder API functions until Firebase is fully implemented
-const listSuggestionsForAdmin = async (status: string): Promise<Suggestion[]> => {
-  console.log('Loading suggestions with status:', status);
-  // TODO: Implement with Firebase
-  return [];
-};
-
-const moderateSuggestion = async (id: string, action: 'approve' | 'reject'): Promise<void> => {
-  console.log('Moderating suggestion:', id, action);
-  // TODO: Implement with Firebase
-};
-
-const promoteApprovedSuggestionToTask = async (suggestion: Suggestion, userId?: string): Promise<void> => {
-  console.log('Promoting suggestion to task:', suggestion.text, 'by', userId);
-  // TODO: Implement with Firebase
-};
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/context/AdminContext';
 import { useTranslation } from 'react-i18next';

@@ -11,16 +11,6 @@ import { db } from '../../lib/firebase'
 
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 
-// Helper function outside component to avoid re-initialization issues
-function getInitialTabFromPath(pathname: string): AdminTab {
-  if (pathname.includes('/admin/users')) return 'users'
-  if (pathname.includes('/admin/dashboard')) return 'overview'
-  if (pathname.includes('/admin/settings')) return 'settings'
-  if (pathname.includes('/admin/admins')) return 'admins'
-  if (pathname.includes('/admin/notifications')) return 'notifications'
-  return 'overview'
-}
-
 // Separate the main dashboard content into its own component
 function AdminDashboardContent() {
   const { t } = useTranslation()
@@ -28,85 +18,27 @@ function AdminDashboardContent() {
   const isAdmin = useIsAdmin()
   const location = useLocation()
   const navigate = useNavigate()
-
-  // ALL HOOKS MUST BE CALLED IN THE SAME ORDER EVERY TIME
-  // 1. Context hooks first
+  
+  // Now we can safely use useAdminSettings here because we're inside the provider
   const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
-  // 2. All state hooks in fixed order
-  const [activeTab, setActiveTab] = useState<AdminTab>(() => getInitialTabFromPath(location.pathname))
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
-  const [notificationMessage, setNotificationMessage] = useState('')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [adminList, setAdminList] = useState<any[]>([])
-  const [newAdminEmail, setNewAdminEmail] = useState('')
-  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
-  const [userStats, setUserStats] = useState({
-    total: 0,
-    online: 0,
-    admins: 0
-  })
-
-  // Early return AFTER all hooks are called
-  if (!isAdmin) {
-    return <Navigate to="/arena" replace />
+  // Determine initial tab from URL path
+  const getInitialTab = (): AdminTab => {
+    const path = location.pathname
+    if (path.includes('/admin/users')) return 'users'
+    if (path.includes('/admin/dashboard')) return 'overview'
+    if (path.includes('/admin/settings')) return 'settings'
+    if (path.includes('/admin/admins')) return 'admins'
+    if (path.includes('/admin/notifications')) return 'notifications'
+    return 'overview'
   }
 
-  // ALL FUNCTIONS AFTER HOOKS AND EARLY RETURNS
-  const loadRegisteredUsers = async () => {
-    try {
-      const usersRef = collection(db, 'users')
-      const usersSnapshot = await getDocs(usersRef)
-
-      const usersList = usersSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        lastLoginAt: doc.data().lastLoginAt?.toDate?.() || null
-      }))
-
-      setRegisteredUsers(usersList)
-      // Count admins from the admin list
-      const adminCount = adminList.length
-
-      setUserStats({
-        total: usersList.length,
-        online: usersList.filter(u => {
-          const lastLogin = u.lastLoginAt
-          return lastLogin && (Date.now() - lastLogin.getTime()) < 30 * 60 * 1000 // 30 min
-        }).length,
-        admins: adminCount
-      })
-    } catch (error: any) {
-      if (error.code !== 'permission-denied') {
-        console.error('Error loading registered users:', error)
-      } else {
-        console.log('📋 Registered users not accessible - using defaults')
-      }
-      setRegisteredUsers([])
-    }
-  }
-
-  const loadAdminList = async () => {
-    try {
-      const admins = await getAdminList()
-      setAdminList(admins)
-    } catch (error: any) {
-      if (error.code !== 'permission-denied') {
-        console.error('Failed to load admin list:', error)
-      } else {
-        console.log('📋 Admin list not accessible - using local fallback')
-      }
-    }
-  }
-
-  const loadUsers = async () => {
-    await loadRegisteredUsers()
-  }
-
-  const getAdminList = async () => {
-    console.log('Get admin list')
-    // TODO: Implement admin list functionality
-    return []
+  // Mock user management functions for now - these would need to be implemented
+  const userManagement = {
+    users: registeredUsers,
+    bannedUsers: new Set(),
+    moderators: new Set(),
+    error: null
   }
 
   const banUser = async (uid: string, reason?: string) => {
@@ -154,15 +86,34 @@ function AdminDashboardContent() {
     // TODO: Implement admin revocation functionality
   }
 
-  // Mock user management object
-  const userManagement = {
-    users: registeredUsers,
-    bannedUsers: new Set(),
-    moderators: new Set(),
-    error: null
+  const getAdminList = async () => {
+    console.log('Get admin list')
+    // TODO: Implement admin list functionality
+    return []
   }
 
+  const loadUsers = async () => {
+    await loadRegisteredUsers()
+  }
+
+  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
+  const [notificationMessage, setNotificationMessage] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [adminList, setAdminList] = useState<any[]>([])
+  const [newAdminEmail, setNewAdminEmail] = useState('')
+  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
+  const [userStats, setUserStats] = useState({
+    total: 0,
+    online: 0,
+    admins: 0
+  })
   const error = settingsError
+
+  // Redirect if not admin
+  if (!isAdmin) {
+    return <Navigate to="/arena" replace />
+  }
 
   if (loading) {
     return (
@@ -250,6 +201,19 @@ function AdminDashboardContent() {
     setSelectedUsers(newSelection)
   }
 
+  const loadAdminList = async () => {
+    try {
+      const admins = await getAdminList()
+      setAdminList(admins)
+    } catch (error) {
+      if (error.code !== 'permission-denied') {
+        console.error('Failed to load admin list:', error)
+      } else {
+        console.log('📋 Admin list not accessible - using local fallback')
+      }
+    }
+  }
+
   const loadSettings = async () => {
     try {
       // Admin settings are already loaded via useAdminSettings hook
@@ -258,6 +222,47 @@ function AdminDashboardContent() {
       console.error('Error loading settings:', error)
     }
   }
+
+  const loadRegisteredUsers = async () => {
+    try {
+      const usersRef = collection(db, 'users')
+      const usersSnapshot = await getDocs(usersRef)
+
+      const usersList = usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        lastLoginAt: doc.data().lastLoginAt?.toDate?.() || null
+      }))
+
+      setRegisteredUsers(usersList)
+      // Count admins from the admin list
+      const adminCount = adminList.length
+      
+      setUserStats({
+        total: usersList.length,
+        online: usersList.filter(u => {
+          const lastLogin = u.lastLoginAt
+          return lastLogin && (Date.now() - lastLogin.getTime()) < 30 * 60 * 1000 // 30 min
+        }).length,
+        admins: adminCount
+      })
+    } catch (error) {
+      if (error.code !== 'permission-denied') {
+        console.error('Error loading registered users:', error)
+      } else {
+        console.log('📋 Registered users not accessible - using defaults')
+      }
+      setRegisteredUsers([])
+    }
+  }
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadUsers()
+      loadAdminList()
+      loadRegisteredUsers()
+    }
+  }, [isAdmin])
 
   const handlePromoteToAdmin = async () => {
     if (!newAdminEmail.trim()) return
@@ -281,15 +286,6 @@ function AdminDashboardContent() {
       console.error('Failed to revoke admin:', error)
     }
   }
-
-  // useEffect hooks at the end, after all other logic
-  useEffect(() => {
-    if (isAdmin) {
-      loadUsers()
-      loadAdminList()
-      loadRegisteredUsers()
-    }
-  }, [isAdmin])
 
   return (
     <div className={styles.dashboard}>

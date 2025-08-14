@@ -75,6 +75,6 @@ export const menuItems: MenuItem[] = [
     labelKey: 'nav.adminTasks',
     icon: '📋',
     requiresAuth: true,
-    adminOnly: true
+    adminOnly: true,
   }
 ]

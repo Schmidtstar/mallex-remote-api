@@ -40,6 +40,8 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  console.log('TaskSuggestionsProvider initialized for user:', user?.uid || 'anonymous')
+
   useEffect(() => {
     const loadSuggestions = async () => {
       setLoading(true)

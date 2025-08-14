@@ -50,7 +50,8 @@ const db = initializeFirestore(app, {
   ignoreUndefinedProperties: true,
   experimentalAutoDetectLongPolling: true,
   localCache: persistentLocalCache({
-    cacheSizeBytes: 40 * 1024 * 1024 // 40MB
+    tabManager: undefined, // Use default tab manager
+    cacheSizeBytes: undefined // Remove deprecated parameter
   })
 })
 

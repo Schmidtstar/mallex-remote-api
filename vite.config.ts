@@ -23,17 +23,23 @@ export default defineConfig(({ mode }) => {
       ],
       hmr: {
         port: 5001,
-        host: '0.0.0.0',           // Wichtig für Replit WebSocket-Zugriff
+        host: '0.0.0.0',
         overlay: false,
-        timeout: 30000,            // Reduzierter Timeout
+        timeout: 60000,              // Längerer Timeout für Replit
         clientErrorOverlay: false,
-        reconnectionAttempts: 2,   // Weniger Reconnect-Versuche
-        skipSSLVerification: true, // Für Replit SSL-Probleme
+        reconnectionDelay: 1000,     // Delay zwischen Reconnects
+        reconnectionAttempts: 5,     // Mehr Versuche für Replit
+        skipSSLVerification: true
       },
       watch: {
-        usePolling: false,
-        interval: 1000,
-        ignored: ['**/node_modules/**', '**/.git/**'], // Weniger File-Watching
+        usePolling: true,              // Aktiviere Polling für Replit
+        interval: 2000,                // Längeres Intervall
+        ignored: [
+          '**/node_modules/**', 
+          '**/.git/**',
+          '**/dist/**',
+          '**/*.log'
+        ]
       },
       cors: true, // CORS für WebSocket-Verbindungen
     },

@@ -10,18 +10,21 @@ import AdminSettingsProvider from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import { IntroScreen } from './components/IntroScreen'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
-    <AdminProvider>
-      <AdminSettingsProvider>
-        <PlayersProvider>
-          <TaskSuggestionsProvider>
-            {children}
-          </TaskSuggestionsProvider>
-        </PlayersProvider>
-      </AdminSettingsProvider>
-    </AdminProvider>
+    <ErrorBoundary>
+      <AdminProvider>
+        <AdminSettingsProvider>
+          <PlayersProvider>
+            <TaskSuggestionsProvider>
+              {children}
+            </TaskSuggestionsProvider>
+          </PlayersProvider>
+        </AdminSettingsProvider>
+      </AdminProvider>
+    </ErrorBoundary>
   </AuthProvider>
 ))
 ContextProviders.displayName = 'ContextProviders'

@@ -101,7 +101,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Firebase connection errors
-      if (error.message?.includes('Firebase') || error.message?.includes('firestore')) {
+      if (error.message?.includes('Firebase') || error.message?.includes('firestore') || error.message?.includes('cache')) {
         return (
           <div style={{
             display: 'flex',

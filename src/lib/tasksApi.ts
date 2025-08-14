@@ -1,75 +1,99 @@
 
-import { collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, type Timestamp } from 'firebase/firestore'
-import { db } from './firebase'
-
-export type CategoryKey = 'fate' | 'shame' | 'seduce' | 'escalate' | 'confess'
+import { apiService } from './api';
+import { where, orderBy } from 'firebase/firestore';
 
 export interface Task {
-  id?: string
-  text: string
-  category: CategoryKey
-  createdAt?: Timestamp
-  createdBy?: string
-  status?: 'approved' | 'pending' | 'rejected'
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: number;
+  points: number;
+  createdAt: Date;
+  isActive: boolean;
 }
 
-export interface CreateTaskRequest {
-  category: CategoryKey
-  text: string
-  createdBy: string
+export interface TaskSuggestion {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  suggestedBy: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: Date;
 }
 
-export async function createTaskApproved(taskData: CreateTaskRequest): Promise<string> {
-  try {
-    const docRef = await addDoc(collection(db, 'tasks'), {
-      text: taskData.text,
-      category: taskData.category,
-      status: 'approved',
-      createdBy: taskData.createdBy,
-      createdAt: serverTimestamp()
-    })
+export const tasksApi = {
+  async getTasks(category?: string) {
+    const conditions = [
+      where('isActive', '==', true),
+      orderBy('createdAt', 'desc')
+    ];
     
-    console.log('✅ Task created successfully:', docRef.id)
-    return docRef.id
-  } catch (error) {
-    console.error('❌ Failed to create task:', error)
-    throw error
+    if (category) {
+      conditions.unshift(where('category', '==', category));
+    }
+    
+    return apiService.getCollection<Task>('tasks', conditions);
+  },
+
+  async getTasksByCategory(category: string) {
+    return this.getTasks(category);
+  },
+
+  async createTask(task: Omit<Task, 'id' | 'createdAt'>) {
+    const newTask = {
+      ...task,
+      createdAt: new Date(),
+    };
+    
+    const taskId = `task_${Date.now()}`;
+    return apiService.setDocument<Task>('tasks', taskId, newTask);
+  },
+
+  async updateTask(taskId: string, updates: Partial<Task>) {
+    return apiService.updateDocument<Task>('tasks', taskId, updates);
+  },
+
+  async deleteTask(taskId: string) {
+    return apiService.updateDocument<Task>('tasks', taskId, { isActive: false });
+  },
+
+  async getSuggestions() {
+    const conditions = [orderBy('createdAt', 'desc')];
+    return apiService.getCollection<TaskSuggestion>('taskSuggestions', conditions);
+  },
+
+  async createSuggestion(suggestion: Omit<TaskSuggestion, 'id' | 'createdAt'>) {
+    const newSuggestion = {
+      ...suggestion,
+      createdAt: new Date(),
+      status: 'pending' as const,
+    };
+    
+    const suggestionId = `suggestion_${Date.now()}`;
+    return apiService.setDocument<TaskSuggestion>('taskSuggestions', suggestionId, newSuggestion);
+  },
+
+  async updateSuggestion(suggestionId: string, updates: Partial<TaskSuggestion>) {
+    return apiService.updateDocument<TaskSuggestion>('taskSuggestions', suggestionId, updates);
+  },
+
+  subscribeToTasks(callback: (tasks: Task[]) => void, category?: string) {
+    const conditions = [
+      where('isActive', '==', true),
+      orderBy('createdAt', 'desc')
+    ];
+    
+    if (category) {
+      conditions.unshift(where('category', '==', category));
+    }
+    
+    return apiService.subscribeToCollection<Task>('tasks', callback, conditions);
+  },
+
+  subscribeToSuggestions(callback: (suggestions: TaskSuggestion[]) => void) {
+    const conditions = [orderBy('createdAt', 'desc')];
+    return apiService.subscribeToCollection<TaskSuggestion>('taskSuggestions', callback, conditions);
   }
-}
-
-export async function listApprovedTasks(category?: CategoryKey): Promise<Task[]> {
-  try {
-    const tasksRef = collection(db, 'tasks')
-    const tasksQuery = category
-      ? query(tasksRef, 
-          where('category', '==', category), 
-          where('status', '==', 'approved'),
-          orderBy('createdAt', 'desc')
-        )
-      : query(tasksRef, 
-          where('status', '==', 'approved'),
-          orderBy('createdAt', 'desc')
-        )
-
-    const snapshot = await getDocs(tasksQuery)
-    const tasks: Task[] = []
-
-    snapshot.forEach((doc) => {
-      const data = doc.data()
-      tasks.push({
-        id: doc.id,
-        text: data.text,
-        category: data.category,
-        createdAt: data.createdAt,
-        createdBy: data.createdBy,
-        status: data.status
-      })
-    })
-
-    console.log('✅ Tasks loaded successfully:', tasks.length)
-    return tasks
-  } catch (error) {
-    console.error('❌ Failed to load tasks:', error)
-    throw error
-  }
-}
+};

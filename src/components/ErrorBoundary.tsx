@@ -1,164 +1,102 @@
-import React, { Component, ReactNode } from 'react'
 
-// Assuming styles are defined elsewhere, e.g., in a CSS module
-// import styles from './ErrorBoundary.module.css';
-// For demonstration, using inline styles similar to the original.
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
-  error?: Error
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false,
+    error: null,
+    errorInfo: null
+  };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    this.setState({
+      error,
+      errorInfo
+    });
+
+    // Here you could send error to logging service
+    // logErrorToService(error, errorInfo);
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('🚨 Error caught by boundary:', error, errorInfo)
+  private handleReset = () => {
+    this.setState({
+      hasError: false,
+      error: null,
+      errorInfo: null
+    });
+  };
 
-    // Additional error logging for Firebase/Firestore errors
-    if (error.message.includes('permission-denied')) {
-      console.error('🔒 Firebase permission error - check Firestore rules')
-    }
-    if (error.message.includes('Firebase')) {
-      console.error('🔥 Firebase error detected - check configuration')
-    }
-  }
-
-  handleReload = () => {
-    window.location.reload()
-  }
-
-  render() {
+  public render() {
     if (this.state.hasError) {
-      // Mocking styles for demonstration, as they were not provided in the original snippet
-      const styles = {
-        container: {
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '50vh',
-          padding: '2rem',
-          textAlign: 'center',
-          fontFamily: 'sans-serif'
-        },
-        icon: {
-          fontSize: '3rem',
-          marginBottom: '1rem'
-        },
-        h2: {
-          margin: '0 0 1rem 0'
-        },
-        button: {
-          padding: '0.5rem 1rem',
-          cursor: 'pointer',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          background: '#f5f5f5',
-          marginTop: '1rem'
-        }
-      };
-
-      // Original error handling for ChunkLoadError
-      if (this.state.error?.name === 'ChunkLoadError') {
-        return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column' as const,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            padding: '20px',
-            textAlign: 'center' as const,
-            fontFamily: 'Arial, sans-serif'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔄</div>
-            <h2 style={{ margin: '0 0 1rem 0' }}>App wird aktualisiert...</h2>
-            <p>Bitte lade die Seite neu.</p>
-            <button onClick={() => window.location.reload()} style={{
-              padding: '0.5rem 1rem',
-              cursor: 'pointer',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              background: '#f5f5f5',
-              marginTop: '1rem'
-            }}>
-              Neu laden
-            </button>
-          </div>
-        )
+      if (this.props.fallback) {
+        return this.props.fallback;
       }
 
-      // Firebase connection errors
-      if (this.state.error?.message?.includes('Firebase') || this.state.error?.message?.includes('firestore') || this.state.error?.message?.includes('cache')) {
-        return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column' as const,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            padding: '20px',
-            textAlign: 'center' as const,
-            fontFamily: 'Arial, sans-serif'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔥</div>
-            <h2 style={{ margin: '0 0 1rem 0' }}>Verbindungsproblem</h2>
-            <p>Firebase-Verbindung unterbrochen. App läuft im Offline-Modus.</p>
-            <button onClick={() => window.location.reload()} style={{
-              padding: '0.5rem 1rem',
-              cursor: 'pointer',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              background: '#f5f5f5',
-              marginTop: '1rem'
-            }}>
-              Erneut versuchen
-            </button>
-          </div>
-        )
-      }
-
-      // Default error fallback
       return (
         <div style={{
-          display: 'flex',
-          flexDirection: 'column' as const,
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
           padding: '20px',
-          textAlign: 'center' as const,
-          fontFamily: 'Arial, sans-serif'
+          margin: '20px',
+          border: '1px solid #ff6b6b',
+          borderRadius: '8px',
+          backgroundColor: '#ffe0e0',
+          color: '#d63447'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
-          <h2 style={{ margin: '0 0 1rem 0' }}>Ein Fehler ist aufgetreten</h2>
-          <p>Etwas ist schiefgelaufen. Bitte lade die Seite neu.</p>
-          <button onClick={this.handleReload} style={{
-            padding: '0.5rem 1rem',
-            cursor: 'pointer',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            background: '#f5f5f5',
-            marginTop: '1rem'
-          }}>
-            Seite neu laden
+          <h2>🚨 Etwas ist schiefgelaufen</h2>
+          <p>Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.</p>
+          
+          <button 
+            onClick={this.handleReset}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#d63447',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              marginTop: '10px'
+            }}
+          >
+            Erneut versuchen
           </button>
+          
+          {process.env.NODE_ENV === 'development' && this.state.error && (
+            <details style={{ marginTop: '20px' }}>
+              <summary>Fehlerdetails (Development)</summary>
+              <pre style={{ 
+                backgroundColor: '#f8f8f8', 
+                padding: '10px', 
+                overflow: 'auto',
+                fontSize: '12px',
+                marginTop: '10px'
+              }}>
+                {this.state.error.toString()}
+                {this.state.errorInfo?.componentStack}
+              </pre>
+            </details>
+          )}
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
+
+export default ErrorBoundary;

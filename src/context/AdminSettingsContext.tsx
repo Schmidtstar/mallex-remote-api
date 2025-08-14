@@ -101,7 +101,7 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
     )
 
     return unsubscribe
-  }, [user?.uid]) // Dependency array updated to reflect removal of isAdmin
+  }, [user?.uid, isAdmin]) // Include isAdmin in dependency array
 
   const updateSettings = async (newSettings: Partial<AdminSettings>) => {
     if (!user || !isAdmin) {

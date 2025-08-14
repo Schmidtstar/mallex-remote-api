@@ -144,7 +144,6 @@ function NotificationCenter() {
       case 'system': return '🔧'
       case 'admin': return '👤' 
       case 'achievement': return '🏆'
-      case 'welcome': return '🎉'
       default: return '📢'
     }
   }
@@ -243,7 +242,6 @@ const PostfachScreenComponent: React.FC = () => {
       case 'system': return '🔧'
       case 'admin': return '👤' 
       case 'achievement': return '🏆'
-      case 'welcome': return '🎉'
       default: return '📢'
     }
   }

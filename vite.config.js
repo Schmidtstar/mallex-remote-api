@@ -44,7 +44,7 @@ export default defineConfig(function (_a) {
         },
         preview: {
             host: true,
-            port: 3000,
+            port: 5000,
             allowedHosts: [
                 '.replit.dev',
                 '.riker.replit.dev'

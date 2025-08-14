@@ -40,7 +40,7 @@ export function SuggestTaskScreen() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>📝 Aufgaben vorschlagen</h2>
+        <h2 className={styles.title}>📝 Aufgabe vorschlagen</h2>
         <p className={styles.subtitle}>
           Teile deine Ideen für neue Aufgaben mit der Community
         </p>

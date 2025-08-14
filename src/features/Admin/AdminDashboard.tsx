@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useAdminSettings } from '../../context/AdminSettingsContext'
 import styles from './AdminDashboard.module.css'
 import { collection, getDocs } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { db } from '../../lib/firebase'
 
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 

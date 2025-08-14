@@ -125,6 +125,11 @@ const routes = [
         path: 'settings',
         element: <Navigate to="/menu?tab=settings" replace />,
         errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
+      },
+      {
+        path: 'admin/dashboard',
+        element: <Navigate to="/admin" replace />,
+        errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
       }
     ]
   }

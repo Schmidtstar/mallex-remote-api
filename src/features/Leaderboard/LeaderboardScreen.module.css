@@ -1,56 +1,88 @@
 
 .container {
-  padding: 20px;
+  padding: var(--space-6);
   max-width: 600px;
   margin: 0 auto;
   min-height: 100vh;
-  background: #f5f7fa;
+  background: var(--bg);
+  position: relative;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
-  color: #2c3e50;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: var(--space-8);
+  position: relative;
+  z-index: 1;
 }
 
 .title {
-  font-size: 2rem;
-  margin-bottom: 8px;
-  color: #2c3e50;
-  text-shadow: none;
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-epic);
+  margin-bottom: var(--space-4);
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 8px rgba(218, 165, 32, 0.3);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .subtitle {
-  font-size: 1rem;
-  opacity: 0.7;
+  font-size: var(--font-size-lg);
+  color: var(--ancient-marble);
   margin: 0;
-  color: #7f8c8d;
+  opacity: 0.9;
+  font-style: italic;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .leaderboard {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-large);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-marble);
   overflow: hidden;
-  border: 1px solid #e1e8ed;
+  position: relative;
+}
+
+.leaderboard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-gold);
 }
 
 .playerRow {
   display: flex;
   align-items: center;
-  padding: 18px 24px;
-  border-bottom: 1px solid #e1e8ed;
-  transition: all 0.2s ease;
-  background: white;
+  padding: var(--space-6);
+  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+  transition: all var(--transition-normal) ease;
+  background: transparent;
+  position: relative;
 }
 
 .playerRow:hover {
-  background-color: #f8f9ff;
-  transform: translateX(2px);
+  background: rgba(218, 165, 32, 0.1);
+  transform: translateX(4px);
+  box-shadow: inset 4px 0 0 var(--ancient-gold);
 }
 
 .playerRow:last-child {
@@ -58,142 +90,219 @@
 }
 
 .topThree {
-  background: linear-gradient(90deg, #fffbf0 0%, #ffffff 100%);
-  border-left: 4px solid #f39c12;
+  background: linear-gradient(90deg, 
+    rgba(218, 165, 32, 0.15) 0%, 
+    rgba(255, 215, 0, 0.1) 50%,
+    transparent 100%
+  );
+  border-left: 4px solid var(--ancient-gold);
   position: relative;
+  overflow: hidden;
+}
+
+.topThree::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, 
+    var(--ancient-gold), 
+    transparent, 
+    var(--ancient-gold)
+  );
 }
 
 .topThree:hover {
-  background: linear-gradient(90deg, #fff8e1 0%, #f8f9ff 100%);
+  background: linear-gradient(90deg, 
+    rgba(218, 165, 32, 0.25) 0%, 
+    rgba(255, 215, 0, 0.15) 50%,
+    rgba(218, 165, 32, 0.1) 100%
+  );
+  box-shadow: 
+    inset 4px 0 0 var(--olympic-victory),
+    0 0 20px rgba(218, 165, 32, 0.2);
 }
 
 .rankSection {
   display: flex;
   align-items: center;
-  min-width: 70px;
-  margin-right: 20px;
+  min-width: 80px;
+  margin-right: var(--space-6);
 }
 
 .medal {
-  font-size: 1.8rem;
-  margin-right: 10px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  font-size: 2rem;
+  margin-right: var(--space-4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 .rank {
-  font-weight: bold;
-  font-size: 1.3rem;
-  color: #2c3e50;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  color: var(--ancient-gold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .playerInfo {
   flex: 1;
-  margin-right: 20px;
+  margin-right: var(--space-6);
 }
 
 .playerName {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #2c3e50;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--ancient-marble);
   line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .points {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 90px;
-  background: #f8f9fa;
-  padding: 8px 12px;
-  border-radius: 8px;
+  min-width: 100px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid rgba(218, 165, 32, 0.3);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .pointsNumber {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #3498db;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--olympic-victory);
   line-height: 1;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }
 
 .pointsLabel {
-  font-size: 0.75rem;
-  color: #7f8c8d;
+  font-size: var(--font-size-xs);
+  color: var(--ancient-bronze);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 2px;
+  letter-spacing: 1px;
+  margin-top: var(--space-2);
+  font-weight: var(--font-weight-medium);
 }
 
 .loading, .empty {
   text-align: center;
-  padding: 40px 20px;
-  color: #7f8c8d;
-  font-size: 1.1rem;
-  background: white;
-  border-radius: 12px;
-  margin: 20px 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: var(--space-8);
+  color: var(--ancient-marble);
+  font-size: var(--font-size-lg);
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-large);
+  margin: var(--space-6) 0;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-marble);
+  position: relative;
+}
+
+.loading::before, .empty::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-gold);
 }
 
 .footer {
   text-align: center;
-  margin-top: 20px;
+  margin-top: var(--space-8);
+  position: relative;
+  z-index: 1;
 }
 
-.refreshButton {
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
-  transition: all 0.2s ease;
+/* Antike Ornamente für Top 3 */
+.topThree .medal {
+  position: relative;
 }
 
-.refreshButton:hover {
-  background: #2980b9;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+.topThree .medal::after {
+  content: "✨";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.8rem;
+  animation: sparkle 2s ease-in-out infinite;
 }
 
-.refreshButton:active {
-  transform: translateY(0);
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.2);
+  }
 }
 
 /* Mobile Anpassungen */
 @media (max-width: 480px) {
   .container {
-    padding: 16px;
+    padding: var(--mobile-padding);
   }
   
   .title {
-    font-size: 1.6rem;
+    font-size: var(--font-size-2xl);
   }
   
   .playerRow {
-    padding: 12px 16px;
+    padding: var(--space-4);
   }
   
   .rankSection {
-    min-width: 50px;
-    margin-right: 12px;
+    min-width: 60px;
+    margin-right: var(--space-4);
   }
   
   .medal {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
+    margin-right: var(--space-3);
   }
   
   .playerName {
-    font-size: 1rem;
+    font-size: var(--font-size-lg);
   }
   
   .pointsNumber {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
   }
   
   .points {
-    min-width: 60px;
+    min-width: 80px;
+    padding: var(--space-3);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .playerRow, .topThree .medal::after {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .playerRow {
+    border-bottom-color: var(--ancient-gold);
+  }
+  
+  .topThree {
+    border-left-width: 6px;
+  }
+  
+  .points {
+    border-width: 2px;
   }
 }

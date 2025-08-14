@@ -2,15 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { useAuth } from './AuthContext'
 import { collection, query, orderBy, getDocs, where, limit } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-
-// Assuming useIsAdmin and AdminSettingsContext are available or defined elsewhere
-// For this specific file, we need isAdmin to be defined.
-// If it's not imported or defined, we'll create a placeholder or assume it's available.
-
-// Import actual admin hook
-import { useIsAdmin } from '../context/AdminContext'
-
-// Remove the placeholder function
+import { useAdmin } from './AdminContext'
 
 export interface TaskSuggestion {
   id: string
@@ -56,7 +48,7 @@ interface TaskSuggestionsProviderProps {
 
 export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderProps) {
   const { user } = useAuth()
-  const isAdmin = useIsAdmin() // Get admin status
+  const { isAdmin } = useAdmin() // Get admin status from context
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

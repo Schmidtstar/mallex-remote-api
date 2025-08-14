@@ -1,4 +1,3 @@
-
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app'
 import {
   getAuth,
@@ -46,26 +45,13 @@ if (import.meta.env.PROD) {
 // Initialize Firebase app once
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
-// Initialize Firestore with proper cache configuration
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    cacheSizeBytes: 40 * 1024 * 1024 // 40MB
-  })
-})
-
-// Enable network
-enableNetwork(db)
-
-// Initialize Auth with persistence
-const auth = getAuth(app)
-setPersistence(auth, browserLocalPersistence)
-
-export { app, auth, db }
+// Initialize Firestore with proper cache configuration - only one configuration!
 const db = initializeFirestore(app, {
   ignoreUndefinedProperties: true,
   experimentalAutoDetectLongPolling: true,
-  // ✅ KORREKT: Funktion statt Objekt, cacheSizeBytes statt sizeBytes
-  localCache: persistentLocalCache({ cacheSizeBytes: 40_000_000 })
+  localCache: persistentLocalCache({
+    cacheSizeBytes: 40 * 1024 * 1024 // 40MB
+  })
 })
 
 // Auth-Persistenz

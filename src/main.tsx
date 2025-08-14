@@ -9,7 +9,7 @@ import { AdminProvider } from './context/AdminContext'
 import AdminSettingsProvider from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
-import { IntroScreen } from './components/IntroScreen'
+
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>

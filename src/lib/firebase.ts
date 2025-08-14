@@ -48,9 +48,7 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 
 // Initialize Firestore with optimized settings
 const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-  }),
+  localCache: persistentLocalCache(),
   ignoreUndefinedProperties: true,
   experimentalForceLongPolling: false,
 });

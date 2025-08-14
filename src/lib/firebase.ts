@@ -22,6 +22,13 @@ if (!isConfigValid) {
   throw new Error('🚨 Firebase configuration is incomplete. Please check your environment variables.')
 }
 
+// Global declarations für bessere Module-Resolution
+declare global {
+  interface Window {
+    _firebaseConfigLogged?: boolean;
+  }
+}
+
 // Debug Firebase Config nur einmal loggen
 if (import.meta.env.DEV && !window._firebaseConfigLogged) {
   console.log('🔧 Firebase Config:', {
@@ -69,7 +76,11 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Explizite Exports
+// Explizite Exports mit Fallback
 export { auth, db }
+
+// Named exports für bessere Kompatibilität
+export { auth as firestore } from 'firebase/auth'
+export const firebase = { auth, db }
 
 console.log('🔥 Firebase ready')

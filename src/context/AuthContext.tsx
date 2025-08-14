@@ -86,7 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           console.error('Error in auth state change:', error);
           // Bei Firebase-Verbindungsproblemen: in Gastmodus wechseln
-          if ((error as any)?.code === 'unavailable') {
+          const errorCode = (error as any)?.code;
+          if (errorCode === 'unavailable' || errorCode === 'permission-denied' || errorCode === 'failed-precondition') {
             console.warn('🟡 Firebase became unavailable - switching to guest mode');
             setUser(null);
           } else {

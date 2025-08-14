@@ -65,3 +65,16 @@ interface ImportMeta {
 }
 
 export {};
+declare global {
+  interface Window {
+    _firebaseConfigLogged?: boolean;
+    __MALLEX_DEV__?: boolean;
+  }
+}
+
+// Firebase module augmentation
+declare module 'firebase/auth' {
+  export const firestore: any;
+}
+
+export {};

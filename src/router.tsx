@@ -10,7 +10,8 @@ const TabLayout = React.lazy(() =>
     .then(m => ({ default: m.TabLayout }))
     .catch(error => {
       console.error('Failed to load TabLayout:', error)
-      throw error
+      // Return fallback component instead of throwing
+      return { default: () => <div>Layout konnte nicht geladen werden</div> }
     })
 )
 
@@ -97,10 +98,10 @@ const AuthScreen = React.lazy(() =>
 
 const PostfachScreen = React.lazy(() => 
   import('./components/NotificationCenter')
-    .then(m => ({ default: m.PostfachScreen }))
+    .then(m => ({ default: m.default || m.PostfachScreen }))
     .catch(error => {
       console.error('Failed to load PostfachScreen:', error)
-      throw error
+      return { default: () => <div>Postfach konnte nicht geladen werden</div> }
     })
 )
 

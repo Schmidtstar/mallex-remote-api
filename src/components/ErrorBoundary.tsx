@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react'
 
 // Assuming styles are defined elsewhere, e.g., in a CSS module
-// import styles from './ErrorBoundary.module.css'; 
+// import styles from './ErrorBoundary.module.css';
 // For demonstration, using inline styles similar to the original.
 
 interface Props {
@@ -73,11 +73,27 @@ export class ErrorBoundary extends Component<Props, State> {
       // Original error handling for ChunkLoadError
       if (error.name === 'ChunkLoadError') {
         return (
-          <div style={styles.container}>
-            <div style={styles.icon}>🔄</div>
-            <h2 style={styles.h2}>App wird aktualisiert...</h2>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column' as const,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            padding: '20px',
+            textAlign: 'center' as const,
+            fontFamily: 'Arial, sans-serif'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔄</div>
+            <h2 style={{ margin: '0 0 1rem 0' }}>App wird aktualisiert...</h2>
             <p>Bitte lade die Seite neu.</p>
-            <button onClick={() => window.location.reload()} style={styles.button}>
+            <button onClick={() => window.location.reload()} style={{
+              padding: '0.5rem 1rem',
+              cursor: 'pointer',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              background: '#f5f5f5',
+              marginTop: '1rem'
+            }}>
               Neu laden
             </button>
           </div>
@@ -87,11 +103,27 @@ export class ErrorBoundary extends Component<Props, State> {
       // Firebase connection errors
       if (error.message?.includes('Firebase') || error.message?.includes('firestore')) {
         return (
-          <div style={styles.container}>
-            <div style={styles.icon}>🔥</div>
-            <h2 style={styles.h2}>Verbindungsproblem</h2>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column' as const,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            padding: '20px',
+            textAlign: 'center' as const,
+            fontFamily: 'Arial, sans-serif'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔥</div>
+            <h2 style={{ margin: '0 0 1rem 0' }}>Verbindungsproblem</h2>
             <p>Firebase-Verbindung unterbrochen. App läuft im Offline-Modus.</p>
-            <button onClick={() => window.location.reload()} style={styles.button}>
+            <button onClick={() => window.location.reload()} style={{
+              padding: '0.5rem 1rem',
+              cursor: 'pointer',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              background: '#f5f5f5',
+              marginTop: '1rem'
+            }}>
               Erneut versuchen
             </button>
           </div>
@@ -100,11 +132,27 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default error fallback
       return (
-        <div style={styles.container}>
-          <div style={styles.icon}>⚠️</div>
-          <h2 style={styles.h2}>Ein Fehler ist aufgetreten</h2>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column' as const,
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          padding: '20px',
+          textAlign: 'center' as const,
+          fontFamily: 'Arial, sans-serif'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+          <h2 style={{ margin: '0 0 1rem 0' }}>Ein Fehler ist aufgetreten</h2>
           <p>Etwas ist schiefgelaufen. Bitte lade die Seite neu.</p>
-          <button onClick={this.handleReload} style={styles.button}>
+          <button onClick={this.handleReload} style={{
+            padding: '0.5rem 1rem',
+            cursor: 'pointer',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            background: '#f5f5f5',
+            marginTop: '1rem'
+          }}>
             Seite neu laden
           </button>
         </div>

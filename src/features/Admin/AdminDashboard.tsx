@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import { useAdminSettings } from '../../context/AdminSettingsContext'
@@ -14,6 +14,19 @@ export function AdminDashboard() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const isAdmin = useIsAdmin()
+  const location = useLocation()
+  const navigate = useNavigate()
+  
+  // Determine initial tab from URL path
+  const getInitialTab = (): AdminTab => {
+    const path = location.pathname
+    if (path.includes('/admin/users')) return 'users'
+    if (path.includes('/admin/dashboard')) return 'overview'
+    if (path.includes('/admin/settings')) return 'settings'
+    if (path.includes('/admin/admins')) return 'admins'
+    if (path.includes('/admin/notifications')) return 'notifications'
+    return 'overview'
+  }
   const {
     appSettings,
     userManagement,
@@ -32,7 +45,7 @@ export function AdminDashboard() {
     loadUsers
   } = useAdminSettings()
 
-  const [activeTab, setActiveTab] = useState<AdminTab>('overview')
+  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [notificationMessage, setNotificationMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -236,7 +249,12 @@ export function AdminDashboard() {
           <button
             key={tab}
             className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab(tab as AdminTab)}
+            onClick={() => {
+              setActiveTab(tab as AdminTab)
+              // Update URL to match tab
+              const newPath = tab === 'overview' ? '/admin' : `/admin/${tab}`
+              navigate(newPath, { replace: true })
+            }}
           >
             {tab === 'admins' ? '👑 Admins' : t(`admin.tabs.${tab}`)}
           </button>

@@ -117,6 +117,21 @@ const routes = [
             errorElement: <ErrorBoundary><div>Fehler in Benutzerverwaltung</div></ErrorBoundary>
           },
           {
+            path: 'settings',
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler in Admin-Einstellungen</div></ErrorBoundary>
+          },
+          {
+            path: 'admins',
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler in Admin-Verwaltung</div></ErrorBoundary>
+          },
+          {
+            path: 'notifications',
+            element: <AdminDashboard />,
+            errorElement: <ErrorBoundary><div>Fehler in Benachrichtigungen</div></ErrorBoundary>
+          },
+          {
             path: 'tasks',
             element: <AdminTasksScreen />,
             errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
@@ -8,59 +9,19 @@ import styles from './AdminDashboard.module.css'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
+type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
+
 // Separate the main dashboard content into its own component
 function AdminDashboardContent() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const isAdmin = useIsAdmin()
-  const navigate = useNavigate()
   const location = useLocation()
+  const navigate = useNavigate()
   
   // Now we can safely use useAdminSettings here because we're inside the provider
-  const { settings, loading, error, updateSettings, resetToDefaults } = useAdminSettings()
+  const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeTasks: 0,
-    pendingApprovals: 0,
-    totalPoints: 0
-  })
-
-  // Redirect if not admin
-  if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />
-  }
-
-  // ... rest of your dashboard logic here
-
-  return (
-    <div className={styles.adminDashboard}>
-      <h1>{t('admin.dashboard.title')}</h1>
-      {loading && <div>Loading admin settings...</div>}
-      {error && <div className={styles.error}>{error}</div>}
-      {/* Your dashboard content here */}
-    </div>
-  )
-}
-
-// Main component that provides the AdminSettings context
-export default function AdminDashboard() {
-  return (
-    <AdminSettingsProvider>
-      <AdminDashboardContent />
-    </AdminSettingsProvider>
-  )
-}
-
-type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
-
-export function AdminDashboard() {
-  const { t } = useTranslation()
-  const { user } = useAuth()
-  const isAdmin = useIsAdmin()
-  const location = useLocation()
-  const navigate = useNavigate()
-  
   // Determine initial tab from URL path
   const getInitialTab = (): AdminTab => {
     const path = location.pathname
@@ -71,12 +32,6 @@ export function AdminDashboard() {
     if (path.includes('/admin/notifications')) return 'notifications'
     return 'overview'
   }
-  const {
-    settings: appSettings,
-    loading,
-    updateSettings: updateAppSettings,
-    error: settingsError
-  } = useAdminSettings()
 
   // Mock user management functions for now - these would need to be implemented
   const userManagement = {
@@ -155,6 +110,11 @@ export function AdminDashboard() {
   })
   const error = settingsError
 
+  // Redirect if not admin
+  if (!isAdmin) {
+    return <Navigate to="/arena" replace />
+  }
+
   if (loading) {
     return (
       <div className={styles.dashboard}>
@@ -186,10 +146,6 @@ export function AdminDashboard() {
         </div>
       </div>
     )
-  }
-
-  if (!isAdmin) {
-    return <Navigate to="/arena" replace />
   }
 
   const filteredUsers = (userManagement?.users || []).filter(user => 
@@ -413,6 +369,53 @@ export function AdminDashboard() {
                   onClick={() => sendSystemNotification('all', 'Systembwartung ist für heute Nacht geplant.')}
                 >
                   📢 Globale Benachrichtigung
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.section}>
+              <h3>👥 Angemeldete Benutzer ({userStats.total})</h3>
+              <div className={styles.userStats}>
+                <div className={styles.statCard}>
+                  <span className={styles.statNumber}>{userStats.total}</span>
+                  <span className={styles.statLabel}>Gesamt registriert</span>
+                </div>
+                <div className={styles.statCard}>
+                  <span className={styles.statNumber}>{userStats.online}</span>
+                  <span className={styles.statLabel}>Online (30min)</span>
+                </div>
+                <div className={styles.statCard}>
+                  <span className={styles.statNumber}>{userStats.admins}</span>
+                  <span className={styles.statLabel}>Admins</span>
+                </div>
+              </div>
+
+              <div className={styles.usersList}>
+                {registeredUsers.map(user => (
+                  <div key={user.id} className={styles.userCard}>
+                    <span className={styles.userName}>
+                      {user.displayName || user.email || 'Unbekannt'}
+                    </span>
+                    <span className={styles.userEmail}>{user.email}</span>
+                    <span className={styles.userLastLogin}>
+                      {user.lastLoginAt ? 
+                        `Zuletzt: ${user.lastLoginAt.toLocaleDateString('de-DE')}` : 
+                        'Nie angemeldet'
+                      }
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.section}>
+              <h3>🔧 System Administration</h3>
+              <div className={styles.actionButtons}>
+                <button className={styles.actionButton} onClick={loadRegisteredUsers}>
+                  User-Liste aktualisieren
+                </button>
+                <button className={styles.actionButton} onClick={() => window.location.reload()}>
+                  System neustarten
                 </button>
               </div>
             </div>
@@ -747,57 +750,15 @@ export function AdminDashboard() {
           </div>
         )}
       </div>
-      
-      {activeTab === 'overview' && (
-        <div className={styles.section}>
-          <h3>👥 Angemeldete Benutzer ({userStats.total})</h3>
-          <div className={styles.userStats}>
-            <div className={styles.statCard}>
-              <span className={styles.statNumber}>{userStats.total}</span>
-              <span className={styles.statLabel}>Gesamt registriert</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statNumber}>{userStats.online}</span>
-              <span className={styles.statLabel}>Online (30min)</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statNumber}>{userStats.admins}</span>
-              <span className={styles.statLabel}>Admins</span>
-            </div>
-          </div>
-
-          <div className={styles.usersList}>
-            {registeredUsers.map(user => (
-              <div key={user.id} className={styles.userCard}>
-                <span className={styles.userName}>
-                  {user.displayName || user.email || 'Unbekannt'}
-                </span>
-                <span className={styles.userEmail}>{user.email}</span>
-                <span className={styles.userLastLogin}>
-                  {user.lastLoginAt ? 
-                    `Zuletzt: ${user.lastLoginAt.toLocaleDateString('de-DE')}` : 
-                    'Nie angemeldet'
-                  }
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'overview' && (
-        <div className={styles.section}>
-          <h3>🔧 System Administration</h3>
-          <div className={styles.actionButtons}>
-            <button className={styles.actionButton} onClick={loadRegisteredUsers}>
-              User-Liste aktualisieren
-            </button>
-            <button className={styles.actionButton} onClick={() => window.location.reload()}>
-              System neustarten
-            </button>
-          </div>
-        </div>
-      )}
     </div>
+  )
+}
+
+// Main component that provides the AdminSettings context
+export default function AdminDashboard() {
+  return (
+    <AdminSettingsProvider>
+      <AdminDashboardContent />
+    </AdminSettingsProvider>
   )
 }

@@ -43,7 +43,7 @@ export const menuItems: MenuItem[] = [
   {
     key: 'suggestTask',
     path: '/tasks/suggest',
-    labelKey: 'tasks.suggest.title',
+    labelKey: 'menu.suggestTask',
     icon: '💭',
     requiresAuth: true
   },

@@ -4,7 +4,7 @@ import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDqZv3qF_tH4Y8K8K8K8K8K8K8K8K8K8K8",
-  authDomain: import.meta.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mallex-1b745.firebaseapp.com",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mallex-1b745.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "mallex-1b745",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mallex-1b745.appspot.com",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "461634733593",

@@ -110,11 +110,6 @@ const routes = [
             errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
           },
           {
-            path: 'dashboard',
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
-          },
-          {
             path: 'tasks',
             element: <AdminTasksScreen />,
             errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>

@@ -11,6 +11,16 @@ import { db } from '../../lib/firebase'
 
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 
+// Helper function outside component to avoid re-initialization issues
+function getInitialTabFromPath(pathname: string): AdminTab {
+  if (pathname.includes('/admin/users')) return 'users'
+  if (pathname.includes('/admin/dashboard')) return 'overview'
+  if (pathname.includes('/admin/settings')) return 'settings'
+  if (pathname.includes('/admin/admins')) return 'admins'
+  if (pathname.includes('/admin/notifications')) return 'notifications'
+  return 'overview'
+}
+
 // Separate the main dashboard content into its own component
 function AdminDashboardContent() {
   const { t } = useTranslation()
@@ -19,22 +29,12 @@ function AdminDashboardContent() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  // Use useAdminSettings hook early, before state declarations
+  // ALL HOOKS MUST BE CALLED IN THE SAME ORDER EVERY TIME
+  // 1. Context hooks first
   const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
-  // Helper function to determine initial tab from URL path
-  const getInitialTab = (): AdminTab => {
-    const path = location.pathname
-    if (path.includes('/admin/users')) return 'users'
-    if (path.includes('/admin/dashboard')) return 'overview'
-    if (path.includes('/admin/settings')) return 'settings'
-    if (path.includes('/admin/admins')) return 'admins'
-    if (path.includes('/admin/notifications')) return 'notifications'
-    return 'overview'
-  }
-
-  // ALL STATE VARIABLES AFTER HOOKS
-  const [activeTab, setActiveTab] = useState<AdminTab>(() => getInitialTab())
+  // 2. All state hooks in fixed order
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => getInitialTabFromPath(location.pathname))
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [notificationMessage, setNotificationMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -47,7 +47,12 @@ function AdminDashboardContent() {
     admins: 0
   })
 
-  // THEN ALL FUNCTIONS
+  // Early return AFTER all hooks are called
+  if (!isAdmin) {
+    return <Navigate to="/arena" replace />
+  }
+
+  // ALL FUNCTIONS AFTER HOOKS AND EARLY RETURNS
   const loadRegisteredUsers = async () => {
     try {
       const usersRef = collection(db, 'users')
@@ -159,11 +164,6 @@ function AdminDashboardContent() {
 
   const error = settingsError
 
-  // Redirect if not admin
-  if (!isAdmin) {
-    return <Navigate to="/arena" replace />
-  }
-
   if (loading) {
     return (
       <div className={styles.dashboard}>
@@ -259,14 +259,6 @@ function AdminDashboardContent() {
     }
   }
 
-  useEffect(() => {
-    if (isAdmin) {
-      loadUsers()
-      loadAdminList()
-      loadRegisteredUsers()
-    }
-  }, [isAdmin])
-
   const handlePromoteToAdmin = async () => {
     if (!newAdminEmail.trim()) return
 
@@ -289,6 +281,15 @@ function AdminDashboardContent() {
       console.error('Failed to revoke admin:', error)
     }
   }
+
+  // useEffect hooks at the end, after all other logic
+  useEffect(() => {
+    if (isAdmin) {
+      loadUsers()
+      loadAdminList()
+      loadRegisteredUsers()
+    }
+  }, [isAdmin])
 
   return (
     <div className={styles.dashboard}>

@@ -8,6 +8,50 @@ import styles from './AdminDashboard.module.css'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
+// Separate the main dashboard content into its own component
+function AdminDashboardContent() {
+  const { t } = useTranslation()
+  const { user } = useAuth()
+  const isAdmin = useIsAdmin()
+  const navigate = useNavigate()
+  const location = useLocation()
+  
+  // Now we can safely use useAdminSettings here because we're inside the provider
+  const { settings, loading, error, updateSettings, resetToDefaults } = useAdminSettings()
+
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeTasks: 0,
+    pendingApprovals: 0,
+    totalPoints: 0
+  })
+
+  // Redirect if not admin
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  // ... rest of your dashboard logic here
+
+  return (
+    <div className={styles.adminDashboard}>
+      <h1>{t('admin.dashboard.title')}</h1>
+      {loading && <div>Loading admin settings...</div>}
+      {error && <div className={styles.error}>{error}</div>}
+      {/* Your dashboard content here */}
+    </div>
+  )
+}
+
+// Main component that provides the AdminSettings context
+export default function AdminDashboard() {
+  return (
+    <AdminSettingsProvider>
+      <AdminDashboardContent />
+    </AdminSettingsProvider>
+  )
+}
+
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 
 export function AdminDashboard() {

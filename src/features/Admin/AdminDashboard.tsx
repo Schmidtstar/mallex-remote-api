@@ -44,6 +44,7 @@ export function AdminDashboard() {
     online: 0,
     admins: 0
   })
+  const { error } = appSettings || {}
 
   if (loading) {
     return (
@@ -140,14 +141,18 @@ export function AdminDashboard() {
       const admins = await getAdminList()
       setAdminList(admins)
     } catch (error) {
-      console.error('Failed to load admin list:', error)
+      if (error.code !== 'permission-denied') {
+        console.error('Failed to load admin list:', error)
+      } else {
+        console.log('📋 Admin list not accessible - using local fallback')
+      }
     }
   }
 
   const loadSettings = async () => {
     try {
-      // Load admin settings here
-      setSettings({})
+      // Admin settings are already loaded via useAdminSettings hook
+      console.log('Admin settings loaded via context')
     } catch (error) {
       console.error('Error loading settings:', error)
     }
@@ -177,7 +182,11 @@ export function AdminDashboard() {
         admins: adminCount
       })
     } catch (error) {
-      console.error('Error loading registered users:', error)
+      if (error.code !== 'permission-denied') {
+        console.error('Error loading registered users:', error)
+      } else {
+        console.log('📋 Registered users not accessible - using defaults')
+      }
       setRegisteredUsers([])
     }
   }

@@ -34,6 +34,28 @@ const LoadingSpinner = () => (
   </div>
 )
 
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      { index: true, element: <Navigate to="/arena" replace /> },
+      { path: 'arena', element: <ArenaScreen /> },
+      { path: 'auth', element: <AuthScreen /> },
+      { path: 'postfach', element: <PostfachScreen /> },
+      {
+        path: 'admin',
+        element: <RequireAdmin />,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: 'users', element: <AdminDashboard /> },
+          { path: 'dashboard', element: <AdminDashboard /> }
+        ]
+      }
+    ]
+  }
+])
+
 const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
 
 function withAuth(element: React.ReactNode) {

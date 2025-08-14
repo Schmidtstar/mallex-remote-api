@@ -3,103 +3,123 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions - optimized for performance
+
     function isAuthenticated() {
       return request.auth != null;
     }
     
     function isAdmin() {
-      return isAuthenticated() && 
-             request.auth.token.admin == true;
+      return isAuthenticated() && request.auth.token.admin == true;
     }
     
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
-    function belongsToUser(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
 
-    // Users collection - users can read/write their own data
+    // ---- USERS --------------------------------------------------------------
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
-      allow read: if isAdmin(); // Admins can read all users
-      allow create: if isAuthenticated(); // Anyone can create their profile
-    }
+      // Nur der eigene User-Datensatz kann erstellt werden
+      allow create: if isOwner(userId);
+      allow read:   if isOwner(userId) || isAdmin();
 
-    // Admins collection - only admins can read/write
-    match /admins/{userId} {
-      allow read, write: if isAdmin();
-      allow read: if isOwner(userId); // Users can check if they are admin
-    }
+      // Updates nur für erlaubte Felder (verhindert Rollen-Escalation)
+      allow update: if isOwner(userId)
+                    && request.resource.data.keys().hasOnly([
+                      'displayName', 'photoURL', 'locale', 'settings', 'preferences'
+                    ])
+                    && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                      'displayName', 'photoURL', 'locale', 'settings', 'preferences'
+                    ]);
 
-    // Tasks collection - read for authenticated users, write for admins
-    match /tasks/{taskId} {
-      allow read: if isAuthenticated();
+      // Admins dürfen alles (inkl. Rollenpflege)
       allow write: if isAdmin();
     }
 
-    // Task suggestions - users can submit, admins can moderate
+    // ---- ADMINS -------------------------------------------------------------
+    match /admins/{userId} {
+      allow read, write: if isAdmin();
+      // Selbstauskunft erlaubt (User kann prüfen ob Admin)
+      allow read: if isOwner(userId);
+    }
+
+    // ---- TASKS --------------------------------------------------------------
+    match /tasks/{taskId} {
+      allow read:  if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ---- TASK SUGGESTIONS ---------------------------------------------------
     match /taskSuggestions/{suggestionId} {
-      allow read: if isAuthenticated(); 
+      allow read:   if isAuthenticated();
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
 
-    // Task categories and static content
+    // ---- CATEGORIES / STATIC ------------------------------------------------
     match /categories/{categoryId} {
-      allow read: if isAuthenticated();
+      allow read:  if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // User progress/points - users own their data
+    // ---- USER PROGRESS ------------------------------------------------------
     match /userProgress/{userId} {
-      allow read, write: if belongsToUser(userId);
-      allow read: if isAdmin();
-      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow create: if isOwner(userId);
+      allow read:   if isOwner(userId) || isAdmin();
+      // Updates nur Eigendaten, kein Fremdschreiben
+      allow update: if isOwner(userId);
+      // Admin-Full-Access:
+      allow write:  if isAdmin();
     }
 
-    // Players collection for leaderboard
+    // ---- PLAYERS (Leaderboard) ---------------------------------------------
     match /players/{playerId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(playerId) || isAdmin();
+
+      // Verhindert Cheating: nur bestimmte Felder editierbar
+      allow update: if isOwner(playerId)
+                    && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                      'avatar', 'nickname', 'displayName'
+                    ]);
+
+      // Neue Player-Docs nur für sich selbst
+      allow create: if isOwner(playerId);
+
+      // Admins dürfen alles
+      allow write: if isAdmin();
     }
 
-    // App settings - FIXED: Only admins can access
+    // ---- SETTINGS -----------------------------------------------------------
     match /settings/{settingId} {
       allow read, write: if isAdmin();
     }
-
-    // Public settings that users can read
+    
     match /publicSettings/{settingId} {
-      allow read: if isAuthenticated();
+      allow read:  if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Notifications - SIMPLIFIED and SECURE
+    // ---- NOTIFICATIONS ------------------------------------------------------
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && 
-                     (resource.data.targetUserId == request.auth.uid || isAdmin());
+      allow read: if isAuthenticated()
+                  && (resource.data.targetUserId == request.auth.uid || isAdmin());
       allow write: if isAdmin();
     }
 
-    // Global notifications (system-wide) - read-only for users
     match /globalNotifications/{notificationId} {
-      allow read: if isAuthenticated();
+      allow read:  if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Admin-only collections
+    // ---- ADMIN-ONLY COLLECTIONS --------------------------------------------
     match /analytics/{docId} {
       allow read, write: if isAdmin();
     }
-
+    
     match /systemLogs/{logId} {
       allow read, write: if isAdmin();
     }
 
-    // Default deny all other documents
+    // Default deny
     match /{document=**} {
       allow read, write: if false;
     }

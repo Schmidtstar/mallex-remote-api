@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { firebaseAuth } from '../lib/firebase';
+import { auth as firebaseAuth } from '../lib/firebase';
 import { apiService } from '../lib/api';
 import { where } from 'firebase/firestore';
 

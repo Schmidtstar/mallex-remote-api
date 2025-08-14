@@ -209,12 +209,13 @@
   color: var(--ancient-marble);
 }
 
-/* Tab Navigation */
+/* Tab Navigation - Vertical Layout like MenuScreen */
 .tabContainer {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  padding: 0.25rem;
+  padding: 1rem;
   background: var(--glass-background);
   border-radius: 12px;
   backdrop-filter: blur(10px);
@@ -222,8 +223,8 @@
 }
 
 .tab {
-  flex: 1;
-  padding: 0.75rem 1rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
   border: none;
   border-radius: 8px;
   background: transparent;
@@ -231,12 +232,17 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .tab:hover {
   background: rgba(218, 165, 32, 0.1);
   color: var(--ancient-gold);
+  transform: translateX(4px);
 }
 
 .tab.active {
@@ -244,6 +250,7 @@
   color: var(--ancient-night);
   box-shadow: var(--shadow-gold);
   font-weight: 600;
+  transform: translateX(8px);
 }
 
 /* Mobile Optimierung */

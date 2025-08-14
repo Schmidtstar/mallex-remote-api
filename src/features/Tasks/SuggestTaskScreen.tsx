@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-// Deprecated API entfernt - placeholder Funktion
-const createSuggestion = async (suggestion: any) => {
-  console.log('Suggestion would be created:', suggestion);
+// Updated placeholder function with correct signature
+const createSuggestion = async (userId: string, category: string, text: string) => {
+  console.log('Suggestion would be created:', { userId, category, text });
   // TODO: Implement with Firebase
 };
 import { useAuth } from '@/context/AuthContext';

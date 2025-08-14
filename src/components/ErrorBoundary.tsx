@@ -71,7 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
       };
 
       // Original error handling for ChunkLoadError
-      if (error.name === 'ChunkLoadError') {
+      if (this.state.error?.name === 'ChunkLoadError') {
         return (
           <div style={{
             display: 'flex',
@@ -101,7 +101,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Firebase connection errors
-      if (error.message?.includes('Firebase') || error.message?.includes('firestore') || error.message?.includes('cache')) {
+      if (this.state.error?.message?.includes('Firebase') || this.state.error?.message?.includes('firestore') || this.state.error?.message?.includes('cache')) {
         return (
           <div style={{
             display: 'flex',

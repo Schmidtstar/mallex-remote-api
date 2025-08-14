@@ -357,10 +357,11 @@ export function AdminTasksScreen() {
 
       const englishCategory = categoryMapping[newTaskCategory] || newTaskCategory
 
-      await createTaskApproved(
-        { category: englishCategory as CategoryKey, text: newTaskText.trim() },
-        user?.email || user?.uid || 'unknown'
-      )
+      await createTaskApproved({
+        category: englishCategory as CategoryKey, 
+        text: newTaskText.trim(),
+        createdBy: user?.email || user?.uid || 'unknown'
+      })
 
       setNewTaskText('')
       setCreateSuccess(t('tasks.create.success'))
@@ -503,8 +504,6 @@ export function AdminTasksScreen() {
                 <h3>Keine {activeTab} Aufgaben vorhanden</h3>
                 <p>
                   {activeTab === 'pending' && 'Sobald Benutzer Aufgaben vorschlagen, erscheinen sie hier zur Moderation.'}
-                  {activeTab === 'approved' && 'Genehmigte Aufgaben werden hier angezeigt.'}
-                  {activeTab === 'rejected' && 'Abgelehnte Aufgaben werden hier angezeigt.'}
                 </p>
               </div>
             ) : (

@@ -7,15 +7,10 @@ import { db } from '../lib/firebase'
 // For this specific file, we need isAdmin to be defined.
 // If it's not imported or defined, we'll create a placeholder or assume it's available.
 
-// Placeholder for useIsAdmin hook, assuming it returns a boolean indicating admin status.
-// In a real scenario, this would be imported from an appropriate context or utility file.
-const useIsAdmin = () => {
-  // Dummy implementation: Replace with actual logic to determine admin status
-  // This could involve checking user roles from auth context or Firestore
-  const { user } = useAuth();
-  // Example: Admins might have a specific role or UID
-  return user?.role === 'admin'; // Assuming user object has a 'role' property
-};
+// Import actual admin hook
+import { useIsAdmin } from '../context/AdminContext'
+
+// Remove the placeholder function
 
 export interface TaskSuggestion {
   id: string

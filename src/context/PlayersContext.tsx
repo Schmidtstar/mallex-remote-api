@@ -102,7 +102,8 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       // Only localStorage mode until Firebase setup is complete
       const newPlayer: Player = {
         id: Date.now().toString(),
-        name: name.trim()
+        name: name.trim(),
+        score: 0
       }
       const updatedPlayers = [...players, newPlayer]
       setPlayers(updatedPlayers)

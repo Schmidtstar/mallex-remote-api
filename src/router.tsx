@@ -4,20 +4,105 @@ import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-do
 import { useAuth } from './context/AuthContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
-// Lazy load components mit Preload-Optimierung
-const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout').then(m => ({ default: m.TabLayout })))
-const ArenaScreen = React.lazy(() => import(/* webpackPrefetch: true */ './features/Arena/ArenaScreen').then(m => ({ default: m.ArenaScreen })))
-const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen').then(m => ({ default: m.LegendsScreen })))
-const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(m => ({ default: m.LeaderboardScreen })))
-const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen').then(m => ({ default: m.MenuScreen })))
-const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen').then(m => ({ default: m.TasksOverviewScreen })))
-const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen').then(m => ({ default: m.SuggestTaskScreen })))
-const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen').then(m => ({ default: m.AdminTasksScreen })))
-const AdminSuggestionsScreen = React.lazy(() => import('./features/Admin/AdminSuggestionsScreen').then(m => ({ default: m.AdminSuggestionsScreen })))
-const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard').then(m => ({ default: m.default })))
-const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin').then(m => ({ default: m.default })))
-const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m => ({ default: m.AuthScreen })))
-const PostfachScreen = React.lazy(() => import('./components/NotificationCenter').then(m => ({ default: m.PostfachScreen })))
+// Lazy load components mit verbesserter Fehlerbehandlung
+const TabLayout = React.lazy(() => 
+  import('./layouts/TabLayout')
+    .then(m => ({ default: m.TabLayout }))
+    .catch(error => {
+      console.error('Failed to load TabLayout:', error)
+      throw error
+    })
+)
+
+const ArenaScreen = React.lazy(() => 
+  import('./features/Arena/ArenaScreen')
+    .then(m => ({ default: m.ArenaScreen }))
+    .catch(error => {
+      console.error('Failed to load ArenaScreen:', error)
+      throw error
+    })
+)
+
+const LegendsScreen = React.lazy(() => 
+  import('./features/Legends/LegendsScreen')
+    .then(m => ({ default: m.LegendsScreen }))
+    .catch(error => {
+      console.error('Failed to load LegendsScreen:', error)
+      throw error
+    })
+)
+
+const LeaderboardScreen = React.lazy(() => 
+  import('./features/Leaderboard/LeaderboardScreen')
+    .then(m => ({ default: m.LeaderboardScreen }))
+    .catch(error => {
+      console.error('Failed to load LeaderboardScreen:', error)
+      throw error
+    })
+)
+
+const MenuScreen = React.lazy(() => 
+  import('./features/Menu/MenuScreen')
+    .then(m => ({ default: m.MenuScreen }))
+    .catch(error => {
+      console.error('Failed to load MenuScreen:', error)
+      throw error
+    })
+)
+
+const TasksOverviewScreen = React.lazy(() => 
+  import('./features/Tasks/TasksOverviewScreen')
+    .then(m => ({ default: m.TasksOverviewScreen }))
+    .catch(error => {
+      console.error('Failed to load TasksOverviewScreen:', error)
+      throw error
+    })
+)
+
+const AdminTasksScreen = React.lazy(() => 
+  import('./features/Tasks/AdminTasksScreen')
+    .then(m => ({ default: m.AdminTasksScreen }))
+    .catch(error => {
+      console.error('Failed to load AdminTasksScreen:', error)
+      throw error
+    })
+)
+
+const AdminDashboard = React.lazy(() => 
+  import('./features/Admin/AdminDashboard')
+    .then(m => ({ default: m.default }))
+    .catch(error => {
+      console.error('Failed to load AdminDashboard:', error)
+      throw error
+    })
+)
+
+const RequireAdmin = React.lazy(() => 
+  import('./routes/guards/RequireAdmin')
+    .then(m => ({ default: m.default }))
+    .catch(error => {
+      console.error('Failed to load RequireAdmin:', error)
+      throw error
+    })
+)
+
+const AuthScreen = React.lazy(() => 
+  import('./features/Auth/AuthScreen')
+    .then(m => ({ default: m.AuthScreen }))
+    .catch(error => {
+      console.error('Failed to load AuthScreen:', error)
+      throw error
+    })
+)
+
+const PostfachScreen = React.lazy(() => 
+  import('./components/NotificationCenter')
+    .then(m => ({ default: m.PostfachScreen }))
+    .catch(error => {
+      console.error('Failed to load PostfachScreen:', error)
+      throw error
+    })
+)
 
 const LoadingSpinner = () => (
   <div style={{

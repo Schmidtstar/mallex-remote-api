@@ -1,7 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { initializeApp } from 'firebase/app'
+import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth'
+import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,43 +10,66 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-};
-
-// Singleton pattern for Firebase app
-let app: any = null;
-let db: any = null;
-let auth: any = null;
-let functions: any = null;
-
-export function initializeFirebase() {
-  if (!app) {
-    try {
-      app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-      auth = getAuth(app);
-      functions = getFunctions(app);
-
-      // Connect to emulators in development
-      if (import.meta.env.DEV) {
-        try {
-          connectFirestoreEmulator(db, 'localhost', 8080);
-          connectAuthEmulator(auth, 'http://localhost:9099');
-          connectFunctionsEmulator(functions, 'localhost', 5001);
-        } catch (error) {
-          console.log('Emulators not available, using production Firebase');
-        }
-      }
-
-      console.log('🔥 Firebase ready');
-    } catch (error) {
-      console.error('Firebase initialization failed:', error);
-      throw error;
-    }
-  }
-
-  return { app, db, auth, functions };
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 }
 
-export const firebase = initializeFirebase();
-export const { db: firestore, auth: firebaseAuth, functions: firebaseFunctions } = firebase;
+// Validierung der Firebase-Konfiguration
+const isConfigValid = firebaseConfig.apiKey &&
+                     firebaseConfig.authDomain &&
+                     firebaseConfig.projectId
+
+if (!isConfigValid) {
+  throw new Error('🚨 Firebase configuration is incomplete. Please check your environment variables.')
+}
+
+// Debug Firebase Config nur einmal loggen
+if (import.meta.env.DEV && !window._firebaseConfigLogged) {
+  console.log('🔧 Firebase Config:', {
+    ...firebaseConfig,
+    apiKey: firebaseConfig.apiKey ? '[HIDDEN]' : '[MISSING]'
+  })
+  window._firebaseConfigLogged = true
+}
+
+// Firebase initialisieren
+export const app = initializeApp(firebaseConfig)
+
+// Auth und DB mit expliziter Typisierung
+let auth: Auth
+let db: Firestore
+
+try {
+  auth = getAuth(app)
+  db = getFirestore(app)
+} catch (error) {
+  console.error('🚨 Firebase initialization failed:', error)
+  throw error
+}
+
+// Emulator nur im Development und falls nicht bereits verbunden
+if (import.meta.env.DEV) {
+  try {
+    // Auth Emulator
+    if (!(auth as any)._config?.emulator) {
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
+      console.log('🔧 Auth Emulator connected')
+    }
+  } catch (error) {
+    console.log('🟢 Firebase Auth online - production mode')
+  }
+
+  try {
+    // Firestore Emulator
+    if (!(db as any)._delegate?._databaseId?.projectId?.includes('demo-')) {
+      connectFirestoreEmulator(db, 'localhost', 8080)
+      console.log('🔧 Firestore Emulator connected')
+    }
+  } catch (error) {
+    console.log('🟢 Firestore online - production mode')
+  }
+}
+
+// Explizite Exports
+export { auth, db }
+
+console.log('🔥 Firebase ready')

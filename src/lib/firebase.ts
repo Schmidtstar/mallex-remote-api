@@ -78,8 +78,10 @@ if (import.meta.env.DEV) {
 
 // Explizite Exports
 export { auth, db }
-export { auth as firebaseAuth }
-export { db as firestore }
+
+// Alternative Namen für Kompatibilität
+export const firebaseAuth = auth
+export const firestore = db
 
 // Named exports für bessere Kompatibilität
 export const firebase = { auth, db }

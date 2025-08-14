@@ -1,32 +1,39 @@
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { 
+  collection, 
+  getDocs, 
+  addDoc, 
+  deleteDoc, 
+  doc, 
+  updateDoc,
+  query,
+  orderBy,
+  Timestamp 
+} from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 import { useAuth } from './AuthContext'
-import { collection, query, orderBy, getDocs, where, limit } from 'firebase/firestore'
-import { db } from '../lib/firebase'
 
 export interface TaskSuggestion {
   id: string
-  text: string
+  title: string
+  description: string
   category: string
-  authorId: string
-  createdAt: Date
+  difficulty: 'easy' | 'medium' | 'hard'
+  submittedBy: string
+  submittedAt: Date
   status: 'pending' | 'approved' | 'rejected'
-}
-
-interface ApprovedTask {
-  id: string;
-  text: string;
-  category: string;
-  authorId: string;
-  createdAt: Date;
+  adminNotes?: string
 }
 
 interface TaskSuggestionsContextType {
   suggestions: TaskSuggestion[]
   loading: boolean
   error: string | null
-  addSuggestion: (text: string, category: string) => Promise<void>
-  updateSuggestionStatus: (id: string, status: 'approved' | 'rejected') => Promise<void>
+  addSuggestion: (suggestion: Omit<TaskSuggestion, 'id' | 'submittedAt' | 'status'>) => Promise<void>
+  updateSuggestion: (id: string, updates: Partial<TaskSuggestion>) => Promise<void>
+  deleteSuggestion: (id: string) => Promise<void>
+  refreshSuggestions: () => Promise<void>
 }
 
 const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | null>(null)
@@ -34,7 +41,7 @@ const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | null>(
 const STORAGE_KEY = 'mallex_task_suggestions'
 
 interface TaskSuggestionsProviderProps {
-  children: ReactNode;
+  children: React.ReactNode
 }
 
 export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderProps) {
@@ -43,141 +50,159 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [approvedTasks, setApprovedTasks] = useState<ApprovedTask[]>([])
-  const [approvedTasksLoading, setApprovedTasksLoading] = useState(true)
-  const [approvedTasksError, setApprovedTasksError] = useState<string | null>(null)
-
   useEffect(() => {
-    const loadSuggestions = async () => {
-      setLoading(true)
-      setError(null)
-      
-      try {
-        if (!user?.uid) {
-          // If no user, fall back to localStorage
-          const saved = localStorage.getItem(STORAGE_KEY)
-          const suggestionsList = saved ? JSON.parse(saved) : []
-
-          const parsed = suggestionsList.map((s: any) => ({
-            ...s,
-            createdAt: new Date(s.createdAt)
-          }))
-          setSuggestions(parsed)
-        } else {
-          // If user is logged in, try Firebase first
-          try {
-            const q = query(collection(db, 'taskSuggestions'), orderBy('createdAt', 'desc'))
-            const snapshot = await getDocs(q)
-            setSuggestions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TaskSuggestion)))
-          } catch (firebaseError: any) {
-            console.warn('Firebase unavailable - using localStorage fallback:', firebaseError)
-            
-            // Fallback to localStorage if Firebase fails
-            const saved = localStorage.getItem(STORAGE_KEY)
-            const suggestionsList = saved ? JSON.parse(saved) : []
-
-            const parsed = suggestionsList.map((s: any) => ({
-              ...s,
-              createdAt: new Date(s.createdAt)
-            }))
-            setSuggestions(parsed)
-          }
-        }
-      } catch (error: any) {
-        console.error('Error loading suggestions:', error)
-        setError('Failed to load suggestions: ' + (error?.message || 'Unknown error'))
-        setSuggestions([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
     loadSuggestions()
-  }, [user?.uid])
+  }, [user])
 
-  const addSuggestion = async (text: string, category: string) => {
+  const loadSuggestions = async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // Versuche Firebase zu laden
+      if (user?.uid && db) {
+        try {
+          const suggestionsRef = collection(db, 'task_suggestions')
+          const q = query(suggestionsRef, orderBy('submittedAt', 'desc'))
+          const snapshot = await getDocs(q)
+          
+          const loadedSuggestions = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            submittedAt: doc.data().submittedAt?.toDate() || new Date()
+          })) as TaskSuggestion[]
+          
+          setSuggestions(loadedSuggestions)
+          
+          // Backup zu localStorage
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedSuggestions))
+          console.log(`✅ Loaded ${loadedSuggestions.length} task suggestions from Firebase`)
+          
+        } catch (firebaseError) {
+          console.warn('Firebase loading failed, using localStorage:', firebaseError)
+          loadFromLocalStorage()
+        }
+      } else {
+        // Kein User oder Firebase nicht verfügbar - localStorage verwenden
+        loadFromLocalStorage()
+      }
+    } catch (error) {
+      console.error('Error loading suggestions:', error)
+      setError('Failed to load task suggestions')
+      loadFromLocalStorage()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadFromLocalStorage = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved).map((s: any) => ({
+          ...s,
+          submittedAt: new Date(s.submittedAt)
+        }))
+        setSuggestions(parsed)
+        console.log(`📦 Loaded ${parsed.length} task suggestions from localStorage`)
+      } else {
+        setSuggestions([])
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error)
+      setSuggestions([])
+    }
+  }
+
+  const addSuggestion = async (suggestion: Omit<TaskSuggestion, 'id' | 'submittedAt' | 'status'>) => {
     const newSuggestion: TaskSuggestion = {
-      id: Date.now().toString(),
-      text: text.trim(),
-      category,
-      authorId: user?.uid || 'anonymous',
-      createdAt: new Date(),
+      ...suggestion,
+      id: crypto.randomUUID(),
+      submittedAt: new Date(),
       status: 'pending'
     }
 
-    const updated = [...suggestions, newSuggestion]
-    setSuggestions(updated)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-  }
-
-  const updateSuggestionStatus = async (id: string, status: 'approved' | 'rejected') => {
-    const updated = suggestions.map(s =>
-      s.id === id ? { ...s, status } : s
-    )
-    setSuggestions(updated)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-  }
-
-  // Cache for better performance
-  const taskCache = new Map<string, { tasks: ApprovedTask[], timestamp: number }>()
-  const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
-
-  const loadApprovedTasks = async (category?: string) => {
-    const cacheKey = category || 'all'
-    const cached = taskCache.get(cacheKey)
-
-    // Check cache
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      setApprovedTasks(cached.tasks)
-      console.log('✅ Tasks loaded from cache:', cached.tasks.length)
-      setApprovedTasksLoading(false)
-      return
-    }
-
-    setApprovedTasksLoading(true)
-    setApprovedTasksError(null)
-
     try {
-      const tasksRef = collection(db, 'approvedTasks')
-      const tasksQuery = category
-        ? query(tasksRef,
-            where('category', '==', category),
-            orderBy('createdAt', 'desc'),
-            limit(50)
-          )
-        : query(tasksRef,
-            orderBy('createdAt', 'desc'),
-            limit(50)
-          )
-
-      const snapshot = await getDocs(tasksQuery)
-      const tasks: ApprovedTask[] = []
-
-      snapshot.forEach((doc) => {
-        const data = doc.data()
-        tasks.push({
-          id: doc.id,
-          ...data,
-          createdAt: data.createdAt?.toDate() || new Date()
-        } as ApprovedTask)
-      })
-
-      // Update cache
-      taskCache.set(cacheKey, { tasks, timestamp: Date.now() })
-
-      setApprovedTasks(tasks)
-      console.log('✅ Tasks loaded successfully:', tasks.length)
-    } catch (error: any) {
-      console.error('Failed to load approved tasks:', error)
-      if (error?.code === 'permission-denied') {
-        setApprovedTasksError('📝 No approved tasks found in Firebase')
-      } else {
-        setApprovedTasksError('Fehler beim Laden der Tasks: ' + (error?.message || 'Unbekannter Fehler'))
+      // Versuche zu Firebase zu speichern
+      if (user?.uid && db) {
+        try {
+          const docRef = await addDoc(collection(db, 'task_suggestions'), {
+            ...newSuggestion,
+            submittedAt: Timestamp.fromDate(newSuggestion.submittedAt)
+          })
+          newSuggestion.id = docRef.id
+          console.log('✅ Task suggestion saved to Firebase')
+        } catch (firebaseError) {
+          console.warn('Firebase save failed, using localStorage:', firebaseError)
+        }
       }
-      setApprovedTasks([])
-    } finally {
-      setApprovedTasksLoading(false)
+
+      // Immer auch zu localStorage speichern
+      const updated = [newSuggestion, ...suggestions]
+      setSuggestions(updated)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      
+    } catch (error) {
+      console.error('Error adding suggestion:', error)
+      throw new Error('Failed to add task suggestion')
     }
+  }
+
+  const updateSuggestion = async (id: string, updates: Partial<TaskSuggestion>) => {
+    try {
+      // Versuche Firebase zu updaten
+      if (user?.uid && db) {
+        try {
+          const docRef = doc(db, 'task_suggestions', id)
+          const updateData = { ...updates }
+          if (updates.submittedAt) {
+            updateData.submittedAt = Timestamp.fromDate(updates.submittedAt)
+          }
+          await updateDoc(docRef, updateData)
+          console.log('✅ Task suggestion updated in Firebase')
+        } catch (firebaseError) {
+          console.warn('Firebase update failed, using localStorage:', firebaseError)
+        }
+      }
+
+      // Lokalen State aktualisieren
+      const updated = suggestions.map(s => 
+        s.id === id ? { ...s, ...updates } : s
+      )
+      setSuggestions(updated)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      
+    } catch (error) {
+      console.error('Error updating suggestion:', error)
+      throw new Error('Failed to update task suggestion')
+    }
+  }
+
+  const deleteSuggestion = async (id: string) => {
+    try {
+      // Versuche von Firebase zu löschen
+      if (user?.uid && db) {
+        try {
+          await deleteDoc(doc(db, 'task_suggestions', id))
+          console.log('✅ Task suggestion deleted from Firebase')
+        } catch (firebaseError) {
+          console.warn('Firebase delete failed, using localStorage:', firebaseError)
+        }
+      }
+
+      // Aus lokalem State entfernen
+      const updated = suggestions.filter(s => s.id !== id)
+      setSuggestions(updated)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      
+    } catch (error) {
+      console.error('Error deleting suggestion:', error)
+      throw new Error('Failed to delete task suggestion')
+    }
+  }
+
+  const refreshSuggestions = async () => {
+    await loadSuggestions()
   }
 
   const value: TaskSuggestionsContextType = {
@@ -185,7 +210,9 @@ export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderPro
     loading,
     error,
     addSuggestion,
-    updateSuggestionStatus,
+    updateSuggestion,
+    deleteSuggestion,
+    refreshSuggestions
   }
 
   return (

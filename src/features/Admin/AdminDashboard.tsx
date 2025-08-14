@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
@@ -6,6 +5,8 @@ import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import { useAdminSettings } from '../../context/AdminSettingsContext'
 import styles from './AdminDashboard.module.css'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../../firebase'
 
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
 
@@ -27,7 +28,8 @@ export function AdminDashboard() {
     refreshUsers,
     promoteToAdmin,
     revokeAdmin,
-    getAdminList
+    getAdminList,
+    loadUsers
   } = useAdminSettings()
 
   const [activeTab, setActiveTab] = useState<AdminTab>('overview')
@@ -36,6 +38,12 @@ export function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('')
   const [adminList, setAdminList] = useState<any[]>([])
   const [newAdminEmail, setNewAdminEmail] = useState('')
+  const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
+  const [userStats, setUserStats] = useState({
+    total: 0,
+    online: 0,
+    admins: 0
+  })
 
   if (loading) {
     return (
@@ -90,7 +98,7 @@ export function AdminDashboard() {
 
   const handleBulkAction = async (action: 'ban' | 'suspend' | 'promote' | 'notify') => {
     const userIds = Array.from(selectedUsers)
-    
+
     try {
       for (const uid of userIds) {
         switch (action) {
@@ -136,15 +144,53 @@ export function AdminDashboard() {
     }
   }
 
-  useEffect(() => {
-    if (activeTab === 'admins') {
-      loadAdminList()
+  const loadSettings = async () => {
+    try {
+      // Load admin settings here
+      setSettings({})
+    } catch (error) {
+      console.error('Error loading settings:', error)
     }
-  }, [activeTab])
+  }
+
+  const loadRegisteredUsers = async () => {
+    try {
+      const usersRef = collection(db, 'users')
+      const usersSnapshot = await getDocs(usersRef)
+
+      const usersList = usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        lastLoginAt: doc.data().lastLoginAt?.toDate?.() || null
+      }))
+
+      setRegisteredUsers(usersList)
+      setUserStats({
+        total: usersList.length,
+        online: usersList.filter(u => {
+          const lastLogin = u.lastLoginAt
+          return lastLogin && (Date.now() - lastLogin.getTime()) < 30 * 60 * 1000 // 30 min
+        }).length,
+        admins: 0 // TODO: Count actual admins
+      })
+    } catch (error) {
+      console.error('Error loading registered users:', error)
+      setRegisteredUsers([])
+    }
+  }
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadUsers()
+      loadSettings()
+      loadRegisteredUsers()
+    }
+    setLoading(false)
+  }, [isAdmin])
 
   const handlePromoteToAdmin = async () => {
     if (!newAdminEmail.trim()) return
-    
+
     try {
       await promoteToAdmin(newAdminEmail.trim())
       setNewAdminEmail('')
@@ -156,7 +202,7 @@ export function AdminDashboard() {
 
   const handleRevokeAdmin = async (userIdOrEmail: string) => {
     if (!confirm('Admin-Berechtigung wirklich entziehen?')) return
-    
+
     try {
       await revokeAdmin(userIdOrEmail)
       await loadAdminList()
@@ -258,7 +304,7 @@ export function AdminDashboard() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={styles.searchInput}
               />
-              
+
               {selectedUsers.size > 0 && (
                 <div className={styles.bulkActions}>
                   <span>{selectedUsers.size} ausgewählt</span>
@@ -283,7 +329,7 @@ export function AdminDashboard() {
                     checked={selectedUsers.has(targetUser.uid)}
                     onChange={() => toggleUserSelection(targetUser.uid)}
                   />
-                  
+
                   <div className={styles.userInfo}>
                     <div className={styles.userName}>
                       {targetUser.displayName || targetUser.email || 'Anonymous'}
@@ -349,7 +395,7 @@ export function AdminDashboard() {
             <div className={styles.settingsGrid}>
               <div className={styles.settingGroup}>
                 <h3>App-Konfiguration</h3>
-                
+
                 <label className={styles.settingItem}>
                   <input
                     type="checkbox"
@@ -402,7 +448,7 @@ export function AdminDashboard() {
 
               <div className={styles.settingGroup}>
                 <h3>Funktionen</h3>
-                
+
                 {Object.entries(appSettings.featuresEnabled).map(([feature, enabled]) => (
                   <label key={feature} className={styles.settingItem}>
                     <input
@@ -420,7 +466,7 @@ export function AdminDashboard() {
 
               <div className={styles.settingGroup}>
                 <h3>Ankündigung</h3>
-                
+
                 <label className={styles.settingItem}>
                   <input
                     type="checkbox"
@@ -446,7 +492,7 @@ export function AdminDashboard() {
           <div className={styles.adminManagement}>
             <div className={styles.adminControls}>
               <h3>👑 Admin Management</h3>
-              
+
               <div className={styles.addAdmin}>
                 <div className={styles.addAdminForm}>
                   <input
@@ -540,6 +586,57 @@ export function AdminDashboard() {
           </div>
         )}
       </div>
+      
+      {activeTab === 'overview' && (
+        <div className={styles.section}>
+          <h3>👥 Angemeldete Benutzer ({userStats.total})</h3>
+          <div className={styles.userStats}>
+            <div className={styles.statCard}>
+              <span className={styles.statNumber}>{userStats.total}</span>
+              <span className={styles.statLabel}>Gesamt registriert</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statNumber}>{userStats.online}</span>
+              <span className={styles.statLabel}>Online (30min)</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statNumber}>{userStats.admins}</span>
+              <span className={styles.statLabel}>Admins</span>
+            </div>
+          </div>
+
+          <div className={styles.usersList}>
+            {registeredUsers.map(user => (
+              <div key={user.id} className={styles.userCard}>
+                <span className={styles.userName}>
+                  {user.displayName || user.email || 'Unbekannt'}
+                </span>
+                <span className={styles.userEmail}>{user.email}</span>
+                <span className={styles.userLastLogin}>
+                  {user.lastLoginAt ? 
+                    `Zuletzt: ${user.lastLoginAt.toLocaleDateString('de-DE')}` : 
+                    'Nie angemeldet'
+                  }
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'overview' && (
+        <div className={styles.section}>
+          <h3>🔧 System Administration</h3>
+          <div className={styles.actionButtons}>
+            <button className={styles.actionButton} onClick={loadRegisteredUsers}>
+              User-Liste aktualisieren
+            </button>
+            <button className={styles.actionButton} onClick={() => window.location.reload()}>
+              System neustarten
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

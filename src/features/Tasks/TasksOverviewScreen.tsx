@@ -1,18 +1,30 @@
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { categories } from '../Arena/categories';
 import { listApprovedTasks, type Task, type CategoryKey } from '@/lib/tasksApi';
+import { SuggestTaskScreen } from './SuggestTaskScreen';
 import styles from './TasksOverviewScreen.module.css';
 
 export function TasksOverviewScreen() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get('tab') || 'overview';
+  
   // Items state removed - using tasks from API directly
   const [filteredItems, setFilteredItems] = useState<Task[]>([]);
   const [category, setCategory] = useState<CategoryKey | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
 
   useEffect(() => {
+    // Only load tasks when on overview tab
+    if (currentTab !== 'overview') return;
+
     const loadTasks = async () => {
       setLoading(true);
       try {
@@ -37,7 +49,7 @@ export function TasksOverviewScreen() {
     };
 
     loadTasks();
-  }, [category]);
+  }, [category, currentTab]);
 
   const handleCategoryFilter = (newCategory: CategoryKey | undefined) => {
     setCategory(newCategory);
@@ -49,69 +61,92 @@ export function TasksOverviewScreen() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1>{t('tasks.title')}</h1>
-        <p className={styles.subtitle}>
-          {filteredItems.length} {filteredItems.length === 1 ? 'Aufgabe' : 'Aufgaben'} verfügbar
-        </p>
-      </header>
-
-      <div className={styles.filters}>
-        <h3>Nach Kategorie filtern:</h3>
-        <div className={styles.categoryButtons}>
-          <button
-            className={`${styles.categoryButton} ${!category ? styles.active : ''}`}
-            onClick={() => handleCategoryFilter(undefined)}
-          >
-            Alle Kategorien
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              className={`${styles.categoryButton} ${category === cat.id ? styles.active : ''}`}
-              onClick={() => handleCategoryFilter(cat.id as CategoryKey)}
-            >
-              {getCategoryLabel(cat.id)}
-            </button>
-          ))}
-        </div>
+      {/* Tab Navigation */}
+      <div className={styles.tabContainer}>
+        <button
+          className={`${styles.tab} ${currentTab === 'overview' ? styles.active : ''}`}
+          onClick={() => handleTabChange('overview')}
+        >
+          📋 {t('tasks.overview')}
+        </button>
+        <button
+          className={`${styles.tab} ${currentTab === 'suggest' ? styles.active : ''}`}
+          onClick={() => handleTabChange('suggest')}
+        >
+          💭 {t('tasks.suggest')}
+        </button>
       </div>
 
-      <div className={styles.content}>
-        {loading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner}></div>
-            <p>{t('common.loading')}</p>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className={styles.empty}>
-            <span className={styles.emptyIcon}>📋</span>
-            <h3>Keine Aufgaben gefunden</h3>
-            <p>
-              {category 
-                ? `Keine Aufgaben in der Kategorie "${getCategoryLabel(category)}" verfügbar.`
-                : 'Momentan sind keine Aufgaben verfügbar.'
-              }
+      {/* Tab Content */}
+      {currentTab === 'suggest' ? (
+        <SuggestTaskScreen />
+      ) : (
+        <>
+          <header className={styles.header}>
+            <h1>{t('tasks.title')}</h1>
+            <p className={styles.subtitle}>
+              {filteredItems.length} {filteredItems.length === 1 ? 'Aufgabe' : 'Aufgaben'} verfügbar
             </p>
+          </header>
+
+          <div className={styles.filters}>
+            <h3>Nach Kategorie filtern:</h3>
+            <div className={styles.categoryButtons}>
+              <button
+                className={`${styles.categoryButton} ${!category ? styles.active : ''}`}
+                onClick={() => handleCategoryFilter(undefined)}
+              >
+                Alle Kategorien
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryButton} ${category === cat.id ? styles.active : ''}`}
+                  onClick={() => handleCategoryFilter(cat.id as CategoryKey)}
+                >
+                  {getCategoryLabel(cat.id)}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : (
-          <div className={styles.tasksList}>
-            {filteredItems.map((task, index) => (
-              <div key={task.id || index} className={styles.taskCard}>
-                <div className={styles.taskHeader}>
-                  <span className={styles.categoryBadge}>
-                    {getCategoryLabel(task.category)}
-                  </span>
-                  <span className={styles.taskNumber}>#{index + 1}</span>
-                </div>
-                <div className={styles.taskText}>
-                  {task.text}
-                </div>
+
+          <div className={styles.content}>
+            {loading ? (
+              <div className={styles.loading}>
+                <div className={styles.spinner}></div>
+                <p>{t('common.loading')}</p>
               </div>
-            ))}
+            ) : filteredItems.length === 0 ? (
+              <div className={styles.empty}>
+                <span className={styles.emptyIcon}>📋</span>
+                <h3>Keine Aufgaben gefunden</h3>
+                <p>
+                  {category 
+                    ? `Keine Aufgaben in der Kategorie "${getCategoryLabel(category)}" verfügbar.`
+                    : 'Momentan sind keine Aufgaben verfügbar.'
+                  }
+                </p>
+              </div>
+            ) : (
+              <div className={styles.tasksList}>
+                {filteredItems.map((task, index) => (
+                  <div key={task.id || index} className={styles.taskCard}>
+                    <div className={styles.taskHeader}>
+                      <span className={styles.categoryBadge}>
+                        {getCategoryLabel(task.category)}
+                      </span>
+                      <span className={styles.taskNumber}>#{index + 1}</span>
+                    </div>
+                    <div className={styles.taskText}>
+                      {task.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

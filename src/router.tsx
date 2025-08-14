@@ -19,11 +19,11 @@ const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m 
 const PostfachScreen = React.lazy(() => import('./components/NotificationCenter').then(m => ({ default: m.PostfachScreen })))
 
 const LoadingSpinner = () => (
-  <div style={{ 
-    display: 'flex', 
+  <div style={{
+    display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    justifyContent: 'center',
+    alignItems: 'center',
     height: '50vh',
     fontSize: '1rem',
     color: '#666',
@@ -96,8 +96,8 @@ const routes = [
       },
       {
         path: 'tasks/suggest',
-        element: <SuggestTaskScreen />,
-        errorElement: <ErrorBoundary><div>Fehler beim Vorschlagen</div></ErrorBoundary>
+        element: <Navigate to="/tasks?tab=suggest" replace />,
+        errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
       },
       {
         path: 'admin',

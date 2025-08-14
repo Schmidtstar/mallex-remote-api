@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
@@ -13,22 +14,31 @@ interface Player {
 
 export function LeaderboardScreen() {
   const { t } = useTranslation()
+  const location = useLocation()
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadLeaderboard()
     
-    // Auto-refresh every 10 seconds
+    // Auto-refresh every 15 seconds (less frequent since we refresh on navigation)
     const interval = setInterval(() => {
       if (import.meta.env.DEV) {
         console.log('🔄 Auto-refresh Rangliste...')
       }
       loadLeaderboard()
-    }, 10000)
+    }, 15000)
     
     return () => clearInterval(interval)
   }, [])
+
+  // Refresh leaderboard when navigating to this screen
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('🎯 Navigation zur Rangliste - automatische Aktualisierung...')
+    }
+    loadLeaderboard()
+  }, [location.pathname])
 
   async function loadLeaderboard() {
     try {
@@ -137,35 +147,24 @@ export function LeaderboardScreen() {
           🏆 {t('leaderboard.title')} 🏆
         </h1>
 
-        <button
-          onClick={loadLeaderboard}
-          disabled={loading}
-          style={{
-            padding: '10px 20px',
-            fontSize: '1rem',
-            background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
-            color: 'var(--ancient-night)',
-            border: '2px solid var(--olympic-victory)',
-            borderRadius: 'var(--radius)',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            marginBottom: '2rem',
-            fontWeight: 'bold',
-            opacity: loading ? 0.6 : 1,
-            transition: 'all 0.3s ease'
-          }}
-        >
-          {loading ? '⏳ Aktualisiere...' : '🔄 Aktualisieren'}
-        </button>
-
         <div style={{
           background: 'linear-gradient(135deg, rgba(218,165,32,0.2), rgba(255,215,0,0.1))',
           padding: '1rem',
           borderRadius: 'var(--radius)',
-          border: '1px solid rgba(218,165,32,0.3)'
+          border: '1px solid rgba(218,165,32,0.3)',
+          marginBottom: '1rem'
         }}>
           <p className={styles.subtitle}>
             {t('leaderboard.subtitle')}
           </p>
+          <div style={{
+            color: 'var(--ancient-bronze)',
+            fontSize: '0.9rem',
+            fontStyle: 'italic',
+            marginTop: '0.5rem'
+          }}>
+            ⚡ Automatische Updates bei Navigation & alle 15 Sekunden
+          </div>
         </div>
       </header>
 
@@ -215,7 +214,7 @@ export function LeaderboardScreen() {
           fontStyle: 'italic',
           marginTop: '2rem'
         }}>
-          🔄 Automatische Aktualisierung alle 10 Sekunden
+          🎯 Arena-Punkte werden automatisch synchronisiert
         </div>
       </div>
     </div>

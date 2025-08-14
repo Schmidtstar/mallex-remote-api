@@ -41,11 +41,11 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Clean exports - NO duplicates
-export { auth }
-export { db }
+// Clean exports - only aliases to avoid duplicates
 export { auth as firebaseAuth }
 export { db as firestore }
+export { auth }
+export { db }
 
 export default { auth, db }
 

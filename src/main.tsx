@@ -30,7 +30,7 @@ const App: React.FC = () => {
   // Intro komplett entfernt - direkt die App laden
   return (
     <ContextProviders>
-      <RouterProvider router={router} />
+      <RouterProvider key="main-router" router={router} />
     </ContextProviders>
   )
 }

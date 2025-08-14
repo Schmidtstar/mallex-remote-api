@@ -38,7 +38,7 @@ service cloud.firestore {
 
     // Task suggestions - users can submit, admins can moderate
     match /taskSuggestions/{suggestionId} {
-      allow read: if isAuthenticated(); // Users need to read suggestions too
+      allow read: if isAuthenticated(); 
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
@@ -64,12 +64,30 @@ service cloud.firestore {
     // App settings - admins only
     match /settings/{settingId} {
       allow read, write: if isAdmin();
+      allow read: if isAuthenticated(); // Allow users to read some settings
     }
 
-    // Notifications
+    // Notifications - FIXED for admin access
     match /notifications/{notificationId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated() && resource.data.targetUserId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // Global notifications (system-wide)
+    match /globalNotifications/{notificationId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+    }
+
+    // Admin statistics and analytics
+    match /analytics/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // System logs for admin debugging
+    match /systemLogs/{logId} {
+      allow read, write: if isAdmin();
     }
 
     // Default deny all other documents

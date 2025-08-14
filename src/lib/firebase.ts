@@ -80,7 +80,6 @@ if (import.meta.env.DEV) {
 export { auth, db }
 
 // Named exports für bessere Kompatibilität
-export { auth as firestore } from 'firebase/auth'
 export const firebase = { auth, db }
 
 console.log('🔥 Firebase ready')

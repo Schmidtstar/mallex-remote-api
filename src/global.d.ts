@@ -72,9 +72,4 @@ declare global {
   }
 }
 
-// Firebase module augmentation
-declare module 'firebase/auth' {
-  export const firestore: any;
-}
-
 export {};

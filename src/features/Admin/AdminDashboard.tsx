@@ -1,28 +1,70 @@
-
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { useIsAdmin } from '../../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import AdminSettingsProvider, { useAdminSettings } from '../../context/AdminSettingsContext'
 import styles from './AdminDashboard.module.css'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
 type AdminTab = 'overview' | 'users' | 'settings' | 'admins' | 'notifications'
+
+// Independent admin check function like in AdminTasksScreen
+const useIndependentAdminCheck = () => {
+  const { user } = useAuth()
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user?.uid) {
+        setIsAdmin(false)
+        setLoading(false)
+        return
+      }
+
+      try {
+        // Check localStorage first for dev testing
+        const localAdmin = localStorage.getItem('mallex_dev_admin')
+        if (localAdmin === user.uid) {
+          console.log('🔧 Dev Admin mode active for dashboard:', user.uid)
+          setIsAdmin(true)
+          setLoading(false)
+          return
+        }
+
+        // Try Firebase
+        const snap = await getDoc(doc(db, 'admins', user.uid))
+        const isFirebaseAdmin = snap.exists()
+        setIsAdmin(isFirebaseAdmin)
+        if (isFirebaseAdmin) {
+          console.log('✅ Dashboard admin verified via Firebase')
+        }
+      } catch (error: any) {
+        if (error?.code !== 'permission-denied') {
+          console.warn('Dashboard admin check error:', error?.code || error?.message)
+        }
+        setIsAdmin(false)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAdmin()
+  }, [user?.uid])
+
+  return { isAdmin, loading }
+}
 
 // Separate the main dashboard content into its own component
 function AdminDashboardContent() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const isAdmin = useIsAdmin()
+  const { isAdmin, loading: adminLoading } = useIndependentAdminCheck()
   const location = useLocation()
   const navigate = useNavigate()
-  
-  // Now we can safely use useAdminSettings here because we're inside the provider
-  const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
-  // State definitions - move these to the top
+  // State definitions first
   const [activeTab, setActiveTab] = useState<AdminTab>(() => {
     const path = location.pathname
     if (path.includes('/admin/users')) return 'users'
@@ -110,11 +152,11 @@ function AdminDashboardContent() {
   const error = settingsError
 
   // Redirect if not admin
-  if (!isAdmin) {
+  if (!isAdmin && !adminLoading) {
     return <Navigate to="/arena" replace />
   }
 
-  if (loading) {
+  if (adminLoading || loading) {
     return (
       <div className={styles.dashboard}>
         <div className={styles.header}>
@@ -236,7 +278,7 @@ function AdminDashboardContent() {
       setRegisteredUsers(usersList)
       // Count admins from the admin list
       const adminCount = adminList.length
-      
+
       setUserStats({
         total: usersList.length,
         online: usersList.filter(u => {

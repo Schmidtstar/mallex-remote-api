@@ -7,7 +7,8 @@ import {
 import {
   initializeFirestore,
   enableNetwork,
-  persistentLocalCache
+  persistentLocalCache,
+  CACHE_SIZE_UNLIMITED
 } from 'firebase/firestore'
 
 declare global {
@@ -47,7 +48,7 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 
 // Initialize Firestore with optimized settings
 const db = initializeFirestore(app, {
-  cache: persistentLocalCache({
+  localCache: persistentLocalCache({
     cacheSizeBytes: CACHE_SIZE_UNLIMITED,
   }),
   ignoreUndefinedProperties: true,

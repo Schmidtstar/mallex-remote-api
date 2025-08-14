@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useIsAdmin } from '../../context/AdminContext';
 import { getUserProfile, updateUserProfile } from '../../lib/userApi';
 import { calcAgeFromISO } from '../../lib/date';
 import { nationalityOptions } from '../../lib/options';
@@ -44,6 +45,7 @@ export function MenuScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
   const { user, logout, loading } = useAuth();
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
 
   const currentTab = searchParams.get('tab') || 'profile';
@@ -171,7 +173,7 @@ export function MenuScreen() {
         >
           {t('menu.settings')}
         </button>
-        {user && !user.isAnonymous && (
+        {user && !user.isAnonymous && isAdmin && (
           <button
             className={`${styles.tab} ${currentTab === 'admin' ? styles.active : ''}`}
             onClick={() => handleTabChange('admin')}
@@ -359,7 +361,7 @@ export function MenuScreen() {
           </div>
         )}
 
-        {currentTab === 'admin' && user && (
+        {currentTab === 'admin' && user && isAdmin && (
           <div className={styles.adminSection}>
             <h2>🔧 Admin Panel</h2>
             

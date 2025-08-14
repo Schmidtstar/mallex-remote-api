@@ -30,15 +30,15 @@ window.addEventListener('orientationchange', () => {
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <ErrorBoundary>
     <AuthProvider>
-      <TaskSuggestionsProvider>
-        <AdminProvider>
-          <AdminSettingsProvider>
+      <AdminProvider>
+        <AdminSettingsProvider>
+          <TaskSuggestionsProvider>
             <PlayersProvider>
               {children}
             </PlayersProvider>
-          </AdminSettingsProvider>
-        </AdminProvider>
-      </TaskSuggestionsProvider>
+          </TaskSuggestionsProvider>
+        </AdminSettingsProvider>
+      </AdminProvider>
     </AuthProvider>
   </ErrorBoundary>
 ))

@@ -44,6 +44,8 @@ if (import.meta.env.DEV) {
 // Clean exports
 export { auth as firebaseAuth }
 export { db as firestore }
+export { db } // Add direct db export
+export { auth } // Add direct auth export
 
 export default { auth, db }
 

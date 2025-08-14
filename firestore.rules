@@ -38,9 +38,15 @@ service cloud.firestore {
 
     // Task suggestions - users can submit, admins can moderate
     match /taskSuggestions/{suggestionId} {
-      allow read: if isAdmin();
+      allow read: if isAuthenticated(); // Users need to read suggestions too
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
+    }
+
+    // Task categories and static content
+    match /categories/{categoryId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     // User progress/points

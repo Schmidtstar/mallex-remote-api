@@ -165,13 +165,16 @@ export function AdminDashboard() {
       }))
 
       setRegisteredUsers(usersList)
+      // Count admins from the admin list
+      const adminCount = adminList.length
+      
       setUserStats({
         total: usersList.length,
         online: usersList.filter(u => {
           const lastLogin = u.lastLoginAt
           return lastLogin && (Date.now() - lastLogin.getTime()) < 30 * 60 * 1000 // 30 min
         }).length,
-        admins: 0 // TODO: Count actual admins
+        admins: adminCount
       })
     } catch (error) {
       console.error('Error loading registered users:', error)
@@ -182,10 +185,9 @@ export function AdminDashboard() {
   useEffect(() => {
     if (isAdmin) {
       loadUsers()
-      loadSettings()
+      loadAdminList()
       loadRegisteredUsers()
     }
-    setLoading(false)
   }, [isAdmin])
 
   const handlePromoteToAdmin = async () => {

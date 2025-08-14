@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
         usePolling: true,              // Aktiviere Polling für Replit
         interval: 2000,                // Längeres Intervall
         ignored: [
-          '**/node_modules/**', 
+          '**/node_modules/**',
           '**/.git/**',
           '**/dist/**',
           '**/*.log'

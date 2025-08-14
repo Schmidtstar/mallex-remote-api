@@ -27,16 +27,7 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ContextProviders.displayName = 'ContextProviders'
 
 const App: React.FC = () => {
-  const [showIntro, setShowIntro] = useState(false) // Temporär deaktiviert
-
-  const handleIntroComplete = React.useCallback(() => {
-    setShowIntro(false)
-  }, [])
-
-  if (showIntro) {
-    return <IntroScreen onComplete={handleIntroComplete} />
-  }
-
+  // Intro komplett entfernt - direkt die App laden
   return (
     <ContextProviders>
       <RouterProvider router={router} />

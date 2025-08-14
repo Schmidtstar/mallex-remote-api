@@ -1,50 +1,24 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { collection, doc, onSnapshot, updateDoc, setDoc, getDoc } from 'firebase/firestore'
+
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from './AuthContext'
 import { useIsAdmin } from './AdminContext'
 
-interface AdminSettings {
-  maxTasksPerUser: number
+export interface AdminSettings {
   moderationEnabled: boolean
   autoApproveFromTrustedUsers: boolean
-  trustedUserIds: string[]
-  taskCategories: string[]
+  allowAnonymousSubmissions: boolean
+  maxTasksPerUser: number
   pointsPerTask: number
-  bonusPointsForFirstSubmission: number
   dailyTaskLimit: number
   weeklyTaskLimit: number
-  bannedWords: string[]
-  minTaskDescriptionLength: number
-  maxTaskDescriptionLength: number
   requireImageForTasks: boolean
-  allowAnonymousSubmissions: boolean
+  maintenanceMode: boolean
   notificationSettings: {
     newTaskSubmissions: boolean
     userReports: boolean
     systemAlerts: boolean
-  }
-}
-
-const defaultSettings: AdminSettings = {
-  maxTasksPerUser: 5,
-  moderationEnabled: true,
-  autoApproveFromTrustedUsers: false,
-  trustedUserIds: [],
-  taskCategories: ['general', 'fitness', 'creative', 'learning', 'social'],
-  pointsPerTask: 10,
-  bonusPointsForFirstSubmission: 5,
-  dailyTaskLimit: 3,
-  weeklyTaskLimit: 15,
-  bannedWords: [],
-  minTaskDescriptionLength: 10,
-  maxTaskDescriptionLength: 500,
-  requireImageForTasks: false,
-  allowAnonymousSubmissions: true,
-  notificationSettings: {
-    newTaskSubmissions: true,
-    userReports: true,
-    systemAlerts: true
   }
 }
 
@@ -54,7 +28,23 @@ interface AdminSettingsContextType {
   error: string | null
   updateSettings: (newSettings: Partial<AdminSettings>) => Promise<void>
   resetToDefaults: () => Promise<void>
-  isAdmin: boolean
+}
+
+const defaultSettings: AdminSettings = {
+  moderationEnabled: true,
+  autoApproveFromTrustedUsers: false,
+  allowAnonymousSubmissions: false,
+  maxTasksPerUser: 5,
+  pointsPerTask: 10,
+  dailyTaskLimit: 3,
+  weeklyTaskLimit: 15,
+  requireImageForTasks: false,
+  maintenanceMode: false,
+  notificationSettings: {
+    newTaskSubmissions: true,
+    userReports: true,
+    systemAlerts: true
+  }
 }
 
 const AdminSettingsContext = createContext<AdminSettingsContextType | undefined>(undefined)
@@ -101,7 +91,7 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
     )
 
     return unsubscribe
-  }, [user?.uid, isAdmin]) // Include isAdmin in dependency array
+  }, [user?.uid, isAdmin])
 
   const updateSettings = async (newSettings: Partial<AdminSettings>) => {
     if (!user || !isAdmin) {
@@ -112,14 +102,12 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
       setLoading(true)
       const settingsRef = doc(db, 'admin', 'settings')
       const updatedSettings = { ...settings, ...newSettings }
-
       await setDoc(settingsRef, updatedSettings, { merge: true })
       setSettings(updatedSettings)
-      setError(null)
-    } catch (err) {
-      console.error('Error updating admin settings:', err)
+    } catch (error) {
+      console.error('Failed to update settings:', error)
       setError('Fehler beim Speichern der Einstellungen')
-      throw err
+      throw error
     } finally {
       setLoading(false)
     }
@@ -135,27 +123,25 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
       const settingsRef = doc(db, 'admin', 'settings')
       await setDoc(settingsRef, defaultSettings)
       setSettings(defaultSettings)
-      setError(null)
-    } catch (err) {
-      console.error('Error resetting admin settings:', err)
+    } catch (error) {
+      console.error('Failed to reset settings:', error)
       setError('Fehler beim Zurücksetzen der Einstellungen')
-      throw err
+      throw error
     } finally {
       setLoading(false)
     }
   }
 
-  const value: AdminSettingsContextType = {
-    settings,
-    loading,
-    error,
-    updateSettings,
-    resetToDefaults,
-    isAdmin
-  }
-
   return (
-    <AdminSettingsContext.Provider value={value}>
+    <AdminSettingsContext.Provider
+      value={{
+        settings,
+        loading,
+        error,
+        updateSettings,
+        resetToDefaults
+      }}
+    >
       {children}
     </AdminSettingsContext.Provider>
   )
@@ -169,6 +155,5 @@ function useAdminSettings() {
   return context
 }
 
-// Fast Refresh compatible exports
 export { useAdminSettings }
 export default AdminSettingsProvider

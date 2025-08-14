@@ -81,7 +81,7 @@ export { auth, db }
 export { auth as firebaseAuth }
 export { db as firestore }
 
-// Named exports für bessere Kompatibilität  
+// Named exports für bessere Kompatibilität
 export const firebase = { auth, db }
 
 console.log('🔥 Firebase ready')

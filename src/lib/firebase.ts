@@ -40,7 +40,7 @@ const db = initializeFirestore(app, {
   localCache: {
     kind: 'persistent',
     tabManager: 'optimistic',
-    cacheSizeBytes: 40000000  // Cache-Größe im localCache-Objekt
+    sizeBytes: 40000000  // Korrigierter Cache-Parameter
   }
 })
 

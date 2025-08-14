@@ -3,7 +3,6 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from './AuthContext'
-import { useIsAdmin } from './AdminContext'
 
 export interface AdminSettings {
   moderationEnabled: boolean
@@ -58,7 +57,22 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
-  const isAdmin = useIsAdmin()
+  
+  // Import useIsAdmin dynamically to avoid circular dependency
+  const [isAdmin, setIsAdmin] = useState(false)
+  
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      try {
+        const { useIsAdmin } = await import('./AdminContext')
+        setIsAdmin(useIsAdmin())
+      } catch (err) {
+        console.log('Admin context not available, using default')
+        setIsAdmin(false)
+      }
+    }
+    checkAdminStatus()
+  }, [user])
 
   useEffect(() => {
     if (!user?.uid || !isAdmin) {

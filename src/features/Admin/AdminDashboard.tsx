@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
@@ -18,9 +17,6 @@ function AdminDashboardContent() {
   const isAdmin = useIsAdmin()
   const location = useLocation()
   const navigate = useNavigate()
-  
-  // Now we can safely use useAdminSettings here because we're inside the provider
-  const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
   // Determine initial tab from URL path
   const getInitialTab = (): AdminTab => {
@@ -32,6 +28,11 @@ function AdminDashboardContent() {
     if (path.includes('/admin/notifications')) return 'notifications'
     return 'overview'
   }
+
+  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
+
+  // Now we can safely use useAdminSettings here because we're inside the provider
+  const { settings: appSettings, loading, error: settingsError, updateSettings: updateAppSettings, resetToDefaults } = useAdminSettings()
 
   // Mock user management functions for now - these would need to be implemented
   const userManagement = {
@@ -96,7 +97,6 @@ function AdminDashboardContent() {
     await loadRegisteredUsers()
   }
 
-  const [activeTab, setActiveTab] = useState<AdminTab>(getInitialTab())
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [notificationMessage, setNotificationMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -237,7 +237,7 @@ function AdminDashboardContent() {
       setRegisteredUsers(usersList)
       // Count admins from the admin list
       const adminCount = adminList.length
-      
+
       setUserStats({
         total: usersList.length,
         online: usersList.filter(u => {

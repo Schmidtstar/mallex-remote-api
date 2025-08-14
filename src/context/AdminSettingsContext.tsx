@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { collection, doc, onSnapshot, updateDoc, setDoc, getDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from './AuthContext'
+import { useIsAdmin } from './AdminContext'
 
 interface AdminSettings {
   maxTasksPerUser: number
@@ -66,16 +67,10 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
   const [settings, setSettings] = useState<AdminSettings>(defaultSettings)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { user } = useAuth() // Removed isAdmin from here as per the change
+  const { user } = useAuth()
+  const isAdmin = useIsAdmin()
 
   useEffect(() => {
-    // Assuming isAdmin is now fetched or derived differently if needed within this effect
-    // For now, if isAdmin is truly required here, it needs to be passed or fetched.
-    // If the intention was to remove the check entirely, then this logic might need adjustment.
-    // Based on the provided change, we assume isAdmin is no longer directly used here.
-    // If isAdmin is still needed, it should be obtained from elsewhere.
-    const isAdmin = true; // Placeholder: Replace with actual logic to determine admin status if required
-
     if (!user?.uid || !isAdmin) {
       console.log('📋 Admin settings not accessible - using defaults')
       setSettings(defaultSettings)
@@ -109,10 +104,6 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
   }, [user?.uid]) // Dependency array updated to reflect removal of isAdmin
 
   const updateSettings = async (newSettings: Partial<AdminSettings>) => {
-    // Assuming isAdmin is checked elsewhere or implicitly true if this function is called.
-    // If an explicit isAdmin check is required here, it needs to be obtained.
-    const isAdmin = true; // Placeholder: Replace with actual logic to determine admin status if required
-
     if (!user || !isAdmin) {
       throw new Error('Keine Admin-Berechtigung')
     }
@@ -135,10 +126,6 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
   }
 
   const resetToDefaults = async () => {
-    // Assuming isAdmin is checked elsewhere or implicitly true if this function is called.
-    // If an explicit isAdmin check is required here, it needs to be obtained.
-    const isAdmin = true; // Placeholder: Replace with actual logic to determine admin status if required
-
     if (!user || !isAdmin) {
       throw new Error('Keine Admin-Berechtigung')
     }
@@ -157,12 +144,6 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
       setLoading(false)
     }
   }
-
-  // The isAdmin property is still present in AdminSettingsContextType,
-  // and is being passed in the value object.
-  // If isAdmin is truly meant to be removed from the context, the interface and this line should also be changed.
-  // Based on the provided change, only the direct usage from useAuth was modified.
-  const isAdmin = true; // Placeholder: If isAdmin is still needed here, it must be obtained.
 
   const value: AdminSettingsContextType = {
     settings,

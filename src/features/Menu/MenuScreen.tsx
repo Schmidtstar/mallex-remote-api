@@ -195,7 +195,7 @@ export function MenuScreen() {
                   <>
                     {!isEditing ? (
                       <div className={styles.profileData}>
-                        <p><strong>{t('profile.displayName')}:</strong> {userProfile.displayName || '-'}</p>
+                        <p><strong>{t('profile.displayName')}:</strong> {userProfile.displayName || userProfile.email || 'Unbekannter Benutzer'}</p>
                         {userProfile.birthdate && (
                           <p>
                             <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthdate)}

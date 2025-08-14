@@ -27,25 +27,24 @@ export const db = getFirestore(app)
 // Connect to emulators in development
 if (import.meta.env.DEV) {
   try {
-    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
+    connectAuthEmulator(auth, 'http://0.0.0.0:9099', { disableWarnings: true })
     console.log('🔧 Auth Emulator connected')
   } catch (error) {
-    console.log('Auth Emulator already connected or not available')
+    console.log('⚠️ Auth Emulator not available - using production Firebase')
   }
 
   try {
-    connectFirestoreEmulator(db, 'localhost', 8080)
+    connectFirestoreEmulator(db, '0.0.0.0', 8080)
     console.log('🔧 Firestore Emulator connected')
   } catch (error) {
-    console.log('Firestore Emulator already connected or not available')
+    console.log('⚠️ Firestore Emulator not available - using production Firebase')
   }
 }
 
-// Clean exports
+// Clean exports - fixed duplicate exports
+export { auth, db }
 export { auth as firebaseAuth }
 export { db as firestore }
-export { db } // Add direct db export
-export { auth } // Add direct auth export
 
 export default { auth, db }
 

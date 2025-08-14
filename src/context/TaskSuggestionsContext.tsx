@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from './AuthContext'
-import { useAdmin } from './AdminContext' // Assuming AdminContext is available and export useAdmin
 
 export interface TaskSuggestion {
   id: string
@@ -37,17 +36,6 @@ interface TaskSuggestionsProviderProps {
 
 export function TaskSuggestionsProvider({ children }: TaskSuggestionsProviderProps) {
   const { user } = useAuth()
-
-  // Safe useAdmin with error handling
-  let isAdmin = false
-  try {
-    const adminContext = useAdmin()
-    isAdmin = adminContext.isAdmin
-  } catch (error) {
-    console.warn('Admin context not available, defaulting to false')
-    isAdmin = false
-  }
-
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

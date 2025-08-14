@@ -45,12 +45,14 @@ if (import.meta.env.PROD) {
 // Initialize Firebase app once
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
-// Initialize Firestore with proper cache configuration - only one configuration!
+// Initialize Firestore with optimized settings
 const db = initializeFirestore(app, {
+  cache: persistentLocalCache({
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  }),
   ignoreUndefinedProperties: true,
-  experimentalAutoDetectLongPolling: true,
-  localCache: persistentLocalCache()
-})
+  experimentalForceLongPolling: false,
+});
 
 // Auth-Persistenz
 const auth = getAuth(app)

@@ -207,6 +207,12 @@
     "theme": "Thème",
     "about": "À propos de MALLEX - Le jeu de société ultime pour des soirées inoubliables ! Développé par JPS"
   },
+  "language": {
+    "german": "Deutsch",
+    "english": "English", 
+    "french": "Français",
+    "spanish": "Español"
+  },
   "notifications": {
     "title": "Boîte de réception",
     "empty": "Boîte de réception vide",

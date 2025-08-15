@@ -208,6 +208,12 @@
     "theme": "Design",
     "about": "Über MALLEX - Das ultimative Party-Spiel für unvergessliche Abende! Entwickelt von JPS"
   },
+  "language": {
+    "german": "Deutsch",
+    "english": "English", 
+    "french": "Français",
+    "spanish": "Español"
+  },
   "notifications": {
     "title": "Postfach",
     "empty": "Postfach ist leer",

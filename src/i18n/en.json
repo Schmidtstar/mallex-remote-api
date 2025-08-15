@@ -210,6 +210,12 @@
     "privacy": "Privacy",
     "about": "About MALLEX - The ultimate party game for unforgettable nights! Developed by JPS"
   },
+  "language": {
+    "german": "Deutsch",
+    "english": "English", 
+    "french": "Français",
+    "spanish": "Español"
+  },
   "notifications": {
     "title": "Inbox",
     "empty": "Inbox is empty",

@@ -102,7 +102,8 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       // Only localStorage mode until Firebase setup is complete
       const newPlayer: Player = {
         id: Date.now().toString(),
-        name: name.trim()
+        name: name.trim(),
+        score: 0
       }
       const updatedPlayers = [...players, newPlayer]
       setPlayers(updatedPlayers)
@@ -121,8 +122,15 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       const updatedPlayers = players.filter(p => p.id !== id)
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+      
+      if (import.meta.env.DEV) {
+        console.log('Player removed successfully:', id)
+        console.log('Updated players list:', updatedPlayers)
+      }
     } catch (error) {
-      console.warn('Failed to remove player:', error)
+      if (import.meta.env.DEV) {
+        console.warn('Failed to remove player:', error)
+      }
       throw error
     }
   }, [players])

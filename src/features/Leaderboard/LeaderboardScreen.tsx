@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 import styles from './LeaderboardScreen.module.css'
+import { useAuth } from '@/context/AuthContext'
+import { usePlayersContext } from '@/context/PlayersContext'
 
 interface Player {
   id: string
@@ -15,12 +17,14 @@ interface Player {
 export function LeaderboardScreen() {
   const { t } = useTranslation()
   const location = useLocation()
+  const { user } = useAuth()
+  const { players: playersFromContext } = usePlayersContext()
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadLeaderboard()
-    
+
     // Auto-refresh every 15 seconds (less frequent since we refresh on navigation)
     const interval = setInterval(() => {
       if (import.meta.env.DEV) {
@@ -28,7 +32,7 @@ export function LeaderboardScreen() {
       }
       loadLeaderboard()
     }, 15000)
-    
+
     return () => clearInterval(interval)
   }, [])
 
@@ -43,10 +47,10 @@ export function LeaderboardScreen() {
   async function loadLeaderboard() {
     try {
       setLoading(true)
-      
+
       // Load players from Firebase if available
-      let playersData: Player[] = []
-      
+      let firebasePlayers: Player[] = []
+
       try {
         const playersRef = collection(db, 'players')
         const q = query(playersRef, orderBy('arenaPoints', 'desc'), limit(50))
@@ -60,55 +64,46 @@ export function LeaderboardScreen() {
             arenaPoints: data.arenaPoints || 0,
             rank: 0 // Will be set later
           }
-          playersData.push(player)
+          firebasePlayers.push(player)
           if (import.meta.env.DEV) {
             console.log('🏆 Spieler geladen:', player.name, 'Punkte:', player.arenaPoints)
           }
         })
-        
+
         if (import.meta.env.DEV) {
-          console.log('📊 Gesamte Spielerliste aus Firebase:', playersData.length, 'Spieler')
+          console.log('📊 Gesamte Spielerliste aus Firebase:', firebasePlayers.length, 'Spieler')
         }
       } catch (firebaseError) {
         console.warn('Firebase nicht verfügbar, lade lokale Legenden:', firebaseError)
       }
 
-      // Also load legends from localStorage (they should appear with 0 points if not in Firebase)
-      try {
-        const localLegends = localStorage.getItem('mallex-players')
-        if (localLegends) {
-          const legends = JSON.parse(localLegends)
-          legends.forEach((legend: any) => {
-            // Check if this legend is already in the players data
-            const existingPlayer = playersData.find(p => 
-              p.name.toLowerCase() === legend.name.toLowerCase()
-            )
-            
-            if (!existingPlayer) {
-              // Add legend with 0 arena points
-              playersData.push({
-                id: legend.id,
-                name: legend.name,
-                arenaPoints: 0,
-                rank: 0 // Will be set later
-              })
-            }
+      // Combine Firebase data with players from PlayersContext
+      // Ensure no duplicate players based on name (case-insensitive)
+      const combinedPlayers = [...firebasePlayers]
+      playersFromContext.forEach((contextPlayer) => {
+        const isAlreadyInFirebase = firebasePlayers.some(firebasePlayer => 
+          firebasePlayer.name.toLowerCase() === contextPlayer.name.toLowerCase()
+        )
+        if (!isAlreadyInFirebase) {
+          combinedPlayers.push({
+            id: contextPlayer.id,
+            name: contextPlayer.name,
+            arenaPoints: contextPlayer.arenaPoints || 0, // Use points from context if available
+            rank: 0
           })
         }
-      } catch (localError) {
-        console.warn('Fehler beim Laden der lokalen Legenden:', localError)
-      }
+      })
 
       // Sort by arena points (descending) and assign ranks
-      playersData.sort((a, b) => b.arenaPoints - a.arenaPoints)
-      playersData.forEach((player, index) => {
+      combinedPlayers.sort((a, b) => b.arenaPoints - a.arenaPoints)
+      combinedPlayers.forEach((player, index) => {
         player.rank = index + 1
       })
 
       if (import.meta.env.DEV) {
-        console.log('🏁 Finale Rangliste:', playersData.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
+        console.log('🏁 Finale Rangliste:', combinedPlayers.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
       }
-      setPlayers(playersData)
+      setPlayers(combinedPlayers)
     } catch (error) {
       console.error('Fehler beim Laden der Rangliste:', error)
     } finally {

@@ -49,13 +49,8 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
       </div>
 
       <div className={styles.content}>
-        {/* Dramatic entrance text */}
-        <div className={`${styles.entrance} ${currentStep >= 1 ? styles.visible : ''}`}>
-          <div className={styles.entranceText}>WILLKOMMEN BEI</div>
-        </div>
-
-        {/* MALLEX mit dramatischer Animation */}
-        <div className={`${styles.appName} ${currentStep >= 2 ? styles.visible : ''}`}>
+        {/* MALLEX - Sofort der Star */}
+        <div className={`${styles.appName} ${currentStep >= 1 ? styles.visible : ''}`}>
           <span className={styles.letter} style={{ animationDelay: '0s' }}>M</span>
           <span className={styles.letter} style={{ animationDelay: '0.1s' }}>A</span>
           <span className={styles.letter} style={{ animationDelay: '0.2s' }}>L</span>
@@ -64,16 +59,16 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
           <span className={styles.letter} style={{ animationDelay: '0.5s' }}>X</span>
         </div>
 
-        {/* Subtitle: DIE OLYMPISCHEN SAUFSPIELE */}
-        <div className={`${styles.subtitle1} ${currentStep >= 3 ? styles.visible : ''}`}>
-          <span className={styles.word} style={{ animationDelay: '0s' }}>DIE</span>
-          <span className={styles.word} style={{ animationDelay: '0.2s' }}>OLYMPISCHEN</span>
-          <span className={styles.word} style={{ animationDelay: '0.4s' }}>SAUFSPIELE</span>
+        {/* Banner-Style Subtitle */}
+        <div className={`${styles.eventBanner} ${currentStep >= 2 ? styles.visible : ''}`}>
+          <div className={styles.bannerRibbon}>
+            <span className={styles.bannerText}>DIE OLYMPISCHEN SAUFSPIELE</span>
+          </div>
         </div>
 
-        {/* Epic Quote */}
+        {/* Epic Quote mit Feuer-Verlauf */}
         <div className={`${styles.epicQuote} ${currentStep >= 3 ? styles.visible : ''}`}>
-          <div className={styles.quoteText}>"MÖGEN DIE SPIELE BEGINNEN!"</div>
+          <div className={styles.quoteText}>„Mögen die Spiele beginnen!"</div>
         </div>
 
         {/* Values mit explosiver Animation */}

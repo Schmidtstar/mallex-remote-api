@@ -150,13 +150,18 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-align: center;
+  letter-spacing: 0.1em;
+  width: 100%;
+  display: block;
 }
 
 .appName::before {
   content: 'MALLEX';
   position: absolute;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   color: #ffffff;
   z-index: -1;
   background: none;
@@ -166,18 +171,25 @@
     0 0 20px rgba(255, 215, 0, 0.8),
     0 0 30px rgba(255, 107, 53, 0.6),
     0 2px 4px rgba(0, 0, 0, 1);
+  letter-spacing: 0.1em;
+  width: 100%;
+  text-align: center;
 }
 
 .appName::after {
   content: 'MALLEX';
   position: absolute;
   top: 2px;
-  left: 2px;
+  left: 50%;
+  transform: translateX(-50%);
   color: #000000;
   z-index: -2;
   background: none;
   -webkit-text-fill-color: #000000;
   opacity: 0.3;
+  letter-spacing: 0.1em;
+  width: 100%;
+  text-align: center;
 }
 
 .appName.visible {

@@ -3,6 +3,7 @@ import s from "./AppIntro.module.css";
 
 export default function AppIntro() {
   const [phase, setPhase] = useState<"wait"|"idle"|"reveal"|"text">("wait");
+  const [doorsOpen, setDoorsOpen] = useState(false);
 
   // Start Sequenz nach User-Klick
   const startIntro = () => {
@@ -11,6 +12,7 @@ export default function AppIntro() {
     // t=1.2s - Türen öffnen sich
     setTimeout(() => {
       setPhase("reveal");
+      setDoorsOpen(true); // Türen bleiben dauerhaft offen
     }, 1200);
 
     // t=2.5s - Text erscheint aus der Dunkelheit
@@ -37,8 +39,8 @@ export default function AppIntro() {
         </div>
 
         {/* Türen */}
-        <div className={`${s.door} ${s.left} ${phase==="reveal" ? s.open : ""}`}/>
-        <div className={`${s.door} ${s.right} ${phase==="reveal" ? s.open : ""}`}/>
+        <div className={`${s.door} ${s.left} ${doorsOpen ? s.open : ""}`}/>
+        <div className={`${s.door} ${s.right} ${doorsOpen ? s.open : ""}`}/>
         
         {/* Text aus der Dunkelheit */}
         {phase === "text" && (

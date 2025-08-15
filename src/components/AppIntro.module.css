@@ -53,8 +53,8 @@
 }
 .door.left{left:0;border-right:1px solid rgba(0,0,0,.08);}
 .door.right{right:0;border-left:1px solid rgba(0,0,0,.08); transform-origin:center right;}
-.door.open.left{transform: perspective(1000px) rotateY(-65deg);}
-.door.open.right{transform: perspective(1000px) rotateY(65deg);}
+.door.open.left{transform: perspective(1000px) rotateY(-65deg) !important;}
+.door.open.right{transform: perspective(1000px) rotateY(65deg) !important;}
 
 
 /* Emergierender Text */

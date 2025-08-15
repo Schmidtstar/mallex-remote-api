@@ -110,7 +110,8 @@
   "tasks": {
     "title": "Tasks",
     "overview": "Tasks Overview",
-    "suggest": {
+    "suggest": "Suggest Task",
+    "suggestTask": {
       "title": "Suggest Task",
       "placeholder": "Enter your task suggestion here…",
       "submit": "Submit Suggestion"

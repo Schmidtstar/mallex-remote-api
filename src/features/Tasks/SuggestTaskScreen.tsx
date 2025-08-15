@@ -40,7 +40,7 @@ export function SuggestTaskScreen() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>📝 Aufgabe vorschlagen</h2>
+        <h2 className={styles.title}>📝 {t('tasks.suggestTask.title')}</h2>
         <p className={styles.subtitle}>
           Teile deine Ideen für neue Aufgaben mit der Community
         </p>
@@ -79,7 +79,7 @@ export function SuggestTaskScreen() {
             id="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Beschreibe deine Aufgabenidee hier... (z.B. 'Erzähle von deinem schönsten Kindheitserlebnis')"
+            placeholder={t('tasks.suggestTask.placeholder')}
             className={styles.textarea}
             rows={4}
             maxLength={500}
@@ -94,7 +94,7 @@ export function SuggestTaskScreen() {
           disabled={busy || !text.trim()} 
           className={styles.submitButton}
         >
-          {busy ? '📤 Wird gesendet...' : '🚀 Vorschlag einreichen'}
+          {busy ? '📤 Wird gesendet...' : `🚀 ${t('tasks.suggestTask.submit')}`}
         </button>
       </form>
 

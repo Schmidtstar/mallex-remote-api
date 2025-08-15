@@ -132,7 +132,8 @@
   "tasks": {
     "title": "Aufgaben",
     "overview": "Aufgaben-Übersicht",
-    "suggest": {
+    "suggest": "Aufgabe vorschlagen",
+    "suggestTask": {
       "title": "Aufgabe vorschlagen",
       "placeholder": "Deine Aufgabe hier eingeben…",
       "submit": "Vorschlag senden"

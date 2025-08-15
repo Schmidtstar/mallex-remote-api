@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Dancing+Script:wght@400;500;600;700&display=swap');
 
 :root{
   --navy:#0f1c33;
@@ -34,9 +34,9 @@
   linear-gradient(180deg,rgba(0,0,0,.12),transparent);border-radius:6px 6px 0 0;}
 .title{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family: "Cinzel", "Times New Roman", serif;
-  letter-spacing:.3em;word-spacing:.2em;
-  font-size:clamp(2rem,6vw,3.4rem);font-weight:700;
+  font-family: "Dancing Script", "Cinzel", cursive;
+  letter-spacing:.15em;word-spacing:.1em;
+  font-size:clamp(2.4rem,7vw,4rem);font-weight:700;
   background:linear-gradient(135deg,var(--gold),#fff,var(--gold2));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   text-shadow:0 0 30px rgba(255,209,102,.6),0 3px 6px rgba(0,0,0,.6);
@@ -70,52 +70,54 @@
   transform:translate(-50%, -50%);
   text-align:center;
   color:#fff;
-  font-family:"Cinzel", "Times New Roman", serif;
+  font-family:"Dancing Script", cursive;
   z-index:10;
   animation: emerge 5s ease-out forwards;
 }
 
 .emergingText h1{
-  font-size:clamp(1.8rem, 5vw, 3.2rem);
-  font-weight:900;
-  letter-spacing:0.25em;
-  word-spacing:0.4em;
+  font-size:clamp(2.2rem, 6vw, 3.8rem);
+  font-weight:700;
+  letter-spacing:0.1em;
+  word-spacing:0.2em;
   margin:0 0 1rem 0;
   background:linear-gradient(135deg,var(--gold),#fff,var(--gold2));
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
   text-shadow:0 0 20px rgba(255,209,102,.8), 0 4px 8px rgba(0,0,0,.9);
-  font-variant:small-caps;
-  text-transform:uppercase;
-  font-family:"Cinzel", serif;
+  font-variant:normal;
+  text-transform:none;
+  font-family:"Dancing Script", cursive;
+  font-style:italic;
 }
 
 .emergingText h2{
-  font-size:clamp(0.9rem, 2.5vw, 1.4rem);
-  font-weight:500;
-  letter-spacing:0.18em;
-  word-spacing:0.25em;
+  font-size:clamp(1.1rem, 3vw, 1.8rem);
+  font-weight:600;
+  letter-spacing:0.08em;
+  word-spacing:0.15em;
   margin:0 0 1.5rem 0;
   color:#e0e6ed;
   text-shadow:0 3px 10px rgba(0,0,0,.8);
-  font-variant:small-caps;
-  line-height:1.5;
-  font-family:"Cinzel", serif;
+  font-variant:normal;
+  line-height:1.4;
+  font-family:"Dancing Script", cursive;
+  font-style:italic;
 }
 
 .emergingText h3{
-  font-size:clamp(1.1rem, 3vw, 1.8rem);
+  font-size:clamp(1.3rem, 3.5vw, 2.2rem);
   font-weight:700;
-  letter-spacing:0.28em;
-  word-spacing:0.35em;
+  letter-spacing:0.12em;
+  word-spacing:0.2em;
   margin:0;
   color:var(--gold);
   text-shadow:0 0 18px rgba(255,209,102,.7), 0 3px 6px rgba(0,0,0,.9);
-  font-variant:small-caps;
-  text-transform:uppercase;
+  font-variant:normal;
+  text-transform:none;
   font-style:italic;
-  font-family:"Cinzel", serif;
+  font-family:"Dancing Script", cursive;
 }
 
 @keyframes emerge{
@@ -170,11 +172,12 @@
 }
 .clickOverlay p{
   color:#fff;
-  font-size:clamp(1rem,4vw,1.4rem);
-  font-family:"Cinzel","Times New Roman",serif;
+  font-size:clamp(1.2rem,4.5vw,1.8rem);
+  font-family:"Dancing Script", cursive;
   font-weight:600;
-  letter-spacing:0.1em;
+  letter-spacing:0.05em;
   text-align:center;
+  font-style:italic;
   animation: blink 1.4s ease-in-out infinite;
 }
 @keyframes blink{

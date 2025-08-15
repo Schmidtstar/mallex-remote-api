@@ -2,6 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     // Helper functions
     function isAuthenticated() {
       return request.auth != null;
@@ -16,30 +17,22 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Users collection - users can read/write their own data
+    // Users collection - users can manage their own data, admins can read all
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
-      allow read: if isAdmin(); // Admins can read all users
-      allow create: if isAuthenticated(); // Anyone can create their profile
+      allow create: if isAuthenticated();
+      allow read, write: if isOwner(userId) || isAdmin();
     }
 
-    // Admins collection - only admins can read/write
+    // Admins collection - only admins can read/write, users can check their own admin status
     match /admins/{userId} {
       allow read, write: if isAdmin();
-      allow read: if isOwner(userId); // Users can check if they are admin
+      allow read: if isOwner(userId);
     }
 
-    // Tasks collection - read for authenticated users, write for admins
+    // Tasks collection - read for authenticated users, write for admins only
     match /tasks/{taskId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
-    }
-
-    // Task suggestions - users can submit, admins can moderate
-    match /taskSuggestions/{suggestionId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAdmin();
     }
 
     // Task categories and static content
@@ -48,18 +41,29 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // User progress/points - users own their data
-    match /userProgress/{userId} {
-      allow read, write: if isOwner(userId);
-      allow read: if isAdmin();
+    // Task suggestions - users can submit and read, admins can moderate
+    match /taskSuggestions/{suggestionId} {
+      allow read, create: if isAuthenticated();
+      allow update, delete: if isAdmin() || 
+        (isAuthenticated() && request.auth.uid == resource.data.submittedBy);
     }
 
-    // Players collection for leaderboard and Arena points
-    // FIXED: Allow all authenticated users to read/write Arena points
-    // This is needed for multiplayer Arena where players award points to each other
+    // User progress/points - users own their data
+    match /userProgress/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // Players collection - SECURE Arena points system
+    // Players can only update their OWN records, but all can read leaderboard
     match /players/{playerId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated(); // 🎯 FIXED: All authenticated users can update Arena points
+      // SECURE: Only allow creation if the document's userId matches auth.uid
+      allow create: if isAuthenticated() && 
+                      request.auth.uid == request.resource.data.userId;
+      // SECURE: Only allow updates if the document's userId matches auth.uid
+      allow update: if isAuthenticated() && 
+                      request.auth.uid == resource.data.userId;
+      allow delete: if isAdmin();
     }
 
     // App settings - only admins can access
@@ -75,8 +79,8 @@ service cloud.firestore {
 
     // Notifications - users see only their own, admins see all
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() &&
-                     (resource.data.targetUserId == request.auth.uid || isAdmin());
+      allow read: if isAuthenticated() && 
+                    (request.auth.uid == resource.data.targetUserId || isAdmin());
       allow write: if isAdmin();
     }
 

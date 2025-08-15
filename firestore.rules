@@ -3,103 +3,108 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // Helpers
     function isAuthenticated() {
       return request.auth != null;
     }
-
     function isAdmin() {
       return isAuthenticated() &&
              exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
-
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Users collection - users can manage their own data, admins can read all
+    // USERS — eigenes Profil + Admin-Zugriff
     match /users/{userId} {
-      allow create: if isAuthenticated();
+      // Nur eigenes Profil anlegen (statt "if isAuthenticated()")
+      allow create: if isOwner(userId);
       allow read, write: if isOwner(userId) || isAdmin();
     }
 
-    // Admins collection - only admins can read/write, users can check their own admin status
+    // ADMINS — Admin-only schreiben/lesen; Owner darf sein eigenes Admin-Dokument lesen
     match /admins/{userId} {
       allow read, write: if isAdmin();
-      allow read: if isOwner(userId);
+      allow read: if isOwner(userId); // ODER-Regel ist ok
     }
 
-    // Tasks collection - read for authenticated users, write for admins only
+    // TASKS — alle Auth lesen, nur Admin schreiben
     match /tasks/{taskId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Task categories and static content
+    // CATEGORIES — alle Auth lesen, nur Admin schreiben
     match /categories/{categoryId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Task suggestions - users can submit and read, admins can moderate
+    // TASK SUGGESTIONS — Auth lesen/erstellen; Admin oder Ersteller darf ändern/löschen
     match /taskSuggestions/{suggestionId} {
       allow read, create: if isAuthenticated();
-      allow update, delete: if isAdmin() || 
+      allow update, delete: if isAdmin() ||
         (isAuthenticated() && request.auth.uid == resource.data.submittedBy);
     }
 
-    // User progress/points - users own their data
+    // USER PROGRESS — Owner & Admin lesen; nur Owner schreibt
     match /userProgress/{userId} {
       allow read, write: if isOwner(userId) || isAdmin();
     }
 
-    // Players collection - SECURE Arena points system
-    // Players can only update their OWN records, but all can read leaderboard
+    // PLAYERS — Leaderboard
     match /players/{playerId} {
       allow read: if isAuthenticated();
-      // SECURE: Only allow creation if the document's userId matches auth.uid
-      allow create: if isAuthenticated() && 
-                      request.auth.uid == request.resource.data.userId;
-      // SECURE: Only allow updates if the document's userId matches auth.uid
-      allow update: if isAuthenticated() && 
-                      request.auth.uid == resource.data.userId;
+
+      // Nur eigenes Player-Dokument anlegen: Doc-ID UND Feld müssen zu auth.uid passen
+      allow create: if isAuthenticated()
+                    && playerId == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid;
+
+      // Nur der Owner darf sein Dokument ändern (optional: Felder einschränken)
+      allow update: if isAuthenticated()
+                    && resource.data.userId == request.auth.uid
+                    && playerId == request.auth.uid
+                    // optionaler Manipulationsschutz: nur bestimmte Felder dürfen sich ändern
+                    && request.resource.data.diff(resource.data).changedKeys()
+                         .hasOnly(['displayName', 'avatarUrl', 'arenaPoints', 'updatedAt']);
+
       allow delete: if isAdmin();
     }
 
-    // App settings - only admins can access
+    // SETTINGS — Admin-only
     match /settings/{settingId} {
       allow read, write: if isAdmin();
     }
 
-    // Public settings that users can read
+    // PUBLIC SETTINGS — Auth lesen, Admin schreiben
     match /publicSettings/{settingId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Notifications - users see only their own, admins see all
+    // NOTIFICATIONS — User nur eigene, Admin alle
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && 
-                    (request.auth.uid == resource.data.targetUserId || isAdmin());
+      allow read: if isAuthenticated() &&
+                  (request.auth.uid == resource.data.targetUserId || isAdmin());
       allow write: if isAdmin();
     }
 
-    // Global notifications (system-wide) - read-only for users
+    // GLOBALE NOTIFICATIONS — User read-only, Admin write
     match /globalNotifications/{notificationId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    // Admin-only collections
+    // Admin-only Collections
     match /analytics/{docId} {
       allow read, write: if isAdmin();
     }
-
     match /systemLogs/{logId} {
       allow read, write: if isAdmin();
     }
 
-    // Default deny all other documents
+    // Default deny
     match /{document=**} {
       allow read, write: if false;
     }

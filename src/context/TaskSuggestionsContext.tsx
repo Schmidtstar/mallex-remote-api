@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react'
 import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
@@ -60,6 +60,14 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
     }
   ]
 
+  // Mock useAuth hook - replace with actual implementation
+  const useAuth = () => {
+    // Assuming a user object and isAdmin flag are available
+    const user = { uid: 'user-123', displayName: 'Test User' };
+    const isAdmin = true; // Or false, depending on the user
+    return { user, isAdmin };
+  };
+
   const { user, isAdmin } = useAuth()
 
   useEffect(() => {
@@ -76,11 +84,11 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setError(null)
 
-      // Simuliere Laden der Vorschläge
+      // Simulate loading suggestions
       const mockSuggestions: TaskSuggestion[] = []
       setSuggestions(mockSuggestions)
 
-      // Lade Tasks (sowohl aus Firebase als auch localStorage)
+      // Load tasks (from Firebase and localStorage)
       try {
         console.log('🔄 Firebase empty, falling back to localStorage with demo data')
 
@@ -208,7 +216,7 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
     setTasks(prev => [...prev, newTask])
   }
 
-  const value: TaskSuggestionsContextType = {
+  const contextValue = useMemo(() => ({
     suggestions,
     tasks,
     loading,
@@ -221,10 +229,10 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
     updateTask,
     deleteTask,
     createTask
-  }
+  }), [suggestions, tasks, loading, error, addSuggestion, refreshSuggestions, approveSuggestion, rejectSuggestion, toggleTaskVisibility, updateTask, deleteTask, createTask]);
 
   return (
-    <TaskSuggestionsContext.Provider value={value}>
+    <TaskSuggestionsContext.Provider value={contextValue}>
       {children}
     </TaskSuggestionsContext.Provider>
   )

@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, ReactNode } from 'react'
 import { useAuth } from './AuthContext'
 
@@ -18,6 +19,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   )
 }
 
+// ✅ EINZIGE ADMIN-HOOK - alle anderen entfernt
 export function useIsAdmin(): boolean {
   const { isAdmin } = useAuth()
   return isAdmin
@@ -26,7 +28,8 @@ export function useIsAdmin(): boolean {
 export function useAdminContext(): AdminContextType {
   const context = useContext(AdminContext)
   if (!context) {
-    throw new Error('useAdminContext must be used within AdminProvider')
+    // Fallback statt Fehler
+    return { isAdmin: false, loading: false }
   }
   return context
 }

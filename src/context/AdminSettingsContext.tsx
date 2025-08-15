@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -66,7 +65,7 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
         setError(null)
 
         const settingsDoc = await getDoc(doc(db, 'adminSettings', 'app'))
-        
+
         if (settingsDoc.exists()) {
           const data = settingsDoc.data()
           setAppSettings({ ...defaultSettings, ...data })
@@ -96,10 +95,10 @@ export function AdminSettingsProvider({ children }: { children: ReactNode }) {
 
     try {
       const newSettings = { ...appSettings, ...updates }
-      
+
       await updateDoc(doc(db, 'adminSettings', 'app'), updates)
       setAppSettings(newSettings)
-      
+
       console.log('✅ Settings updated:', Object.keys(updates))
     } catch (error: any) {
       console.error('Settings update failed:', error)

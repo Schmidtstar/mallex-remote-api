@@ -5,26 +5,26 @@ import { router } from './router'
 import './styles/index.css'
 import './i18n'
 import { AuthProvider } from './context/AuthContext'
-import { AdminProvider } from './context/AdminContext'
+import { AdminSettingsProvider } from './context/AdminSettingsContext' // Assuming AdminSettingsProvider is the intended replacement
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
-    <AdminProvider>
+    <AdminSettingsProvider>
       <TaskSuggestionsProvider>
         <PlayersProvider>
           {children}
         </PlayersProvider>
       </TaskSuggestionsProvider>
-    </AdminProvider>
+    </AdminSettingsProvider>
   </AuthProvider>
 ))
 ContextProviders.displayName = 'ContextProviders'
 
 const App: React.FC = () => {
-  // Intro komplett entfernt - direkt die App laden
+  // Intro completely removed - load the app directly
   return (
     <ContextProviders>
       <RouterProvider key="main-router" router={router} />

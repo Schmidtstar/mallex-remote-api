@@ -1,4 +1,3 @@
-
 .introContainer {
   position: fixed;
   top: 0;
@@ -585,12 +584,12 @@
     gap: 1rem;
     margin-top: 2rem;
   }
-  
+
   .value {
     padding: 0.8rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   .subtitle1, .subtitle2 {
     margin: 1rem 0;
     letter-spacing: 2px;
@@ -641,4 +640,116 @@
     transform: translateY(10px) rotate(-1deg) scale(0.9);
     opacity: 0.9;
   }
+}
+
+/* Epic Action Buttons */
+.actionButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto;
+  max-width: 500px;
+  padding: 0 1rem;
+  opacity: 0;
+  position: relative;
+  z-index: 100002;
+}
+
+@media (min-width: 768px) {
+  .actionButtons {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 700px;
+    gap: 1rem;
+  }
+}
+
+.actionButton {
+  padding: 1rem 1.2rem;
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 50%, #b8860b 100%);
+  color: #1a1a2e;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 6px 20px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 25px rgba(255, 215, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.actionButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.actionButton::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.actionButton:hover::before {
+  left: 100%;
+}
+
+.actionButton:hover::after {
+  opacity: 1;
+}
+
+.actionButton:hover {
+  transform: translateY(-4px) scale(1.08);
+  background: linear-gradient(135deg, #ffed4a 0%, #f7c52b 50%, #daa520 100%);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 
+    0 12px 35px rgba(255, 215, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 0 40px rgba(255, 215, 0, 0.4);
+}
+
+.actionButton:active {
+  transform: translateY(-2px) scale(1.05);
+  transition: all 0.1s ease;
+}
+
+/* Special styling for each button */
+.actionButton:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.actionButton:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.actionButton:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.actionButton:nth-child(4) {
+  animation-delay: 0.3s;
 }

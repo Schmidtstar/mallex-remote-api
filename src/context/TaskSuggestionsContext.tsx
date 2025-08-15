@@ -1,8 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-import { useAuth } from './AuthContext'
 
 interface TaskSuggestion {
   id: string
@@ -34,7 +32,6 @@ interface TaskSuggestionsContextType {
 const TaskSuggestionsContext = createContext<TaskSuggestionsContextType | undefined>(undefined)
 
 export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
-  const { user, isAdmin } = useAuth()
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([])
   const [tasks, setTasks] = useState<TaskSuggestion[]>([])
   const [loading, setLoading] = useState(false)
@@ -63,6 +60,8 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
     }
   ]
 
+  const { user, isAdmin } = useAuth()
+
   useEffect(() => {
     if (user) {
       console.log('TaskSuggestionsProvider initialized for user:', user.uid)
@@ -71,7 +70,7 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
   }, [user])
 
   const loadSuggestions = async () => {
-    if (!user) return
+    if (!user?.uid) return
 
     try {
       setLoading(true)
@@ -84,20 +83,20 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
       // Lade Tasks (sowohl aus Firebase als auch localStorage)
       try {
         console.log('🔄 Firebase empty, falling back to localStorage with demo data')
-        
+
         const storedSuggestions = localStorage.getItem(`suggestions_${user.uid}`)
         const parsedSuggestions = storedSuggestions ? JSON.parse(storedSuggestions) : []
         console.log('📦 localStorage suggestions loaded:', parsedSuggestions.length)
-        
+
         setSuggestions(parsedSuggestions)
         setTasks(mockData)
         console.log('✅ Direct tasks loaded:', mockData.length)
       } catch (fbError) {
         console.warn('Firebase load failed, using localStorage:', fbError)
-        
+
         const storedSuggestions = localStorage.getItem(`suggestions_${user.uid}`)
         const parsedSuggestions = storedSuggestions ? JSON.parse(storedSuggestions) : []
-        
+
         setSuggestions(parsedSuggestions)
         setTasks(mockData)
       }

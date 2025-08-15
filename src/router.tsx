@@ -13,7 +13,7 @@ const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen').then(m 
 const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen').then(m => ({ default: m.TasksOverviewScreen })))
 const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen').then(m => ({ default: m.SuggestTaskScreen })))
 const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen').then(m => ({ default: m.AdminTasksScreen })))
-const AdminSuggestionsScreen = React.lazy(() => import('./features/Admin/AdminSuggestionsScreen').then(m => ({ default: m.AdminSuggestionsScreen })))
+
 const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard').then(m => ({ default: m.default })))
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin').then(m => ({ default: m.default })))
 const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m => ({ default: m.AuthScreen })))

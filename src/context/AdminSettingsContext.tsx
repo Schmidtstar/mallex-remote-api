@@ -58,21 +58,8 @@ function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   
-  // Import useIsAdmin dynamically to avoid circular dependency
-  const [isAdmin, setIsAdmin] = useState(false)
-  
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      try {
-        const { useIsAdmin } = await import('./AdminContext')
-        setIsAdmin(useIsAdmin())
-      } catch (err) {
-        console.log('Admin context not available, using default')
-        setIsAdmin(false)
-      }
-    }
-    checkAdminStatus()
-  }, [user])
+  // Use centralized admin check from AuthContext
+  const { isAdmin } = useAuth()
 
   useEffect(() => {
     if (!user?.uid || !isAdmin) {

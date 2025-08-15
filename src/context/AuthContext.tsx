@@ -2,6 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut, updateProfile, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { ensureUserProfile } from '@/lib/userApi';
+import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
+
+// Assuming db is initialized elsewhere, e.g., in firebase.ts
+const db = getFirestore(auth.app); // Initialize db here if not already
 
 interface AuthContextType {
   user: User | null;
@@ -84,9 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // **ZENTRALE ADMIN-PRÜFUNG BEIM LOGIN**
             try {
-              const adminDoc = await import('firebase/firestore').then(m => 
-                m.getDoc(m.doc(db, 'admins', user.uid))
-              );
+              const adminDoc = await getDoc(doc(db, 'admins', user.uid));
               const userIsAdmin = adminDoc.exists();
               setIsAdmin(userIsAdmin);
               console.log(userIsAdmin ? '👑 ADMIN LOGIN' : '👤 Normal user login');
@@ -96,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           } else {
             setUser(null);
+            setIsAdmin(false); // Reset admin status on logout
           }
         } catch (error) {
           console.error('Error in auth state change:', error);
@@ -103,8 +106,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if ((error as any)?.code === 'unavailable') {
             console.warn('🟡 Firebase became unavailable - switching to guest mode');
             setUser(null);
+            setIsAdmin(false); // Also reset admin status in this case
           } else {
             setUser(null);
+            setIsAdmin(false); // Reset admin status in case of other errors
           }
         } finally {
           if (isMounted) setLoading(false);

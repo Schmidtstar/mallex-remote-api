@@ -1,103 +1,122 @@
+import { useEffect, useRef, useState } from "react";
+import s from "./AppIntro.module.css";
 
-import React, { useState, useEffect } from 'react'
-import styles from './AppIntro.module.css'
+export default function AppIntro() {
+  const [phase, setPhase] = useState<"wait"|"idle"|"reveal"|"content">("wait");
+  const lightRef = useRef<HTMLDivElement>(null);
+  const confettiRef = useRef<HTMLDivElement>(null);
 
-interface AppIntroProps {
-  onComplete: () => void
-}
+  // Sound Refs
+  const drum = useRef<HTMLAudioElement|null>(null);
+  const gate = useRef<HTMLAudioElement|null>(null);
+  const burst = useRef<HTMLAudioElement|null>(null);
+  const fanfare = useRef<HTMLAudioElement|null>(null);
+  const confetti = useRef<HTMLAudioElement|null>(null);
 
-export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
-  const [currentStep, setCurrentStep] = useState(0)
+  // Preload Audio
+  useEffect(()=>{
+    drum.current = new Audio("/sounds/drum_hit.mp3");
+    gate.current = new Audio("/sounds/gate_creak.mp3");
+    burst.current = new Audio("/sounds/light_burst.mp3");
+    fanfare.current = new Audio("/sounds/fanfare.mp3");
+    confetti.current = new Audio("/sounds/confetti.mp3");
+    // Lautstärke anpassen
+    [drum,gate,burst,fanfare,confetti].forEach(ref=>{
+      if(ref.current) ref.current.volume = 0.8;
+    });
+  },[]);
 
-  useEffect(() => {
-    const timeouts: NodeJS.Timeout[] = []
+  // Start Sequenz nach User-Klick
+  const startIntro = () => {
+    setPhase("idle");
 
-    // Step 1: Dramatic entrance with thunder
-    timeouts.push(setTimeout(() => setCurrentStep(1), 800))
-    
-    // Step 2: MALLEX mit explosiver Animation
-    timeouts.push(setTimeout(() => setCurrentStep(2), 2500))
-    
-    // Step 3: "den olympischen Saufspielen" erscheint
-    timeouts.push(setTimeout(() => setCurrentStep(3), 4500))
-    
-    // Step 4: "MUT RAUSCH EHRE KAMPF" mit Explosion
-    timeouts.push(setTimeout(() => setCurrentStep(4), 6500))
-    
-    // Step 5: Final flash und fade out
-    timeouts.push(setTimeout(() => setCurrentStep(5), 8500))
-    timeouts.push(setTimeout(() => onComplete(), 10000))
+    // t=0.8s Drum
+    setTimeout(()=> drum.current?.play(), 800);
 
-    return () => {
-      timeouts.forEach(timeout => clearTimeout(timeout))
-    }
-  }, [onComplete])
+    // t=1.2s Gate
+    setTimeout(()=>{
+      setPhase("reveal");
+      gate.current?.play();
+    }, 1200);
+
+    // t=2.0s Burst
+    setTimeout(()=>{
+      lightRef.current?.classList.add(s.flash);
+      burst.current?.play();
+    }, 2000);
+
+    // t=2.1s Fanfare
+    setTimeout(()=> fanfare.current?.play(), 2100);
+
+    // t=2.4s Confetti
+    setTimeout(()=>{
+      confettiRef.current?.classList.add(s.shoot);
+      confetti.current?.play();
+    }, 2400);
+
+    // t=3.4s Ribbon
+    setTimeout(()=> setPhase("content"), 3400);
+  };
 
   return (
-    <div className={`${styles.introContainer} ${currentStep === 5 ? styles.fadeOut : ''}`}>
-      {/* Thunder flash effect */}
-      <div className={`${styles.thunderFlash} ${currentStep >= 1 ? styles.active : ''}`}></div>
-      
-      {/* Particle explosions */}
-      <div className={`${styles.particles} ${currentStep >= 2 ? styles.explode : ''}`}>
-        {Array.from({ length: 50 }).map((_, i) => (
-          <div key={i} className={styles.particle} style={{ 
-            '--delay': `${i * 0.05}s`,
-            '--angle': `${i * 7.2}deg`
-          } as React.CSSProperties}></div>
-        ))}
-      </div>
+    <section className={s.stage}>
+      {phase==="wait" && (
+        <div className={s.clickOverlay} onClick={startIntro}>
+          <p>Tippe, um die Spiele zu beginnen…</p>
+        </div>
+      )}
 
-      <div className={styles.content}>
-        {/* MALLEX - Sofort der Star */}
-        <div className={`${styles.appName} ${currentStep >= 1 ? styles.visible : ''}`}>
-          <span className={styles.letter} style={{ animationDelay: '0s' }}>M</span>
-          <span className={styles.letter} style={{ animationDelay: '0.1s' }}>A</span>
-          <span className={styles.letter} style={{ animationDelay: '0.2s' }}>L</span>
-          <span className={styles.letter} style={{ animationDelay: '0.3s' }}>L</span>
-          <span className={styles.letter} style={{ animationDelay: '0.4s' }}>E</span>
-          <span className={styles.letter} style={{ animationDelay: '0.5s' }}>X</span>
+      {/* Himmel + Tempel */}
+      <div className={s.sky}/>
+      <div className={s.clouds}/>
+      <div className={s.temple}>
+        <div className={s.pediment}>
+          <div className={s.frieze}/>
+          <div className={s.title}>MALLEX</div>
         </div>
 
-        {/* Banner-Style Subtitle */}
-        <div className={`${styles.eventBanner} ${currentStep >= 2 ? styles.visible : ''}`}>
-          <div className={styles.bannerRibbon}>
-            <span className={styles.bannerText}>DIE OLYMPISCHEN SAUFSPIELE</span>
+        {/* Fackeln */}
+        <div className={`${s.torch} ${s.left}`}><span/></div>
+        <div className={`${s.torch} ${s.right}`}><span/></div>
+
+        {/* Lorbeer */}
+        <div className={s.laurelLeft}/>
+        <div className={s.laurelRight}/>
+
+        {/* Türen */}
+        <div className={`${s.door} ${s.left} ${phase==="reveal" ? s.open : ""}`}/>
+        <div className={`${s.door} ${s.right} ${phase==="reveal" ? s.open : ""}`}/>
+
+        {/* Licht */}
+        <div ref={lightRef} className={s.godRay}/>
+
+        {/* Konfetti */}
+        <div ref={confettiRef} className={s.confetti}>
+          {Array.from({length:24}).map((_,i)=>(
+            <span key={i} style={{["--i" as any]: i}}/>
+          ))}
+        </div>
+
+        {/* Inhalt */}
+        <div className={`${s.inner} ${phase==="content" ? s.show : ""}`}>
+          <div className={s.ribbon}>Die olympischen Saufspiele</div>
+          <p className={s.quote}>„Mögen die Spiele beginnen!“</p>
+
+          <div className={s.tiles}>
+            {[
+              {icon:"💪",txt:"Mut"},
+              {icon:"🍻",txt:"Rausch"},
+              {icon:"🏆",txt:"Ehre"},
+              {icon:"⚔️",txt:"Kampf"},
+            ].map((k,idx)=>(
+              <button key={k.txt} className={s.tile} style={{animationDelay:`${idx*120}ms`}}>
+                <span className={s.ic}>{k.icon}</span>
+                <span className={s.tx}>{k.txt}</span>
+              </button>
+            ))}
           </div>
         </div>
-
-        {/* Epic Quote mit Feuer-Verlauf */}
-        <div className={`${styles.epicQuote} ${currentStep >= 3 ? styles.visible : ''}`}>
-          <div className={styles.quoteText}>„Mögen die Spiele beginnen!"</div>
-        </div>
-
-        {/* Values mit explosiver Animation */}
-        <div className={`${styles.values} ${currentStep >= 4 ? styles.visible : ''}`}>
-          <span className={styles.value} style={{ animationDelay: '0s' }}>
-            <span className={styles.valueIcon}>💪</span>
-            <span className={styles.valueText}>MUT</span>
-          </span>
-          <span className={styles.value} style={{ animationDelay: '0.2s' }}>
-            <span className={styles.valueIcon}>🍺</span>
-            <span className={styles.valueText}>RAUSCH</span>
-          </span>
-          <span className={styles.value} style={{ animationDelay: '0.4s' }}>
-            <span className={styles.valueIcon}>🏆</span>
-            <span className={styles.valueText}>EHRE</span>
-          </span>
-          <span className={styles.value} style={{ animationDelay: '0.6s' }}>
-            <span className={styles.valueIcon}>⚔️</span>
-            <span className={styles.valueText}>KAMPF</span>
-          </span>
-        </div>
-
-        {/* Epic lightning effects */}
-        <div className={`${styles.lightning} ${currentStep >= 2 ? styles.active : ''}`}></div>
-        <div className={`${styles.lightningBolt} ${currentStep >= 2 ? styles.strike : ''}`}></div>
       </div>
-
-      {/* Screen shake effect */}
-      <div className={`${styles.screenShake} ${currentStep === 2 || currentStep === 4 ? styles.shake : ''}`}></div>
-    </div>
-  )
+    </section>
+  );
 }

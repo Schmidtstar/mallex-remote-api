@@ -51,7 +51,7 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
       <div className={styles.content}>
         {/* Dramatic entrance text */}
         <div className={`${styles.entrance} ${currentStep >= 1 ? styles.visible : ''}`}>
-          <div className={styles.entranceText}>WILLKOMMEN ZU</div>
+          <div className={styles.entranceText}>WILLKOMMEN BEI</div>
         </div>
 
         {/* MALLEX mit dramatischer Animation */}
@@ -64,19 +64,36 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
           <span className={styles.letter} style={{ animationDelay: '0.5s' }}>X</span>
         </div>
 
-        {/* Subtitle: den olympischen Saufspielen */}
+        {/* Subtitle: DIE OLYMPISCHEN SAUFSPIELE */}
         <div className={`${styles.subtitle1} ${currentStep >= 3 ? styles.visible : ''}`}>
-          <span className={styles.word} style={{ animationDelay: '0s' }}>den</span>
-          <span className={styles.word} style={{ animationDelay: '0.2s' }}>olympischen</span>
-          <span className={styles.word} style={{ animationDelay: '0.4s' }}>Saufspielen</span>
+          <span className={styles.word} style={{ animationDelay: '0s' }}>DIE</span>
+          <span className={styles.word} style={{ animationDelay: '0.2s' }}>OLYMPISCHEN</span>
+          <span className={styles.word} style={{ animationDelay: '0.4s' }}>SAUFSPIELE</span>
+        </div>
+
+        {/* Epic Quote */}
+        <div className={`${styles.epicQuote} ${currentStep >= 3 ? styles.visible : ''}`}>
+          <div className={styles.quoteText}>"MÖGEN DIE SPIELE BEGINNEN!"</div>
         </div>
 
         {/* Values mit explosiver Animation */}
         <div className={`${styles.values} ${currentStep >= 4 ? styles.visible : ''}`}>
-          <span className={styles.value} style={{ animationDelay: '0s' }}>MUT</span>
-          <span className={styles.value} style={{ animationDelay: '0.2s' }}>RAUSCH</span>
-          <span className={styles.value} style={{ animationDelay: '0.4s' }}>EHRE</span>
-          <span className={styles.value} style={{ animationDelay: '0.6s' }}>KAMPF</span>
+          <span className={styles.value} style={{ animationDelay: '0s' }}>
+            <span className={styles.valueIcon}>💪</span>
+            <span className={styles.valueText}>MUT</span>
+          </span>
+          <span className={styles.value} style={{ animationDelay: '0.2s' }}>
+            <span className={styles.valueIcon}>🍺</span>
+            <span className={styles.valueText}>RAUSCH</span>
+          </span>
+          <span className={styles.value} style={{ animationDelay: '0.4s' }}>
+            <span className={styles.valueIcon}>🏆</span>
+            <span className={styles.valueText}>EHRE</span>
+          </span>
+          <span className={styles.value} style={{ animationDelay: '0.6s' }}>
+            <span className={styles.valueIcon}>⚔️</span>
+            <span className={styles.valueText}>KAMPF</span>
+          </span>
         </div>
 
         {/* Epic lightning effects */}

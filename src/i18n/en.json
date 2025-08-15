@@ -6,7 +6,8 @@
     "tasks": "Tasks",
     "profile": "Profile",
     "settings": "Settings",
-    "admin": "Admin"
+    "admin": "Admin",
+    "adminTasks": "Manage Tasks"
   },
   "menu": {
     "title": "Menu",
@@ -30,10 +31,14 @@
   },
   "auth": {
     "loginTitle": "Sign In",
+    "registerTitle": "Sign Up",
     "email": "Email Address",
     "password": "Password",
-    "loginButton": "Sign In",
-    "registerLink": "Create New Account",
+    "displayName": "Username",
+    "login": "Sign In",
+    "register": "Create Account",
+    "loginLink": "Already have an account? Sign in now",
+    "registerLink": "Don't have an account? Sign up now",
     "guestButton": "Continue as Guest",
     "invalidCredentials": "Invalid credentials",
     "emailAlreadyInUse": "Email already in use",
@@ -52,25 +57,25 @@
     "selectPlayer": "Choose 'New Task' to Start",
     "newTask": "New Task",
     "categories": {
-      "schicksal": "Fate",
-      "schande": "Shame",
-      "verfuehrung": "Seduction",
-      "eskalation": "Escalation",
-      "beichte": "Confession"
+      "fate": "🎭 Fatum - Fate of the Gods",
+      "shame": "🔥 Pudor - Trial of Shame",
+      "seduce": "💘 Venus - Art of Seduction",
+      "escalate": "⚡ Bacchus - Rush of Escalation",
+      "confess": "🗿 Veritas - Confession of Truth"
     },
     "fate": {
-      "item1": "Tell about your first kiss",
-      "item2": "Describe your most embarrassing moment",
-      "item3": "What is your biggest dream?",
-      "item4": "What secret have you never revealed?",
-      "item5": "What would you change if you could turn back time?"
+      "item1": "🪙 Flip the coin of fate - The gods decide triumph or tribute!",
+      "item2": "👑 The oracle speaker to your right proclaims your destiny!",
+      "item3": "⚱️ Confess your greatest shame before the gods or sacrifice 3 sips!",
+      "item4": "🔄 Exchange your place in the amphitheater for 2 rounds!",
+      "item5": "🤐 You are struck with silence by the muses - until the next trial!"
     },
     "shame": {
-      "item1": "Admit what shames you the most",
-      "item2": "Tell about a moment when you failed",
-      "item3": "Confess your worst habit",
-      "item4": "What's the dumbest thing you've ever done?",
-      "item5": "What are you most ashamed of?"
+      "item1": "💃 Perform the dance of the Bacchantes for 30 seconds!",
+      "item2": "🎭 Imitate the songs of a medieval minstrel from antiquity!",
+      "item3": "💘 Tell about your adventures in the gardens of Venus!",
+      "item4": "💪 Prove your strength like a gladiator - 10 push-ups or 2 offerings!",
+      "item5": "🎨 Speak for 3 rounds only in verses of an ancient poet!"
     },
     "seduce": {
       "item1": "Whisper something seductive in someone's ear",
@@ -97,7 +102,24 @@
   "legends": {
     "title": "Hall of Legends",
     "subtitle": "The greatest players of all time",
-    "empty": "No legends yet"
+    "empty": "No legends yet",
+    "loginRequired": "Sign in to save your legends.",
+    "guestMode": "Guest mode: Legends are only saved locally.",
+    "syncMode": "Legends are saved in your profile.",
+    "playerNamePlaceholder": "Enter legend name",
+    "addPlayer": "Add",
+    "removePlayer": "Remove legend",
+    "playersList": "Legends",
+    "noPlayers": "No legends added yet",
+    "addSuccess": "Legend successfully added!",
+    "addError": "Error adding legend",
+    "removeError": "Error removing legend",
+    "validation": {
+      "required": "Legend name is required",
+      "tooShort": "At least 2 characters required",
+      "tooLong": "Maximum 50 characters allowed",
+      "duplicate": "This legend already exists"
+    }
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -201,6 +223,25 @@
     "no": "No",
     "save": "Save",
     "delete": "Delete",
-    "edit": "Edit"
+    "edit": "Edit",
+    "remove": "Remove",
+    "adding": "Adding..."
+  },
+  "admin": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "suggestions": {
+      "title": "Manage Suggestions",
+      "empty": "No pending suggestions",
+      "by": "By"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "users": "Users",
+      "settings": "Settings",
+      "content": "Content",
+      "analytics": "Analytics",
+      "notifications": "Notifications"
+    }
   }
 }

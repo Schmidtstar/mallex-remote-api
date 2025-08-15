@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -53,13 +54,15 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
-    // Players collection for leaderboard
+    // Players collection for leaderboard and Arena points
+    // FIXED: Allow all authenticated users to read/write Arena points
+    // This is needed for multiplayer Arena where players award points to each other
     match /players/{playerId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(playerId) || isAdmin();
+      allow write: if isAuthenticated(); // 🎯 FIXED: All authenticated users can update Arena points
     }
 
-    // App settings - FIXED: Only admins can access
+    // App settings - only admins can access
     match /settings/{settingId} {
       allow read, write: if isAdmin();
     }
@@ -70,7 +73,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Notifications - SIMPLIFIED and SECURE
+    // Notifications - users see only their own, admins see all
     match /notifications/{notificationId} {
       allow read: if isAuthenticated() &&
                      (resource.data.targetUserId == request.auth.uid || isAdmin());

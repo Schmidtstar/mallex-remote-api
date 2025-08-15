@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 99999;
   overflow: hidden;
   transition: opacity 1.5s ease-out;
 }
@@ -21,7 +21,7 @@
 .content {
   text-align: center;
   position: relative;
-  z-index: 10;
+  z-index: 100000;
 }
 
 /* Thunder Flash Effect */

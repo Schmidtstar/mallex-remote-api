@@ -18,18 +18,15 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
     // Step 2: MALLEX mit explosiver Animation
     timeouts.push(setTimeout(() => setCurrentStep(2), 2500))
     
-    // Step 3: "DIE OLYMPISCHEN SAUFSPIELE" erscheint
+    // Step 3: "den olympischen Saufspielen" erscheint
     timeouts.push(setTimeout(() => setCurrentStep(3), 4500))
     
-    // Step 4: "MÖGEN DIE SPIELE BEGINNEN" erscheint
-    timeouts.push(setTimeout(() => setCurrentStep(4), 6000))
+    // Step 4: "MUT RAUSCH EHRE KAMPF" mit Explosion
+    timeouts.push(setTimeout(() => setCurrentStep(4), 6500))
     
-    // Step 5: "MUT RAUSCH EHRE KAMPF" mit Explosion
-    timeouts.push(setTimeout(() => setCurrentStep(5), 7500))
-    
-    // Step 6: Final flash und fade out
-    timeouts.push(setTimeout(() => setCurrentStep(6), 9500))
-    timeouts.push(setTimeout(() => onComplete(), 11000))
+    // Step 5: Final flash und fade out
+    timeouts.push(setTimeout(() => setCurrentStep(5), 8500))
+    timeouts.push(setTimeout(() => onComplete(), 10000))
 
     return () => {
       timeouts.forEach(timeout => clearTimeout(timeout))
@@ -37,7 +34,7 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
   }, [onComplete])
 
   return (
-    <div className={`${styles.introContainer} ${currentStep === 6 ? styles.fadeOut : ''}`}>
+    <div className={`${styles.introContainer} ${currentStep === 5 ? styles.fadeOut : ''}`}>
       {/* Thunder flash effect */}
       <div className={`${styles.thunderFlash} ${currentStep >= 1 ? styles.active : ''}`}></div>
       
@@ -67,23 +64,15 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
           <span className={styles.letter} style={{ animationDelay: '0.5s' }}>X</span>
         </div>
 
-        {/* Subtitle 1 */}
+        {/* Subtitle: den olympischen Saufspielen */}
         <div className={`${styles.subtitle1} ${currentStep >= 3 ? styles.visible : ''}`}>
-          <span className={styles.word} style={{ animationDelay: '0s' }}>DIE</span>
-          <span className={styles.word} style={{ animationDelay: '0.2s' }}>OLYMPISCHEN</span>
-          <span className={styles.word} style={{ animationDelay: '0.4s' }}>SAUFSPIELE</span>
-        </div>
-
-        {/* Subtitle 2 */}
-        <div className={`${styles.subtitle2} ${currentStep >= 4 ? styles.visible : ''}`}>
-          <span className={styles.word} style={{ animationDelay: '0s' }}>MÖGEN</span>
-          <span className={styles.word} style={{ animationDelay: '0.15s' }}>DIE</span>
-          <span className={styles.word} style={{ animationDelay: '0.3s' }}>SPIELE</span>
-          <span className={styles.word} style={{ animationDelay: '0.45s' }}>BEGINNEN</span>
+          <span className={styles.word} style={{ animationDelay: '0s' }}>den</span>
+          <span className={styles.word} style={{ animationDelay: '0.2s' }}>olympischen</span>
+          <span className={styles.word} style={{ animationDelay: '0.4s' }}>Saufspielen</span>
         </div>
 
         {/* Values mit explosiver Animation */}
-        <div className={`${styles.values} ${currentStep >= 5 ? styles.visible : ''}`}>
+        <div className={`${styles.values} ${currentStep >= 4 ? styles.visible : ''}`}>
           <span className={styles.value} style={{ animationDelay: '0s' }}>MUT</span>
           <span className={styles.value} style={{ animationDelay: '0.2s' }}>RAUSCH</span>
           <span className={styles.value} style={{ animationDelay: '0.4s' }}>EHRE</span>
@@ -96,7 +85,7 @@ export const AppIntro: React.FC<AppIntroProps> = ({ onComplete }) => {
       </div>
 
       {/* Screen shake effect */}
-      <div className={`${styles.screenShake} ${currentStep === 2 || currentStep === 5 ? styles.shake : ''}`}></div>
+      <div className={`${styles.screenShake} ${currentStep === 2 || currentStep === 4 ? styles.shake : ''}`}></div>
     </div>
   )
 }

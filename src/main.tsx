@@ -8,7 +8,7 @@ import { AuthProvider } from './context/AuthContext'
 import { AdminSettingsProvider } from './context/AdminSettingsContext' // Assuming AdminSettingsProvider is the intended replacement
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
-import { AppIntro } from './components/AppIntro'
+import AppIntro from './components/AppIntro'
 
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (

@@ -69,8 +69,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       console.log('🟢 Firebase online - normal auth mode');
       let isMounted = true;
+      let authTimeout: NodeJS.Timeout;
+      
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (!isMounted) return;
+        
+        // Clear any existing timeout
+        if (authTimeout) clearTimeout(authTimeout);
+        
         setLoading(true);
         try {
           if (user) {

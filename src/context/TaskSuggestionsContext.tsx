@@ -71,11 +71,22 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
   const { user, isAdmin } = useAuth()
 
   useEffect(() => {
-    if (user) {
-      console.log('TaskSuggestionsProvider initialized for user:', user.uid)
-      loadSuggestions()
+    if (!user?.uid) {
+      console.log('❌ No user - TaskSuggestions context inactive');
+      setSuggestions([]);
+      setLoading(false);
+      return;
     }
-  }, [user])
+
+    // Prevent multiple initializations for the same user
+    if (suggestions.length > 0 && !loading) {
+      console.log('✅ TaskSuggestions already loaded for user:', user.uid);
+      return;
+    }
+
+    console.log('TaskSuggestionsProvider initialized for user:', user.uid);
+    loadSuggestions();
+  }, [user?.uid]);
 
   const loadSuggestions = async () => {
     if (!user?.uid) return

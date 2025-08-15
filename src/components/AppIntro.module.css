@@ -21,6 +21,16 @@
   text-align: center;
   position: relative;
   z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  gap: 1.5rem;
 }
 
 /* Thunder Flash Effect */
@@ -93,15 +103,16 @@
 
 /* Dramatic Entrance */
 .entrance {
-  font-size: clamp(1.2rem, 4vw, 2rem);
-  font-weight: 600;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  font-weight: 700;
   color: #ff6b35;
   text-transform: uppercase;
-  letter-spacing: 4px;
-  margin-bottom: 2rem;
+  letter-spacing: 3px;
+  margin: 0;
   opacity: 0;
   transform: translateY(50px) scale(0.8);
   transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+  order: 1;
 }
 
 .entrance.visible {
@@ -124,13 +135,14 @@
 
 /* MALLEX - Epic Animation */
 .appName {
-  font-size: clamp(4rem, 12vw, 8rem);
+  font-size: clamp(3.5rem, 10vw, 7rem);
   font-weight: 900;
   color: #ffffff;
-  margin: 2rem 0;
+  margin: 0;
   opacity: 0;
   transform: translateY(100px) rotateX(90deg) scale(0.5);
   transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  order: 2;
   text-shadow: 
     0 0 20px rgba(255, 215, 0, 1),
     0 0 40px rgba(255, 215, 0, 0.9),
@@ -268,11 +280,11 @@
 
 /* Epic Subtitles */
 .subtitle1 {
-  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  margin: 1.5rem 0;
+  letter-spacing: 2px;
+  margin: 0;
   opacity: 0;
   transform: translateY(50px) scale(0.8);
   transition: all 1.5s cubic-bezier(0.23, 1, 0.32, 1);
@@ -286,18 +298,23 @@
   font-family: 'Impact', 'Arial Black', sans-serif;
   position: relative;
   z-index: 100001;
+  order: 3;
+  max-width: 90%;
+  text-align: center;
 }
 
 /* Epic Quote */
 .epicQuote {
-  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  font-size: clamp(1.2rem, 3.2vw, 1.8rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin: 2rem 0 3rem 0;
+  margin: 0;
   opacity: 0;
   transform: translateY(30px) scale(0.9);
   transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.5s;
+  order: 4;
+  max-width: 95%;
 }
 
 .epicQuote.visible {
@@ -387,27 +404,40 @@
 
 /* Epic Values */
 .values {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-  max-width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  max-width: 500px;
+  width: 100%;
+  order: 5;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .values {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 700px;
+    gap: 0.8rem;
+  }
 }
 
 .value {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  gap: 0.3rem;
+  font-size: clamp(0.8rem, 2vw, 1rem);
   font-weight: 900;
   color: #1a1a2e;
   background: linear-gradient(135deg, #ffd700 0%, #ff8c00 25%, #ff6b35 50%, #ff8c00 75%, #ffd700 100%);
   background-size: 300% 300%;
-  padding: 0.8rem 1.5rem;
-  border-radius: 25px;
+  padding: 1rem 0.8rem;
+  border-radius: 20px;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
   opacity: 0;
   transform: scale(0) rotate(360deg);
   transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -419,6 +449,10 @@
   position: relative;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
+  min-height: 80px;
+  aspect-ratio: 1;
+  justify-content: center;
+  text-align: center;
 }
 
 .valueIcon {
@@ -580,19 +614,26 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .values {
-    gap: 1rem;
-    margin-top: 2rem;
+  .content {
+    gap: 1.2rem;
+    padding: 1.5rem 1rem;
   }
-
-  .value {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+  
+  .entrance {
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
   }
-
-  .subtitle1, .subtitle2 {
-    margin: 1rem 0;
-    letter-spacing: 2px;
+  
+  .appName {
+    font-size: clamp(3rem, 12vw, 6rem);
+  }
+  
+  .subtitle1 {
+    font-size: clamp(1.4rem, 5vw, 2.4rem);
+    letter-spacing: 1.5px;
+  }
+  
+  .epicQuote {
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
   }
 
   .word {
@@ -601,14 +642,20 @@
 }
 
 @media (max-width: 480px) {
+  .content {
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+  
   .values {
-    flex-direction: column;
-    align-items: center;
+    max-width: 100%;
     gap: 0.8rem;
   }
-
-  .appName {
-    margin: 1.5rem 0;
+  
+  .value {
+    min-height: 70px;
+    padding: 0.8rem 0.6rem;
+    font-size: clamp(0.7rem, 2.2vw, 0.9rem);
   }
 }
 

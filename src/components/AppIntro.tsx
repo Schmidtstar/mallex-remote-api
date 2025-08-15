@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import s from "./AppIntro.module.css";
 
-export default function AppIntro() {
+interface AppIntroProps {
+  onComplete?: () => void;
+}
+
+export default function AppIntro({ onComplete }: AppIntroProps) {
   const [phase, setPhase] = useState<"wait"|"idle"|"reveal"|"text">("wait");
   const [doorsOpen, setDoorsOpen] = useState(false);
 
@@ -19,6 +23,11 @@ export default function AppIntro() {
     setTimeout(() => {
       setPhase("text");
     }, 2500);
+
+    // t=8s - Intro beendet, weiterleiten zum Hauptmenü
+    setTimeout(() => {
+      onComplete?.();
+    }, 8000);
   };
 
   return (

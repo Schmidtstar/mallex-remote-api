@@ -166,7 +166,7 @@ function NotificationCenter() {
       onClick={openPostfach}
     >
       <span className={styles.itemIcon}>📬</span>
-      <span className={styles.itemLabel}>{t('header.postfach', 'Postfach')}</span>
+      <span className={styles.itemLabel}>{t('notifications.title')}</span>
       {unreadCount > 0 && (
         <span className={styles.badge}>{unreadCount}</span>
       )}
@@ -260,8 +260,8 @@ const PostfachScreenComponent: React.FC = () => {
   return (
     <div className={styles.postfachContainer}>
       <header className={styles.postfachHeader}>
-        <h1>📬 {t('postfachScreen.title', 'Postfach')}</h1>
-        <p>{t('postfachScreen.subtitle', 'Deine Nachrichten und Benachrichtigungen')}</p>
+        <h1>📬 {t('notifications.title')}</h1>
+        <p>{t('notifications.subtitle')}</p>
       </header>
 
       <div className={styles.postfachContent}>
@@ -272,8 +272,8 @@ const PostfachScreenComponent: React.FC = () => {
         ) : notifications.length === 0 ? (
           <div className={styles.empty}>
             <span className={styles.emptyIcon}>📪</span>
-            <h3>{t('postfachScreen.emptyTitle', 'Postfach ist leer')}</h3>
-            <p>{t('postfachScreen.emptySubtitle', 'Du hast noch keine Nachrichten erhalten.')}</p>
+            <h3>{t('notifications.empty')}</h3>
+            <p>{t('notifications.noMessages')}</p>
           </div>
         ) : (
           <div className={styles.messageList}>
@@ -294,7 +294,7 @@ const PostfachScreenComponent: React.FC = () => {
                     {formatTime(notification.timestamp)}
                     {notification.fromAdmin && (
                       <span className={styles.fromAdmin}>
-                        • {t('notification.fromAdmin', 'von')} {notification.fromAdmin}
+                        • {t('notifications.from')} {notification.fromAdmin}
                       </span>
                     )}
                   </div>
@@ -305,7 +305,7 @@ const PostfachScreenComponent: React.FC = () => {
                     <button 
                       onClick={() => markAsRead(notification.id)}
                       className={styles.readButton}
-                      title={t('notification.markAsRead', 'Als gelesen markieren')}
+                      title={t('notifications.markAsRead')}
                     >
                       ✓
                     </button>
@@ -313,7 +313,7 @@ const PostfachScreenComponent: React.FC = () => {
                   <button 
                     onClick={() => deleteNotification(notification.id)}
                     className={styles.deleteButton}
-                    title={t('notification.delete', 'Nachricht löschen')}
+                    title={t('notifications.deleteMessage')}
                   >
                     🗑️
                   </button>

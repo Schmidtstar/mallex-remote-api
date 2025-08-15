@@ -46,15 +46,15 @@
     "passwordReset": {
       "button": "Reset Password",
       "emailRequired": "Please enter your email address",
-      "success": "Password reset email has been sent!",
-      "userNotFound": "No user found with this email address",
-      "invalidEmail": "Invalid email address"
+      "success": "Password reset email sent successfully!",
+      "userNotFound": "No account found with this email address",
+      "invalidEmail": "Please enter a valid email address"
     }
   },
   "arena": {
     "title": "MALLEX Arena",
     "selectCategory": "Choose a Category",
-    "selectPlayer": "Choose 'New Task' to Start",
+    "selectPlayer": "Select 'New Task' to Begin",
     "newTask": "New Task",
     "categories": {
       "fate": "🎭 Fatum - Fate of the Gods",
@@ -80,9 +80,9 @@
     "seduce": {
       "item1": "Whisper something seductive in someone's ear",
       "item2": "Give someone a sensual compliment",
-      "item3": "Tell about your wildest fantasy",
+      "item3": "Share your wildest fantasy",
       "item4": "Describe your perfect date",
-      "item5": "What do you do to seduce someone?"
+      "item5": "How do you seduce someone?"
     },
     "escalate": {
       "item1": "Dare to do something you've never done",
@@ -115,10 +115,10 @@
     "addError": "Error adding legend",
     "removeError": "Error removing legend",
     "validation": {
-      "required": "Legend name is required",
-      "tooShort": "At least 2 characters required",
-      "tooLong": "Maximum 50 characters allowed",
-      "duplicate": "This legend already exists"
+      "required": "Please enter a legend name",
+      "tooShort": "Name must be at least 2 characters long",
+      "tooLong": "Name cannot exceed 50 characters",
+      "duplicate": "This legend has already been added"
     }
   },
   "leaderboard": {
@@ -206,7 +206,7 @@
     "theme": "Theme",
     "notifications": "Notifications",
     "privacy": "Privacy",
-    "about": "About MALLEX - The ultimate party game for unforgettable evenings! Developed by JPS"
+    "about": "About MALLEX - The ultimate party game for unforgettable nights! Developed by JPS"
   },
   "notifications": {
     "title": "Inbox",

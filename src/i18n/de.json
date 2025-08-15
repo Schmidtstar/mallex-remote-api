@@ -17,7 +17,7 @@
     "game": "Spiel",
     "arena": "Arena",
     "legends": "Legenden",
-    "leaderboard": "Tabelle",
+    "leaderboard": "Rangliste",
     "tasks": "Aufgaben",
     "tasksOverview": "Übersicht",
     "suggestTask": "Vorschlagen",
@@ -81,7 +81,7 @@
       "item1": "Flüstere jemandem etwas Verführerisches ins Ohr",
       "item2": "Mache jemandem ein sinnliches Kompliment",
       "item3": "Erzähle von deiner wildesten Fantasie",
-      "item4": "Beschreibe dein perfektes Rendezvous",
+      "item4": "Beschreibe dein perfektes Date",
       "item5": "Was machst du, um jemanden zu verführen?"
     },
     "escalate": {
@@ -115,10 +115,10 @@
     "addError": "Fehler beim Hinzufügen der Legende",
     "removeError": "Fehler beim Entfernen der Legende",
     "validation": {
-      "required": "Legendenname ist erforderlich",
-      "tooShort": "Mindestens 2 Zeichen erforderlich",
-      "tooLong": "Maximal 50 Zeichen erlaubt",
-      "duplicate": "Diese Legende existiert bereits"
+      "required": "Bitte gib einen Legendenname ein",
+      "tooShort": "Name muss mindestens 2 Zeichen lang sein",
+      "tooLong": "Name darf maximal 50 Zeichen haben",
+      "duplicate": "Diese Legende wurde bereits hinzugefügt"
     }
   },
   "leaderboard": {

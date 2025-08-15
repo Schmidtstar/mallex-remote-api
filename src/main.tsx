@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext'
 import { AdminSettingsProvider } from './context/AdminSettingsContext' // Assuming AdminSettingsProvider is the intended replacement
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
+import { AppIntro } from './components/AppIntro'
 
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
@@ -24,7 +25,16 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ContextProviders.displayName = 'ContextProviders'
 
 const App: React.FC = () => {
-  // Intro completely removed - load the app directly
+  const [showIntro, setShowIntro] = useState(true)
+
+  const handleIntroComplete = () => {
+    setShowIntro(false)
+  }
+
+  if (showIntro) {
+    return <AppIntro onComplete={handleIntroComplete} />
+  }
+
   return (
     <ContextProviders>
       <RouterProvider key="main-router" router={router} />

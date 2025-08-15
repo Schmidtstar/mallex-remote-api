@@ -2,7 +2,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-export default function RequireAdmin() {
+function RequireAdmin() {
   const { user, loading, isAdmin } = useAuth()
 
   if (loading) {
@@ -25,3 +25,5 @@ export default function RequireAdmin() {
 
   return <Outlet />
 }
+
+export default RequireAdmin

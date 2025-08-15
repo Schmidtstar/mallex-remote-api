@@ -269,18 +269,22 @@
 
 /* Epic Subtitles */
 .subtitle1 {
-  font-size: clamp(1rem, 3vw, 1.6rem);
-  font-weight: 600;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 700;
   text-transform: none;
-  letter-spacing: 1px;
-  margin: 1.5rem 0;
+  letter-spacing: 2px;
+  margin: 2rem 0;
   opacity: 0;
-  color: #ff6b35;
+  color: #ffd700;
   text-shadow: 
-    0 0 15px rgba(255, 107, 53, 0.6),
-    0 0 30px rgba(255, 107, 53, 0.3);
+    0 0 20px rgba(255, 215, 0, 0.9),
+    0 0 40px rgba(255, 215, 0, 0.6),
+    0 0 60px rgba(255, 107, 53, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.8);
   font-style: italic;
   font-family: 'Georgia', 'Times New Roman', serif;
+  position: relative;
+  z-index: 100001;
 }
 
 

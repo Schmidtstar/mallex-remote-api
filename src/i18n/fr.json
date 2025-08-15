@@ -215,8 +215,12 @@
   },
   "notifications": {
     "title": "Boîte de réception",
+    "subtitle": "Vos messages et notifications",
     "empty": "Boîte de réception vide",
-    "noMessages": "Vous n'avez encore reçu aucun message."
+    "noMessages": "Vous n'avez encore reçu aucun message.",
+    "markAsRead": "Marquer comme lu",
+    "deleteMessage": "Supprimer le message",
+    "from": "de"
   },
   "countries": {
     "DE": "Allemagne",
@@ -241,7 +245,8 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "remove": "Supprimer",
-    "adding": "Ajout..."
+    "adding": "Ajout...",
+    "justNow": "À l'instant"
   },
   "admin": {
     "approve": "Approuver",

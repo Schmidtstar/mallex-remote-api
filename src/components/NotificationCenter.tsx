@@ -3,6 +3,7 @@ import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, deleteDo
 import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import styles from './NotificationCenter.module.css'
 
 interface Notification {
@@ -18,6 +19,7 @@ interface Notification {
 function NotificationCenter() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true) // Added loading state
@@ -39,7 +41,7 @@ function NotificationCenter() {
         if (welcomeSnap.empty) {
           const welcomeNotification = {
             userId: user.uid,
-            message: `Willkommen ${user.displayName || user.email}! 🎉 Dies ist dein persönliches Postfach. Hier erhältst du wichtige Nachrichten und Updates.`,
+            message: t('notification.welcomeMessage', `Willkommen ${user.displayName || user.email}! 🎉 Dies ist dein persönliches Postfach. Hier erhältst du wichtige Nachrichten und Updates.`),
             timestamp: serverTimestamp(),
             type: 'welcome' as const,
             read: false,
@@ -128,9 +130,13 @@ function NotificationCenter() {
   }
 
   const formatTime = (timestamp: any) => {
-    if (!timestamp) return 'Gerade eben'
+    if (!timestamp) return t('common.justNow', 'Just now')
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    return date.toLocaleString('de-DE', {
+    const locale = t('language.current') === 'Deutsch' ? 'de-DE' :
+                   t('language.current') === 'English' ? 'en-US' :
+                   t('language.current') === 'Français' ? 'fr-FR' :
+                   t('language.current') === 'Español' ? 'es-ES' : 'en-US'
+    return date.toLocaleString(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -160,7 +166,7 @@ function NotificationCenter() {
       onClick={openPostfach}
     >
       <span className={styles.itemIcon}>📬</span>
-      <span className={styles.itemLabel}>Postfach</span>
+      <span className={styles.itemLabel}>{t('header.postfach', 'Postfach')}</span>
       {unreadCount > 0 && (
         <span className={styles.badge}>{unreadCount}</span>
       )}
@@ -173,6 +179,7 @@ const PostfachScreenComponent: React.FC = () => {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true) // Added loading state
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!user?.uid) return
@@ -226,9 +233,13 @@ const PostfachScreenComponent: React.FC = () => {
   }
 
   const formatTime = (timestamp: any) => {
-    if (!timestamp) return 'Gerade eben'
+    if (!timestamp) return t('common.justNow', 'Just now')
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    return date.toLocaleString('de-DE', {
+    const locale = t('language.current') === 'Deutsch' ? 'de-DE' :
+                   t('language.current') === 'English' ? 'en-US' :
+                   t('language.current') === 'Français' ? 'fr-FR' :
+                   t('language.current') === 'Español' ? 'es-ES' : 'en-US'
+    return date.toLocaleString(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -249,20 +260,20 @@ const PostfachScreenComponent: React.FC = () => {
   return (
     <div className={styles.postfachContainer}>
       <header className={styles.postfachHeader}>
-        <h1>📬 Postfach</h1>
-        <p>Deine Nachrichten und Benachrichtigungen</p>
+        <h1>📬 {t('postfachScreen.title', 'Postfach')}</h1>
+        <p>{t('postfachScreen.subtitle', 'Deine Nachrichten und Benachrichtigungen')}</p>
       </header>
 
       <div className={styles.postfachContent}>
         {loading ? (
           <div className={styles.loading}>
-            <p>Lade Benachrichtigungen...</p>
+            <p>{t('common.loading', 'Lade Benachrichtigungen...')}</p>
           </div>
         ) : notifications.length === 0 ? (
           <div className={styles.empty}>
             <span className={styles.emptyIcon}>📪</span>
-            <h3>Postfach ist leer</h3>
-            <p>Du hast noch keine Nachrichten erhalten.</p>
+            <h3>{t('postfachScreen.emptyTitle', 'Postfach ist leer')}</h3>
+            <p>{t('postfachScreen.emptySubtitle', 'Du hast noch keine Nachrichten erhalten.')}</p>
           </div>
         ) : (
           <div className={styles.messageList}>
@@ -283,7 +294,7 @@ const PostfachScreenComponent: React.FC = () => {
                     {formatTime(notification.timestamp)}
                     {notification.fromAdmin && (
                       <span className={styles.fromAdmin}>
-                        • von {notification.fromAdmin}
+                        • {t('notification.fromAdmin', 'von')} {notification.fromAdmin}
                       </span>
                     )}
                   </div>
@@ -294,7 +305,7 @@ const PostfachScreenComponent: React.FC = () => {
                     <button 
                       onClick={() => markAsRead(notification.id)}
                       className={styles.readButton}
-                      title="Als gelesen markieren"
+                      title={t('notification.markAsRead', 'Als gelesen markieren')}
                     >
                       ✓
                     </button>
@@ -302,7 +313,7 @@ const PostfachScreenComponent: React.FC = () => {
                   <button 
                     onClick={() => deleteNotification(notification.id)}
                     className={styles.deleteButton}
-                    title="Nachricht löschen"
+                    title={t('notification.delete', 'Nachricht löschen')}
                   >
                     🗑️
                   </button>

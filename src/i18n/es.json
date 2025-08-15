@@ -215,8 +215,12 @@
   },
   "notifications": {
     "title": "Bandeja de entrada",
+    "subtitle": "Tus mensajes y notificaciones",
     "empty": "La bandeja está vacía",
-    "noMessages": "Aún no has recibido mensajes."
+    "noMessages": "Aún no has recibido mensajes.",
+    "markAsRead": "Marcar como leído",
+    "deleteMessage": "Eliminar mensaje",
+    "from": "de"
   },
   "countries": {
     "DE": "Alemania",
@@ -241,7 +245,8 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "remove": "Eliminar",
-    "adding": "Añadiendo..."
+    "adding": "Añadiendo...",
+    "justNow": "Ahora mismo"
   },
   "admin": {
     "approve": "Aprobar",

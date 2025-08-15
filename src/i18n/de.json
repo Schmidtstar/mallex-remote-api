@@ -216,8 +216,12 @@
   },
   "notifications": {
     "title": "Postfach",
+    "subtitle": "Deine Nachrichten und Benachrichtigungen",
     "empty": "Postfach ist leer",
-    "noMessages": "Du hast noch keine Nachrichten erhalten."
+    "noMessages": "Du hast noch keine Nachrichten erhalten.",
+    "markAsRead": "Als gelesen markieren",
+    "deleteMessage": "Nachricht löschen",
+    "from": "von"
   },
   "countries": {
     "DE": "Deutschland",
@@ -242,7 +246,8 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "remove": "Entfernen",
-    "adding": "Hinzufügen..."
+    "adding": "Hinzufügen...",
+    "justNow": "Gerade eben"
   },
   "admin": {
     "approve": "Genehmigen",

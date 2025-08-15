@@ -218,8 +218,12 @@
   },
   "notifications": {
     "title": "Inbox",
+    "subtitle": "Your messages and notifications",
     "empty": "Inbox is empty",
-    "noMessages": "You haven't received any messages yet."
+    "noMessages": "You haven't received any messages yet.",
+    "markAsRead": "Mark as read",
+    "deleteMessage": "Delete message",
+    "from": "from"
   },
   "countries": {
     "DE": "Germany",
@@ -244,7 +248,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "remove": "Remove",
-    "adding": "Adding..."
+    "adding": "Adding...",
+    "justNow": "Just now"
   },
   "admin": {
     "approve": "Approve",

@@ -21,7 +21,7 @@
 @keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(-6%)}}
 
 /* Tempel */
-.temple{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:min(960px,94vw);height:min(600px,86vh);filter:drop-shadow(0 10px 60px rgba(0,0,0,.35));}
+.temple{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:min(960px,94vw);height:min(600px,86vh);filter:drop-shadow(0 10px 60px rgba(0,0,0,.35));perspective:1000px;}
 .pediment{
   height:18%; background:
     linear-gradient(#e9eaee,#dfe2e6),
@@ -67,7 +67,7 @@
   color:#fff;
   font-family:"Georgia","Times New Roman",serif;
   z-index:10;
-  animation: emerge 2s ease-out forwards;
+  animation: emerge 3s ease-out forwards;
 }
 
 .emergingText h1{
@@ -103,17 +103,22 @@
 @keyframes emerge{
   0%{
     opacity:0;
-    transform:translate(-50%, -50%) scale(0.3);
+    transform:translate(-50%, -50%) scale(0.1) translateZ(-500px);
+    filter:blur(15px);
+  }
+  30%{
+    opacity:0.4;
+    transform:translate(-50%, -50%) scale(0.4) translateZ(-200px);
     filter:blur(8px);
   }
-  40%{
-    opacity:0.3;
-    transform:translate(-50%, -50%) scale(0.7);
-    filter:blur(4px);
+  70%{
+    opacity:0.8;
+    transform:translate(-50%, -50%) scale(0.8) translateZ(-50px);
+    filter:blur(3px);
   }
   100%{
     opacity:1;
-    transform:translate(-50%, -50%) scale(1);
+    transform:translate(-50%, -50%) scale(1) translateZ(0px);
     filter:blur(0px);
   }
 }

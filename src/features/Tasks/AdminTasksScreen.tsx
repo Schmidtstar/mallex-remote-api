@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
 import { collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc, addDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
-// Removed AdminContext import - using centralized auth
 import { useAuth } from '../../context/AuthContext'
 import { categories, type CategoryKey } from '../Arena/categories'
 import { challenges } from '../Arena/challenges'

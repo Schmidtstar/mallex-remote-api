@@ -1,10 +1,11 @@
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { doc, onSnapshot, setDoc } from 'firebase/firestore'
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from './AuthContext'
 
-export interface AdminSettings {
+interface AppSettings {
+  maintenanceMode: boolean
   moderationEnabled: boolean
   autoApproveFromTrustedUsers: boolean
   allowAnonymousSubmissions: boolean
@@ -13,7 +14,6 @@ export interface AdminSettings {
   dailyTaskLimit: number
   weeklyTaskLimit: number
   requireImageForTasks: boolean
-  maintenanceMode: boolean
   notificationSettings: {
     newTaskSubmissions: boolean
     userReports: boolean
@@ -22,23 +22,22 @@ export interface AdminSettings {
 }
 
 interface AdminSettingsContextType {
-  settings: AdminSettings
+  appSettings: AppSettings | null
+  updateAppSettings: (updates: Partial<AppSettings>) => Promise<void>
   loading: boolean
   error: string | null
-  updateSettings: (newSettings: Partial<AdminSettings>) => Promise<void>
-  resetToDefaults: () => Promise<void>
 }
 
-const defaultSettings: AdminSettings = {
+const defaultSettings: AppSettings = {
+  maintenanceMode: false,
   moderationEnabled: true,
   autoApproveFromTrustedUsers: false,
-  allowAnonymousSubmissions: false,
+  allowAnonymousSubmissions: true,
   maxTasksPerUser: 5,
   pointsPerTask: 10,
   dailyTaskLimit: 3,
   weeklyTaskLimit: 15,
   requireImageForTasks: false,
-  maintenanceMode: false,
   notificationSettings: {
     newTaskSubmissions: true,
     userReports: true,
@@ -46,115 +45,86 @@ const defaultSettings: AdminSettings = {
   }
 }
 
-const AdminSettingsContext = createContext<AdminSettingsContextType | undefined>(undefined)
+const AdminSettingsContext = createContext<AdminSettingsContextType | null>(null)
 
-interface AdminSettingsProviderProps {
-  children: ReactNode
-}
-
-function AdminSettingsProvider({ children }: AdminSettingsProviderProps) {
-  const [settings, setSettings] = useState<AdminSettings>(defaultSettings)
+export function AdminSettingsProvider({ children }: { children: ReactNode }) {
+  const { isAdmin, user } = useAuth()
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { user } = useAuth()
-  
-  // Use centralized admin check from AuthContext
-  const { isAdmin } = useAuth()
 
   useEffect(() => {
-    if (!user?.uid || !isAdmin) {
-      console.log('📋 Admin settings not accessible - using defaults')
-      setSettings(defaultSettings)
+    if (!isAdmin || !user) {
+      setAppSettings(defaultSettings)
       setLoading(false)
       return
     }
 
-    const settingsRef = doc(db, 'admin', 'settings')
-
-    const unsubscribe = onSnapshot(
-      settingsRef,
-      (doc) => {
-        if (doc.exists()) {
-          const data = doc.data()
-          setSettings({ ...defaultSettings, ...data })
-        } else {
-          setSettings(defaultSettings)
-        }
-        setLoading(false)
+    const loadSettings = async () => {
+      try {
+        setLoading(true)
         setError(null)
-      },
-      (err) => {
-        console.error('Error loading admin settings:', err)
-        setError('Fehler beim Laden der Admin-Einstellungen')
-        setSettings(defaultSettings)
+
+        const settingsDoc = await getDoc(doc(db, 'adminSettings', 'app'))
+        
+        if (settingsDoc.exists()) {
+          const data = settingsDoc.data()
+          setAppSettings({ ...defaultSettings, ...data })
+          console.log('✅ Admin settings loaded from Firebase')
+        } else {
+          // Create default settings
+          await setDoc(doc(db, 'adminSettings', 'app'), defaultSettings)
+          setAppSettings(defaultSettings)
+          console.log('🔧 Created default admin settings')
+        }
+      } catch (error: any) {
+        console.warn('Admin settings load failed:', error?.code)
+        setAppSettings(defaultSettings)
+        setError('Settings konnten nicht geladen werden')
+      } finally {
         setLoading(false)
       }
-    )
+    }
 
-    return unsubscribe
-  }, [user?.uid, isAdmin])
+    loadSettings()
+  }, [isAdmin, user])
 
-  const updateSettings = async (newSettings: Partial<AdminSettings>) => {
-    if (!user || !isAdmin) {
-      throw new Error('Keine Admin-Berechtigung')
+  const updateAppSettings = async (updates: Partial<AppSettings>) => {
+    if (!isAdmin || !user || !appSettings) {
+      throw new Error('Nicht berechtigt')
     }
 
     try {
-      setLoading(true)
-      const settingsRef = doc(db, 'admin', 'settings')
-      const updatedSettings = { ...settings, ...newSettings }
-      await setDoc(settingsRef, updatedSettings, { merge: true })
-      setSettings(updatedSettings)
-    } catch (error) {
-      console.error('Failed to update settings:', error)
-      setError('Fehler beim Speichern der Einstellungen')
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const resetToDefaults = async () => {
-    if (!user || !isAdmin) {
-      throw new Error('Keine Admin-Berechtigung')
-    }
-
-    try {
-      setLoading(true)
-      const settingsRef = doc(db, 'admin', 'settings')
-      await setDoc(settingsRef, defaultSettings)
-      setSettings(defaultSettings)
-    } catch (error) {
-      console.error('Failed to reset settings:', error)
-      setError('Fehler beim Zurücksetzen der Einstellungen')
-      throw error
-    } finally {
-      setLoading(false)
+      const newSettings = { ...appSettings, ...updates }
+      
+      await updateDoc(doc(db, 'adminSettings', 'app'), updates)
+      setAppSettings(newSettings)
+      
+      console.log('✅ Settings updated:', Object.keys(updates))
+    } catch (error: any) {
+      console.error('Settings update failed:', error)
+      throw new Error('Einstellungen konnten nicht gespeichert werden')
     }
   }
 
   return (
-    <AdminSettingsContext.Provider
-      value={{
-        settings,
-        loading,
-        error,
-        updateSettings,
-        resetToDefaults
-      }}
-    >
+    <AdminSettingsContext.Provider value={{
+      appSettings,
+      updateAppSettings,
+      loading,
+      error
+    }}>
       {children}
     </AdminSettingsContext.Provider>
   )
 }
 
-function useAdminSettings() {
+export function useAdminSettings() {
   const context = useContext(AdminSettingsContext)
-  if (context === undefined) {
-    throw new Error('useAdminSettings must be used within an AdminSettingsProvider')
+  if (!context) {
+    throw new Error('useAdminSettings must be used within AdminSettingsProvider')
   }
   return context
 }
 
-export { useAdminSettings }
 export default AdminSettingsProvider

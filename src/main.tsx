@@ -5,21 +5,20 @@ import { router } from './router'
 import './styles/index.css'
 import './i18n'
 import { AuthProvider } from './context/AuthContext'
-// AdminContext removed - centralized admin check in AuthContext
-import AdminSettingsProvider from './context/AdminSettingsContext'
+import { AdminProvider } from './context/AdminContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
-        <AdminSettingsProvider>
-          <TaskSuggestionsProvider>
-            <PlayersProvider>
-            {children}
-          </PlayersProvider>
-        </TaskSuggestionsProvider>
-      </AdminSettingsProvider>
+    <AdminProvider>
+      <TaskSuggestionsProvider>
+        <PlayersProvider>
+          {children}
+        </PlayersProvider>
+      </TaskSuggestionsProvider>
+    </AdminProvider>
   </AuthProvider>
 ))
 ContextProviders.displayName = 'ContextProviders'

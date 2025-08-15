@@ -374,7 +374,7 @@ export function ArenaScreen() {
               ⚔️ RUNDE {currentRound} ⚔️
             </div>
 
-            {/* Spieler & Kategorie - Mobile kompakt */}
+            {/* Nur Spieler anzeigen - Kategorie wird erst beim Enthüllen gezeigt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,107,53,0.3), rgba(218,165,32,0.2))',
               padding: isMobile ? '1rem' : '2rem',
@@ -395,15 +395,6 @@ export function ArenaScreen() {
                   🏛️
                 </div>
               )}
-
-              <h2 style={{ 
-                color: 'var(--olympic-victory)', 
-                marginBottom: isMobile ? '0.5rem' : '1rem',
-                fontSize: isMobile ? '1.1rem' : '2rem',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.7)'
-              }}>
-                🎭 {t(`arena.categories.${selectedCategory}`).toUpperCase()} 🎭
-              </h2>
 
               <div style={{
                 background: 'var(--glass-background)',
@@ -638,7 +629,7 @@ export function ArenaScreen() {
               ⚔️ RUNDE {currentRound} ⚔️
             </div>
 
-            {/* Spieler Info - Kompakt */}
+            {/* Spieler & Kategorie Info - Kompakt */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(218,165,32,0.1))',
               padding: isMobile ? '1rem' : '2rem',
@@ -655,6 +646,15 @@ export function ArenaScreen() {
               }}>
                 🏛️ {selectedPlayer.toUpperCase()}! 🏛️
               </h3>
+              <div style={{ 
+                fontSize: isMobile ? '0.9rem' : '1.2rem',
+                color: 'var(--ancient-gold)',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                marginTop: '0.5rem'
+              }}>
+                🎭 {t(`arena.categories.${selectedCategory}`)} 🎭
+              </div>
             </div>
 
             {/* Aufgaben-Anzeige - Mobile kompakt */}

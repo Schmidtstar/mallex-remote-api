@@ -5,7 +5,7 @@ interface AppIntroProps {
   onComplete?: () => void;
 }
 
-export default function AppIntro({ onComplete }: AppIntroProps) {
+function AppIntro({ onComplete }: AppIntroProps) {
   const [phase, setPhase] = useState<"wait"|"idle"|"reveal"|"text">("wait");
   const [doorsOpen, setDoorsOpen] = useState(false);
 
@@ -63,3 +63,6 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
     </section>
   );
 }
+
+export { AppIntro };
+export default AppIntro;

@@ -32,13 +32,14 @@
   linear-gradient(180deg,rgba(0,0,0,.12),transparent);border-radius:6px 6px 0 0;}
 .title{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family: "Trajan Pro","Optima","Palatino","Book Antiqua","URW Palladio L","Georgia","Times New Roman",serif;
-  letter-spacing:.18em;word-spacing:.1em;
+  font-family: "Times New Roman","Georgia","Book Antiqua","Palatino",serif;
+  letter-spacing:.2em;word-spacing:.15em;
   font-size:clamp(2rem,6vw,3.4rem);font-weight:700;
   background:linear-gradient(135deg,var(--gold),#fff,var(--gold2));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   text-shadow:0 0 30px rgba(255,209,102,.6),0 3px 6px rgba(0,0,0,.6);
   font-variant:small-caps;
+  text-transform:uppercase;
 }
 
 
@@ -67,7 +68,7 @@
   transform:translate(-50%, -50%);
   text-align:center;
   color:#fff;
-  font-family:"Trajan Pro","Optima","Palatino","Book Antiqua","URW Palladio L","Georgia","Times New Roman",serif;
+  font-family:"Times New Roman","Georgia","Book Antiqua","Palatino",serif;
   z-index:10;
   animation: emerge 5s ease-out forwards;
 }
@@ -75,41 +76,44 @@
 .emergingText h1{
   font-size:clamp(1.8rem, 5vw, 3.2rem);
   font-weight:700;
-  letter-spacing:0.15em;
-  word-spacing:0.2em;
+  letter-spacing:0.2em;
+  word-spacing:0.3em;
   margin:0 0 1rem 0;
   background:linear-gradient(135deg,var(--gold),#fff,var(--gold2));
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 20px rgba(255,209,102,.8);
+  text-shadow:0 0 20px rgba(255,209,102,.8), 0 4px 8px rgba(0,0,0,.9);
   font-variant:small-caps;
   text-transform:uppercase;
+  font-family:"Times New Roman",serif;
 }
 
 .emergingText h2{
   font-size:clamp(0.9rem, 2.5vw, 1.4rem);
-  font-weight:500;
-  letter-spacing:0.12em;
-  word-spacing:0.15em;
+  font-weight:400;
+  letter-spacing:0.15em;
+  word-spacing:0.2em;
   margin:0 0 1.5rem 0;
   color:#e0e6ed;
-  text-shadow:0 2px 8px rgba(0,0,0,.7);
+  text-shadow:0 3px 10px rgba(0,0,0,.8);
   font-variant:small-caps;
-  line-height:1.4;
+  line-height:1.5;
+  font-family:"Georgia",serif;
 }
 
 .emergingText h3{
   font-size:clamp(1.1rem, 3vw, 1.8rem);
   font-weight:600;
-  letter-spacing:0.18em;
-  word-spacing:0.25em;
+  letter-spacing:0.22em;
+  word-spacing:0.3em;
   margin:0;
   color:var(--gold);
-  text-shadow:0 0 15px rgba(255,209,102,.6), 0 2px 4px rgba(0,0,0,.8);
+  text-shadow:0 0 18px rgba(255,209,102,.7), 0 3px 6px rgba(0,0,0,.9);
   font-variant:small-caps;
   text-transform:uppercase;
   font-style:italic;
+  font-family:"Times New Roman",serif;
 }
 
 @keyframes emerge{

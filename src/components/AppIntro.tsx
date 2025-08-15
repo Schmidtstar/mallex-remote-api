@@ -13,49 +13,90 @@ export default function AppIntro() {
   const fanfare = useRef<HTMLAudioElement|null>(null);
   const confetti = useRef<HTMLAudioElement|null>(null);
 
-  // Preload Audio
-  useEffect(()=>{
-    drum.current = new Audio("/sounds/drum_hit.mp3");
-    gate.current = new Audio("/sounds/gate_creak.mp3");
-    burst.current = new Audio("/sounds/light_burst.mp3");
-    fanfare.current = new Audio("/sounds/fanfare.mp3");
-    confetti.current = new Audio("/sounds/confetti.mp3");
-    // Lautstärke anpassen
-    [drum,gate,burst,fanfare,confetti].forEach(ref=>{
-      if(ref.current) ref.current.volume = 0.8;
+  // Preload Audio with error handling
+  useEffect(() => {
+    const sounds = [
+      { ref: drum, src: "/sounds/drum_hit.mp3", volume: 0.7 },
+      { ref: gate, src: "/sounds/gate_creak.mp3", volume: 0.6 },
+      { ref: burst, src: "/sounds/light_burst.mp3", volume: 0.8 },
+      { ref: fanfare, src: "/sounds/fanfare.mp3", volume: 0.9 },
+      { ref: confetti, src: "/sounds/confetti.mp3", volume: 0.5 }
+    ];
+
+    sounds.forEach(({ ref, src, volume }) => {
+      try {
+        ref.current = new Audio(src);
+        ref.current.volume = volume;
+        ref.current.preload = "auto";
+        
+        // Preload for smoother playback
+        ref.current.load();
+        
+        // Handle load errors gracefully
+        ref.current.addEventListener('error', () => {
+          console.warn(`Sound file not found: ${src}`);
+        });
+        
+        // Enable better mobile support
+        ref.current.addEventListener('canplaythrough', () => {
+          console.log(`Sound loaded: ${src}`);
+        });
+      } catch (error) {
+        console.warn(`Failed to load sound: ${src}`, error);
+      }
     });
-  },[]);
+
+    // Cleanup on unmount
+    return () => {
+      sounds.forEach(({ ref }) => {
+        if (ref.current) {
+          ref.current.src = '';
+          ref.current = null;
+        }
+      });
+    };
+  }, []);
+
+  // Safe sound playing helper
+  const playSound = (audioRef: React.RefObject<HTMLAudioElement | null>) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0; // Reset to beginning
+      audioRef.current.play().catch(err => {
+        console.warn('Sound play failed:', err);
+      });
+    }
+  };
 
   // Start Sequenz nach User-Klick
   const startIntro = () => {
     setPhase("idle");
 
-    // t=0.8s Drum
-    setTimeout(()=> drum.current?.play(), 800);
+    // t=0.8s - Tiefer Trommelschlag (Atmosphäre aufbauen)
+    setTimeout(() => playSound(drum), 800);
 
-    // t=1.2s Gate
-    setTimeout(()=>{
+    // t=1.2s - Türen öffnen sich + Knarrgeräusch
+    setTimeout(() => {
       setPhase("reveal");
-      gate.current?.play();
+      playSound(gate);
     }, 1200);
 
-    // t=2.0s Burst
-    setTimeout(()=>{
+    // t=2.0s - Helles Licht bricht heraus + Burst-Sound
+    setTimeout(() => {
       lightRef.current?.classList.add(s.flash);
-      burst.current?.play();
+      playSound(burst);
     }, 2000);
 
-    // t=2.1s Fanfare
-    setTimeout(()=> fanfare.current?.play(), 2100);
+    // t=2.1s - Epische Fanfare für MALLEX-Enthüllung
+    setTimeout(() => playSound(fanfare), 2100);
 
-    // t=2.4s Confetti
-    setTimeout(()=>{
+    // t=2.4s - Lorbeer-Konfetti schießt heraus
+    setTimeout(() => {
       confettiRef.current?.classList.add(s.shoot);
-      confetti.current?.play();
+      playSound(confetti);
     }, 2400);
 
-    // t=3.4s Ribbon
-    setTimeout(()=> setPhase("content"), 3400);
+    // t=3.4s - Content wird angezeigt (Ribbon + Zitat + Kacheln)
+    setTimeout(() => setPhase("content"), 3400);
   };
 
   return (

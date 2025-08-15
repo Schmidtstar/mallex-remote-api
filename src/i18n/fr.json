@@ -1,0 +1,257 @@
+
+{
+  "nav": {
+    "arena": "Arène",
+    "legends": "Légendes",
+    "leaderboard": "Classement",
+    "tasks": "Tâches",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "admin": "Admin",
+    "adminTasks": "Gérer les tâches"
+  },
+  "menu": {
+    "title": "Menu",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "game": "Jeu",
+    "arena": "Arène",
+    "legends": "Légendes",
+    "leaderboard": "Classement",
+    "tasks": "Tâches",
+    "tasksOverview": "Aperçu",
+    "suggestTask": "Proposer",
+    "admin": "Administration",
+    "adminTasks": "Gérer les tâches",
+    "adminSuggestions": "Modérer les suggestions"
+  },
+  "tabs": {
+    "arena": "Arène",
+    "legends": "Salle des Légendes"
+  },
+  "auth": {
+    "loginTitle": "Se connecter",
+    "registerTitle": "S'inscrire",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "displayName": "Nom d'utilisateur",
+    "login": "Se connecter",
+    "register": "Créer un compte",
+    "loginLink": "Déjà un compte ? Connectez-vous maintenant",
+    "registerLink": "Pas de compte ? Inscrivez-vous maintenant",
+    "guestButton": "Continuer en tant qu'invité",
+    "invalidCredentials": "Identifiants invalides",
+    "emailAlreadyInUse": "Cette adresse e-mail est déjà utilisée",
+    "weakPassword": "Le mot de passe est trop faible",
+    "passwordReset": {
+      "button": "Réinitialiser le mot de passe",
+      "emailRequired": "Veuillez saisir votre adresse e-mail",
+      "success": "E-mail de réinitialisation envoyé avec succès !",
+      "userNotFound": "Aucun utilisateur trouvé avec cette adresse e-mail",
+      "invalidEmail": "Adresse e-mail invalide"
+    }
+  },
+  "arena": {
+    "title": "Arène MALLEX",
+    "selectCategory": "Choisir une catégorie",
+    "selectPlayer": "Sélectionnez 'Nouvelle tâche' pour commencer",
+    "newTask": "Nouvelle tâche",
+    "categories": {
+      "fate": "🎭 Fatum - Destin des Dieux",
+      "shame": "🔥 Pudor - Épreuve de la honte",
+      "seduce": "💘 Venus - Art de la séduction",
+      "escalate": "⚡ Bacchus - Ivresse de l'escalade",
+      "confess": "🗿 Veritas - Confession de vérité"
+    },
+    "fate": {
+      "item1": "🪙 Lance la pièce du destin - Les dieux décident du triomphe ou du tribut !",
+      "item2": "👑 L'oracle à ta droite proclame ton destin !",
+      "item3": "⚱️ Confesse ta plus grande honte devant les dieux ou sacrifie 3 gorgées !",
+      "item4": "🔄 Échange ta place dans l'amphithéâtre pour 2 tours !",
+      "item5": "🤐 Tu es frappé de silence par les muses - jusqu'à la prochaine épreuve !"
+    },
+    "shame": {
+      "item1": "💃 Exécute la danse des Bacchantes pendant 30 secondes !",
+      "item2": "🎭 Imite les chants d'un troubadour de l'antiquité !",
+      "item3": "💘 Raconte tes aventures dans les jardins de Vénus !",
+      "item4": "💪 Prouve ta force comme un gladiateur - 10 pompes ou 2 offrandes !",
+      "item5": "🎨 Parle pendant 3 tours uniquement en vers d'un poète antique !"
+    },
+    "seduce": {
+      "item1": "Chuchote quelque chose de séduisant à l'oreille de quelqu'un",
+      "item2": "Fais un compliment sensuel à quelqu'un",
+      "item3": "Partage ton fantasme le plus fou",
+      "item4": "Décris ton rendez-vous parfait",
+      "item5": "Comment séduire quelqu'un ?"
+    },
+    "escalate": {
+      "item1": "Ose faire quelque chose que tu n'as jamais fait",
+      "item2": "Défie quelqu'un en duel",
+      "item3": "Fais quelque chose de complètement fou",
+      "item4": "Fais rire tout le monde - coûte que coûte",
+      "item5": "Dépasse une de tes limites"
+    },
+    "confess": {
+      "item1": "Confesse ta peur la plus profonde",
+      "item2": "Avoue de qui tu es secrètement amoureux",
+      "item3": "Raconte ton secret le plus sombre",
+      "item4": "Admets ce que tu penses vraiment de quelqu'un",
+      "item5": "Confesse ta plus grosse erreur"
+    }
+  },
+  "legends": {
+    "title": "Salle des Légendes",
+    "subtitle": "Les meilleurs joueurs de tous les temps",
+    "empty": "Aucune légende pour l'instant",
+    "loginRequired": "Connectez-vous pour sauvegarder vos légendes.",
+    "guestMode": "Mode invité : Les légendes ne sont sauvegardées qu'en local.",
+    "syncMode": "Les légendes sont sauvegardées dans votre profil.",
+    "playerNamePlaceholder": "Entrer le nom de la légende",
+    "addPlayer": "Ajouter",
+    "removePlayer": "Supprimer la légende",
+    "playersList": "Légendes",
+    "noPlayers": "Aucune légende ajoutée pour l'instant",
+    "addSuccess": "Légende ajoutée avec succès !",
+    "addError": "Erreur lors de l'ajout de la légende",
+    "removeError": "Erreur lors de la suppression de la légende",
+    "validation": {
+      "required": "Veuillez entrer un nom de légende",
+      "tooShort": "Le nom doit faire au moins 2 caractères",
+      "tooLong": "Le nom ne peut pas dépasser 50 caractères",
+      "duplicate": "Cette légende a déjà été ajoutée"
+    }
+  },
+  "leaderboard": {
+    "title": "Classement",
+    "subtitle": "Les champions actuels de l'arène",
+    "loading": "Chargement du classement...",
+    "empty": "Aucun joueur dans le classement pour l'instant",
+    "points": "Points",
+    "refresh": "Actualiser"
+  },
+  "tasks": {
+    "title": "Tâches",
+    "overview": "Aperçu des tâches",
+    "suggest": "Proposer une tâche",
+    "available": "{{count}} tâches disponibles",
+    "filterByCategory": "Filtrer par catégorie :",
+    "allCategories": "TOUTES LES CATÉGORIES",
+    "suggestTask": {
+      "title": "Proposer une tâche",
+      "subtitle": "Partagez vos idées de nouvelles tâches avec la communauté",
+      "categorySelect": "Sélectionner une catégorie",
+      "taskText": "Texte de la tâche",
+      "placeholder": "Entrez votre suggestion de tâche ici…",
+      "submit": "Envoyer la suggestion"
+    },
+    "admin": {
+      "title": "Gestion des tâches",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "pending": "Suggestions en attente",
+      "noSuggestions": "Aucune suggestion en attente"
+    },
+    "create": {
+      "title": "Créer une nouvelle tâche",
+      "categoryLabel": "Catégorie",
+      "textLabel": "Texte de la tâche",
+      "placeholder": "Décrivez la tâche...",
+      "submit": "Créer la tâche",
+      "creating": "Création...",
+      "success": "Tâche créée avec succès !",
+      "error": "La tâche doit faire au moins 5 caractères"
+    }
+  },
+  "adminTasks": {
+    "title": "Admin : Gestion des tâches",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "note": "Raison du rejet",
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "save": "Enregistrer",
+      "hide": "Masquer",
+      "show": "Afficher"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Nom d'affichage",
+    "birthdate": "Date de naissance",
+    "gender": "Genre",
+    "gender_male": "Masculin",
+    "gender_female": "Féminin",
+    "gender_diverse": "Non-binaire",
+    "nationality": "Nationalité",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "saved": "Enregistré avec succès !",
+    "cancel": "Annuler",
+    "ageYears": "{{count}} ans",
+    "playerCount": "Nombre de héros",
+    "createdAt": "Membre depuis",
+    "email": "Adresse e-mail",
+    "anonymous": "Utilisateur anonyme",
+    "noPlayers": "Aucun héros créé pour l'instant"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "german": "Allemand",
+    "english": "Anglais",
+    "theme": "Thème",
+    "about": "À propos de MALLEX - Le jeu de société ultime pour des soirées inoubliables ! Développé par JPS"
+  },
+  "notifications": {
+    "title": "Boîte de réception",
+    "empty": "Boîte de réception vide",
+    "noMessages": "Vous n'avez encore reçu aucun message."
+  },
+  "countries": {
+    "DE": "Allemagne",
+    "AT": "Autriche",
+    "CH": "Suisse",
+    "US": "États-Unis",
+    "GB": "Royaume-Uni",
+    "FR": "France",
+    "IT": "Italie",
+    "ES": "Espagne",
+    "NL": "Pays-Bas",
+    "BE": "Belgique"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "error": "Une erreur s'est produite",
+    "cancel": "Annuler",
+    "ok": "OK",
+    "yes": "Oui",
+    "no": "Non",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "remove": "Supprimer",
+    "adding": "Ajout..."
+  },
+  "admin": {
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "suggestions": {
+      "title": "Gérer les suggestions",
+      "empty": "Aucune suggestion en attente",
+      "by": "Par"
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "users": "Utilisateurs",
+      "settings": "Paramètres",
+      "content": "Contenu",
+      "analytics": "Analyses",
+      "notifications": "Notifications"
+    }
+  }
+}

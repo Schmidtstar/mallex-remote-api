@@ -1,0 +1,257 @@
+
+{
+  "nav": {
+    "arena": "Arena",
+    "legends": "Leyendas",
+    "leaderboard": "Clasificación",
+    "tasks": "Tareas",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "admin": "Admin",
+    "adminTasks": "Gestionar tareas"
+  },
+  "menu": {
+    "title": "Menú",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión",
+    "game": "Juego",
+    "arena": "Arena",
+    "legends": "Leyendas",
+    "leaderboard": "Clasificación",
+    "tasks": "Tareas",
+    "tasksOverview": "Resumen",
+    "suggestTask": "Sugerir",
+    "admin": "Administración",
+    "adminTasks": "Gestionar tareas",
+    "adminSuggestions": "Moderar sugerencias"
+  },
+  "tabs": {
+    "arena": "Arena",
+    "legends": "Salón de las Leyendas"
+  },
+  "auth": {
+    "loginTitle": "Iniciar sesión",
+    "registerTitle": "Registrarse",
+    "email": "Dirección de correo",
+    "password": "Contraseña",
+    "displayName": "Nombre de usuario",
+    "login": "Iniciar sesión",
+    "register": "Crear cuenta",
+    "loginLink": "¿Ya tienes cuenta? Inicia sesión ahora",
+    "registerLink": "¿No tienes cuenta? Regístrate ahora",
+    "guestButton": "Continuar como invitado",
+    "invalidCredentials": "Credenciales inválidas",
+    "emailAlreadyInUse": "Esta dirección de correo ya está en uso",
+    "weakPassword": "La contraseña es demasiado débil",
+    "passwordReset": {
+      "button": "Restablecer contraseña",
+      "emailRequired": "Por favor introduce tu dirección de correo",
+      "success": "¡Correo de restablecimiento enviado con éxito!",
+      "userNotFound": "No se encontró ninguna cuenta con esta dirección de correo",
+      "invalidEmail": "Dirección de correo inválida"
+    }
+  },
+  "arena": {
+    "title": "Arena MALLEX",
+    "selectCategory": "Elegir una categoría",
+    "selectPlayer": "Selecciona 'Nueva tarea' para empezar",
+    "newTask": "Nueva tarea",
+    "categories": {
+      "fate": "🎭 Fatum - Destino de los Dioses",
+      "shame": "🔥 Pudor - Prueba de la vergüenza",
+      "seduce": "💘 Venus - Arte de la seducción",
+      "escalate": "⚡ Baco - Embriaguez de la escalada",
+      "confess": "🗿 Veritas - Confesión de la verdad"
+    },
+    "fate": {
+      "item1": "🪙 ¡Lanza la moneda del destino - Los dioses deciden el triunfo o el tributo!",
+      "item2": "¡👑 El oráculo a tu derecha proclama tu destino!",
+      "item3": "⚱️ ¡Confiesa ante los dioses tu mayor vergüenza o sacrifica 3 tragos!",
+      "item4": "🔄 ¡Intercambia tu lugar en el anfiteatro por 2 rondas!",
+      "item5": "🤐 ¡Las musas te han golpeado con silencio - hasta la próxima prueba!"
+    },
+    "shame": {
+      "item1": "💃 ¡Ejecuta la danza de las Bacantes durante 30 segundos!",
+      "item2": "🎭 ¡Imita los cantos de un trovador de la antigüedad!",
+      "item3": "💘 ¡Cuenta tus aventuras en los jardines de Venus!",
+      "item4": "💪 ¡Demuestra tu fuerza como un gladiador - 10 flexiones o 2 ofrendas!",
+      "item5": "🎨 ¡Habla durante 3 rondas solo en versos de un poeta antiguo!"
+    },
+    "seduce": {
+      "item1": "Susurra algo seductor al oído de alguien",
+      "item2": "Haz un cumplido sensual a alguien",
+      "item3": "Comparte tu fantasía más salvaje",
+      "item4": "Describe tu cita perfecta",
+      "item5": "¿Cómo seduces a alguien?"
+    },
+    "escalate": {
+      "item1": "Atrévete a hacer algo que nunca has hecho",
+      "item2": "Desafía a alguien a un duelo",
+      "item3": "Haz algo completamente loco",
+      "item4": "Haz reír a todos - cueste lo que cueste",
+      "item5": "Cruza uno de tus límites"
+    },
+    "confess": {
+      "item1": "Confiesa tu miedo más profundo",
+      "item2": "Admite de quién estás secretamente enamorado",
+      "item3": "Cuenta tu secreto más oscuro",
+      "item4": "Admite lo que realmente piensas de alguien",
+      "item5": "Confiesa tu mayor error"
+    }
+  },
+  "legends": {
+    "title": "Salón de las Leyendas",
+    "subtitle": "Los mejores jugadores de todos los tiempos",
+    "empty": "Aún no hay leyendas",
+    "loginRequired": "Inicia sesión para guardar tus leyendas.",
+    "guestMode": "Modo invitado: Las leyendas solo se guardan localmente.",
+    "syncMode": "Las leyendas se guardan en tu perfil.",
+    "playerNamePlaceholder": "Introducir nombre de leyenda",
+    "addPlayer": "Añadir",
+    "removePlayer": "Eliminar leyenda",
+    "playersList": "Leyendas",
+    "noPlayers": "Aún no se han añadido leyendas",
+    "addSuccess": "¡Leyenda añadida con éxito!",
+    "addError": "Error al añadir la leyenda",
+    "removeError": "Error al eliminar la leyenda",
+    "validation": {
+      "required": "Por favor introduce un nombre de leyenda",
+      "tooShort": "El nombre debe tener al menos 2 caracteres",
+      "tooLong": "El nombre no puede exceder los 50 caracteres",
+      "duplicate": "Esta leyenda ya ha sido añadida"
+    }
+  },
+  "leaderboard": {
+    "title": "Clasificación",
+    "subtitle": "Los campeones actuales de la arena",
+    "loading": "Cargando clasificación...",
+    "empty": "Aún no hay jugadores en la clasificación",
+    "points": "Puntos",
+    "refresh": "Actualizar"
+  },
+  "tasks": {
+    "title": "Tareas",
+    "overview": "Resumen de tareas",
+    "suggest": "Sugerir tarea",
+    "available": "{{count}} tareas disponibles",
+    "filterByCategory": "Filtrar por categoría:",
+    "allCategories": "TODAS LAS CATEGORÍAS",
+    "suggestTask": {
+      "title": "Sugerir tarea",
+      "subtitle": "Comparte tus ideas para nuevas tareas con la comunidad",
+      "categorySelect": "Seleccionar categoría",
+      "taskText": "Texto de la tarea",
+      "placeholder": "Introduce tu sugerencia de tarea aquí…",
+      "submit": "Enviar sugerencia"
+    },
+    "admin": {
+      "title": "Gestión de tareas",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "pending": "Sugerencias pendientes",
+      "noSuggestions": "No hay sugerencias pendientes"
+    },
+    "create": {
+      "title": "Crear nueva tarea",
+      "categoryLabel": "Categoría",
+      "textLabel": "Texto de la tarea",
+      "placeholder": "Describe la tarea...",
+      "submit": "Crear tarea",
+      "creating": "Creando...",
+      "success": "¡Tarea creada con éxito!",
+      "error": "La tarea debe tener al menos 5 caracteres"
+    }
+  },
+  "adminTasks": {
+    "title": "Admin: Gestión de tareas",
+    "pending": "Pendiente",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "note": "Motivo del rechazo",
+    "actions": {
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "displayName": "Nombre para mostrar",
+    "birthdate": "Fecha de nacimiento",
+    "gender": "Género",
+    "gender_male": "Masculino",
+    "gender_female": "Femenino",
+    "gender_diverse": "No binario",
+    "nationality": "Nacionalidad",
+    "save": "Guardar",
+    "edit": "Editar",
+    "saved": "¡Guardado con éxito!",
+    "cancel": "Cancelar",
+    "ageYears": "{{count}} años",
+    "playerCount": "Cantidad de héroes",
+    "createdAt": "Miembro desde",
+    "email": "Dirección de correo",
+    "anonymous": "Usuario anónimo",
+    "noPlayers": "Aún no se han creado héroes"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "german": "Alemán",
+    "english": "Inglés",
+    "theme": "Tema",
+    "about": "Acerca de MALLEX - ¡El juego de fiesta definitivo para noches inolvidables! Desarrollado por JPS"
+  },
+  "notifications": {
+    "title": "Bandeja de entrada",
+    "empty": "La bandeja está vacía",
+    "noMessages": "Aún no has recibido mensajes."
+  },
+  "countries": {
+    "DE": "Alemania",
+    "AT": "Austria",
+    "CH": "Suiza",
+    "US": "Estados Unidos",
+    "GB": "Reino Unido",
+    "FR": "Francia",
+    "IT": "Italia",
+    "ES": "España",
+    "NL": "Países Bajos",
+    "BE": "Bélgica"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "error": "Ha ocurrido un error",
+    "cancel": "Cancelar",
+    "ok": "OK",
+    "yes": "Sí",
+    "no": "No",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "remove": "Eliminar",
+    "adding": "Añadiendo..."
+  },
+  "admin": {
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "suggestions": {
+      "title": "Gestionar sugerencias",
+      "empty": "No hay sugerencias pendientes",
+      "by": "Por"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "users": "Usuarios",
+      "settings": "Configuración",
+      "content": "Contenido",
+      "analytics": "Analíticas",
+      "notifications": "Notificaciones"
+    }
+  }
+}

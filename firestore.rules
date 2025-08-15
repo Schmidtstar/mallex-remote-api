@@ -1,18 +1,16 @@
-
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
     // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isAdmin() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
-    
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
@@ -38,7 +36,7 @@ service cloud.firestore {
 
     // Task suggestions - users can submit, admins can moderate
     match /taskSuggestions/{suggestionId} {
-      allow read: if isAuthenticated(); 
+      allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
@@ -74,7 +72,7 @@ service cloud.firestore {
 
     // Notifications - SIMPLIFIED and SECURE
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                      (resource.data.targetUserId == request.auth.uid || isAdmin());
       allow write: if isAdmin();
     }

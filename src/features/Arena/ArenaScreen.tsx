@@ -134,8 +134,8 @@ export function ArenaScreen() {
   // Function to update player points in Firebase
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
-      // Create a simple ID from player name (lowercase, no spaces)
-      const playerId = playerName.toLowerCase().replace(/\s+/g, '-')
+      // Create a simple ID from player name (lowercase, no spaces, special chars removed)
+      const playerId = playerName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
       const playerRef = doc(db, 'players', playerId)
 
       // Check if player exists
@@ -144,24 +144,43 @@ export function ArenaScreen() {
       if (playerDoc.exists()) {
         // Player exists, increment points
         await setDoc(playerRef, {
-          arenaPoints: increment(pointsToAdd)
+          arenaPoints: increment(pointsToAdd),
+          updatedAt: new Date()
         }, { merge: true })
       } else {
         // Player doesn't exist, create new entry
         await setDoc(playerRef, {
           name: playerName,
           arenaPoints: pointsToAdd,
+          totalGames: 1,
+          wins: pointsToAdd > 1 ? 1 : 0,
+          losses: pointsToAdd === 1 ? 1 : 0,
           createdAt: new Date(),
           updatedAt: new Date()
         })
       }
 
       if (import.meta.env.DEV) {
-        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte!`)
+        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte! (Total: ${playerDoc.exists() ? 'wird aktualisiert' : pointsToAdd})`)
       }
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.warn('⚠️ Punkte konnten nicht gespeichert werden:', error)
+        console.error('❌ FIREBASE FEHLER - Punkte konnten nicht gespeichert werden:', error)
+        console.error('📋 Spieler:', playerName, 'Punkte:', pointsToAdd)
+      }
+      
+      // Fallback: Store in localStorage for offline mode
+      try {
+        const offlinePoints = localStorage.getItem('mallex-offline-points') || '{}'
+        const pointsData = JSON.parse(offlinePoints)
+        pointsData[playerName] = (pointsData[playerName] || 0) + pointsToAdd
+        localStorage.setItem('mallex-offline-points', JSON.stringify(pointsData))
+        
+        if (import.meta.env.DEV) {
+          console.log('💾 Punkte offline gespeichert:', playerName, pointsToAdd)
+        }
+      } catch (localError) {
+        console.error('❌ Auch lokale Speicherung fehlgeschlagen:', localError)
       }
     }
   }

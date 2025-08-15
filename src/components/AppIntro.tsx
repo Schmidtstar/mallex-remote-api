@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import s from "./AppIntro.module.css";
 
 export default function AppIntro() {

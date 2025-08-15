@@ -1,5 +1,6 @@
-
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
+import { db } from '../lib/firebase'
 import { useAuth } from './AuthContext'
 
 interface TaskSuggestion {
@@ -37,7 +38,7 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
       try {
         setLoading(true)
         setError(null)
-        
+
         // Simuliere Laden der Vorschläge
         const mockSuggestions: TaskSuggestion[] = []
         setSuggestions(mockSuggestions)
@@ -77,7 +78,7 @@ export function TaskSuggestionsProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       // Mock refresh
       const mockSuggestions: TaskSuggestion[] = []
       setSuggestions(mockSuggestions)

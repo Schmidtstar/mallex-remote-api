@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   loginAnonymously: () => Promise<void>;
@@ -18,7 +19,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  // Admin state removed - handled in useAdmin hook
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Teste Firebase-Verfügbarkeit mit Timeout
@@ -80,6 +81,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } catch (profileError) {
               console.warn('Could not ensure user profile (offline?):', profileError);
             }
+
+            // **ZENTRALE ADMIN-PRÜFUNG BEIM LOGIN**
+            try {
+              const adminDoc = await import('firebase/firestore').then(m => 
+                m.getDoc(m.doc(db, 'admins', user.uid))
+              );
+              const userIsAdmin = adminDoc.exists();
+              setIsAdmin(userIsAdmin);
+              console.log(userIsAdmin ? '👑 ADMIN LOGIN' : '👤 Normal user login');
+            } catch (adminError) {
+              console.warn('Admin check failed:', adminError);
+              setIsAdmin(false);
+            }
           } else {
             setUser(null);
           }
@@ -127,6 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     isAuthenticated: !!user,
+    isAdmin,
     login,
     register,
     loginAnonymously,

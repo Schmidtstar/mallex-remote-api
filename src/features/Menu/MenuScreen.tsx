@@ -341,15 +341,27 @@ export function MenuScreen() {
               <div className={styles.languageButtons}>
                 <button
                   className={`${styles.languageButton} ${i18n.language === 'de' ? styles.active : ''}`}
-                  onClick={() => changeLanguage('de')}
+                  onClick={() => i18n.changeLanguage('de')}
                 >
-                  {t('settings.german')}
+                  {t('language.german')}
                 </button>
                 <button
                   className={`${styles.languageButton} ${i18n.language === 'en' ? styles.active : ''}`}
-                  onClick={() => changeLanguage('en')}
+                  onClick={() => i18n.changeLanguage('en')}
                 >
-                  {t('settings.english')}
+                  {t('language.english')}
+                </button>
+                <button
+                  className={`${styles.languageButton} ${i18n.language === 'fr' ? styles.active : ''}`}
+                  onClick={() => i18n.changeLanguage('fr')}
+                >
+                  {t('language.french')}
+                </button>
+                <button
+                  className={`${styles.languageButton} ${i18n.language === 'es' ? styles.active : ''}`}
+                  onClick={() => i18n.changeLanguage('es')}
+                >
+                  {t('language.spanish')}
                 </button>
               </div>
             </div>
@@ -364,7 +376,7 @@ export function MenuScreen() {
         {currentTab === 'admin' && user && isAdmin && (
           <div className={styles.adminSection}>
             <h2>🔧 Admin Panel</h2>
-            
+
             <div className={styles.adminQuickActions}>
               <button 
                 onClick={() => navigate('/admin/dashboard')}

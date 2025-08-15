@@ -666,13 +666,16 @@
 }
 
 .languageButtons {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
   justify-content: center;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .languageButton {
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-5);
   border-radius: var(--radius);
   border: 2px solid var(--ancient-gold);
   background: transparent;
@@ -682,7 +685,8 @@
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  min-width: 100px;
+  min-width: 120px;
+  text-align: center;
 }
 
 .languageButton:hover {
@@ -856,7 +860,8 @@
   }
 
   .languageButtons {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
     align-items: center;
   }
 

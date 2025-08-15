@@ -2,7 +2,7 @@ import { useState } from "react";
 import s from "./AppIntro.module.css";
 
 export default function AppIntro() {
-  const [phase, setPhase] = useState<"wait"|"idle"|"reveal">("wait");
+  const [phase, setPhase] = useState<"wait"|"idle"|"reveal"|"text">("wait");
 
   // Start Sequenz nach User-Klick
   const startIntro = () => {
@@ -12,6 +12,11 @@ export default function AppIntro() {
     setTimeout(() => {
       setPhase("reveal");
     }, 1200);
+
+    // t=2.5s - Text erscheint aus der Dunkelheit
+    setTimeout(() => {
+      setPhase("text");
+    }, 2500);
   };
 
   return (
@@ -34,6 +39,15 @@ export default function AppIntro() {
         {/* Türen */}
         <div className={`${s.door} ${s.left} ${phase==="reveal" ? s.open : ""}`}/>
         <div className={`${s.door} ${s.right} ${phase==="reveal" ? s.open : ""}`}/>
+        
+        {/* Text aus der Dunkelheit */}
+        {phase === "text" && (
+          <div className={s.emergingText}>
+            <h1>DIE OLYMPISCHEN SAUFSPIELE</h1>
+            <h2>ZEIGE MUT, EHRE UND TRINKE WIE EINE LEGENDE</h2>
+            <h3>LASS DIE SPIELE BEGINNEN</h3>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -67,7 +67,7 @@
   color:#fff;
   font-family:"Georgia","Times New Roman",serif;
   z-index:10;
-  animation: emerge 3s ease-out forwards;
+  animation: emerge 5s ease-out forwards;
 }
 
 .emergingText h1{
@@ -106,15 +106,20 @@
     transform:translate(-50%, -50%) scale(0.1) translateZ(-500px);
     filter:blur(15px);
   }
-  30%{
-    opacity:0.4;
-    transform:translate(-50%, -50%) scale(0.4) translateZ(-200px);
-    filter:blur(8px);
+  25%{
+    opacity:0.2;
+    transform:translate(-50%, -50%) scale(0.3) translateZ(-300px);
+    filter:blur(12px);
   }
-  70%{
-    opacity:0.8;
-    transform:translate(-50%, -50%) scale(0.8) translateZ(-50px);
-    filter:blur(3px);
+  50%{
+    opacity:0.5;
+    transform:translate(-50%, -50%) scale(0.6) translateZ(-150px);
+    filter:blur(6px);
+  }
+  80%{
+    opacity:0.9;
+    transform:translate(-50%, -50%) scale(0.9) translateZ(-20px);
+    filter:blur(2px);
   }
   100%{
     opacity:1;

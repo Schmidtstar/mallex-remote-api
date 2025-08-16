@@ -1,11 +1,15 @@
+
 import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-// Player type lokal definiert da deprecated API entfernt
+import { doc, setDoc, getDoc, increment } from 'firebase/firestore'
+import { db } from '../lib/firebase'
+
+// Player type mit allen nötigen Feldern
 interface Player {
   id: string;
   name: string;
   score: number;
-  arenaPoints?: number; // Für Firebase Kompatibilität
+  arenaPoints: number;
 }
 
 type PlayersContextType = {
@@ -19,7 +23,6 @@ type PlayersContextType = {
 
 const PlayersContext = createContext<PlayersContextType | undefined>(undefined)
 
-// Hook mit konsistentem Export für Fast Refresh
 function usePlayersContext() {
   const context = useContext(PlayersContext)
   if (!context) {
@@ -37,53 +40,23 @@ type PlayersProviderProps = {
 const STORAGE_KEY = 'mallex-players'
 
 export function PlayersProvider({ children }: PlayersProviderProps) {
-  const { loading: authLoading, user } = useAuth() // Assuming 'user' is available from useAuth
+  const { loading: authLoading, user } = useAuth()
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
 
   const mode = useMemo((): 'firebase' | 'localStorage' => {
-    // Force localStorage until Firebase players collection is properly configured
-    return 'localStorage'
+    return 'localStorage' // Hybrides System bleibt bestehen
   }, [])
 
-  // Load players when auth state changes - ONLY localStorage for now
+  // Spieler laden beim Start
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined
-    let retryCount = 0
-    const maxRetries = 3
-
-    const fetchPlayers = async () => {
-      if (!user) return
-
-      setLoading(true)
-      try {
-        // Add connection timeout
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Connection timeout')), 5000)
-        );
-
-        // Use localStorage for now (Firebase rules need players collection setup)
-        const saved = localStorage.getItem(STORAGE_KEY)
-        const playersList = saved ? JSON.parse(saved) : []
-        setPlayers(playersList)
-        setLoading(false)
-      } catch (error) {
-        if (import.meta.env.DEV) {
-          console.warn('Failed to load players:', error)
-        }
-        setPlayers([])
-        setLoading(false)
-      }
-    }
-
-    // Temporarily use localStorage for player loading
     const loadPlayersFromLocalStorage = async () => {
       setLoading(true);
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         let playersList = saved ? JSON.parse(saved) : [];
         
-        // Wenn keine Spieler in localStorage, Demo-Daten hinzufügen
+        // Demo-Daten nur wenn komplett leer
         if (playersList.length === 0) {
           const demoPlayers = [
             { id: '1', name: 'JP', score: 0, arenaPoints: 0 },
@@ -97,33 +70,51 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           console.log('📦 Demo players added to localStorage:', demoPlayers);
         }
         
-        // Bestehende Spieler um arenaPoints erweitern falls nicht vorhanden
-        playersList = playersList.map(player => ({
-          ...player,
-          arenaPoints: player.arenaPoints || 0
-        }));
+        // WICHTIG: arenaPoints aus Firebase laden und mergen
+        const playersWithFirebasePoints = await Promise.all(
+          playersList.map(async (player) => {
+            try {
+              // Firebase Punkte für jeden Spieler abrufen
+              const playerId = player.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+              const playerRef = doc(db, 'players', playerId)
+              const playerDoc = await getDoc(playerRef)
+              
+              const firebasePoints = playerDoc.exists() ? playerDoc.data().arenaPoints || 0 : 0
+              
+              return {
+                ...player,
+                arenaPoints: firebasePoints // Firebase überschreibt localStorage
+              }
+            } catch (error) {
+              // Fallback: localStorage Punkte behalten
+              return {
+                ...player,
+                arenaPoints: player.arenaPoints || 0
+              }
+            }
+          })
+        )
         
-        setPlayers(playersList);
-        console.log('✅ Players loaded from localStorage:', playersList);
+        // Aktualisierte Punkte wieder speichern
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(playersWithFirebasePoints));
+        setPlayers(playersWithFirebasePoints);
+        
+        console.log('✅ Players mit Firebase-Punkten geladen:', playersWithFirebasePoints);
         setLoading(false);
       } catch (error) {
-        if (import.meta.env.DEV) {
-          console.warn('Failed to load players from localStorage:', error);
-        }
+        console.warn('❌ Fehler beim Laden der Spieler:', error);
         setPlayers([]);
         setLoading(false);
       }
     };
 
     loadPlayersFromLocalStorage();
-
-  }, [authLoading, user]) // Dependency array includes user
+  }, [authLoading, user])
 
   const handleAddPlayer = useCallback(async (name: string) => {
     if (!name.trim()) return
 
     try {
-      // Only localStorage mode until Firebase setup is complete
       const newPlayer: Player = {
         id: Date.now().toString(),
         name: name.trim(),
@@ -133,50 +124,113 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       const updatedPlayers = [...players, newPlayer]
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+      console.log('✅ Spieler hinzugefügt:', newPlayer.name)
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.warn('Failed to add player:', error)
-      }
+      console.error('❌ Fehler beim Hinzufügen:', error)
       throw error
     }
   }, [players])
 
   const handleRemovePlayer = useCallback(async (id: string) => {
     if (!id) {
-      console.warn('❌ No player ID provided for removal')
+      console.warn('❌ Keine Spieler-ID für Entfernung angegeben')
       return
     }
     
     try {
+      console.log('🗑️ Versuche Spieler zu entfernen. ID:', id)
+      console.log('📋 Aktuelle Spieler:', players.map(p => `${p.id}: ${p.name}`))
+      
       const playerToRemove = players.find(p => p.id === id)
       if (!playerToRemove) {
-        console.warn('❌ Player not found:', id)
-        throw new Error('Player not found')
+        console.warn('❌ Spieler nicht gefunden:', id)
+        throw new Error(`Spieler mit ID ${id} nicht gefunden`)
       }
       
+      console.log('🎯 Entferne Spieler:', playerToRemove.name)
+      
       const updatedPlayers = players.filter(p => p.id !== id)
+      console.log('📝 Neue Spielerliste:', updatedPlayers.map(p => `${p.id}: ${p.name}`))
+      
+      // State UND localStorage aktualisieren
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
       
-      console.log('✅ Player removed:', playerToRemove.name)
+      console.log('✅ Spieler erfolgreich entfernt:', playerToRemove.name)
+      
+      // Firebase Eintrag auch löschen (optional)
+      try {
+        const playerId = playerToRemove.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+        const playerRef = doc(db, 'players', playerId)
+        await setDoc(playerRef, { deleted: true, deletedAt: new Date() }, { merge: true })
+        console.log('🔥 Firebase Eintrag als gelöscht markiert:', playerId)
+      } catch (firebaseError) {
+        console.warn('⚠️ Firebase Löschung fehlgeschlagen (nicht kritisch):', firebaseError)
+      }
+      
     } catch (error) {
-      console.error('❌ Failed to remove player:', error)
+      console.error('❌ Fehler beim Entfernen des Spielers:', error)
       throw error
     }
   }, [players])
 
   const handleUpdatePlayerArenaPoints = useCallback(async (name: string, points: number) => {
     try {
-      const updatedPlayers = players.map(player => 
-        player.name.toLowerCase() === name.toLowerCase() 
-          ? { ...player, arenaPoints: points }
-          : player
-      )
-      setPlayers(updatedPlayers)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
-      console.log('✅ Arena points updated for:', name, 'Points:', points)
+      console.log('🎯 Arena-Punkte Update:', name, 'Punkte:', points)
+      
+      // 1. Firebase Update (Hauptspeicher)
+      const playerId = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+      const playerRef = doc(db, 'players', playerId)
+      
+      try {
+        const playerDoc = await getDoc(playerRef)
+        if (playerDoc.exists()) {
+          await setDoc(playerRef, {
+            arenaPoints: increment(points),
+            updatedAt: new Date()
+          }, { merge: true })
+        } else {
+          await setDoc(playerRef, {
+            name: name,
+            arenaPoints: points,
+            totalGames: 1,
+            wins: points > 1 ? 1 : 0,
+            losses: points === 1 ? 1 : 0,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        }
+        
+        // 2. Aktuelle Punkte aus Firebase abrufen
+        const updatedDoc = await getDoc(playerRef)
+        const currentPoints = updatedDoc.exists() ? updatedDoc.data().arenaPoints || 0 : 0
+        
+        // 3. localStorage State aktualisieren
+        const updatedPlayers = players.map(player => 
+          player.name.toLowerCase() === name.toLowerCase() 
+            ? { ...player, arenaPoints: currentPoints }
+            : player
+        )
+        setPlayers(updatedPlayers)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+        
+        console.log('✅ Arena-Punkte erfolgreich aktualisiert:', name, 'Neue Gesamtpunkte:', currentPoints)
+      } catch (firebaseError) {
+        console.warn('⚠️ Firebase Update fehlgeschlagen, nur localStorage:', firebaseError)
+        
+        // Fallback: nur localStorage
+        const updatedPlayers = players.map(player => 
+          player.name.toLowerCase() === name.toLowerCase() 
+            ? { ...player, arenaPoints: (player.arenaPoints || 0) + points }
+            : player
+        )
+        setPlayers(updatedPlayers)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+        
+        console.log('💾 Punkte offline gespeichert:', name, 'Punkte:', points)
+      }
     } catch (error) {
-      console.error('❌ Failed to update arena points:', error)
+      console.error('❌ Fehler beim Aktualisieren der Arena-Punkte:', error)
       throw error
     }
   }, [players])

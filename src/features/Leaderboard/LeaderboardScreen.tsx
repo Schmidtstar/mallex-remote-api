@@ -48,64 +48,27 @@ export function LeaderboardScreen() {
     try {
       setLoading(true)
 
-      // Load players from Firebase if available
-      let firebasePlayers: Player[] = []
+      // Nutze PlayersContext als HAUPT-Quelle (hat bereits Firebase sync)
+      const contextPlayersWithPoints = playersFromContext.map(player => ({
+        id: player.id,
+        name: player.name,
+        arenaPoints: player.arenaPoints || 0,
+        rank: 0
+      }))
 
-      try {
-        const playersRef = collection(db, 'players')
-        const q = query(playersRef, orderBy('arenaPoints', 'desc'), limit(50))
-        const snapshot = await getDocs(q)
-
-        snapshot.forEach((doc) => {
-          const data = doc.data()
-          const player = {
-            id: doc.id,
-            name: data.name || data.displayName || 'Unbekannter Spieler',
-            arenaPoints: data.arenaPoints || 0,
-            rank: 0 // Will be set later
-          }
-          firebasePlayers.push(player)
-          if (import.meta.env.DEV) {
-            console.log('🏆 Spieler geladen:', player.name, 'Punkte:', player.arenaPoints)
-          }
-        })
-
-        if (import.meta.env.DEV) {
-          console.log('📊 Gesamte Spielerliste aus Firebase:', firebasePlayers.length, 'Spieler')
-        }
-      } catch (firebaseError) {
-        console.warn('Firebase nicht verfügbar, lade lokale Legenden:', firebaseError)
-      }
-
-      // Combine Firebase data with players from PlayersContext
-      // Ensure no duplicate players based on name (case-insensitive)
-      const combinedPlayers = [...firebasePlayers]
-      playersFromContext.forEach((contextPlayer) => {
-        const isAlreadyInFirebase = firebasePlayers.some(firebasePlayer => 
-          firebasePlayer.name.toLowerCase() === contextPlayer.name.toLowerCase()
-        )
-        if (!isAlreadyInFirebase) {
-          combinedPlayers.push({
-            id: contextPlayer.id,
-            name: contextPlayer.name,
-            arenaPoints: contextPlayer.arenaPoints || 0, // Use points from context if available
-            rank: 0
-          })
-        }
-      })
-
-      // Sort by arena points (descending) and assign ranks
-      combinedPlayers.sort((a, b) => b.arenaPoints - a.arenaPoints)
-      combinedPlayers.forEach((player, index) => {
+      // Sortiere nach Arena-Punkten und weise Ränge zu
+      contextPlayersWithPoints.sort((a, b) => b.arenaPoints - a.arenaPoints)
+      contextPlayersWithPoints.forEach((player, index) => {
         player.rank = index + 1
       })
 
       if (import.meta.env.DEV) {
-        console.log('🏁 Finale Rangliste:', combinedPlayers.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
+        console.log('🏁 Finale Rangliste (PlayersContext):', contextPlayersWithPoints.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
       }
-      setPlayers(combinedPlayers)
+      
+      setPlayers(contextPlayersWithPoints)
     } catch (error) {
-      console.error('Fehler beim Laden der Rangliste:', error)
+      console.error('❌ Fehler beim Laden der Rangliste:', error)
     } finally {
       setLoading(false)
     }

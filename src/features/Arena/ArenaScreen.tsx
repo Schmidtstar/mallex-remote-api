@@ -133,64 +133,18 @@ export function ArenaScreen() {
     return Math.floor(Math.random() * 5) + 1; // 1-5 Schlücke
   }
 
-  // Function to update player points in Firebase and sync with localStorage
+  // Nutze PlayersContext für Arena-Punkte Updates
+  const { updatePlayerArenaPoints } = usePlayersContext()
+
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
-      // Create a simple ID from player name (lowercase, no spaces, special chars removed)
-      const playerId = playerName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
-      const playerRef = doc(db, 'players', playerId)
-
-      // Check if player exists
-      const playerDoc = await getDoc(playerRef)
-
-      if (playerDoc.exists()) {
-        // Player exists, increment points
-        await setDoc(playerRef, {
-          arenaPoints: increment(pointsToAdd),
-          updatedAt: new Date()
-        }, { merge: true })
-      } else {
-        // Player doesn't exist, create new entry
-        await setDoc(playerRef, {
-          name: playerName,
-          arenaPoints: pointsToAdd,
-          totalGames: 1,
-          wins: pointsToAdd > 1 ? 1 : 0,
-          losses: pointsToAdd === 1 ? 1 : 0,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-      }
-
-      // Sync with localStorage for offline or immediate update
-      const offlinePointsData = localStorage.getItem('mallex-offline-points') || '{}'
-      const pointsData = JSON.parse(offlinePointsData)
-      pointsData[playerName] = (pointsData[playerName] || 0) + pointsToAdd
-      localStorage.setItem('mallex-offline-points', JSON.stringify(pointsData))
-
+      await updatePlayerArenaPoints(playerName, pointsToAdd)
+      
       if (import.meta.env.DEV) {
-        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte! (Total: ${playerDoc.exists() ? 'wird aktualisiert' : pointsToAdd})`)
-        console.log('💾 Punkte auch lokal gespeichert:', playerName, pointsToAdd)
+        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte über PlayersContext!`)
       }
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error('❌ FIREBASE FEHLER - Punkte konnten nicht gespeichert werden:', error)
-        console.error('📋 Spieler:', playerName, 'Punkte:', pointsToAdd)
-      }
-
-      // Fallback: Store in localStorage for offline mode if Firebase fails
-      try {
-        const offlinePointsData = localStorage.getItem('mallex-offline-points') || '{}'
-        const pointsData = JSON.parse(offlinePointsData)
-        pointsData[playerName] = (pointsData[playerName] || 0) + pointsToAdd
-        localStorage.setItem('mallex-offline-points', JSON.stringify(pointsData))
-
-        if (import.meta.env.DEV) {
-          console.log('💾 Punkte offline gespeichert (Fallback):', playerName, pointsToAdd)
-        }
-      } catch (localError) {
-        console.error('❌ Auch lokale Speicherung fehlgeschlagen:', localError)
-      }
+      console.error('❌ Arena-Punkte Update fehlgeschlagen:', error)
     }
   }
 

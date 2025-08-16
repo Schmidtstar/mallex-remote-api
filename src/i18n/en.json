@@ -269,12 +269,3 @@
     }
   }
 }
-{
-  "menu": {
-    "logout": "Logout"
-  },
-  "profile": {
-    "anonymous": "Anonymous user"
-  },
-  "settings": {}
-}

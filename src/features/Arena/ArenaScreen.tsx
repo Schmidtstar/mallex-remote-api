@@ -8,12 +8,14 @@ import { listApprovedTasks } from '../../lib/tasksApi'
 import { usePlayersContext } from '../../context/PlayersContext'
 // Swipe functionality handled internally
 import styles from '../../layouts/TabLayout.module.css'
+import { useAuth } from '@/context/AuthContext'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 
 export function ArenaScreen() {
   const { t } = useTranslation()
   const { players } = usePlayersContext()
+  const { user } = useAuth()
 
   // Game State
   const [gameState, setGameState] = useState<GameState>('idle')
@@ -27,7 +29,7 @@ export function ArenaScreen() {
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinningCategory, setSpinningCategory] = useState<string>('')
-  
+
 
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)
@@ -131,7 +133,7 @@ export function ArenaScreen() {
     return Math.floor(Math.random() * 5) + 1; // 1-5 Schlücke
   }
 
-  // Function to update player points in Firebase
+  // Function to update player points in Firebase and sync with localStorage
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
       // Create a simple ID from player name (lowercase, no spaces, special chars removed)
@@ -160,24 +162,31 @@ export function ArenaScreen() {
         })
       }
 
+      // Sync with localStorage for offline or immediate update
+      const offlinePointsData = localStorage.getItem('mallex-offline-points') || '{}'
+      const pointsData = JSON.parse(offlinePointsData)
+      pointsData[playerName] = (pointsData[playerName] || 0) + pointsToAdd
+      localStorage.setItem('mallex-offline-points', JSON.stringify(pointsData))
+
       if (import.meta.env.DEV) {
         console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte! (Total: ${playerDoc.exists() ? 'wird aktualisiert' : pointsToAdd})`)
+        console.log('💾 Punkte auch lokal gespeichert:', playerName, pointsToAdd)
       }
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('❌ FIREBASE FEHLER - Punkte konnten nicht gespeichert werden:', error)
         console.error('📋 Spieler:', playerName, 'Punkte:', pointsToAdd)
       }
-      
-      // Fallback: Store in localStorage for offline mode
+
+      // Fallback: Store in localStorage for offline mode if Firebase fails
       try {
-        const offlinePoints = localStorage.getItem('mallex-offline-points') || '{}'
-        const pointsData = JSON.parse(offlinePoints)
+        const offlinePointsData = localStorage.getItem('mallex-offline-points') || '{}'
+        const pointsData = JSON.parse(offlinePointsData)
         pointsData[playerName] = (pointsData[playerName] || 0) + pointsToAdd
         localStorage.setItem('mallex-offline-points', JSON.stringify(pointsData))
-        
+
         if (import.meta.env.DEV) {
-          console.log('💾 Punkte offline gespeichert:', playerName, pointsToAdd)
+          console.log('💾 Punkte offline gespeichert (Fallback):', playerName, pointsToAdd)
         }
       } catch (localError) {
         console.error('❌ Auch lokale Speicherung fehlgeschlagen:', localError)

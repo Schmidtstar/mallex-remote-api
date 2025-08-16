@@ -5,12 +5,14 @@ interface Player {
   id: string;
   name: string;
   score: number;
+  arenaPoints?: number; // Für Firebase Kompatibilität
 }
 
 type PlayersContextType = {
   players: Player[]
   addPlayer: (name: string) => Promise<void>
   removePlayer: (id: string) => Promise<void>
+  updatePlayerArenaPoints: (name: string, points: number) => Promise<void>
   mode: 'firebase' | 'localStorage'
   loading: boolean
 }
@@ -84,16 +86,22 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         // Wenn keine Spieler in localStorage, Demo-Daten hinzufügen
         if (playersList.length === 0) {
           const demoPlayers = [
-            { id: '1', name: 'JP', score: 0 },
-            { id: '2', name: 'BP', score: 0 },
-            { id: '3', name: 'DM', score: 0 },
-            { id: '4', name: 'GB', score: 0 },
-            { id: '5', name: 'Schmidtstar', score: 0 }
+            { id: '1', name: 'JP', score: 0, arenaPoints: 0 },
+            { id: '2', name: 'BP', score: 0, arenaPoints: 0 },
+            { id: '3', name: 'DM', score: 0, arenaPoints: 0 },
+            { id: '4', name: 'GB', score: 0, arenaPoints: 0 },
+            { id: '5', name: 'Schmidtstar', score: 0, arenaPoints: 0 }
           ];
           playersList = demoPlayers;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(demoPlayers));
           console.log('📦 Demo players added to localStorage:', demoPlayers);
         }
+        
+        // Bestehende Spieler um arenaPoints erweitern falls nicht vorhanden
+        playersList = playersList.map(player => ({
+          ...player,
+          arenaPoints: player.arenaPoints || 0
+        }));
         
         setPlayers(playersList);
         console.log('✅ Players loaded from localStorage:', playersList);
@@ -119,7 +127,8 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       const newPlayer: Player = {
         id: Date.now().toString(),
         name: name.trim(),
-        score: 0
+        score: 0,
+        arenaPoints: 0
       }
       const updatedPlayers = [...players, newPlayer]
       setPlayers(updatedPlayers)
@@ -156,13 +165,30 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     }
   }, [players])
 
+  const handleUpdatePlayerArenaPoints = useCallback(async (name: string, points: number) => {
+    try {
+      const updatedPlayers = players.map(player => 
+        player.name.toLowerCase() === name.toLowerCase() 
+          ? { ...player, arenaPoints: points }
+          : player
+      )
+      setPlayers(updatedPlayers)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+      console.log('✅ Arena points updated for:', name, 'Points:', points)
+    } catch (error) {
+      console.error('❌ Failed to update arena points:', error)
+      throw error
+    }
+  }, [players])
+
   const value = useMemo(() => ({
     players,
     addPlayer: handleAddPlayer,
     removePlayer: handleRemovePlayer,
+    updatePlayerArenaPoints: handleUpdatePlayerArenaPoints,
     mode,
     loading
-  }), [players, handleAddPlayer, handleRemovePlayer, mode, loading])
+  }), [players, handleAddPlayer, handleRemovePlayer, handleUpdatePlayerArenaPoints, mode, loading])
 
   return (
     <PlayersContext.Provider value={value}>

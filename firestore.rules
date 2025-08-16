@@ -1,28 +1,35 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Spieler-Collection: Jeder kann lesen/schreiben
+    
+    // === SPIELER: Vollzugriff für lokales Spiel ===
     match /players/{playerId} {
       allow read, write: if true;
     }
 
-    // Admin-Settings: Nur authentifizierte Nutzer
+    // === ADMIN: Basis-Schutz ===
     match /admin/{document=**} {
       allow read, write: if request.auth != null;
     }
 
-    // Tasks: Lesen für alle, Schreiben für authentifizierte
+    // === AUFGABEN: Lesen für alle ===
     match /tasks/{taskId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // Task-Suggestions: Alle können vorschlagen
+    // === VORSCHLÄGE: Vollzugriff ===
     match /taskSuggestions/{suggestionId} {
       allow read, write: if true;
     }
 
-    // Fallback: Deny all andere
+    // === SPIELE: Authentifizierte Nutzer ===
+    match /games/{gameId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // === FALLBACK ===
     match /{document=**} {
       allow read, write: if false;
     }

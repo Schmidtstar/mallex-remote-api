@@ -266,3 +266,12 @@
     }
   }
 }
+{
+  "menu": {
+    "logout": "Déconnexion"
+  },
+  "profile": {
+    "anonymous": "Utilisateur anonyme"
+  },
+  "settings": {}
+}

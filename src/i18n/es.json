@@ -266,3 +266,12 @@
     }
   }
 }
+{
+  "menu": {
+    "logout": "Cerrar sesión"
+  },
+  "profile": {
+    "anonymous": "Usuario anónimo"
+  },
+  "settings": {}
+}

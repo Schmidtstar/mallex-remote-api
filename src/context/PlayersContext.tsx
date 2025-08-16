@@ -79,8 +79,24 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       setLoading(true);
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        const playersList = saved ? JSON.parse(saved) : [];
+        let playersList = saved ? JSON.parse(saved) : [];
+        
+        // Wenn keine Spieler in localStorage, Demo-Daten hinzufügen
+        if (playersList.length === 0) {
+          const demoPlayers = [
+            { id: '1', name: 'JP', score: 0 },
+            { id: '2', name: 'BP', score: 0 },
+            { id: '3', name: 'DM', score: 0 },
+            { id: '4', name: 'GB', score: 0 },
+            { id: '5', name: 'Schmidtstar', score: 0 }
+          ];
+          playersList = demoPlayers;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(demoPlayers));
+          console.log('📦 Demo players added to localStorage:', demoPlayers);
+        }
+        
         setPlayers(playersList);
+        console.log('✅ Players loaded from localStorage:', playersList);
         setLoading(false);
       } catch (error) {
         if (import.meta.env.DEV) {
@@ -117,33 +133,23 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   }, [players])
 
   const handleRemovePlayer = useCallback(async (id: string) => {
-    console.log('🗑️ Remove player called with ID:', id)
-    console.log('📋 Current players before removal:', players)
-    
     if (!id) {
       console.warn('❌ No player ID provided for removal')
       return
     }
     
     try {
-      // Only localStorage mode until Firebase setup is complete
       const playerToRemove = players.find(p => p.id === id)
       if (!playerToRemove) {
         console.warn('❌ Player not found:', id)
-        console.log('Available player IDs:', players.map(p => p.id))
         throw new Error('Player not found')
       }
       
-      console.log('🎯 Found player to remove:', playerToRemove)
-      
       const updatedPlayers = players.filter(p => p.id !== id)
-      console.log('📝 Updated players list:', updatedPlayers)
-      
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
       
-      console.log('✅ Player removed successfully:', playerToRemove.name)
-      console.log('💾 LocalStorage updated')
+      console.log('✅ Player removed:', playerToRemove.name)
     } catch (error) {
       console.error('❌ Failed to remove player:', error)
       throw error

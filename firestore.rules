@@ -1,110 +1,28 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helpers
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    function isAdmin() {
-      return isAuthenticated() &&
-             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-
-    // USERS — eigenes Profil + Admin-Zugriff
-    match /users/{userId} {
-      // Nur eigenes Profil anlegen (statt "if isAuthenticated()")
-      allow create: if isOwner(userId);
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-
-    // ADMINS — Admin-only schreiben/lesen; Owner darf sein eigenes Admin-Dokument lesen
-    match /admins/{userId} {
-      allow read, write: if isAdmin();
-      allow read: if isOwner(userId); // ODER-Regel ist ok
-    }
-
-    // TASKS — alle Auth lesen, nur Admin schreiben
-    match /tasks/{taskId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
-    }
-
-    // CATEGORIES — alle Auth lesen, nur Admin schreiben
-    match /categories/{categoryId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
-    }
-
-    // TASK SUGGESTIONS — Auth lesen/erstellen; Admin oder Ersteller darf ändern/löschen
-    match /taskSuggestions/{suggestionId} {
-      allow read, create: if isAuthenticated();
-      allow update, delete: if isAdmin() ||
-        (isAuthenticated() && request.auth.uid == resource.data.submittedBy);
-    }
-
-    // USER PROGRESS — Owner & Admin lesen; nur Owner schreibt
-    match /userProgress/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-
-    // PLAYERS — Leaderboard
+    // Spieler-Collection: Jeder kann lesen/schreiben
     match /players/{playerId} {
-      allow read: if isAuthenticated();
-
-      // Nur eigenes Player-Dokument anlegen: Doc-ID UND Feld müssen zu auth.uid passen
-      allow create: if isAuthenticated()
-                    && playerId == request.auth.uid
-                    && request.resource.data.userId == request.auth.uid;
-
-      // Nur der Owner darf sein Dokument ändern (optional: Felder einschränken)
-      allow update: if isAuthenticated()
-                    && resource.data.userId == request.auth.uid
-                    && playerId == request.auth.uid
-                    // optionaler Manipulationsschutz: nur bestimmte Felder dürfen sich ändern
-                    && request.resource.data.diff(resource.data).changedKeys()
-                         .hasOnly(['displayName', 'avatarUrl', 'arenaPoints', 'updatedAt']);
-
-      allow delete: if isAdmin();
+      allow read, write: if true;
     }
 
-    // SETTINGS — Admin-only
-    match /settings/{settingId} {
-      allow read, write: if isAdmin();
+    // Admin-Settings: Nur authentifizierte Nutzer
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null;
     }
 
-    // PUBLIC SETTINGS — Auth lesen, Admin schreiben
-    match /publicSettings/{settingId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    // Tasks: Lesen für alle, Schreiben für authentifizierte
+    match /tasks/{taskId} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
 
-    // NOTIFICATIONS — User nur eigene, Admin alle
-    match /notifications/{notificationId} {
-      allow read: if isAuthenticated() &&
-                  (request.auth.uid == resource.data.targetUserId || isAdmin());
-      allow write: if isAdmin();
+    // Task-Suggestions: Alle können vorschlagen
+    match /taskSuggestions/{suggestionId} {
+      allow read, write: if true;
     }
 
-    // GLOBALE NOTIFICATIONS — User read-only, Admin write
-    match /globalNotifications/{notificationId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
-    }
-
-    // Admin-only Collections
-    match /analytics/{docId} {
-      allow read, write: if isAdmin();
-    }
-    match /systemLogs/{logId} {
-      allow read, write: if isAdmin();
-    }
-
-    // Default deny
+    // Fallback: Deny all andere
     match /{document=**} {
       allow read, write: if false;
     }

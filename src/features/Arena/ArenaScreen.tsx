@@ -138,15 +138,24 @@ export function ArenaScreen() {
 
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
+      console.log(`🎯 Arena Update startet: ${playerName} soll ${pointsToAdd} Punkte erhalten`)
+      
       // Direkte Nutzung des optimierten PlayersContext
       await updatePlayerArenaPoints(playerName, pointsToAdd)
       
-      if (import.meta.env.DEV) {
-        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte (Real-time Sync aktiv)!`)
+      console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte (Real-time Sync aktiv)!`)
+      
+      // Validierung: Prüfe ob Punkte korrekt gespeichert wurden
+      const updatedPlayer = players.find(p => p.name.toLowerCase() === playerName.toLowerCase())
+      if (updatedPlayer) {
+        console.log(`🔍 Validierung: ${playerName} hat jetzt ${updatedPlayer.arenaPoints} Punkte`)
+      } else {
+        console.warn(`⚠️ Spieler ${playerName} nach Update nicht gefunden!`)
       }
+      
     } catch (error) {
       console.error('❌ Arena-Punkte Update fehlgeschlagen:', error)
-      // User-freundliche Fehlermeldung könnte hier hinzugefügt werden
+      alert(`Fehler beim Speichern der Punkte für ${playerName}. Bitte versuche es erneut.`)
     }
   }
 

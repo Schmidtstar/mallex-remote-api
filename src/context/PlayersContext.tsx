@@ -124,6 +124,18 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(demoPlayers));
           console.log('📦 Demo players added to localStorage:', demoPlayers);
         }
+
+        // KRITISCH: Bestehende Spieler-Daten reparieren (fehlende Felder hinzufügen)
+        playersList = playersList.map(player => ({
+          id: player.id || Date.now().toString(),
+          name: player.name || 'Unbekannt',
+          score: player.score || 0,
+          arenaPoints: player.arenaPoints || 0
+        }))
+
+        // Reparierte Daten speichern
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(playersList))
+        console.log('🔧 Spieler-Datenstruktur repariert:', playersList)
         
         // WICHTIG: arenaPoints aus Firebase laden und mergen
         const playersWithFirebasePoints = await Promise.all(
@@ -290,16 +302,20 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       } catch (firebaseError) {
         console.warn('⚠️ Firebase Update fehlgeschlagen, nur localStorage:', firebaseError)
         
-        // Fallback: nur localStorage
-        const updatedPlayers = players.map(player => 
-          player.name.toLowerCase() === name.toLowerCase() 
-            ? { ...player, arenaPoints: (player.arenaPoints || 0) + points }
-            : player
-        )
+        // Fallback: nur localStorage mit verbesserter Validierung
+        const updatedPlayers = players.map(player => {
+          if (player.name.toLowerCase() === name.toLowerCase()) {
+            const newArenaPoints = (player.arenaPoints || 0) + points
+            console.log(`📊 ${player.name}: ${player.arenaPoints || 0} → ${newArenaPoints}`)
+            return { ...player, arenaPoints: newArenaPoints }
+          }
+          return player
+        })
+        
         setPlayers(updatedPlayers)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
         
-        console.log('💾 Punkte offline gespeichert:', name, 'Punkte:', points)
+        console.log('💾 Punkte offline gespeichert:', name, 'Neue Punkte:', updatedPlayers.find(p => p.name.toLowerCase() === name.toLowerCase())?.arenaPoints)
       }
     } catch (error) {
       console.error('❌ Fehler beim Aktualisieren der Arena-Punkte:', error)

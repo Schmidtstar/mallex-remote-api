@@ -52,11 +52,16 @@ export function LegendsScreen() {
   }
 
   const handleRemovePlayer = async (id: string) => {
-    try {
-      await removePlayer(id)
-    } catch (error) {
-      console.error('Failed to remove player:', error)
-      alert(t('legends.removeError') || 'Fehler beim Entfernen der Legende')
+    if (window.confirm('Möchtest du diese Legende wirklich entfernen?')) {
+      try {
+        await removePlayer(id)
+        setSuccessMessage('Legende erfolgreich entfernt!')
+        setTimeout(() => setSuccessMessage(null), 2000)
+      } catch (error) {
+        console.error('Failed to remove player:', error)
+        setError(t('legends.removeError') || 'Fehler beim Entfernen der Legende')
+        setTimeout(() => setError(null), 3000)
+      }
     }
   }
 

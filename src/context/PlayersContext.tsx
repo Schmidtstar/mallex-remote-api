@@ -117,8 +117,11 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   }, [players])
 
   const handleRemovePlayer = useCallback(async (id: string) => {
+    console.log('🗑️ Remove player called with ID:', id)
+    console.log('📋 Current players before removal:', players)
+    
     if (!id) {
-      console.warn('No player ID provided for removal')
+      console.warn('❌ No player ID provided for removal')
       return
     }
     
@@ -126,22 +129,23 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       // Only localStorage mode until Firebase setup is complete
       const playerToRemove = players.find(p => p.id === id)
       if (!playerToRemove) {
-        console.warn('Player not found:', id)
+        console.warn('❌ Player not found:', id)
+        console.log('Available player IDs:', players.map(p => p.id))
         throw new Error('Player not found')
       }
       
+      console.log('🎯 Found player to remove:', playerToRemove)
+      
       const updatedPlayers = players.filter(p => p.id !== id)
+      console.log('📝 Updated players list:', updatedPlayers)
+      
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
       
-      if (import.meta.env.DEV) {
-        console.log('Player removed successfully:', playerToRemove.name, id)
-        console.log('Updated players list:', updatedPlayers)
-      }
+      console.log('✅ Player removed successfully:', playerToRemove.name)
+      console.log('💾 LocalStorage updated')
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error('Failed to remove player:', error)
-      }
+      console.error('❌ Failed to remove player:', error)
       throw error
     }
   }, [players])

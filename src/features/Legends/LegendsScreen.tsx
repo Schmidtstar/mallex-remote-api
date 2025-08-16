@@ -52,16 +52,26 @@ export function LegendsScreen() {
   }
 
   const handleRemovePlayer = async (id: string) => {
-    if (window.confirm('Möchtest du diese Legende wirklich entfernen?')) {
+    console.log('🗑️ handleRemovePlayer called with ID:', id)
+    console.log('📋 Current players:', players)
+    
+    const confirmed = window.confirm('Möchtest du diese Legende wirklich entfernen?')
+    console.log('🤔 User confirmed removal:', confirmed)
+    
+    if (confirmed) {
       try {
+        console.log('🚀 Calling removePlayer...')
         await removePlayer(id)
         setSuccessMessage('Legende erfolgreich entfernt!')
         setTimeout(() => setSuccessMessage(null), 2000)
+        console.log('✅ Remove completed successfully')
       } catch (error) {
-        console.error('Failed to remove player:', error)
+        console.error('❌ Failed to remove player:', error)
         setError(t('legends.removeError') || 'Fehler beim Entfernen der Legende')
         setTimeout(() => setError(null), 3000)
       }
+    } else {
+      console.log('❌ User cancelled removal')
     }
   }
 
@@ -175,7 +185,10 @@ export function LegendsScreen() {
                   {player.name}
                 </span>
                 <button
-                  onClick={() => handleRemovePlayer(player.id)}
+                  onClick={() => {
+                    console.log('🎯 Remove button clicked for:', player.name, 'ID:', player.id)
+                    handleRemovePlayer(player.id)
+                  }}
                   className={styles.removeButton}
                   title={t('legends.removePlayer') || 'Legende entfernen'}
                 >

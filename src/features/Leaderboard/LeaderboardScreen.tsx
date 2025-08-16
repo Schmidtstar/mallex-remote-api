@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
-import { db } from '../../lib/firebase'
 import styles from './LeaderboardScreen.module.css'
 import { useAuth } from '@/context/AuthContext'
 import { usePlayersContext } from '@/context/PlayersContext'
@@ -18,61 +16,37 @@ export function LeaderboardScreen() {
   const { t } = useTranslation()
   const location = useLocation()
   const { user } = useAuth()
-  const { players: playersFromContext } = usePlayersContext()
+  const { players: playersFromContext, loading: playersLoading } = usePlayersContext()
   const [players, setPlayers] = useState<Player[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadLeaderboard()
-
-    // Auto-refresh every 15 seconds (less frequent since we refresh on navigation)
-    const interval = setInterval(() => {
-      if (import.meta.env.DEV) {
-        console.log('🔄 Auto-refresh Rangliste...')
-      }
-      loadLeaderboard()
-    }, 15000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // Refresh leaderboard when navigating to this screen
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      console.log('🎯 Navigation zur Rangliste - automatische Aktualisierung...')
-    }
-    loadLeaderboard()
-  }, [location.pathname])
-
-  async function loadLeaderboard() {
-    try {
-      setLoading(true)
-
-      // Nutze PlayersContext als HAUPT-Quelle (hat bereits Firebase sync)
-      const contextPlayersWithPoints = playersFromContext.map(player => ({
+    // PlayersContext ist bereits die Single Source of Truth mit Real-time Updates
+    const playersWithRanks = playersFromContext
+      .map(player => ({
         id: player.id,
         name: player.name,
         arenaPoints: player.arenaPoints || 0,
         rank: 0
       }))
+      .sort((a, b) => b.arenaPoints - a.arenaPoints)
+      .map((player, index) => ({
+        ...player,
+        rank: index + 1
+      }))
 
-      // Sortiere nach Arena-Punkten und weise Ränge zu
-      contextPlayersWithPoints.sort((a, b) => b.arenaPoints - a.arenaPoints)
-      contextPlayersWithPoints.forEach((player, index) => {
-        player.rank = index + 1
-      })
+    setPlayers(playersWithRanks)
 
-      if (import.meta.env.DEV) {
-        console.log('🏁 Finale Rangliste (PlayersContext):', contextPlayersWithPoints.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
-      }
-      
-      setPlayers(contextPlayersWithPoints)
-    } catch (error) {
-      console.error('❌ Fehler beim Laden der Rangliste:', error)
-    } finally {
-      setLoading(false)
+    if (import.meta.env.DEV) {
+      console.log('🏁 Rangliste aktualisiert (Real-time):', playersWithRanks.map(p => `${p.rank}. ${p.name}: ${p.arenaPoints} Punkte`))
     }
-  }
+  }, [playersFromContext])
+
+  // Navigation-basierte Aktualisierung (falls nötig)
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('🎯 Navigation zur Rangliste')
+    }
+  }, [location.pathname])
 
   function getMedalIcon(rank: number): string {
     switch (rank) {
@@ -88,7 +62,7 @@ export function LeaderboardScreen() {
     return `${rank}.`
   }
 
-  if (loading) {
+  if (playersLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>
@@ -121,7 +95,7 @@ export function LeaderboardScreen() {
             fontStyle: 'italic',
             marginTop: '0.5rem'
           }}>
-            ⚡ Automatische Updates bei Navigation & alle 15 Sekunden
+            ⚡ Live-Updates durch Real-time Firebase Sync
           </div>
         </div>
       </header>
@@ -172,7 +146,7 @@ export function LeaderboardScreen() {
           fontStyle: 'italic',
           marginTop: '2rem'
         }}>
-          🎯 Arena-Punkte werden automatisch synchronisiert
+          🎯 Live-Updates ohne manuelle Aktualisierung
         </div>
       </div>
     </div>

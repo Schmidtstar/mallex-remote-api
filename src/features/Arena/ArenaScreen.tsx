@@ -133,18 +133,20 @@ export function ArenaScreen() {
     return Math.floor(Math.random() * 5) + 1; // 1-5 Schlücke
   }
 
-  // Nutze PlayersContext für Arena-Punkte Updates
+  // Nutze optimierten PlayersContext für Arena-Punkte Updates
   const { updatePlayerArenaPoints } = usePlayersContext()
 
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
+      // Direkte Nutzung des optimierten PlayersContext
       await updatePlayerArenaPoints(playerName, pointsToAdd)
       
       if (import.meta.env.DEV) {
-        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte über PlayersContext!`)
+        console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte (Real-time Sync aktiv)!`)
       }
     } catch (error) {
       console.error('❌ Arena-Punkte Update fehlgeschlagen:', error)
+      // User-freundliche Fehlermeldung könnte hier hinzugefügt werden
     }
   }
 

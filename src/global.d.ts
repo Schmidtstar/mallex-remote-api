@@ -42,7 +42,43 @@ declare global {
 
   interface Window {
     _firebaseConfigLogged?: boolean;
+    __MALLEX_DEV__?: boolean;
   }
+}
+
+// React Window Types
+declare module 'react-window' {
+  export interface ListProps {
+    children: React.ComponentType<any>;
+    height: number;
+    itemCount: number;
+    itemSize: number | ((index: number) => number);
+    width?: number | string;
+    itemData?: any;
+    overscanCount?: number;
+    onItemsRendered?: (props: {
+      overscanStartIndex: number;
+      overscanStopIndex: number;
+      visibleStartIndex: number;
+      visibleStopIndex: number;
+    }) => void;
+  }
+  
+  export const FixedSizeList: React.ComponentType<ListProps>;
+  export const VariableSizeList: React.ComponentType<ListProps>;
+}
+
+declare module 'react-window-infinite-loader' {
+  export interface InfiniteLoaderProps {
+    children: React.ComponentType<any>;
+    isItemLoaded: (index: number) => boolean;
+    itemCount: number;
+    loadMoreItems: (startIndex: number, stopIndex: number) => Promise<void>;
+    minimumBatchSize?: number;
+    threshold?: number;
+  }
+  
+  export default class InfiniteLoader extends React.Component<InfiniteLoaderProps> {}
 }
 
 // Vite-spezifische Typen für import.meta

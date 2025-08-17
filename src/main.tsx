@@ -5,7 +5,7 @@ import { router } from './router'
 import './styles/index.css'
 import './i18n'
 import { AuthProvider } from './context/AuthContext'
-import { AdminSettingsProvider } from './context/AdminSettingsContext' // Assuming AdminSettingsProvider is the intended replacement
+import { AdminSettingsProvider } from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import AppIntro from './components/AppIntro'
@@ -14,13 +14,13 @@ import { FirebaseOptimizer } from './lib/firebase-optimized'
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
-    <AdminSettingsProvider>
+    <PlayersProvider>
       <TaskSuggestionsProvider>
-        <PlayersProvider>
+        <AdminSettingsProvider>
           {children}
-        </PlayersProvider>
+        </AdminSettingsProvider>
       </TaskSuggestionsProvider>
-    </AdminSettingsProvider>
+    </PlayersProvider>
   </AuthProvider>
 ))
 ContextProviders.displayName = 'ContextProviders'

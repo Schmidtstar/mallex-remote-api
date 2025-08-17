@@ -2,37 +2,24 @@ import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { LoadingSpinner } from './components/LoadingSpinner'
 
-// Lazy load components mit Preload-Optimierung
-const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout').then(m => ({ default: m.TabLayout })))
-const ArenaScreen = React.lazy(() => import(/* webpackPrefetch: true */ './features/Arena/ArenaScreen').then(m => ({ default: m.ArenaScreen })))
-const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen').then(m => ({ default: m.LegendsScreen })))
-const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(m => ({ default: m.LeaderboardScreen })))
-const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen').then(m => ({ default: m.MenuScreen })))
-const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen').then(m => ({ default: m.TasksOverviewScreen })))
-const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen').then(m => ({ default: m.SuggestTaskScreen })))
-const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen').then(m => ({ default: m.AdminTasksScreen })))
+// Lazy load components mit korrigierter Syntax
+const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout'))
+const ArenaScreen = React.lazy(() => import(/* webpackPrefetch: true */ './features/Arena/ArenaScreen'))
+const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))
+const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
+const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))
+const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen'))
+const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen'))
+const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen'))
 
-const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard').then(m => ({ default: m.default })))
-const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin').then(m => ({ default: m.default })))
-const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(m => ({ default: m.AuthScreen })))
-const PostfachScreen = React.lazy(() => import('./components/NotificationCenter').then(m => ({ default: m.PostfachScreen })))
+const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'))
+const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
+const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen'))
+const PostfachScreen = React.lazy(() => import('./components/NotificationCenter'))
 
-const LoadingSpinner = () => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '50vh',
-    fontSize: '1rem',
-    color: '#666',
-    gap: '10px'
-  }}>
-    <div style={{ fontSize: '2rem' }}>⚡</div>
-    <div>Laden...</div>
-  </div>
-)
+import { LoadingSpinner } from '../components/LoadingSpinner'
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

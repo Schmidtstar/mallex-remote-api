@@ -22,8 +22,8 @@ export default defineConfig(({ mode }) => {
         'localhost'            // Local development
       ],
       hmr: {
-        port: 5001,
-        host: '0.0.0.0',           // Wichtig für Replit WebSocket-Zugriff
+        port: 5173,
+        host: '0.0.0.0',
         overlay: false,
         timeout: 30000,            // Reduzierter Timeout
         clientErrorOverlay: false,
@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      sourcemap: mode === 'development',
+      sourcemap: true,
       minify: mode === 'production' ? 'esbuild' : false,
       target: 'es2015', // Better mobile compatibility
       rollupOptions: {
@@ -61,7 +61,8 @@ export default defineConfig(({ mode }) => {
       }
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore']
+      include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
+      exclude: ['@firebase/auth', '@firebase/firestore']
     }
   }
 })

@@ -113,8 +113,9 @@ export class PrivacyManager {
       return exportData
 
     } catch (error) {
-      MonitoringService.trackError('gdpr_export_failed', { userId, error: error.message })
-      throw new Error(`Datenexport fehlgeschlagen: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler'
+      MonitoringService.trackError('gdpr_export_failed', { userId, error: errorMessage })
+      throw new Error(`Datenexport fehlgeschlagen: ${errorMessage}`)
     }
   }
 
@@ -203,8 +204,9 @@ export class PrivacyManager {
       })
 
     } catch (error) {
-      MonitoringService.trackError('gdpr_deletion_failed', { userId, error: error.message })
-      throw new Error(`Datenlöschung fehlgeschlagen: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler'
+      MonitoringService.trackError('gdpr_deletion_failed', { userId, error: errorMessage })
+      throw new Error(`Datenlöschung fehlgeschlagen: ${errorMessage}`)
     }
   }
 
@@ -256,8 +258,9 @@ export class PrivacyManager {
       })
 
     } catch (error) {
-      MonitoringService.trackError('gdpr_anonymization_failed', { userId, error: error.message })
-      throw new Error(`Datenanonymisierung fehlgeschlagen: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler'
+      MonitoringService.trackError('gdpr_anonymization_failed', { userId, error: errorMessage })
+      throw new Error(`Datenanonymisierung fehlgeschlagen: ${errorMessage}`)
     }
   }
 
@@ -291,13 +294,23 @@ export class PrivacyManager {
         await setDoc(privacyRef, privacySettings, { merge: true })
         console.log('✅ Privacy settings saved to Firebase')
       } catch (firebaseError) {
-        console.warn('⚠️ Firebase save failed, using localStorage fallback:', firebaseError)
-        // Fallback bereits durch localStorage abgedeckt
+        const errorMessage = firebaseError instanceof Error ? firebaseError.message : 'Firebase-Fehler'
+
+        // Check if it's a permission error
+        if (errorMessage.includes('permission') || errorMessage.includes('insufficient')) {
+          console.warn('⚠️ Firebase permissions insufficient, using localStorage only')
+          // Privacy settings are already saved in localStorage above
+          return
+        }
+
+        MonitoringService.trackError(firebaseError, { userId, error: errorMessage })
+        throw new Error('Fehler beim Speichern der Privacy-Einstellungen')
       }
 
       MonitoringService.trackUserAction('privacy_settings_updated')
     } catch (error) {
-      MonitoringService.trackError(error, { userId, error: String(error) })
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler'
+      MonitoringService.trackError(error, { userId, error: errorMessage })
       throw new Error('Fehler beim Speichern der Privacy-Einstellungen')
     }
   }
@@ -342,7 +355,9 @@ export class PrivacyManager {
 
       return null
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler'
       console.error('Fehler beim Laden der Privacy-Einstellungen:', error)
+      MonitoringService.trackError('privacy_settings_load_failed', { userId, error: errorMessage })
       return null
     }
   }
@@ -418,7 +433,8 @@ export class PrivacyManager {
       return report
 
     } catch (error) {
-      MonitoringService.trackError('gdpr_report_generation_failed', { error: error.message })
+      const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler'
+      MonitoringService.trackError('gdpr_report_generation_failed', { error: errorMessage })
       throw error
     }
   }

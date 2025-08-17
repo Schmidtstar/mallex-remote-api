@@ -1,4 +1,3 @@
-
 interface PerformanceMetric {
   name: string
   value: number
@@ -10,7 +9,7 @@ class MonitoringService {
   private static metrics: PerformanceMetric[] = []
   private static errorCount = 0
   private static startTime = Date.now()
-  
+
   // Web Vitals Tracking
   static trackWebVital(metric: { name: string; value: number; id: string }) {
     this.addMetric({
@@ -19,7 +18,7 @@ class MonitoringService {
       timestamp: Date.now(),
       context: { id: metric.id }
     })
-    
+
     // Alert if metric is poor
     const thresholds = {
       CLS: 0.1,
@@ -28,13 +27,13 @@ class MonitoringService {
       FCP: 1800,
       TTFB: 600
     }
-    
+
     const threshold = thresholds[metric.name as keyof typeof thresholds]
     if (threshold && metric.value > threshold) {
       console.warn(`⚠️ Poor ${metric.name}: ${metric.value} (threshold: ${threshold})`)
     }
   }
-  
+
   // Custom Performance Tracking
   static startTimer(operation: string): () => void {
     const start = performance.now()
@@ -45,48 +44,69 @@ class MonitoringService {
         value: duration,
         timestamp: Date.now()
       })
-      
+
       if (duration > 1000) {
         console.warn(`🐌 Slow operation: ${operation} took ${duration.toFixed(2)}ms`)
       }
     }
   }
-  
+
   // Error Tracking
-  static trackError(error: Error, context?: Record<string, any>) {
-    this.errorCount++
-    
-    const errorData = {
-      message: error.message,
-      stack: error.stack,
-      timestamp: new Date().toISOString(),
-      context,
-      errorCount: this.errorCount,
-      sessionDuration: Date.now() - this.startTime
-    }
-    
-    if (import.meta.env.DEV) {
-      console.error('🚨 Error tracked:', errorData)
-    }
-    
-    // Store in localStorage for offline analysis
+  static trackError(error: any, context?: any): void {
     try {
-      const stored = JSON.parse(localStorage.getItem('mallex_errors') || '[]')
-      stored.push(errorData)
-      // Keep only last 50 errors
-      const limited = stored.slice(-50)
-      localStorage.setItem('mallex_errors', JSON.stringify(limited))
-    } catch (e) {
-      console.warn('Failed to store error data')
+      if (!this.session) {
+        this.initSession()
+      }
+
+      // Better error message handling
+      let message = 'Unknown error'
+      if (typeof error === 'string') {
+        message = error
+      } else if (error?.message) {
+        message = error.message
+      } else if (error?.toString) {
+        message = error.toString()
+      }
+
+      // Avoid "No default value" generic errors
+      if (message === 'No default value' && error?.stack) {
+        const stackLines = error.stack.split('\n')
+        const relevantLine = stackLines.find(line => line.includes('src/'))
+        if (relevantLine) {
+          message = `Component loading error: ${relevantLine.trim()}`
+        }
+      }
+
+      const errorData = {
+        message,
+        stack: error?.stack || undefined,
+        timestamp: new Date().toISOString(),
+        context,
+        errorCount: this.session.errors.length + 1,
+        sessionDuration: Date.now() - this.session.startTime
+      }
+
+      this.session.errors.push(errorData)
+      console.error('🚨 Error tracked:', errorData)
+
+      // Optional: Send to external monitoring service
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'exception', {
+          description: errorData.message,
+          fatal: false
+        })
+      }
+    } catch (monitoringError) {
+      console.error('Monitoring self-error:', monitoringError)
     }
   }
-  
+
   // User Interaction Tracking
   static trackUserAction(action: string, details?: Record<string, any>) {
     if (import.meta.env.DEV) {
       console.log(`👤 User Action: ${action}`, details)
     }
-    
+
     this.addMetric({
       name: `user_action_${action}`,
       value: 1,
@@ -94,7 +114,7 @@ class MonitoringService {
       context: details
     })
   }
-  
+
   private static addMetric(metric: PerformanceMetric) {
     this.metrics.push(metric)
     // Keep only last 100 metrics
@@ -102,7 +122,7 @@ class MonitoringService {
       this.metrics = this.metrics.slice(-100)
     }
   }
-  
+
   // Get Performance Report
   static getPerformanceReport() {
     return {
@@ -135,12 +155,12 @@ if (typeof window !== 'undefined') {
       }
     }, 0)
   })
-  
+
   // Track Unhandled Errors
   window.addEventListener('error', (event) => {
     MonitoringService.trackError(event.error || new Error(event.message))
   })
-  
+
   window.addEventListener('unhandledrejection', (event) => {
     MonitoringService.trackError(new Error(event.reason))
   })

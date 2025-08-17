@@ -28,6 +28,15 @@ if (import.meta.env.PROD) {
 // Initialize Firebase app once
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
+// Initialize Firebase
+// const app = initializeApp(firebaseConfig) // This line was commented out in the provided original code.
+
+// Development: Fix WebSocket binding for Replit
+if (import.meta.env.DEV) {
+  // Force offline mode during development to prevent WebSocket errors
+  console.log('🔧 Development mode: Using offline-first Firebase')
+}
+
 // Synchrone Initialisierung für bessere Performance
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'

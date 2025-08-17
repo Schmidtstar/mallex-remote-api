@@ -8,7 +8,7 @@ interface Props {
 
 interface State {
   hasError: boolean
-  error?: Error
+  error?: Error | null
   errorId?: string
 }
 
@@ -27,38 +27,29 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Performance & Error Tracking
-    console.error('🚨 ErrorBoundary caught error:', {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      errorId: this.state.errorId,
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href
-    })
+    console.error('🚨 Error Boundary caught error:', error, errorInfo)
 
-    // Custom error handler
-    this.props.onError?.(error, errorInfo)
+    // Special handling for lazy loading errors
+    if (error.message.includes('No default value') || error.message.includes('Loading chunk')) {
+      console.log('🔄 Lazy loading error detected - will attempt retry')
+      // Reset state after a delay to allow retry
+      setTimeout(() => {
+        this.setState({ hasError: false, error: null })
+      }, 1000)
+    }
 
-    // Optional: Send to analytics service
-    if (import.meta.env.PROD) {
-      // Analytics tracking für Production
-      try {
-        // Hier könnte ein Analytics-Service integriert werden
-        fetch('/api/error-tracking', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            error: error.message,
-            errorId: this.state.errorId,
-            url: window.location.href,
-            timestamp: Date.now()
-          })
-        }).catch(() => {}) // Silent fail
-      } catch (e) {
-        // Silent fail
-      }
+    // Track error mit monitoring
+    if (typeof window !== 'undefined') {
+      import('../lib/monitoring').then(({ MonitoringService }) => {
+        MonitoringService.trackError('error_boundary', {
+          error: error.message,
+          stack: error.stack,
+          componentStack: errorInfo.componentStack,
+          isLazyLoadingError: error.message.includes('No default value')
+        })
+      }).catch(() => {
+        console.warn('Monitoring service not available')
+      })
     }
   }
 
@@ -68,11 +59,9 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback
-      }
+      const isLazyError = this.state.error?.message.includes('No default value') ||
+                         this.state.error?.message.includes('Loading chunk')
 
-      // Olympisches Error Design
       return (
         <div style={{
           display: 'flex',
@@ -89,23 +78,23 @@ class ErrorBoundary extends Component<Props, State> {
         }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>⚱️</div>
 
-          <h2 style={{ 
-            color: 'var(--ancient-gold)', 
+          <h2 style={{
+            color: 'var(--ancient-gold)',
             marginBottom: '1rem',
             fontSize: '1.5rem',
             fontWeight: 'bold'
           }}>
-            🏛️ Die Götter sind erzürnt! 🏛️
+            🏛️ {isLazyError ? 'Komponente konnte nicht geladen werden' : 'Die Götter sind erzürnt!'} 🏛️
           </h2>
 
-          <p style={{ 
-            color: 'var(--ancient-bronze)', 
+          <p style={{
+            color: 'var(--ancient-bronze)',
             marginBottom: '2rem',
             fontSize: '1.1rem',
             lineHeight: '1.5',
             maxWidth: '400px'
           }}>
-            Ein unerwarteter Fehler ist aufgetreten. Die olympischen Geister arbeiten bereits an einer Lösung.
+            {isLazyError ? 'Ein Problem beim Laden der Komponente ist aufgetreten.' : 'Ein unerwarteter Fehler ist aufgetreten. Die olympischen Geister arbeiten bereits an einer Lösung.'}
           </p>
 
           {import.meta.env.DEV && this.state.error && (
@@ -122,8 +111,8 @@ class ErrorBoundary extends Component<Props, State> {
               <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
                 🔍 Debug-Info (Development)
               </summary>
-              <pre style={{ 
-                whiteSpace: 'pre-wrap', 
+              <pre style={{
+                whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
                 marginTop: '1rem',
                 fontSize: '0.8rem'
@@ -136,32 +125,61 @@ class ErrorBoundary extends Component<Props, State> {
             </details>
           )}
 
-          <button
-            onClick={this.retry}
-            style={{
-              padding: '12px 24px',
-              fontSize: '1.1rem',
-              background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
-              color: 'var(--ancient-night)',
-              border: '2px solid var(--olympic-victory)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              boxShadow: '0 5px 15px rgba(255,107,53,0.3)',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(255,107,53,0.5)'
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 5px 15px rgba(255,107,53,0.3)'
-            }}
-          >
-            ⚡ Erneut versuchen ⚡
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button
+              onClick={this.retry}
+              style={{
+                padding: '12px 24px',
+                fontSize: '1.1rem',
+                background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
+                color: 'var(--ancient-night)',
+                border: '2px solid var(--olympic-victory)',
+                borderRadius: 'var(--radius)',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                boxShadow: '0 5px 15px rgba(255,107,53,0.3)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(255,107,53,0.5)'
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = '0 5px 15px rgba(255,107,53,0.3)'
+              }}
+            >
+              ⚡ Erneut versuchen ⚡
+            </button>
+
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '12px 24px',
+                fontSize: '1.1rem',
+                background: 'linear-gradient(135deg, #4CAF50, #8BC34A)',
+                color: 'white',
+                border: '2px solid #388E3C',
+                borderRadius: 'var(--radius)',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                boxShadow: '0 5px 15px rgba(76,175,80,0.3)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(76,175,80,0.5)'
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = '0 5px 15px rgba(76,175,80,0.3)'
+              }}
+            >
+              🔄 Seite neu laden
+            </button>
+          </div>
 
           <p style={{
             marginTop: '1rem',
@@ -169,7 +187,7 @@ class ErrorBoundary extends Component<Props, State> {
             color: 'var(--ancient-stone)',
             fontStyle: 'italic'
           }}>
-            Falls das Problem bestehen bleibt, lade die Seite neu (F5)
+            Falls das Problem bestehen bleibt, nutze die "Seite neu laden"-Option.
           </p>
         </div>
       )
@@ -179,5 +197,5 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export { ErrorBoundary };
-export default ErrorBoundary;
+export { ErrorBoundary }
+export default ErrorBoundary

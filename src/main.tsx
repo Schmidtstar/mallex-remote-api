@@ -82,11 +82,16 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
 
-  // Service Worker Performance Metrics Listener
+  // Service Worker Performance Metrics Listener - Fixed with conditional import
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-        PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+        // Dynamically import PerformanceMonitor to avoid initialization errors
+        import('./lib/performance-monitor').then(({ default: PerformanceMonitor }) => {
+          PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+        }).catch(() => {
+          console.log('Performance Monitor nicht verfügbar für SW-Metriken')
+        })
       }
     })
   }
@@ -137,24 +142,15 @@ if ('serviceWorker' in navigator) {
             }
           })
 
-          // PerformanceMonitor & Service Worker
-          try {
-            PerformanceMonitor.init()
-          } catch (error) {
-            console.log('Performance Monitor konnte nicht geladen werden:', error)
-          }
+          // PerformanceMonitor & Service Worker - Fixed with proper import
+          // PerformanceMonitor bereits importiert im oberen Bereich
         })
         .catch((error) => {
           console.error('❌ Service Worker Registration fehlgeschlagen:', error)
           MonitoringService.trackError('sw_registration_failed', { error: error.message })
         })
 
-      // Service Worker Message-Handler für Performance-Metrics
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-          PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
-        }
-      })
+      // Service Worker Message-Handler für Performance-Metrics - Already handled above
 
       // Offline/Online Status-Updates
       window.addEventListener('online', () => {

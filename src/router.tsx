@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, lazy } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -15,42 +15,22 @@ const LazyLoader = ({ children, fallback }) => (
 const TabLayout = React.lazy(() => 
   import('./layouts/TabLayout').then(m => ({ default: m.default || m.TabLayout || m }))
 )
-const ArenaScreen = React.lazy(() => 
-  import('./features/Arena/ArenaScreen').then(m => ({ default: m.default || m.ArenaScreen || m }))
-)
-const LegendsScreen = React.lazy(() => 
-  import('./features/Legends/LegendsScreen').then(m => ({ default: m.default || m.LegendsScreen || m }))
-)
-const LeaderboardScreen = React.lazy(() => 
-  import('./features/Leaderboard/LeaderboardScreen').then(m => ({ default: m.default || m.LeaderboardScreen || m }))
-)
-const MenuScreen = React.lazy(() => 
-  import('./features/Menu/MenuScreen').then(m => ({ default: m.default || m.MenuScreen || m }))
-)
-const TasksOverviewScreen = React.lazy(() => 
-  import('./features/Tasks/TasksOverviewScreen').then(m => ({ default: m.default || m.TasksOverviewScreen || m }))
-)
-const SuggestTaskScreen = React.lazy(() => 
-  import('./features/Tasks/SuggestTaskScreen').then(m => ({ default: m.default || m.SuggestTaskScreen || m }))
-)
-const AdminTasksScreen = React.lazy(() => 
-  import('./features/Tasks/AdminTasksScreen').then(m => ({ default: m.default || m.AdminTasksScreen || m }))
-)
-const AdminDashboard = React.lazy(() => 
-  import('./features/Admin/AdminDashboard').then(m => ({ default: m.default || m.AdminDashboard || m }))
-)
+const ArenaScreen = lazy(() => import('./features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen || module.default })))
+const LegendsScreen = lazy(() => import('./features/Legends/LegendsScreen').then(module => ({ default: module.LegendsScreen || module.default })))
+const LeaderboardScreen = lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(module => ({ default: module.LeaderboardScreen || module.default })))
+const MenuScreen = lazy(() => import('./features/Menu/MenuScreen').then(module => ({ default: module.MenuScreen || module.default })))
+const TasksOverviewScreen = lazy(() => import('./features/Tasks/TasksOverviewScreen').then(module => ({ default: module.TasksOverviewScreen || module.default })))
+const SuggestTaskScreen = lazy(() => import('./features/Tasks/SuggestTaskScreen').then(module => ({ default: module.SuggestTaskScreen || module.default })))
+const AdminTasksScreen = lazy(() => import('./features/Tasks/AdminTasksScreen').then(module => ({ default: module.AdminTasksScreen || module.default })))
+const AdminDashboard = lazy(() => import('./features/Admin/AdminDashboard').then(module => ({ default: module.AdminDashboard || module.default })))
 const RequireAdmin = React.lazy(() => 
   import('./routes/guards/RequireAdmin').then(m => ({ default: m.default || m.RequireAdmin || m }))
 )
-const AuthScreen = React.lazy(() => 
-  import('./features/Auth/AuthScreen').then(m => ({ default: m.default || m.AuthScreen || m }))
-)
+const AuthScreen = lazy(() => import('./features/Auth/AuthScreen').then(module => ({ default: module.AuthScreen || module.default })))
 const PostfachScreen = React.lazy(() => 
   import('./components/NotificationCenter').then(m => ({ default: m.default || m.NotificationCenter || m }))
 )
-const PrivacyDashboard = React.lazy(() => 
-  import('./features/Privacy/PrivacyDashboard').then(m => ({ default: m.default || m.PrivacyDashboard || m }))
-)
+const PrivacyDashboard = lazy(() => import('./features/Privacy/PrivacyDashboard').then(module => ({ default: module.PrivacyDashboard || module.default })))
 
 // Mock MonitoringService for demonstration purposes if it's not globally available.
 // In a real application, this would be imported from its actual location.

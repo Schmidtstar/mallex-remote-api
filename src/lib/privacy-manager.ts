@@ -14,12 +14,16 @@ export interface UserDataExport {
 }
 
 export interface PrivacySettings {
-  analytics: boolean
-  marketing: boolean
-  necessary: boolean
-  performance: boolean
-  lastUpdated: Date
-  consentVersion: string
+  userId?: string; // Added userId for consistency with save function
+  analytics: boolean;
+  marketing: boolean;
+  performance: boolean;
+  necessary: boolean;
+  lastUpdated: Date;
+  consentVersion: string;
+  ipAddress?: string; // Added for new fields
+  userAgent?: string; // Added for new fields
+  gdprCompliant?: boolean; // Added for new fields
 }
 
 export class PrivacyManager {
@@ -263,25 +267,38 @@ export class PrivacyManager {
   static async savePrivacySettings(userId: string, settings: Partial<PrivacySettings>): Promise<void> {
     try {
       const privacySettings: PrivacySettings = {
+        userId,
         analytics: settings.analytics ?? false,
         marketing: settings.marketing ?? false,
-        necessary: true, // Immer erforderlich
         performance: settings.performance ?? false,
+        necessary: true, // Immer true für notwendige Cookies
         lastUpdated: new Date(),
-        consentVersion: this.CONSENT_VERSION
+        consentVersion: '2.0',
+        ipAddress: '', // In production durch echte IP ersetzen
+        userAgent: navigator.userAgent,
+        gdprCompliant: true
       }
 
-      const privacyRef = doc(db, 'privacySettings', userId)
-      await privacyRef.set(privacySettings)
+      // Lokale Kopie speichern (als Fallback)
+      localStorage.setItem(`privacy_${userId}`, JSON.stringify(privacySettings))
 
-      MonitoringService.trackUserAction('privacy_settings_updated', {
-        userId,
-        settings: privacySettings
-      })
+      try {
+        // Firebase versuchen
+        const { db } = await import('./firebase')
+        const { doc, setDoc } = await import('firebase/firestore')
+        const privacyRef = doc(db, 'privacy', userId)
 
+        await setDoc(privacyRef, privacySettings, { merge: true })
+        console.log('✅ Privacy settings saved to Firebase')
+      } catch (firebaseError) {
+        console.warn('⚠️ Firebase save failed, using localStorage fallback:', firebaseError)
+        // Fallback bereits durch localStorage abgedeckt
+      }
+
+      MonitoringService.trackUserAction('privacy_settings_updated')
     } catch (error) {
-      MonitoringService.trackError('privacy_settings_failed', { userId, error: error.message })
-      throw error
+      MonitoringService.trackError(error, { userId, error: String(error) })
+      throw new Error('Fehler beim Speichern der Privacy-Einstellungen')
     }
   }
 
@@ -290,16 +307,42 @@ export class PrivacyManager {
    */
   static async getPrivacySettings(userId: string): Promise<PrivacySettings | null> {
     try {
-      const privacyDoc = await getDoc(doc(db, 'privacySettings', userId))
+      // Zuerst Firebase versuchen
+      try {
+        const { db } = await import('./firebase')
+        const { doc, getDoc } = await import('firebase/firestore')
+        const privacyRef = doc(db, 'privacy', userId)
+        const privacySnap = await getDoc(privacyRef)
 
-      if (privacyDoc.exists()) {
-        return privacyDoc.data() as PrivacySettings
+        if (privacySnap.exists()) {
+          const data = privacySnap.data() as PrivacySettings
+          // Date objects konvertieren
+          if (data.lastUpdated && typeof data.lastUpdated !== 'object') {
+            data.lastUpdated = new Date(data.lastUpdated)
+          }
+          return data
+        }
+      } catch (firebaseError) {
+        console.warn('⚠️ Firebase load failed, using localStorage fallback:', firebaseError)
+      }
+
+      // Fallback: localStorage
+      const localData = localStorage.getItem(`privacy_${userId}`)
+      if (localData) {
+        try {
+          const parsed = JSON.parse(localData) as PrivacySettings
+          if (parsed.lastUpdated) {
+            parsed.lastUpdated = new Date(parsed.lastUpdated)
+          }
+          return parsed
+        } catch (parseError) {
+          console.error('Fehler beim Parsen der lokalen Privacy-Daten:', parseError)
+        }
       }
 
       return null
-
     } catch (error) {
-      MonitoringService.trackError('privacy_settings_load_failed', { userId, error: error.message })
+      console.error('Fehler beim Laden der Privacy-Einstellungen:', error)
       return null
     }
   }

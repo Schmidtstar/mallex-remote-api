@@ -1,37 +1,47 @@
-
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // === SPIELER: Vollzugriff für lokales Spiel ===
+    // Users can read and write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Privacy settings - users can read/write their own
+    match /privacy/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Players data - readable by authenticated users, writable by admins
     match /players/{playerId} {
-      allow read, write: if true;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        (request.auth.uid == playerId || 
+         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
     }
 
-    // === ADMIN: Basis-Schutz ===
-    match /admin/{document=**} {
-      allow read, write: if request.auth != null;
-    }
-
-    // === AUFGABEN: Lesen für alle ===
-    match /tasks/{taskId} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-
-    // === VORSCHLÄGE: Vollzugriff ===
+    // Task suggestions - users can create, admins can manage
     match /taskSuggestions/{suggestionId} {
-      allow read, write: if true;
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // === SPIELE: Authentifizierte Nutzer ===
-    match /games/{gameId} {
-      allow read, write: if request.auth != null;
+    // Game history - users can read/write their own
+    match /gameHistory/{gameId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.playerId == request.auth.uid || 
+         resource.data.participants[request.auth.uid] != null);
     }
 
-    // === FALLBACK ===
-    match /{document=**} {
-      allow read, write: if false;
+    // Admin settings - only admins
+    match /adminSettings/{document=**} {
+      allow read, write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }

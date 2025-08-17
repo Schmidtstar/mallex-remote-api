@@ -17,7 +17,7 @@ const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
 const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(module => ({ default: module.AuthScreen || module.default })))
 const PostfachScreen = React.lazy(() => import('./components/NotificationCenter'))
-const PrivacyDashboard = React.lazy(() => import('./features/Privacy/PrivacyDashboard').then(module => ({ default: module.PrivacyDashboard || module.default })))
+const PrivacyDashboard = React.lazy(() => import('./features/Privacy/PrivacyDashboard'))
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

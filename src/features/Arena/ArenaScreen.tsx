@@ -1154,6 +1154,4 @@ export function ArenaScreen() {
   )
 }
 
-export { ArenaScreen }
 export default ArenaScreen
-export { ArenaScreen }

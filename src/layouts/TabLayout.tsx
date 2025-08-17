@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useCallback } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '../components/BottomNavigation'

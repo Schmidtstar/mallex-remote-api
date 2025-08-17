@@ -18,8 +18,9 @@ export class RealTimeFeatures {
       // Skip WebSocket in Replit environment to avoid blocking
       if (window.location.hostname.includes('replit.dev') || 
           window.location.hostname.includes('replit.co') ||
-          window.location.hostname === '0.0.0.0') {
-        console.log('🔗 WebSocket skipped in Replit environment')
+          window.location.hostname === '0.0.0.0' ||
+          window.location.hostname === 'localhost') {
+        console.log('🔗 WebSocket skipped - using Firebase real-time instead')
         this.fallbackToPolling()
         return
       }

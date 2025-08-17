@@ -23,22 +23,7 @@ const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => 
       const module = await importFn()
       
       // Multiple fallback strategies
-      const Component = module.default || 
-                       module[componentName] || 
-                       module.ArenaScreen || 
-                       module.LegendsScreen ||
-                       module.LeaderboardScreen ||
-                       module.MenuScreen ||
-                       module.TasksOverviewScreen ||
-                       module.SuggestTaskScreen ||
-                       module.AdminTasksScreen ||
-                       module.AdminDashboard ||
-                       module.RequireAdmin ||
-                       module.AuthScreen ||
-                       module.NotificationCenter ||
-                       module.PrivacyDashboard ||
-                       module.TabLayout ||
-                       Object.values(module)[0]
+      const Component = module.default || Object.values(module)[0]
       
       if (typeof Component !== 'function' && typeof Component !== 'object') {
         throw new Error(`No valid component found for ${componentName}`)

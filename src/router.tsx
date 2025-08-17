@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 
 // Lazy load components mit Prioritäts-System

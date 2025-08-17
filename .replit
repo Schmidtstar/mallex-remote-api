@@ -20,7 +20,7 @@ from = "/*"
 to = "/index.html"
 
 [workflows]
-runButton = "Dev Server (Optimized)"
+runButton = "Dev Server (Fixed)"
 
 [[workflows.workflow]]
 name = "Dev Server (Optimized)"
@@ -31,6 +31,15 @@ mode = "sequential"
 task = "shell.exec"
 args = "npm run dev"
 
+[[workflows.workflow]]
+name = "Dev Server (Fixed)"
+author = 45411998
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- --port 5173 --host 0.0.0.0"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
@@ -38,3 +47,7 @@ externalPort = 80
 [[ports]]
 localPort = 5001
 externalPort = 5001
+
+[[ports]]
+localPort = 5173
+externalPort = 5173

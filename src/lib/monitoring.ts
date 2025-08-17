@@ -5,10 +5,17 @@ interface PerformanceMetric {
   context?: Record<string, any>
 }
 
+interface SessionData {
+  startTime: number
+  errors: any[]
+  sessionId: string
+}
+
 class MonitoringService {
   private static metrics: PerformanceMetric[] = []
   private static errorCount = 0
   private static startTime = Date.now()
+  private static session: SessionData | null = null
 
   // Web Vitals Tracking
   static trackWebVital(metric: { name: string; value: number; id: string }) {
@@ -48,6 +55,15 @@ class MonitoringService {
       if (duration > 1000) {
         console.warn(`🐌 Slow operation: ${operation} took ${duration.toFixed(2)}ms`)
       }
+    }
+  }
+
+  // Initialize session
+  static initSession(): void {
+    this.session = {
+      startTime: Date.now(),
+      errors: [],
+      sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     }
   }
 
@@ -139,6 +155,9 @@ class MonitoringService {
 }
 
 export { MonitoringService }
+
+// Auto-initialize session
+MonitoringService.initSession()
 
 // Auto-initialize Web Vitals tracking
 if (typeof window !== 'undefined') {

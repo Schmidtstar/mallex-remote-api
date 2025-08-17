@@ -55,27 +55,26 @@ const PrivacyDashboard: React.FC = () => {
     try {
       await PrivacyManager.savePrivacySettings(user.uid, newSettings)
       await loadPrivacySettings()
-      MonitoringService.trackUserAction('privacy_settings_updated_dashboard')
+      MonitoringService.trackUserAction('privacy_settings_updated')
     } catch (error) {
-      console.error('Fehler beim Aktualisieren der Einstellungen:', error)
+      console.error('Fehler beim Aktualisieren der Privacy-Einstellungen:', error)
+      alert('Einstellungen konnten nicht gespeichert werden.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteData = async () => {
     if (!user || deleteConfirmText !== 'LÖSCHEN') return
 
     setLoading(true)
     try {
       await PrivacyManager.deleteUserData(user.uid, true)
-      MonitoringService.trackUserAction('gdpr_account_deletion_completed')
-      
-      alert('Ihr Account wurde erfolgreich gelöscht. Sie werden zur Startseite weitergeleitet.')
-      window.location.href = '/'
+      MonitoringService.trackUserAction('gdpr_account_deleted')
+      alert('Ihr Account wurde erfolgreich gelöscht.')
     } catch (error) {
-      console.error('Account-Löschung fehlgeschlagen:', error)
-      alert('Account-Löschung fehlgeschlagen. Bitte kontaktieren Sie den Support.')
+      console.error('Fehler beim Löschen der Daten:', error)
+      alert('Datenlöschung fehlgeschlagen.')
     } finally {
       setLoading(false)
       setShowDeleteConfirm(false)
@@ -83,211 +82,94 @@ const PrivacyDashboard: React.FC = () => {
     }
   }
 
-  const handleAnonymizeAccount = async () => {
-    if (!user) return
-
-    const confirmed = window.confirm(
-      'Möchten Sie Ihre Daten anonymisieren? Dies kann nicht rückgängig gemacht werden. ' +
-      'Ihre Spielergebnisse bleiben erhalten, aber alle persönlichen Daten werden entfernt.'
-    )
-
-    if (!confirmed) return
-
-    setLoading(true)
-    try {
-      await PrivacyManager.anonymizeUserData(user.uid)
-      MonitoringService.trackUserAction('gdpr_account_anonymization_completed')
-      
-      alert('Ihr Account wurde erfolgreich anonymisiert.')
-      window.location.reload()
-    } catch (error) {
-      console.error('Account-Anonymisierung fehlgeschlagen:', error)
-      alert('Account-Anonymisierung fehlgeschlagen. Bitte versuchen Sie es später erneut.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   if (!user) {
     return (
       <div className={s.container}>
-        <div className={s.notLoggedIn}>
-          <h2>🔒 Privacy Dashboard</h2>
-          <p>Bitte loggen Sie sich ein, um Ihre Datenschutz-Einstellungen zu verwalten.</p>
-        </div>
+        <h2>Privacy Dashboard</h2>
+        <p>Bitte melden Sie sich an, um Ihre Privacy-Einstellungen zu verwalten.</p>
       </div>
     )
   }
 
   return (
     <div className={s.container}>
-      <div className={s.header}>
-        <h1>🛡️ Datenschutz & GDPR</h1>
-        <p>Verwalten Sie Ihre persönlichen Daten und Datenschutz-Einstellungen</p>
-      </div>
-
+      <h2>Privacy Dashboard</h2>
+      
       {/* Privacy Settings */}
       <section className={s.section}>
-        <h2>⚙️ Cookie & Tracking-Einstellungen</h2>
-        {privacySettings ? (
-          <div className={s.settingsGrid}>
-            <div className={s.setting}>
-              <div className={s.settingInfo}>
-                <strong>📊 Performance & Analytics</strong>
-                <p>Anonyme Nutzungsstatistiken zur App-Verbesserung</p>
-              </div>
-              <label className={s.toggle}>
-                <input
-                  type="checkbox"
-                  checked={privacySettings.performance}
-                  onChange={(e) => handleUpdatePrivacySettings({ performance: e.target.checked })}
-                  disabled={loading}
-                />
-                <span className={s.slider}></span>
-              </label>
-            </div>
-
-            <div className={s.setting}>
-              <div className={s.settingInfo}>
-                <strong>📈 Analytics</strong>
-                <p>Detaillierte Nutzungsanalyse für bessere Features</p>
-              </div>
-              <label className={s.toggle}>
-                <input
-                  type="checkbox"
-                  checked={privacySettings.analytics}
-                  onChange={(e) => handleUpdatePrivacySettings({ analytics: e.target.checked })}
-                  disabled={loading}
-                />
-                <span className={s.slider}></span>
-              </label>
-            </div>
-
-            <div className={s.setting}>
-              <div className={s.settingInfo}>
-                <strong>🎯 Marketing</strong>
-                <p>Personalisierte Inhalte und Empfehlungen</p>
-              </div>
-              <label className={s.toggle}>
-                <input
-                  type="checkbox"
-                  checked={privacySettings.marketing}
-                  onChange={(e) => handleUpdatePrivacySettings({ marketing: e.target.checked })}
-                  disabled={loading}
-                />
-                <span className={s.slider}></span>
-              </label>
-            </div>
-
-            <div className={s.settingInfo}>
-              <small>
-                Letzte Aktualisierung: {privacySettings.lastUpdated?.toLocaleString() || 'Unbekannt'} | 
-                Version: {privacySettings.consentVersion}
-              </small>
-            </div>
-          </div>
-        ) : (
-          <p>Keine Datenschutz-Einstellungen gefunden. Bitte akzeptieren Sie zunächst die Cookie-Richtlinien.</p>
-        )}
+        <h3>Cookie-Einstellungen</h3>
+        <div className={s.settingsGrid}>
+          <label className={s.settingItem}>
+            <input
+              type="checkbox"
+              checked={privacySettings?.analytics ?? false}
+              onChange={(e) => handleUpdatePrivacySettings({ analytics: e.target.checked })}
+              disabled={loading}
+            />
+            <span>Analytics Cookies</span>
+          </label>
+          
+          <label className={s.settingItem}>
+            <input
+              type="checkbox"
+              checked={privacySettings?.marketing ?? false}
+              onChange={(e) => handleUpdatePrivacySettings({ marketing: e.target.checked })}
+              disabled={loading}
+            />
+            <span>Marketing Cookies</span>
+          </label>
+          
+          <label className={s.settingItem}>
+            <input
+              type="checkbox"
+              checked={privacySettings?.performance ?? false}
+              onChange={(e) => handleUpdatePrivacySettings({ performance: e.target.checked })}
+              disabled={loading}
+            />
+            <span>Performance Cookies</span>
+          </label>
+          
+          <label className={s.settingItem}>
+            <input
+              type="checkbox"
+              checked={true}
+              disabled={true}
+            />
+            <span>Notwendige Cookies (erforderlich)</span>
+          </label>
+        </div>
       </section>
 
       {/* Data Export */}
       <section className={s.section}>
-        <h2>📥 Datenexport (GDPR Artikel 15)</h2>
-        <p>
-          Sie haben das Recht, eine Kopie aller Ihrer gespeicherten persönlichen Daten zu erhalten.
-        </p>
-        
-        <button 
-          className={s.exportButton}
+        <h3>Datenexport (GDPR)</h3>
+        <p>Laden Sie alle Ihre gespeicherten Daten herunter.</p>
+        <button
           onClick={handleExportData}
           disabled={loading}
+          className={s.exportButton}
         >
-          {loading ? '⏳ Exportiere...' : '💾 Meine Daten exportieren'}
+          {loading ? 'Exportiere...' : 'Daten exportieren'}
         </button>
-
-        {exportData && (
-          <div className={s.exportInfo}>
-            <h3>✅ Export erfolgreich</h3>
-            <div className={s.exportStats}>
-              <div className={s.stat}>
-                <strong>Export-Datum:</strong> {exportData.exportDate}
-              </div>
-              <div className={s.stat}>
-                <strong>Spielerdaten:</strong> {exportData.playerData ? 'Vorhanden' : 'Keine'}
-              </div>
-              <div className={s.stat}>
-                <strong>Spiel-Verlauf:</strong> {exportData.gameHistory.length} Einträge
-              </div>
-              <div className={s.stat}>
-                <strong>Vorschläge:</strong> {exportData.suggestions.length} Einträge
-              </div>
-              <div className={s.stat}>
-                <strong>GDPR-konform:</strong> {exportData.gdprCompliance ? '✅ Ja' : '❌ Nein'}
-              </div>
-            </div>
-            <button 
-              className={s.downloadButton}
-              onClick={() => PrivacyManager.downloadUserData(exportData)}
-            >
-              📥 Erneut herunterladen
-            </button>
-          </div>
-        )}
       </section>
 
-      {/* Data Management */}
+      {/* Data Deletion */}
       <section className={s.section}>
-        <h2>🗑️ Datenverwaltung</h2>
+        <h3>Account löschen</h3>
+        <p className={s.warning}>
+          ⚠️ Diese Aktion kann nicht rückgängig gemacht werden!
+        </p>
         
-        <div className={s.actionGrid}>
-          <div className={s.actionCard}>
-            <h3>🎭 Account anonymisieren</h3>
-            <p>
-              Ihre persönlichen Daten werden entfernt, aber Ihre Spielergebnisse bleiben 
-              für Statistiken erhalten (anonymisiert).
-            </p>
-            <button 
-              className={s.anonymizeButton}
-              onClick={handleAnonymizeAccount}
-              disabled={loading}
-            >
-              {loading ? '⏳' : '🎭'} Anonymisieren
-            </button>
-          </div>
-
-          <div className={s.actionCard}>
-            <h3>🗑️ Account komplett löschen</h3>
-            <p>
-              <strong>WARNUNG:</strong> Alle Ihre Daten werden unwiderruflich gelöscht. 
-              Dies kann nicht rückgängig gemacht werden.
-            </p>
-            <button 
-              className={s.deleteButton}
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={loading}
-            >
-              🗑️ Account löschen
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className={s.modal}>
-          <div className={s.modalContent}>
-            <h2>⚠️ Account löschen bestätigen</h2>
-            <p>
-              <strong>ACHTUNG:</strong> Diese Aktion kann nicht rückgängig gemacht werden!
-            </p>
-            <p>
-              Alle Ihre Daten, einschließlich Spielergebnisse, Vorschläge und 
-              persönliche Informationen werden permanent gelöscht.
-            </p>
-            <p>
-              Geben Sie <strong>"LÖSCHEN"</strong> ein, um zu bestätigen:
-            </p>
+        {!showDeleteConfirm ? (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className={s.deleteButton}
+          >
+            Account dauerhaft löschen
+          </button>
+        ) : (
+          <div className={s.deleteConfirm}>
+            <p>Geben Sie "LÖSCHEN" ein, um zu bestätigen:</p>
             <input
               type="text"
               value={deleteConfirmText}
@@ -295,37 +177,35 @@ const PrivacyDashboard: React.FC = () => {
               placeholder="LÖSCHEN"
               className={s.confirmInput}
             />
-            <div className={s.modalActions}>
-              <button 
+            <div className={s.confirmButtons}>
+              <button
+                onClick={handleDeleteData}
+                disabled={deleteConfirmText !== 'LÖSCHEN' || loading}
                 className={s.confirmDelete}
-                onClick={handleDeleteAccount}
-                disabled={loading || deleteConfirmText !== 'LÖSCHEN'}
               >
-                {loading ? '⏳ Lösche...' : '🗑️ Endgültig löschen'}
+                {loading ? 'Lösche...' : 'Endgültig löschen'}
               </button>
-              <button 
-                className={s.cancelDelete}
+              <button
                 onClick={() => {
                   setShowDeleteConfirm(false)
                   setDeleteConfirmText('')
                 }}
-                disabled={loading}
+                className={s.cancelDelete}
               >
-                ❌ Abbrechen
+                Abbrechen
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </section>
 
-      {/* Legal Links */}
-      <section className={s.legalSection}>
-        <h2>📋 Rechtliche Informationen</h2>
-        <div className={s.legalLinks}>
-          <a href="/privacy-policy" target="_blank">📋 Datenschutzerklärung</a>
-          <a href="/terms-of-service" target="_blank">📜 Nutzungsbedingungen</a>
-          <a href="/gdpr-info" target="_blank">🛡️ GDPR-Rechte</a>
-          <a href="/contact" target="_blank">📧 Datenschutz-Kontakt</a>
+      {/* Privacy Info */}
+      <section className={s.section}>
+        <h3>Privacy-Informationen</h3>
+        <div className={s.privacyInfo}>
+          <p><strong>Letzte Aktualisierung:</strong> {privacySettings?.lastUpdated?.toLocaleDateString() || 'Unbekannt'}</p>
+          <p><strong>Consent-Version:</strong> {privacySettings?.consentVersion || 'Unbekannt'}</p>
+          <p><strong>GDPR-konform:</strong> {privacySettings?.gdprCompliant ? '✅ Ja' : '❌ Nein'}</p>
         </div>
       </section>
     </div>

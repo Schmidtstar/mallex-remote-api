@@ -17,25 +17,28 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       strictPort: true,
       allowedHosts: [
-        '.replit.dev',         // Wildcard for all Replit subdomains
-        '.riker.replit.dev',   // Specific Replit infrastructure
-        'localhost'            // Local development
+        '.replit.dev',
+        '.riker.replit.dev',
+        'localhost'
       ],
-      hmr: {
-        port: 5173,
-        host: '0.0.0.0',
-        overlay: false,
-        timeout: 30000,            // Reduzierter Timeout
-        clientErrorOverlay: false,
-        reconnectionAttempts: 2,   // Weniger Reconnect-Versuche
-        skipSSLVerification: true, // Für Replit SSL-Probleme
-      },
+      hmr: process.env.REPL_SLUG && process.env.REPL_OWNER
+        ? {
+            protocol: 'wss',
+            host: `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.replit.dev`,
+            clientPort: 443,
+            overlay: false
+          }
+        : {
+            port: 5173,
+            host: 'localhost',
+            overlay: false
+          },
       watch: {
         usePolling: false,
         interval: 1000,
-        ignored: ['**/node_modules/**', '**/.git/**'], // Weniger File-Watching
+        ignored: ['**/node_modules/**', '**/.git/**']
       },
-      cors: true, // CORS für WebSocket-Verbindungen
+      cors: true
     },
     preview: {
       host: true,

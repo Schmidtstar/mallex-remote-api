@@ -12,7 +12,7 @@ interface WebVitalMetric {
   id: string;
 }
 
-export class PerformanceMonitor {
+export default class PerformanceMonitor {
   private static metrics = new Map<string, number[]>()
   private static observers = new Map<string, PerformanceObserver>()
   private static serviceWorkerMetrics = new Map<string, any[]>()

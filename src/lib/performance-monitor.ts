@@ -5,7 +5,14 @@ interface PerformanceMetrics {
   itemsRendered: number;
 }
 
-class PerformanceMonitor {
+interface WebVitalMetric {
+  name: string;
+  value: number;
+  delta: number;
+  id: string;
+}
+
+export class PerformanceMonitor {
   private static metrics = new Map<string, number[]>()
   private static observers = new Map<string, PerformanceObserver>()
   private static serviceWorkerMetrics = new Map<string, any[]>()
@@ -130,6 +137,161 @@ class PerformanceMonitor {
     summary.offlineEvents = statusMetrics.filter(m => m.status === 'offline').length
 
     return summary
+  }
+
+  static trackWebVital(metric: WebVitalMetric) {
+    const key = `web_vital_${metric.name.toLowerCase()}`
+    
+    if (!this.metrics.has(key)) {
+      this.metrics.set(key, [])
+    }
+    
+    this.metrics.get(key)!.push(metric.value)
+    
+    // Performance-Bewertung mit Emojis für bessere UX
+    const getPerformanceEmoji = (name: string, value: number) => {
+      switch (name) {
+        case 'CLS':
+          return value < 0.1 ? '🟢' : value < 0.25 ? '🟡' : '🔴'
+        case 'FID':
+          return value < 100 ? '🟢' : value < 300 ? '🟡' : '🔴'
+        case 'LCP':
+          return value < 2500 ? '🟢' : value < 4000 ? '🟡' : '🔴'
+        case 'FCP':
+          return value < 1800 ? '🟢' : value < 3000 ? '🟡' : '🔴'
+        case 'TTFB':
+          return value < 800 ? '🟢' : value < 1800 ? '🟡' : '🔴'
+        default:
+          return '📊'
+      }
+    }
+    
+    const emoji = getPerformanceEmoji(metric.name, metric.value)
+    console.log(`${emoji} Web Vital ${metric.name}: ${Math.round(metric.value)}ms`, {
+      rating: emoji === '🟢' ? 'Excellent' : emoji === '🟡' ? 'Good' : 'Needs Improvement',
+      id: metric.id
+    })
+  }
+
+  static trackNavigationTiming() {
+    if (typeof window === 'undefined' || !window.performance?.timing) return
+
+    const timing = window.performance.timing
+    const navigation = {
+      domContentLoaded: timing.domContentLoadedEventEnd - timing.navigationStart,
+      loadComplete: timing.loadEventEnd - timing.navigationStart,
+      domInteractive: timing.domInteractive - timing.navigationStart,
+      firstPaint: 0,
+      firstContentfulPaint: 0
+    }
+
+    // Paint Timings falls verfügbar
+    const paintEntries = performance.getEntriesByType('paint')
+    paintEntries.forEach(entry => {
+      if (entry.name === 'first-paint') {
+        navigation.firstPaint = entry.startTime
+      } else if (entry.name === 'first-contentful-paint') {
+        navigation.firstContentfulPaint = entry.startTime
+      }
+    })
+
+    console.log('📊 Navigation Performance:', {
+      domContentLoaded: `${navigation.domContentLoaded}ms`,
+      loadComplete: `${navigation.loadComplete}ms`,
+      domInteractive: `${navigation.domInteractive}ms`,
+      firstPaint: navigation.firstPaint ? `${Math.round(navigation.firstPaint)}ms` : 'N/A',
+      firstContentfulPaint: navigation.firstContentfulPaint ? `${Math.round(navigation.firstContentfulPaint)}ms` : 'N/A'
+    })
+
+    this.metrics.set('navigation_timing', [
+      navigation.domContentLoaded,
+      navigation.loadComplete,
+      navigation.domInteractive
+    ])
+  }
+
+  static observeResourceTiming() {
+    if (typeof window === 'undefined' || !window.PerformanceObserver) return
+
+    try {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries()
+        
+        entries.forEach(entry => {
+          if (entry.entryType === 'resource') {
+            const resourceEntry = entry as PerformanceResourceTiming
+            const loadTime = resourceEntry.responseEnd - resourceEntry.requestStart
+            
+            // Nur wichtige Ressourcen tracken
+            if (resourceEntry.name.includes('firebase') || 
+                resourceEntry.name.includes('.js') || 
+                resourceEntry.name.includes('.css') ||
+                resourceEntry.name.includes('/api/')) {
+              
+              const resourceType = this.getResourceType(resourceEntry.name)
+              const key = `resource_${resourceType}`
+              
+              if (!this.metrics.has(key)) {
+                this.metrics.set(key, [])
+              }
+              
+              this.metrics.get(key)!.push(loadTime)
+              
+              // Performance-Warnung bei langsamen Ressourcen
+              if (loadTime > 2000) {
+                console.warn(`🐌 Langsame Ressource: ${resourceEntry.name} (${Math.round(loadTime)}ms)`)
+              }
+            }
+          }
+        })
+      })
+      
+      observer.observe({ entryTypes: ['resource'] })
+      this.observers.set('resource', observer)
+    } catch (error) {
+      console.warn('Resource Timing Observer nicht verfügbar:', error)
+    }
+  }
+
+  static getResourceType(url: string): string {
+    if (url.includes('firebase') || url.includes('firestore')) return 'firebase'
+    if (url.endsWith('.js')) return 'javascript'
+    if (url.endsWith('.css')) return 'stylesheet'
+    if (url.includes('/api/')) return 'api'
+    if (url.match(/\.(png|jpg|jpeg|gif|svg|webp)$/)) return 'image'
+    return 'other'
+  }
+
+  static getPerformanceReport() {
+    const report: any = {
+      timestamp: new Date().toISOString(),
+      webVitals: {},
+      resources: {},
+      serviceWorker: this.getServiceWorkerMetrics(),
+      navigation: this.metrics.get('navigation_timing') || []
+    }
+
+    // Web Vitals zusammenfassen
+    for (const [key, values] of this.metrics.entries()) {
+      if (key.startsWith('web_vital_')) {
+        const vitalName = key.replace('web_vital_', '').toUpperCase()
+        report.webVitals[vitalName] = {
+          latest: values[values.length - 1],
+          average: values.reduce((a, b) => a + b, 0) / values.length,
+          count: values.length
+        }
+      } else if (key.startsWith('resource_')) {
+        const resourceType = key.replace('resource_', '')
+        report.resources[resourceType] = {
+          average: values.reduce((a, b) => a + b, 0) / values.length,
+          min: Math.min(...values),
+          max: Math.max(...values),
+          count: values.length
+        }
+      }
+    }
+
+    return report
   }
 
   // Existing methods from original code (kept for completeness, assuming they are still relevant)

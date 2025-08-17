@@ -7,6 +7,8 @@ import { getUserProfile, updateUserProfile } from '../../lib/userApi';
 import { calcAgeFromISO } from '../../lib/date';
 import { nationalityOptions } from '../../lib/options';
 import styles from './MenuScreen.module.css';
+import CachePerformanceDashboard from '../../components/CachePerformanceDashboard';
+
 
 interface UserProfile {
   email: string | null;
@@ -77,6 +79,7 @@ export function MenuScreen() {
   });
   const [message, setMessage] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
+  const [showCacheDashboard, setShowCacheDashboard] = useState(false);
 
   // Load user profile
   useEffect(() => {
@@ -404,7 +407,48 @@ export function MenuScreen() {
             </div>
           </div>
         )}
+
+        {/* Tiles section */}
+        <div className={styles.tiles}>
+          <div className={styles.tile} onClick={() => navigate('/play')}>
+            <div className={styles.tileIcon}>🎮</div>
+            <div className={styles.tileTitle}>{t('menu.play')}</div>
+            <div className={styles.tileSubtitle}>{t('menu.playDesc')}</div>
+          </div>
+
+          <div className={styles.tile} onClick={() => navigate('/friends')}>
+            <div className={styles.tileIcon}>👥</div>
+            <div className={styles.tileTitle}>{t('menu.friends')}</div>
+            <div className={styles.tileSubtitle}>{t('menu.friendsDesc')}</div>
+          </div>
+
+          <div className={styles.tile} onClick={() => navigate('/leaderboard')}>
+            <div className={styles.tileIcon}>🏆</div>
+            <div className={styles.tileTitle}>{t('menu.leaderboard')}</div>
+            <div className={styles.tileSubtitle}>{t('menu.leaderboardDesc')}</div>
+          </div>
+
+          {/* Cache Performance Dashboard */}
+          <div className={styles.tile} onClick={() => setShowCacheDashboard(true)}>
+            <div className={styles.tileIcon}>📊</div>
+            <div className={styles.tileTitle}>Performance</div>
+            <div className={styles.tileSubtitle}>Cache & PWA Metrics</div>
+          </div>
+
+          <div className={styles.tile} onClick={() => navigate('/admin')}>
+            <div className={styles.tileIcon}>⚙️</div>
+            <div className={styles.tileTitle}>{t('menu.admin')}</div>
+            <div className={styles.tileSubtitle}>{t('menu.adminDesc')}</div>
+          </div>
+        </div>
       </div>
+      <BottomNavigation />
+
+      {/* Cache Performance Dashboard */}
+      <CachePerformanceDashboard 
+        isVisible={showCacheDashboard}
+        onClose={() => setShowCacheDashboard(false)}
+      />
     </div>
   );
 }

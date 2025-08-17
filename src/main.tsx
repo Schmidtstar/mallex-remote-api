@@ -72,6 +72,8 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 if ('serviceWorker' in navigator) {
   // Import PerformanceMonitor für Service Worker Integration
   import('./lib/performance-monitor').then(({ PerformanceMonitor }) => {
+    // Global verfügbar machen für Dashboard
+    ;(window as any).PerformanceMonitor = PerformanceMonitor
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {

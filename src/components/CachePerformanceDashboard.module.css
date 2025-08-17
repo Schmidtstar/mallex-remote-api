@@ -1,0 +1,198 @@
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.dashboard {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 209, 102, 0.2);
+}
+
+.header h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 1.4rem;
+  font-family: "Dancing Script", cursive;
+  font-weight: 700;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 209, 102, 0.1);
+}
+
+.content {
+  padding: 24px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: #fff;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 209, 102, 0.2);
+  border-top: 3px solid var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mainMetrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.metricLabel {
+  color: #fff;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.performanceRating {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailMetrics {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.value {
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.recommendations {
+  background: rgba(255, 209, 102, 0.1);
+  border: 1px solid rgba(255, 209, 102, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.recommendations h4 {
+  margin: 0 0 12px 0;
+  color: var(--gold);
+  font-size: 1.1rem;
+}
+
+.recommendations ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #fff;
+}
+
+.recommendations li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #fff;
+}
+
+.error p {
+  margin: 8px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .dashboard {
+    width: 95vw;
+    margin: 20px;
+  }
+  
+  .mainMetrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .metricValue {
+    font-size: 1.6rem;
+  }
+  
+  .header {
+    padding: 16px 20px 12px;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+}

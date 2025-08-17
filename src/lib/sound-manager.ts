@@ -1,5 +1,5 @@
 // MALLEX Sound Manager
-export export class SoundManager {
+export class SoundManager {
   private static audioContext: AudioContext | null = null
   private static sounds: Map<string, AudioBuffer> = new Map()
   private static enabled = true

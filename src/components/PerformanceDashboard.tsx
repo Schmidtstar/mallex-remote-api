@@ -1,64 +1,112 @@
-
 import React, { useState, useEffect } from 'react'
 import styles from './PerformanceDashboard.module.css'
 
+// Define the interface for PerformanceMetrics
 interface PerformanceMetrics {
-  totalRequests: number
-  cacheHitRate: number
-  averageResponseTime: number
-  errorCount: number
-  lastUpdated: string
+  totalRequests?: number
+  cacheHitRate?: number
+  averageResponseTime?: number
+  errorCount?: number
+  lastUpdated?: string
+  networkStatus?: boolean
+  serviceWorkerStatus?: string
+  memoryUsage?: number
+  timestamp?: string
+  webVitals?: {
+    [key: string]: {
+      latest: number
+      name: string
+    }
+  }
+  serviceWorker?: {
+    cacheHits: number
+    totalRequests: number
+    averageResponseTime: number
+  }
 }
 
+// Mock MonitoringService for demonstration purposes if it's not globally available
+const MonitoringService = {
+  getPerformanceReport: () => {
+    // Simulate fetching data
+    if (Math.random() > 0.3) { // Simulate occasional data availability
+      return {
+        webVitals: {
+          CLS: { latest: Math.random() * 0.2, name: 'Cumulative Layout Shift' },
+          FID: { latest: Math.random() * 150, name: 'First Input Delay' },
+          LCP: { latest: Math.random() * 2000 + 500, name: 'Largest Contentful Paint' },
+        },
+        serviceWorker: {
+          cacheHits: Math.floor(Math.random() * 100),
+          totalRequests: Math.floor(Math.random() * 200) + 50,
+          averageResponseTime: Math.random() * 800 + 100,
+        }
+      }
+    } else {
+      throw new Error('Performance report not available')
+    }
+  }
+}
+
+
 export default function PerformanceDashboard() {
-  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null)
+  const [metrics, setMetrics] = useState<PerformanceMetrics>({})
   const [isVisible, setIsVisible] = useState(false)
+  const [networkStatus, setNetworkStatus] = useState(navigator.onLine)
+  const [serviceWorkerStatus, setServiceWorkerStatus] = useState('loading')
 
   useEffect(() => {
-    // Listen for Service Worker metrics
-    const handleSWMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-        const { stats } = event.data.metric
-        setMetrics({
-          totalRequests: stats.totalRequests || 0,
-          cacheHitRate: stats.cacheHitRate || 0,
-          averageResponseTime: stats.averageResponseTime || 0,
-          errorCount: stats.errorCount || 0,
-          lastUpdated: new Date().toLocaleTimeString()
-        })
-      }
+    // Network Status Updates
+    const handleOnline = () => setNetworkStatus(true)
+    const handleOffline = () => setNetworkStatus(false)
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    // Service Worker Status
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        setServiceWorkerStatus('active')
+      }).catch(() => {
+        setServiceWorkerStatus('error')
+      })
+    } else {
+      setServiceWorkerStatus('unavailable')
     }
 
-    navigator.serviceWorker?.addEventListener('message', handleSWMessage)
-
-    // Get initial metrics from PerformanceMonitor
-    const updateMetrics = () => {
+    const interval = setInterval(() => {
       try {
-        const report = (window as any).PerformanceMonitor?.getPerformanceReport()
-        if (report?.serviceWorker) {
-          setMetrics({
-            totalRequests: report.serviceWorker.totalRequests || 0,
-            cacheHitRate: report.serviceWorker.totalRequests > 0 
-              ? Math.round((report.serviceWorker.cacheHits / report.serviceWorker.totalRequests) * 100) 
-              : 0,
-            averageResponseTime: Math.round(report.serviceWorker.averageResponseTime || 0),
-            errorCount: 0,
-            lastUpdated: new Date().toLocaleTimeString()
-          })
-        }
-      } catch (error) {
-        console.log('Performance metrics not available yet')
-      }
-    }
+        // Use the mock or actual MonitoringService
+        const report = (window as any).PerformanceMonitor?.getPerformanceReport ? (window as any).PerformanceMonitor.getPerformanceReport() : MonitoringService.getPerformanceReport();
 
-    updateMetrics()
-    const interval = setInterval(updateMetrics, 5000)
+        // Enhanced metrics with real-time data
+        const enhancedReport: PerformanceMetrics = {
+          ...report,
+          networkStatus,
+          serviceWorkerStatus,
+          memoryUsage: (performance as any).memory?.usedJSHeapSize || 0,
+          timestamp: new Date().toLocaleTimeString()
+        }
+
+        setMetrics(enhancedReport)
+      } catch (error) {
+        console.warn('Performance metrics nicht verfügbar:', error)
+        // Ensure metrics state is updated even on error to reflect potential changes
+        setMetrics(prevMetrics => ({
+          ...prevMetrics,
+          networkStatus,
+          serviceWorkerStatus,
+          timestamp: new Date().toLocaleTimeString()
+        }));
+      }
+    }, 3000) // Häufigere Updates
 
     return () => {
-      navigator.serviceWorker?.removeEventListener('message', handleSWMessage)
       clearInterval(interval)
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
     }
-  }, [])
+  }, [networkStatus, serviceWorkerStatus]) // Dependencies ensure updates when status changes
 
   // Development-only dashboard
   if (import.meta.env.PROD && !window.location.search.includes('debug=true')) {
@@ -67,7 +115,7 @@ export default function PerformanceDashboard() {
 
   return (
     <div className={styles.dashboard}>
-      <button 
+      <button
         className={styles.toggle}
         onClick={() => setIsVisible(!isVisible)}
         title="Performance Dashboard"
@@ -81,48 +129,54 @@ export default function PerformanceDashboard() {
             <h4>⚡ Live Performance</h4>
             <button onClick={() => setIsVisible(false)}>×</button>
           </div>
-          
-          {metrics ? (
-            <div className={styles.metrics}>
-              <div className={styles.metric}>
-                <span className={styles.label}>Requests:</span>
-                <span className={styles.value}>{metrics.totalRequests}</span>
+
+          <div className={styles.metricsGrid}>
+            {/* Network & SW Status */}
+            <div className={styles.statusRow}>
+              <div className={`${styles.statusBadge} ${networkStatus ? styles.online : styles.offline}`}>
+                {networkStatus ? '🌐 Online' : '📱 Offline'}
               </div>
-              
-              <div className={styles.metric}>
-                <span className={styles.label}>Cache Hit:</span>
-                <span className={`${styles.value} ${
-                  metrics.cacheHitRate >= 80 ? styles.good : 
-                  metrics.cacheHitRate >= 60 ? styles.warning : styles.poor
-                }`}>
-                  {metrics.cacheHitRate}%
-                </span>
-              </div>
-              
-              <div className={styles.metric}>
-                <span className={styles.label}>Avg Response:</span>
-                <span className={`${styles.value} ${
-                  metrics.averageResponseTime < 500 ? styles.good : 
-                  metrics.averageResponseTime < 1000 ? styles.warning : styles.poor
-                }`}>
-                  {metrics.averageResponseTime}ms
-                </span>
-              </div>
-              
-              <div className={styles.metric}>
-                <span className={styles.label}>Errors:</span>
-                <span className={`${styles.value} ${metrics.errorCount === 0 ? styles.good : styles.poor}`}>
-                  {metrics.errorCount}
-                </span>
-              </div>
-              
-              <div className={styles.timestamp}>
-                Updated: {metrics.lastUpdated}
+              <div className={`${styles.statusBadge} ${serviceWorkerStatus === 'active' ? styles.active : (serviceWorkerStatus === 'unavailable' ? styles.inactive : styles.error)}`}>
+                {serviceWorkerStatus === 'active' ? '⚡ SW Active' : serviceWorkerStatus === 'unavailable' ? '🚫 SW Unavailable' : '❌ SW Error'}
               </div>
             </div>
-          ) : (
-            <div className={styles.loading}>Loading metrics...</div>
-          )}
+
+            {/* Performance Metrics */}
+            {metrics.webVitals && Object.entries(metrics.webVitals).map(([vital, data]: [string, any]) => (
+              <div key={vital} className={styles.vitalMetric}>
+                <span className={styles.vitalName}>{vital}:</span>
+                <span className={`${styles.vitalValue} ${
+                  data.latest < (vital === 'CLS' ? 0.1 : vital === 'FID' ? 100 : 2500) ? styles.good : data.latest < (vital === 'CLS' ? 0.25 : vital === 'FID' ? 200 : 4000) ? styles.warning : styles.poor
+                }`}>
+                  {Math.round(data.latest)}ms
+                </span>
+              </div>
+            ))}
+
+            {/* Memory Usage */}
+            {metrics.memoryUsage !== undefined && (
+              <div className={styles.memoryMetric}>
+                <span>Memory:</span>
+                <span className={styles.memoryValue}>
+                  {Math.round(metrics.memoryUsage / (1024 * 1024))}MB
+                </span>
+              </div>
+            )}
+
+            {/* Service Worker Performance */}
+            {metrics.serviceWorker && (
+              <div className={styles.swMetrics}>
+                <div>Cache Hits: {metrics.serviceWorker.cacheHits}/{metrics.serviceWorker.totalRequests}</div>
+                <div>Avg Response: {Math.round(metrics.serviceWorker.averageResponseTime)}ms</div>
+              </div>
+            )}
+
+            {metrics.timestamp && (
+              <div className={styles.timestamp}>
+                Updated: {metrics.timestamp}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -27,4 +27,3 @@ function RequireAdmin() {
 
 export default RequireAdmin
 export { RequireAdmin }
-export default RequireAdmin

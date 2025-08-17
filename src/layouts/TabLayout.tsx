@@ -80,4 +80,3 @@ export function TabLayout() {
 
 export default TabLayout
 export { TabLayout }
-export default TabLayout

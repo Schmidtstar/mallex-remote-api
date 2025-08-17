@@ -1,58 +1,22 @@
-import React, { Suspense, lazy } from 'react'
+
+import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 
-// Lazy load components mit Prioritäts-System und Error Fallbacks
-const LazyHomeScreen = lazy(() => 
-  import('./features/Menu/MenuScreen').catch(() => ({ default: () => <div>Menu Error</div> }))
-)
-const LazyArenaScreen = lazy(() => 
-  import('./features/Arena/ArenaScreen').catch(() => ({ default: () => <div>Arena Error</div> }))
-)
-const LazyLegendsScreen = lazy(() => 
-  import('./features/Legends/LegendsScreen').catch(() => ({ default: () => <div>Legends Error</div> }))
-)
-const LazyLeaderboardScreen = lazy(() => 
-  import('./features/Leaderboard/LeaderboardScreen').catch(() => ({ default: () => <div>Leaderboard Error</div> }))
-)
-const LazyAuthScreen = lazy(() => 
-  import('./features/Auth/AuthScreen').catch(() => ({ default: () => <div>Auth Error</div> }))
-)
-const LazyAdminDashboard = lazy(() => 
-  import('./features/Admin/AdminDashboard').catch(() => ({ default: () => <div>Admin Error</div> }))
-)
-const LazyAchievementScreen = lazy(() => 
-  import('./features/Achievements/AchievementScreen').catch(() => ({ default: () => <div>Achievement Error</div> }))
-)
-const LazyPrivacyDashboard = lazy(() => 
-  import('./features/Privacy/PrivacyDashboard').catch(() => ({ default: () => <div>Privacy Error</div> }))
-)
-const LazyTasksOverviewScreen = lazy(() => 
-  import('./features/Tasks/TasksOverviewScreen').catch(() => ({ default: () => <div>Tasks Error</div> }))
-)
-const LazySuggestTaskScreen = lazy(() => 
-  import('./features/Tasks/SuggestTaskScreen').catch(() => ({ default: () => <div>Suggest Error</div> }))
-)
-const LazyAdminTasksScreen = lazy(() => 
-  import('./features/Tasks/AdminTasksScreen').catch(() => ({ default: () => <div>Admin Tasks Error</div> }))
-)
-
-const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout'))
-const ArenaScreen = React.lazy(() => import(/* webpackPreload: true */ './features/Arena/ArenaScreen'))
+// Clean lazy loading - nur EINE Definition pro Component
+const TabLayout = React.lazy(() => import('./layouts/TabLayout'))
+const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen'))
 const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))
 const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
 const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))
 const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen'))
-const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen'))
-const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen'))
-
 const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'))
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
 const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen'))
 const PostfachScreen = React.lazy(() => import('./components/NotificationCenter'))
-import PrivacyDashboard from './features/Privacy/PrivacyDashboard'
+const PrivacyDashboard = React.lazy(() => import('./features/Privacy/PrivacyDashboard'))
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
@@ -116,16 +80,18 @@ const routes = [
         errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
       },
       {
-        path: '/admin',
+        path: 'admin',
         element: (
           <RequireAdmin>
             <AdminDashboard />
           </RequireAdmin>
-        )
+        ),
+        errorElement: <ErrorBoundary><div>Fehler im Admin-Bereich</div></ErrorBoundary>
       },
       {
-        path: '/privacy',
-        element: <PrivacyDashboard />
+        path: 'privacy',
+        element: <PrivacyDashboard />,
+        errorElement: <ErrorBoundary><div>Fehler in Privacy</div></ErrorBoundary>
       },
       {
         path: 'profile',

@@ -1,160 +1,177 @@
-import React, { Component, ReactNode } from 'react'
 
-// Assuming styles are defined elsewhere, e.g., in a CSS module
-// import styles from './ErrorBoundary.module.css';
-// For demonstration, using inline styles similar to the original.
+import React, { Component, ErrorInfo, ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
+  fallback?: ReactNode
+  onError?: (error: Error, errorInfo: ErrorInfo) => void
 }
 
 interface State {
   hasError: boolean
   error?: Error
+  errorId?: string
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = { hasError: false }
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('🚨 Error caught by boundary:', error, errorInfo)
-
-    // Additional error logging for Firebase/Firestore errors
-    if (error.message.includes('permission-denied')) {
-      console.error('🔒 Firebase permission error - check Firestore rules')
-    }
-    if (error.message.includes('Firebase')) {
-      console.error('🔥 Firebase error detected - check configuration')
+    return {
+      hasError: true,
+      error,
+      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     }
   }
 
-  handleReload = () => {
-    window.location.reload()
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Performance & Error Tracking
+    console.error('🚨 ErrorBoundary caught error:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      errorId: this.state.errorId,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    })
+
+    // Custom error handler
+    this.props.onError?.(error, errorInfo)
+
+    // Optional: Send to analytics service
+    if (import.meta.env.PROD) {
+      // Analytics tracking für Production
+      try {
+        // Hier könnte ein Analytics-Service integriert werden
+        fetch('/api/error-tracking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            error: error.message,
+            errorId: this.state.errorId,
+            url: window.location.href,
+            timestamp: Date.now()
+          })
+        }).catch(() => {}) // Silent fail
+      } catch (e) {
+        // Silent fail
+      }
+    }
+  }
+
+  retry = () => {
+    this.setState({ hasError: false, error: undefined, errorId: undefined })
   }
 
   render() {
     if (this.state.hasError) {
-      // Mocking styles for demonstration, as they were not provided in the original snippet
-      const styles = {
-        container: {
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '50vh',
-          padding: '2rem',
-          textAlign: 'center',
-          fontFamily: 'sans-serif'
-        },
-        icon: {
-          fontSize: '3rem',
-          marginBottom: '1rem'
-        },
-        h2: {
-          margin: '0 0 1rem 0'
-        },
-        button: {
-          padding: '0.5rem 1rem',
-          cursor: 'pointer',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          background: '#f5f5f5',
-          marginTop: '1rem'
-        }
-      };
-
-      // Original error handling for ChunkLoadError
-      if (error.name === 'ChunkLoadError') {
-        return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column' as const,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            padding: '20px',
-            textAlign: 'center' as const,
-            fontFamily: 'Arial, sans-serif'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔄</div>
-            <h2 style={{ margin: '0 0 1rem 0' }}>App wird aktualisiert...</h2>
-            <p>Bitte lade die Seite neu.</p>
-            <button onClick={() => window.location.reload()} style={{
-              padding: '0.5rem 1rem',
-              cursor: 'pointer',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              background: '#f5f5f5',
-              marginTop: '1rem'
-            }}>
-              Neu laden
-            </button>
-          </div>
-        )
+      if (this.props.fallback) {
+        return this.props.fallback
       }
 
-      // Firebase connection errors
-      if (error.message?.includes('Firebase') || error.message?.includes('firestore')) {
-        return (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column' as const,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            padding: '20px',
-            textAlign: 'center' as const,
-            fontFamily: 'Arial, sans-serif'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔥</div>
-            <h2 style={{ margin: '0 0 1rem 0' }}>Verbindungsproblem</h2>
-            <p>Firebase-Verbindung unterbrochen. App läuft im Offline-Modus.</p>
-            <button onClick={() => window.location.reload()} style={{
-              padding: '0.5rem 1rem',
-              cursor: 'pointer',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              background: '#f5f5f5',
-              marginTop: '1rem'
-            }}>
-              Erneut versuchen
-            </button>
-          </div>
-        )
-      }
-
-      // Default error fallback
+      // Olympisches Error Design
       return (
         <div style={{
           display: 'flex',
-          flexDirection: 'column' as const,
-          justifyContent: 'center',
+          flexDirection: 'column',
           alignItems: 'center',
-          height: '100vh',
+          justifyContent: 'center',
+          minHeight: '60vh',
           padding: '20px',
-          textAlign: 'center' as const,
-          fontFamily: 'Arial, sans-serif'
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, rgba(139,125,107,0.1), rgba(205,127,50,0.1))',
+          borderRadius: 'var(--radius)',
+          border: '2px solid var(--ancient-bronze)',
+          margin: '20px'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
-          <h2 style={{ margin: '0 0 1rem 0' }}>Ein Fehler ist aufgetreten</h2>
-          <p>Etwas ist schiefgelaufen. Bitte lade die Seite neu.</p>
-          <button onClick={this.handleReload} style={{
-            padding: '0.5rem 1rem',
-            cursor: 'pointer',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            background: '#f5f5f5',
-            marginTop: '1rem'
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>⚱️</div>
+          
+          <h2 style={{ 
+            color: 'var(--ancient-gold)', 
+            marginBottom: '1rem',
+            fontSize: '1.5rem',
+            fontWeight: 'bold'
           }}>
-            Seite neu laden
+            🏛️ Die Götter sind erzürnt! 🏛️
+          </h2>
+          
+          <p style={{ 
+            color: 'var(--ancient-bronze)', 
+            marginBottom: '2rem',
+            fontSize: '1.1rem',
+            lineHeight: '1.5',
+            maxWidth: '400px'
+          }}>
+            Ein unerwarteter Fehler ist aufgetreten. Die olympischen Geister arbeiten bereits an einer Lösung.
+          </p>
+
+          {import.meta.env.DEV && this.state.error && (
+            <details style={{
+              background: 'rgba(139,125,107,0.1)',
+              padding: '1rem',
+              borderRadius: 'var(--radius)',
+              border: '1px solid var(--ancient-stone)',
+              marginBottom: '2rem',
+              maxWidth: '600px',
+              fontSize: '0.85rem',
+              color: 'var(--ancient-stone)'
+            }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
+                🔍 Debug-Info (Development)
+              </summary>
+              <pre style={{ 
+                whiteSpace: 'pre-wrap', 
+                wordBreak: 'break-word',
+                marginTop: '1rem',
+                fontSize: '0.8rem'
+              }}>
+                {this.state.error.stack}
+              </pre>
+              <p style={{ marginTop: '1rem', fontSize: '0.8rem' }}>
+                Error ID: {this.state.errorId}
+              </p>
+            </details>
+          )}
+
+          <button
+            onClick={this.retry}
+            style={{
+              padding: '12px 24px',
+              fontSize: '1.1rem',
+              background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
+              color: 'var(--ancient-night)',
+              border: '2px solid var(--olympic-victory)',
+              borderRadius: 'var(--radius)',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              boxShadow: '0 5px 15px rgba(255,107,53,0.3)',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(255,107,53,0.5)'
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 5px 15px rgba(255,107,53,0.3)'
+            }}
+          >
+            ⚡ Erneut versuchen ⚡
           </button>
+
+          <p style={{
+            marginTop: '1rem',
+            fontSize: '0.9rem',
+            color: 'var(--ancient-stone)',
+            fontStyle: 'italic'
+          }}>
+            Falls das Problem bestehen bleibt, lade die Seite neu (F5)
+          </p>
         </div>
       )
     }
@@ -162,3 +179,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children
   }
 }
+
+export default ErrorBoundary

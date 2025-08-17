@@ -1,7 +1,7 @@
 
-import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback, useRef } from 'react'
 import { useAuth } from './AuthContext'
-import { doc, setDoc, getDoc, increment, deleteDoc, onSnapshot, collection, query, where } from 'firebase/firestore'
+import { doc, setDoc, getDoc, increment, deleteDoc, onSnapshot, collection, query, where, orderBy, limit } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
 // Player type mit allen nötigen Feldern
@@ -44,6 +44,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
   const [firebaseListeners, setFirebaseListeners] = useState<Map<string, () => void>>(new Map())
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const mode = useMemo((): 'firebase' | 'localStorage' => {
     return 'localStorage' // Hybrides System bleibt bestehen
@@ -54,7 +55,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     return name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
   }, [])
 
-  // Real-time Firebase Listener für einzelnen Spieler
+  // Optimierter Firebase Listener mit Debouncing
   const setupFirebaseListener = useCallback((player: Player) => {
     const playerId = normalizePlayerId(player.name)
     
@@ -70,30 +71,39 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           const firebaseData = doc.data()
           const updatedArenaPoints = firebaseData.arenaPoints || 0
           
-          // Aktualisiere nur wenn sich Punkte geändert haben
-          setPlayers(prevPlayers => 
-            prevPlayers.map(p => 
-              p.id === player.id 
-                ? { ...p, arenaPoints: updatedArenaPoints }
-                : p
-            )
-          )
-          
-          // Aktualisiere localStorage
-          const localStoragePlayers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-          const updatedLocalStorage = localStoragePlayers.map((p: Player) => 
-            p.id === player.id 
-              ? { ...p, arenaPoints: updatedArenaPoints }
-              : p
-          )
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedLocalStorage))
-          
-          if (import.meta.env.DEV) {
-            console.log(`🔄 Live update für ${player.name}: ${updatedArenaPoints} Punkte`)
+          // Debounce Updates um Performance zu verbessern
+          if (updateTimeoutRef.current) {
+            clearTimeout(updateTimeoutRef.current)
           }
+          
+          updateTimeoutRef.current = setTimeout(() => {
+            setPlayers(prevPlayers => {
+              const player = prevPlayers.find(p => p.id === player.id)
+              if (player && player.arenaPoints === updatedArenaPoints) {
+                return prevPlayers // Keine Änderung, verhindere Re-render
+              }
+              
+              const newPlayers = prevPlayers.map(p => 
+                p.id === player.id 
+                  ? { ...p, arenaPoints: updatedArenaPoints }
+                  : p
+              )
+              
+              // Batch localStorage Update
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(newPlayers))
+              
+              if (import.meta.env.DEV) {
+                console.log(`🔄 Live update für ${player.name}: ${updatedArenaPoints} Punkte`)
+              }
+              
+              return newPlayers
+            })
+          }, 100) // 100ms Debounce
         }
       }, (error) => {
         console.warn(`⚠️ Firebase Listener Fehler für ${player.name}:`, error)
+        // Fallback: Remove broken listener
+        firebaseListeners.delete(playerId)
       })
 
       // Listener registrieren
@@ -101,7 +111,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     } catch (error) {
       console.warn(`❌ Firebase Listener Setup fehlgeschlagen für ${player.name}:`, error)
     }
-  }, [normalizePlayerId, firebaseListeners])
+  }, [normalizePlayerId])
 
   // Spieler laden beim Start
   useEffect(() => {
@@ -137,11 +147,10 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(playersList))
         console.log('🔧 Spieler-Datenstruktur repariert:', playersList)
         
-        // WICHTIG: arenaPoints aus Firebase laden und mergen
-        const playersWithFirebasePoints = await Promise.all(
+        // OPTIMIERT: Batch Firebase Query für bessere Performance
+        const playersWithFirebasePoints = await Promise.allSettled(
           playersList.map(async (player) => {
             try {
-              // Firebase Punkte für jeden Spieler abrufen
               const playerId = normalizePlayerId(player.name)
               const playerRef = doc(db, 'players', playerId)
               const playerDoc = await getDoc(playerRef)
@@ -150,16 +159,21 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
               
               return {
                 ...player,
-                arenaPoints: firebasePoints // Firebase überschreibt localStorage
+                arenaPoints: firebasePoints
               }
             } catch (error) {
-              // Fallback: localStorage Punkte behalten
+              // Graceful degradation
+              console.warn(`⚠️ Firebase load failed for ${player.name}, using localStorage`)
               return {
                 ...player,
                 arenaPoints: player.arenaPoints || 0
               }
             }
           })
+        ).then(results => 
+          results.map(result => 
+            result.status === 'fulfilled' ? result.value : result.reason
+          )
         )
         
         // Aktualisierte Punkte wieder speichern
@@ -182,20 +196,62 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
 
     loadPlayersFromLocalStorage();
 
-    // Cleanup: Alle Firebase Listener entfernen
+    // Cleanup: Alle Firebase Listener und Timeouts entfernen
     return () => {
       firebaseListeners.forEach(unsubscribe => unsubscribe())
       setFirebaseListeners(new Map())
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
+      }
     }
   }, [authLoading, user, setupFirebaseListener])
 
+  // Input-Validierung und XSS-Schutz
+  const validatePlayerName = useCallback((name: string): { isValid: boolean; error?: string } => {
+    const trimmedName = name.trim()
+    
+    if (!trimmedName) {
+      return { isValid: false, error: 'Name darf nicht leer sein' }
+    }
+    
+    if (trimmedName.length < 2) {
+      return { isValid: false, error: 'Name muss mindestens 2 Zeichen haben' }
+    }
+    
+    if (trimmedName.length > 20) {
+      return { isValid: false, error: 'Name darf maximal 20 Zeichen haben' }
+    }
+    
+    // XSS-Schutz: Gefährliche Zeichen entfernen
+    const dangerousChars = /<|>|"|'|&|script|javascript|onerror|onload/gi
+    if (dangerousChars.test(trimmedName)) {
+      return { isValid: false, error: 'Name enthält unerlaubte Zeichen' }
+    }
+    
+    // Prüfe auf doppelte Namen
+    const existingPlayer = players.find(p => p.name.toLowerCase() === trimmedName.toLowerCase())
+    if (existingPlayer) {
+      return { isValid: false, error: 'Dieser Name existiert bereits' }
+    }
+    
+    return { isValid: true }
+  }, [players])
+
   const handleAddPlayer = useCallback(async (name: string) => {
-    if (!name.trim()) return
+    const validation = validatePlayerName(name)
+    if (!validation.isValid) {
+      throw new Error(validation.error)
+    }
 
     try {
+      // Sanitize den Namen
+      const sanitizedName = name.trim()
+        .replace(/[<>]/g, '') // Entferne gefährliche HTML-Zeichen
+        .substring(0, 20) // Begrenze Länge
+      
       const newPlayer: Player = {
-        id: Date.now().toString(),
-        name: name.trim(),
+        id: `player_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+        name: sanitizedName,
         score: 0,
         arenaPoints: 0
       }

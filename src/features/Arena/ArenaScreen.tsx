@@ -29,6 +29,10 @@ export function ArenaScreen() {
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinningCategory, setSpinningCategory] = useState<string>('')
+  
+  // Anti-Repeat System
+  const [recentTasks, setRecentTasks] = useState<string[]>([])
+  const MAX_RECENT_TASKS = 5
 
 
   // Drinking Game Data
@@ -83,15 +87,32 @@ export function ArenaScreen() {
     // Filter out hidden static tasks
     const staticTasks = (challenges[categoryId] || []).filter(taskKey => !hiddenTasks.has(taskKey))
     const dynamicTasks = firestoreTasks[categoryId] || []
-    const allTasks = [...staticTasks, ...dynamicTasks]
+    let allTasks = [...staticTasks, ...dynamicTasks]
 
     if (allTasks.length === 0) return 'Keine Aufgabe verfügbar'
 
-    const randomIndex = Math.floor(Math.random() * allTasks.length)
-    const selectedTask = allTasks[randomIndex]
+    // Anti-Repeat Filter: Entferne kürzlich gespielte Aufgaben
+    const availableTasks = allTasks.filter(task => {
+      const translatedTask = staticTasks.includes(task) ? t(task) : task
+      return !recentTasks.includes(translatedTask)
+    })
 
-    // If it's a static task (i18n key), translate it. Otherwise, use as-is (Firestore text)
-    return staticTasks.includes(selectedTask) ? t(selectedTask) : selectedTask
+    // Falls alle Aufgaben kürzlich gespielt wurden, nehme alle
+    const tasksToChooseFrom = availableTasks.length > 0 ? availableTasks : allTasks
+
+    const randomIndex = Math.floor(Math.random() * tasksToChooseFrom.length)
+    const selectedTask = tasksToChooseFrom[randomIndex]
+
+    // Translate and return
+    const translatedTask = staticTasks.includes(selectedTask) ? t(selectedTask) : selectedTask
+    
+    // Aktualisiere Recent Tasks
+    setRecentTasks(prev => {
+      const updated = [translatedTask, ...prev].slice(0, MAX_RECENT_TASKS)
+      return updated
+    })
+
+    return translatedTask
   }
 
   const startGame = () => {
@@ -110,19 +131,29 @@ export function ArenaScreen() {
     setIsSpinning(true)
     let spinCounter = 0
 
+    // Haptic Feedback für Mobile
+    if ('vibrate' in navigator) {
+      navigator.vibrate(100)
+    }
+
     // Start the spinning animation
     const spinInterval = setInterval(() => {
       spinCounter += 1
       const categoryIndex = (spinCounter - 1) % categories.length
       setSpinningCategory(categories[categoryIndex].id)
 
-      // Stop after 10 spins (5 seconds with 0.5s intervals)
-      if (spinCounter >= 10) {
+      // Stop after 8 spins (4 seconds with 0.5s intervals) - Optimiert für bessere UX
+      if (spinCounter >= 8) {
         clearInterval(spinInterval)
         setIsSpinning(false)
         setGameState('waiting-action')
+        
+        // Final haptic feedback
+        if ('vibrate' in navigator) {
+          navigator.vibrate([50, 100, 50])
+        }
       }
-    }, 500) // Change category every 0.5 seconds
+    }, 500)
   }
 
   const waitForAction = () => {

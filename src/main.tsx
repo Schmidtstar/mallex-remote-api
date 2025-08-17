@@ -12,7 +12,8 @@ import AppIntro from './components/AppIntro'
 import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './components/ErrorBoundary'
+import PerformanceDashboard from './components/PerformanceDashboard'
 
 // Assuming PerformanceMonitor is defined elsewhere and imported if necessary
 // import { PerformanceMonitor } from './lib/performance-monitor'; 
@@ -69,6 +70,7 @@ const App: React.FC = () => {
     <ContextProviders>
       <RouterProvider key="main-router" router={router} />
       <PrivacyBanner />
+      <PerformanceDashboard />
     </ContextProviders>
   )
 }

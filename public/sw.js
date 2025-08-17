@@ -54,10 +54,40 @@ const OFFLINE_FALLBACKS = {
   '/menu': '/index.html'
 }
 
-// Performance-Tracking Variablen
+// Performance Metrics Tracking - Enhanced
 let requestCount = 0
 let cacheHitCount = 0
 let offlineRequestCount = 0
+let errorCount = 0
+let averageResponseTime = 0
+
+// Enhanced Performance Tracking
+function trackPerformanceMetric(metricData) {
+  try {
+    // Send to all clients
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'SW_PERFORMANCE_METRIC',
+          metric: {
+            ...metricData,
+            timestamp: Date.now(),
+            stats: {
+              totalRequests: requestCount,
+              cacheHitRate: requestCount > 0 ? Math.round((cacheHitCount / requestCount) * 100) : 0,
+              offlineRequests: offlineRequestCount,
+              errorCount: errorCount,
+              averageResponseTime: averageResponseTime
+            }
+          }
+        })
+      })
+    })
+  } catch (error) {
+    console.error('SW: Performance tracking error:', error)
+    errorCount++
+  }
+}
 
 // Installation - Aggressives Caching für kritische Ressourcen
 self.addEventListener('install', (event) => {
@@ -153,6 +183,15 @@ self.addEventListener('fetch', (event) => {
       return response
     }).catch(error => {
       console.warn('🚨 Fetch Error:', error.message, 'für URL:', url.href)
+      errorCount++ // Fehler zählen
+      // Performance-Metrik für Fehler senden
+      broadcastPerformanceMetric({
+        type: 'FETCH_ERROR',
+        url: url.pathname,
+        error: error.message,
+        strategy: getStrategy(url.href),
+        online: navigator.onLine
+      })
       return handleOfflineRequest(request, url)
     })
   )
@@ -408,6 +447,8 @@ function resetPerformanceCounters() {
   requestCount = 0
   cacheHitCount = 0
   offlineRequestCount = 0
+  errorCount = 0
+  averageResponseTime = 0 // Reset average response time
 }
 
 // Performance-Metrics Broadcasting
@@ -420,7 +461,9 @@ function broadcastPerformanceMetric(metric) {
       totalRequests: requestCount,
       cacheHits: cacheHitCount,
       cacheHitRate: requestCount > 0 ? (cacheHitCount / requestCount * 100).toFixed(1) : 0,
-      offlineRequests: offlineRequestCount
+      offlineRequests: offlineRequestCount,
+      errorCount: errorCount, // Include error count
+      averageResponseTime: averageResponseTime // Include average response time
     }
   }
 

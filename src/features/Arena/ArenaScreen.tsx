@@ -770,14 +770,14 @@ export function ArenaScreen() {
               <button
                 onClick={endGame}
                 style={{
-                  padding: isMobile ? '10px 15px' : '15px 25px',
-                  fontSize: isMobile ? '0.8rem' : '1rem',
+                  padding: '10px 20px',
+                  fontSize: '0.9rem',
                   background: 'transparent',
-                  color: 'var(--ancient-stone)',
-                  border: '2px solid var(--ancient-stone)',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--text-secondary)',
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  marginTop: isMobile ? '10px' : '20px',
+                  marginTop: '10px',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
                   transition: 'all 0.3s ease',
@@ -986,7 +986,7 @@ export function ArenaScreen() {
                   border: '2px solid var(--ancient-stone)',
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer',
-                  marginTop: isMobile ? '10px' : '20px',
+                  marginTop: '10px',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
                   transition: 'all 0.3s ease',
@@ -1142,3 +1142,6 @@ export function ArenaScreen() {
     </div>
   )
 }
+
+export default ArenaScreen
+export { ArenaScreen }

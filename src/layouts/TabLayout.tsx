@@ -77,3 +77,6 @@ export function TabLayout() {
     </div>
   )
 }
+
+export default TabLayout
+export { TabLayout }

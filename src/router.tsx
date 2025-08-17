@@ -3,6 +3,7 @@ import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-do
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
+import { EnhancedLoadingSpinner } from './components/EnhancedLoadingSpinner'; // Assuming EnhancedLoadingSpinner is available
 
 // Placeholder for LazyLoader component, assuming it's defined elsewhere and handles lazy component loading with fallbacks.
 // For this example, we'll assume LazyLoader is a component that takes children and a fallback prop.
@@ -12,7 +13,7 @@ const LazyLoader = ({ children, fallback }) => (
 );
 
 // Safe lazy loading with explicit default handling
-const TabLayout = React.lazy(() => 
+const TabLayout = React.lazy(() =>
   import('./layouts/TabLayout').then(m => ({ default: m.default || m.TabLayout || m }))
 )
 const ArenaScreen = lazy(() => import('./features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen || module.default })))
@@ -23,11 +24,11 @@ const TasksOverviewScreen = lazy(() => import('./features/Tasks/TasksOverviewScr
 const SuggestTaskScreen = lazy(() => import('./features/Tasks/SuggestTaskScreen').then(module => ({ default: module.SuggestTaskScreen || module.default })))
 const AdminTasksScreen = lazy(() => import('./features/Tasks/AdminTasksScreen').then(module => ({ default: module.AdminTasksScreen || module.default })))
 const AdminDashboard = lazy(() => import('./features/Admin/AdminDashboard').then(module => ({ default: module.AdminDashboard || module.default })))
-const RequireAdmin = React.lazy(() => 
+const RequireAdmin = React.lazy(() =>
   import('./routes/guards/RequireAdmin').then(m => ({ default: m.default || m.RequireAdmin || m }))
 )
 const AuthScreen = lazy(() => import('./features/Auth/AuthScreen').then(module => ({ default: module.AuthScreen || module.default })))
-const PostfachScreen = React.lazy(() => 
+const PostfachScreen = React.lazy(() =>
   import('./components/NotificationCenter').then(m => ({ default: m.default || m.NotificationCenter || m }))
 )
 const PrivacyDashboard = lazy(() => import('./features/Privacy/PrivacyDashboard').then(module => ({ default: module.PrivacyDashboard || module.default })))
@@ -65,7 +66,7 @@ const routes = [
       {
         index: true,
         element: (
-          <ErrorBoundary 
+          <ErrorBoundary
             fallback={
               <div style={{
                 display: 'flex',
@@ -78,8 +79,8 @@ const routes = [
               }}>
                 <div style={{ fontSize: '3rem' }}>⚡</div>
                 <h3>Arena konnte nicht geladen werden</h3>
-                <button 
-                  onClick={() => window.location.reload()} 
+                <button
+                  onClick={() => window.location.reload()}
                   style={{
                     padding: '8px 16px',
                     background: 'var(--ancient-gold)',
@@ -101,7 +102,7 @@ const routes = [
               })
             }}
           >
-            <LazyLoader fallback={<LoadingSpinner message="Arena wird geladen..." />}>
+            <LazyLoader fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
               <ArenaScreen />
             </LazyLoader>
           </ErrorBoundary>
@@ -111,7 +112,7 @@ const routes = [
       {
         path: 'arena',
         element: (
-          <ErrorBoundary 
+          <ErrorBoundary
             fallback={
               <div style={{
                 display: 'flex',
@@ -124,8 +125,8 @@ const routes = [
               }}>
                 <div style={{ fontSize: '3rem' }}>⚡</div>
                 <h3>Arena konnte nicht geladen werden</h3>
-                <button 
-                  onClick={() => window.location.reload()} 
+                <button
+                  onClick={() => window.location.reload()}
                   style={{
                     padding: '8px 16px',
                     background: 'var(--ancient-gold)',
@@ -147,7 +148,7 @@ const routes = [
               })
             }}
           >
-            <LazyLoader fallback={<LoadingSpinner message="Arena wird geladen..." />}>
+            <LazyLoader fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
               <ArenaScreen />
             </LazyLoader>
           </ErrorBoundary>

@@ -1,0 +1,184 @@
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  color: var(--ancient-gold);
+  text-align: center;
+  font-family: var(--font-family-heading);
+}
+
+.iconContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 3rem;
+  z-index: 2;
+  position: relative;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.spinner {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 3px solid transparent;
+  border-top: 3px solid var(--ancient-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 1;
+}
+
+.message {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+.subMessage {
+  font-size: var(--font-size-sm);
+  color: var(--ancient-bronze);
+  font-style: italic;
+  opacity: 0.8;
+  max-width: 300px;
+}
+
+/* Size Variants */
+.small .icon {
+  font-size: 2rem;
+}
+
+.small .spinner {
+  width: 50px;
+  height: 50px;
+}
+
+.small .message {
+  font-size: var(--font-size-base);
+}
+
+.large .icon {
+  font-size: 4rem;
+}
+
+.large .spinner {
+  width: 100px;
+  height: 100px;
+}
+
+.large .message {
+  font-size: var(--font-size-xl);
+}
+
+/* Theme Variants */
+.arena {
+  background: radial-gradient(circle, rgba(218, 165, 32, 0.1) 0%, transparent 70%);
+  padding: var(--space-8);
+  border-radius: var(--radius-large);
+}
+
+.arena .icon {
+  color: var(--olympic-flame);
+  text-shadow: 0 0 20px currentColor;
+}
+
+.arena .spinner {
+  border-top-color: var(--olympic-flame);
+  box-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+}
+
+.achievements {
+  background: radial-gradient(circle, rgba(34, 139, 34, 0.1) 0%, transparent 70%);
+  padding: var(--space-6);
+  border-radius: var(--radius-large);
+}
+
+.achievements .icon {
+  color: var(--olympic-laurel);
+  text-shadow: 0 0 15px currentColor;
+}
+
+.achievements .spinner {
+  border-top-color: var(--olympic-laurel);
+}
+
+.minimal {
+  padding: var(--space-4);
+}
+
+.minimal .message {
+  font-size: var(--font-size-sm);
+  text-transform: none;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .container {
+    gap: var(--space-3);
+  }
+  
+  .icon {
+    font-size: 2.5rem;
+  }
+  
+  .large .icon {
+    font-size: 3rem;
+  }
+  
+  .message {
+    font-size: var(--font-size-base);
+  }
+  
+  .subMessage {
+    font-size: var(--font-size-xs);
+    max-width: 250px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border: 3px solid var(--ancient-gold);
+  }
+  
+  .icon {
+    animation: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    color: var(--ancient-marble);
+  }
+  
+  .subMessage {
+    color: var(--color-text-muted);
+  }
+}

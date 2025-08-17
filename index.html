@@ -14,14 +14,68 @@
     <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
 
-    <!-- Critical CSS inline -->
+    <!-- Critical CSS inline für bessere Performance -->
     <style>
-      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
-      #root { min-height: 100vh; }
+      body { 
+        margin: 0; 
+        font-family: system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #0b1327 0%, #0b0f1b 100%);
+        overflow-x: hidden;
+      }
+      #root { 
+        min-height: 100vh; 
+        position: relative;
+      }
+
+      /* GPU-Acceleration für kritische Elemente */
+      .animate-entrance,
+      .arena-container,
+      .player-card {
+        will-change: transform, opacity;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+      }
+
+      /* Loading State Optimization */
+      .loading-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #0b1327 0%, #0b0f1b 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+
+      /* Prevent layout shift */
+      .layout-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Critical button styles */
+      .btn-critical {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #DAA520, #B8860B);
+        color: #0b1327;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .btn-critical:hover {
+        transform: translateY(-2px);
+      }
     </style>
 
     <title>MALLEX</title>
-    
+
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {

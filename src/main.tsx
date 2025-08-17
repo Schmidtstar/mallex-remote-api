@@ -95,10 +95,13 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
         // Dynamically import PerformanceMonitor to avoid initialization errors
-        import('./lib/performance-monitor').then(({ default: PerformanceMonitor }) => {
-          PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
-        }).catch(() => {
-          console.log('Performance Monitor nicht verfügbar für SW-Metriken')
+        import('./lib/performance-monitor').then((module) => {
+          const PerformanceMonitor = module.default || module.PerformanceMonitor
+          if (PerformanceMonitor?.trackServiceWorkerMetric) {
+            PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+          }
+        }).catch((err) => {
+          console.log('Performance Monitor nicht verfügbar für SW-Metriken:', err.message)
         })
       }
     })

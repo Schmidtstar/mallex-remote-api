@@ -24,10 +24,10 @@ function AppIntro({ onComplete }: AppIntroProps) {
       setPhase("text");
     }, 2500);
 
-    // t=8s - Intro beendet, weiterleiten zum Hauptmenü
+    // t=5s - Intro beendet, weiterleiten zum Hauptmenü (verkürzt)
     setTimeout(() => {
       onComplete?.();
-    }, 8000);
+    }, 5000);
   };
 
   return (
@@ -57,6 +57,13 @@ function AppIntro({ onComplete }: AppIntroProps) {
             <h1>DIE OLYMPISCHEN SAUFSPIELE</h1>
             <h2>ZEIGE MUT, EHRE UND TRINKE WIE EINE LEGENDE</h2>
             <h3>LASS DIE SPIELE BEGINNEN</h3>
+            <button 
+              className={s.skipButton}
+              onClick={() => onComplete?.()}
+              aria-label="Intro überspringen"
+            >
+              Überspringen ⏭️
+            </button>
           </div>
         )}
       </div>

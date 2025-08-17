@@ -184,3 +184,29 @@
   0%,100%{opacity:1}
   50%{opacity:0.4}
 }
+
+.skipButton{
+  position:absolute;
+  bottom:20px;
+  right:20px;
+  background:rgba(255,209,102,0.9);
+  color:#0f1c33;
+  border:none;
+  padding:10px 20px;
+  border-radius:20px;
+  font-family:"Dancing Script", cursive;
+  font-weight:600;
+  font-size:1rem;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  animation:fadeInDelayed 2s ease-out forwards;
+  opacity:0;
+}
+.skipButton:hover{
+  background:var(--gold);
+  transform:scale(1.05);
+}
+@keyframes fadeInDelayed{
+  0%{opacity:0;transform:translateY(20px)}
+  100%{opacity:1;transform:translateY(0)}
+}

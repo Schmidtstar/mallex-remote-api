@@ -32,13 +32,37 @@ ContextProviders.displayName = 'ContextProviders'
 
 const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleIntroComplete = () => {
-    setShowIntro(false)
+    setIsLoading(true)
+    // Smooth transition mit Loading-Feedback
+    setTimeout(() => {
+      setShowIntro(false)
+      setIsLoading(false)
+    }, 300)
   }
 
   if (showIntro) {
     return <AppIntro onComplete={handleIntroComplete} />
+  }
+
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: '100vh',
+        background: 'linear-gradient(#0b1327, #0b0f1b)',
+        color: '#fff'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚔️</div>
+          <div>Die Arena wird vorbereitet...</div>
+        </div>
+      </div>
+    )
   }
 
   return (

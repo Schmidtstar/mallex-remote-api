@@ -1,12 +1,12 @@
 import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import ErrorBoundary from './components/ErrorBoundary'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 
-// Lazy load components mit korrigierter Syntax
+// Lazy load components mit Prioritäts-System
 const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout'))
-const ArenaScreen = React.lazy(() => import(/* webpackPrefetch: true */ './features/Arena/ArenaScreen'))
+const ArenaScreen = React.lazy(() => import(/* webpackPreload: true */ './features/Arena/ArenaScreen'))
 const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))
 const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
 const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))

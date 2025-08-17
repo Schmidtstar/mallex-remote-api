@@ -69,17 +69,28 @@ class PerformanceMonitor {
       timestamp: Date.now()
     })
 
-    // Cache-Performance analysieren
+    // Erweiterte Cache-Performance Analyse
     if (metric.type === 'FETCH_PERFORMANCE') {
-      if (metric.cacheHit) {
-        console.log(`⚡ Cache Hit: ${metric.url} (${Math.round(metric.duration)}ms)`)
-      } else {
-        console.log(`🌐 Network: ${metric.url} (${Math.round(metric.duration)}ms)`)
+      const emoji = metric.cacheHit ? '⚡' : metric.online ? '🌐' : '📱'
+      const status = metric.cacheHit ? 'Cache Hit' : metric.online ? 'Network' : 'Offline'
+      
+      console.log(`${emoji} ${status}: ${metric.url} (${Math.round(metric.duration)}ms)`, {
+        strategy: metric.strategy,
+        cacheHitRate: metric.stats?.cacheHitRate ? `${metric.stats.cacheHitRate}%` : 'N/A',
+        totalRequests: metric.stats?.totalRequests || 0
+      })
+
+      // Performance-Thresholds mit Context
+      if (metric.duration > 2000) {
+        console.warn(`🐌 Langsamer Request: ${metric.url} (${Math.round(metric.duration)}ms)`, {
+          strategy: metric.strategy,
+          suggestion: metric.cacheHit ? 'Cache-Strategie überprüfen' : 'Network-Optimierung nötig'
+        })
       }
 
-      // Performance-Thresholds
-      if (metric.duration > 2000) {
-        console.warn(`🐌 Langsamer Request: ${metric.url} (${Math.round(metric.duration)}ms)`)
+      // Offline-Tracking
+      if (!metric.online && metric.stats?.offlineRequests) {
+        console.log(`📱 Offline-Modus: ${metric.stats.offlineRequests} Requests verarbeitet`)
       }
     }
   }

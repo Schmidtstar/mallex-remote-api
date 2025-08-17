@@ -70,38 +70,63 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
 // Enhanced Service Worker Registration mit Performance-Integration
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('✅ MALLEX Service Worker registriert:', registration.scope)
+  // Import PerformanceMonitor für Service Worker Integration
+  import('./lib/performance-monitor').then(({ PerformanceMonitor }) => {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('✅ MALLEX Service Worker v2.2.0 registriert:', registration.scope)
 
-        // Service Worker Updates überwachen
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('🔄 Neuer Service Worker verfügbar - Update empfohlen')
-                // Optional: User über Update informieren
-              }
-            })
-          }
+          // Service Worker Updates überwachen
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('🔄 Service Worker Update verfügbar - Reload empfohlen')
+                  
+                  // Optional: User-freundliche Update-Benachrichtigung
+                  MonitoringService.trackUserAction('sw_update_available')
+                  
+                  // Auto-Update nach 5 Sekunden (nur im Dev-Mode)
+                  if (import.meta.env.DEV) {
+                    setTimeout(() => {
+                      window.location.reload()
+                    }, 5000)
+                  }
+                }
+              })
+            }
+          })
+
+          // Performance-Monitoring aktivieren
+          PerformanceMonitor.init()
         })
-      })
-      .catch((error) => {
-        console.log('❌ Service Worker Registration fehlgeschlagen:', error)
+        .catch((error) => {
+          console.error('❌ Service Worker Registration fehlgeschlagen:', error)
+          MonitoringService.trackError('sw_registration_failed', { error: error.message })
+        })
+
+      // Service Worker Message-Handler für Performance-Metrics
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
+          PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+        }
       })
 
-    // Service Worker Message-Handler für Performance-Metrics
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-        // Assuming PerformanceMonitor is available in this scope or imported
-        // If PerformanceMonitor is not globally available, it needs to be imported.
-        // For now, assuming it's accessible or needs to be uncommented/added.
-        // PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
-        console.log('Received SW performance metric:', event.data.metric); // Placeholder if PerformanceMonitor is not set up
-      }
+      // Offline/Online Status-Updates
+      window.addEventListener('online', () => {
+        console.log('🌐 Verbindung wiederhergestellt')
+        MonitoringService.trackUserAction('connection_restored')
+      })
+
+      window.addEventListener('offline', () => {
+        console.log('📱 Offline-Modus aktiviert')
+        MonitoringService.trackUserAction('connection_lost')
+      })
     })
+  }).catch(err => {
+    console.warn('Performance Monitor konnte nicht geladen werden:', err)
   })
 }
 

@@ -6,33 +6,61 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 import { EnhancedLoadingSpinner } from './components/EnhancedLoadingSpinner'
 
-// MonitoringService Import fix
-let MonitoringService: any
-try {
-  const monitoring = await import('./lib/monitoring')
+// MonitoringService Import fix - Synchronous fallback
+let MonitoringService: any = { trackError: () => {} }
+
+// Async import with fallback
+import('./lib/monitoring').then((monitoring) => {
   MonitoringService = monitoring.MonitoringService
-} catch {
-  MonitoringService = { trackError: () => {} }
-}
+}).catch(() => {
+  console.warn('MonitoringService fallback used')
+})
 
 // Safe lazy loading with better error handling
 const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => {
   return lazy(async () => {
     try {
       const module = await importFn()
-      // Ensure we have a valid default export
-      const Component = module.default || module[componentName] || module
-      if (typeof Component !== 'function') {
+      
+      // Multiple fallback strategies
+      const Component = module.default || 
+                       module[componentName] || 
+                       module.ArenaScreen || 
+                       module.LegendsScreen ||
+                       module.LeaderboardScreen ||
+                       module.MenuScreen ||
+                       module.TasksOverviewScreen ||
+                       module.SuggestTaskScreen ||
+                       module.AdminTasksScreen ||
+                       module.AdminDashboard ||
+                       module.RequireAdmin ||
+                       module.AuthScreen ||
+                       module.NotificationCenter ||
+                       module.PrivacyDashboard ||
+                       module.TabLayout ||
+                       Object.values(module)[0]
+      
+      if (typeof Component !== 'function' && typeof Component !== 'object') {
         throw new Error(`No valid component found for ${componentName}`)
       }
+      
       return { default: Component }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to load ${componentName}:`, error)
-      MonitoringService?.trackError?.('lazy_loading_error', {
-        component: componentName,
-        error: error.message
-      })
-      // Return fallback component
+      
+      // Safe error tracking
+      try {
+        if (MonitoringService && typeof MonitoringService.trackError === 'function') {
+          MonitoringService.trackError('lazy_loading_error', {
+            component: componentName,
+            error: error?.message || 'Unknown error'
+          })
+        }
+      } catch (trackingError) {
+        console.warn('Error tracking failed:', trackingError)
+      }
+      
+      // Return enhanced fallback component
       return {
         default: () => (
           <div style={{
@@ -42,22 +70,36 @@ const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => 
             justifyContent: 'center',
             height: '60vh',
             gap: '1rem',
-            color: 'var(--ancient-bronze)'
+            color: '#c9aa71',
+            background: 'linear-gradient(135deg, #0b1327 0%, #0b0f1b 100%)',
+            padding: '2rem',
+            borderRadius: '12px',
+            margin: '1rem'
           }}>
             <div style={{ fontSize: '3rem' }}>⚠️</div>
-            <h3>{componentName} konnte nicht geladen werden</h3>
+            <h3 style={{ margin: '0.5rem 0', color: '#c9aa71' }}>
+              {componentName} konnte nicht geladen werden
+            </h3>
+            <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '1rem' }}>
+              Möglicherweise ist ein temporärer Fehler aufgetreten.
+            </p>
             <button
               onClick={() => window.location.reload()}
               style={{
-                padding: '8px 16px',
-                background: 'var(--ancient-gold)',
-                color: 'var(--ancient-night)',
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #c9aa71 0%, #8b7355 100%)',
+                color: '#0b0f1b',
                 border: 'none',
-                borderRadius: 'var(--radius)',
-                cursor: 'pointer'
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                transition: 'transform 0.2s ease'
               }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              Seite neu laden
+              🔄 Seite neu laden
             </button>
           </div>
         )

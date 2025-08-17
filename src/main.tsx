@@ -96,12 +96,13 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
       if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
         // Safe dynamic import with error handling
         import('./lib/performance-monitor').then((module) => {
-          const PerformanceMonitor = module.default || module.PerformanceMonitor
+          const PerformanceMonitor = module.default || module.PerformanceMonitor || module
           if (PerformanceMonitor && typeof PerformanceMonitor.trackServiceWorkerMetric === 'function') {
             PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
           }
-        }).catch(() => {
+        }).catch((error) => {
           // Silent fail - Performance Monitor ist optional
+          console.warn('Performance Monitor konnte nicht geladen werden:', error)
         })
       }
     })

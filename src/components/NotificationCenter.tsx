@@ -74,11 +74,22 @@ function NotificationCenter() {
           setNotifications(notificationsData)
           setLoading(false)
         }, (error) => {
-          // Only log unexpected errors, not permission-denied which is normal
-          if (error.code !== 'failed-precondition' && error.code !== 'permission-denied') {
+          // Handle permission errors gracefully
+          if (error.code === 'permission-denied') {
+            console.log('📋 Firebase Berechtigung verweigert - Demo-Modus aktiviert')
+            // Create demo notification for better UX
+            setNotifications([{
+              id: 'demo_1',
+              message: '👋 Willkommen! Dies ist eine Demo-Benachrichtigung.',
+              timestamp: new Date(),
+              type: 'welcome',
+              read: false,
+              fromAdmin: 'System'
+            }])
+          } else if (error.code !== 'failed-precondition') {
             console.error('Fehler beim Laden der Benachrichtigungen:', error)
           } else {
-            console.log('📋 Benachrichtigungen nicht verfügbar - Firebase Regeln oder Offline-Modus')
+            console.log('📋 Firebase offline - lokaler Demo-Modus')
           }
           setLoading(false)
         })

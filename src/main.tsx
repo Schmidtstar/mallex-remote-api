@@ -128,8 +128,12 @@ if ('serviceWorker' in navigator) {
             }
           })
 
-          // Performance-Monitoring aktivieren
-          PerformanceMonitor.init()
+          // PerformanceMonitor & Service Worker
+          try {
+            PerformanceMonitor.init()
+          } catch (error) {
+            console.log('Performance Monitor konnte nicht geladen werden:', error)
+          }
         })
         .catch((error) => {
           console.error('❌ Service Worker Registration fehlgeschlagen:', error)

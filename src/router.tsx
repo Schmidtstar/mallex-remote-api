@@ -7,7 +7,7 @@ import { LoadingSpinner } from './components/LoadingSpinner'
 
 // Clean lazy loading - nur EINE Definition pro Component
 const TabLayout = React.lazy(() => import('./layouts/TabLayout'))
-const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen })))
+const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen'))
 const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))
 const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
 const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))

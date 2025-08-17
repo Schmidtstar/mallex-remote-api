@@ -18,20 +18,20 @@ export class PerformanceMonitor {
   private static serviceWorkerMetrics = new Map<string, any[]>()
 
   static init() {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
-    // Web Vitals Tracking
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(this.trackWebVital.bind(this))
-      getFID(this.trackWebVital.bind(this))
-      getFCP(this.trackWebVital.bind(this))
-      getLCP(this.trackWebVital.bind(this))
-      getTTFB(this.trackWebVital.bind(this))
-    }).catch(err => {
-      if (import.meta.env.DEV) {
-        console.warn('Web Vitals nicht verfügbar:', err)
-      }
-    })
+    // Optional web-vitals import with fallback
+    import("web-vitals").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(this.trackWebVital.bind(this));
+      getFID(this.trackWebVital.bind(this));
+      getFCP(this.trackWebVital.bind(this));
+      getLCP(this.trackWebVital.bind(this));
+      getTTFB(this.trackWebVital.bind(this));
+      console.log('📊 Web Vitals monitoring active');
+    }).catch(() => {
+      console.log('📊 Web Vitals not available, using basic performance monitoring');
+      this.initBasicMonitoring();
+    });
 
     // Navigation Timing
     this.trackNavigationTiming()
@@ -41,6 +41,29 @@ export class PerformanceMonitor {
 
     // Service Worker Metrics Tracking
     this.initServiceWorkerMetrics()
+  }
+
+  static initBasicMonitoring() {
+    // Basic performance monitoring without web-vitals
+    window.addEventListener('load', () => {
+      const loadTime = performance.now();
+      this.trackMetric({
+        name: 'page_load_time',
+        value: loadTime,
+        timestamp: Date.now()
+      });
+    });
+
+    // Monitor navigation timing
+    if (performance.navigation) {
+      const navTiming = performance.timing;
+      const loadTime = navTiming.loadEventEnd - navTiming.navigationStart;
+      this.trackMetric({
+        name: 'navigation_timing',
+        value: loadTime,
+        timestamp: Date.now()
+      });
+    }
   }
 
   static initServiceWorkerMetrics() {
@@ -351,6 +374,15 @@ export class PerformanceMonitor {
       memoryUsage: sum.memoryUsage / count,
       itemsRendered: sum.itemsRendered / count
     };
+  }
+
+  static trackMetric(metric: { name: string; value: number; timestamp: number }) {
+    const key = `basic_${metric.name}`;
+    if (!this.metrics.has(key)) {
+      this.metrics.set(key, []);
+    }
+    this.metrics.get(key)!.push(metric.value);
+    console.log(`📊 Basic Metric ${metric.name}: ${Math.round(metric.value)}ms`);
   }
 }
 

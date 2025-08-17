@@ -11,7 +11,10 @@ import styles from '../../layouts/TabLayout.module.css'
 import { useAuth } from '../../context/AuthContext'
 import ErrorBoundary from '../../components/ErrorBoundary'
 import { MonitoringService } from '../../lib/monitoring'
-import { SecurityManager } from '../../lib/security'
+import { SecurityLayer } from '../../lib/security'
+import { FirebaseOptimizer } from '../../lib/firebase-optimized'
+import { AchievementSystem, NotificationData } from '../../lib/achievement-system'
+import AchievementNotification from '../../components/AchievementNotification'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 
@@ -45,6 +48,10 @@ export function ArenaScreen() {
   // Task Data
   const [firestoreTasks, setFirestoreTasks] = useState<{[key: string]: string[]}>({})
   const [loadingTasks, setLoadingTasks] = useState(false)
+
+  // Achievement Notification State
+  const [achievementNotification, setAchievementNotification] = useState<NotificationData | null>(null)
+  const [gameStartTime, setGameStartTime] = useState<number>(0) // Track game start time for duration
 
   // Load all tasks for all categories on mount
   useEffect(() => {
@@ -121,7 +128,7 @@ export function ArenaScreen() {
   const startGame = () => {
     const endTimer = MonitoringService.startTimer('arena_game_start')
     MonitoringService.trackUserAction('arena_start', { playersCount: players.length })
-    
+
     try {
       const category = getRandomCategory()
       const player = getRandomPlayer()
@@ -132,7 +139,8 @@ export function ArenaScreen() {
       setCurrentTask(task)
       setCurrentRound(1)
       setGameState('playing')
-      
+      setGameStartTime(Date.now()) // Track start time
+
       endTimer()
     } catch (error) {
       MonitoringService.trackError(error as Error, { context: 'arena_start' })
@@ -159,7 +167,7 @@ export function ArenaScreen() {
       if (spinCounter >= 8) {
         clearInterval(spinInterval)
         setIsSpinning(false)
-        setGameState('waiting-action')
+        setGameState('task-revealed') // Changed from waiting-action to task-revealed for clarity
 
         // Final haptic feedback
         if ('vibrate' in navigator) {
@@ -246,6 +254,7 @@ export function ArenaScreen() {
     // Reset drinking game state
     setDrinkingSips(0)
     setTaskResult('')
+    setGameStartTime(Date.now()) // Reset game start time for the new round
   }
 
   const endGame = () => {
@@ -256,6 +265,7 @@ export function ArenaScreen() {
     setCurrentTask('')
     setDrinkingSips(0)
     setTaskResult('')
+    setAchievementNotification(null) // Clear any pending notifications
   }
 
   // Memoize mobile detection to prevent re-calculations
@@ -605,57 +615,185 @@ export function ArenaScreen() {
 
       case 'task-revealed':
         return (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '10px' }}>
+            {/* Kompakter Runden-Header */}
             <div style={{ 
-              background: 'var(--primary)', 
-              color: 'var(--bg)', 
-              padding: '10px 20px', 
+              background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
+              color: 'var(--ancient-night)', 
+              padding: isMobile ? '8px 15px' : '15px 30px', 
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
-              display: 'inline-block'
+              marginBottom: '1rem',
+              display: 'inline-block',
+              border: '2px solid var(--olympic-victory)',
+              boxShadow: '0 5px 20px rgba(255,107,53,0.5)',
+              fontWeight: 'bold',
+              fontSize: isMobile ? '0.9rem' : '1.2rem',
+              textTransform: 'uppercase'
             }}>
-              Runde {currentRound} - {t(`arena.categories.${selectedCategory}`)}
+              ⚔️ RUNDE {currentRound} ⚔️
             </div>
 
+            {/* Spieler & Kategorie Info - Kompakt */}
             <div style={{
-              background: 'rgba(var(--primary-rgb), 0.1)',
-              padding: '20px',
+              background: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(218,165,32,0.1))',
+              padding: isMobile ? '1rem' : '2rem',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem'
+              marginBottom: '1rem',
+              border: '2px solid var(--ancient-gold)'
             }}>
-              <h3 style={{ marginBottom: '10px', fontSize: '1.3rem' }}>
-                🎯 {selectedPlayer}
+              <div style={{ fontSize: isMobile ? '2rem' : '3rem', marginBottom: '0.5rem' }}>⚡</div>
+              <h3 style={{ 
+                marginBottom: '0.5rem', 
+                fontSize: isMobile ? '1rem' : '1.6rem',
+                color: 'var(--olympic-victory)',
+                fontWeight: 'bold'
+              }}>
+                🎯 {selectedPlayer.toUpperCase()}! 🎯
               </h3>
+              <div style={{ 
+                fontSize: isMobile ? '0.9rem' : '1.2rem',
+                color: 'var(--ancient-gold)',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                marginTop: '0.5rem'
+              }}>
+                🎭 {t(`arena.categories.${selectedCategory}`)} 🎭
+              </div>
             </div>
 
-            <div className={styles.challengeCard}>
-              <p className={`${styles.challengeText} ${styles.revealed}`}>
-                {currentTask}
-              </p>
-            </div>
+            {/* Aufgaben-Anzeige - Mobile kompakt */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(218,165,32,0.3), rgba(255,215,0,0.2))',
+              padding: isMobile ? '1.5rem' : '2.5rem',
+              borderRadius: 'var(--radius)',
+              marginBottom: '1.5rem',
+              border: '3px solid var(--olympic-victory)',
+              boxShadow: '0 15px 40px rgba(218,165,32,0.4)',
+              position: 'relative'
+            }}>
+              {!isMobile && (
+                <div style={{ 
+                  position: 'absolute',
+                  top: '10px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '1.2rem',
+                  opacity: 0.6
+                }}>
+                  🌿 ⚱️ 🌿
+                </div>
+              )}
 
-            <button
-              onClick={waitForAction}
-              style={{
-                padding: '16px 32px',
-                fontSize: '1.2rem',
-                background: 'var(--accent)',
-                color: 'var(--bg)',
-                border: 'none',
+              <div style={{ fontSize: isMobile ? '2rem' : '2.5rem', marginBottom: '1rem' }}>📜</div>
+
+              <div style={{
+                background: 'var(--glass-background)',
+                backdropFilter: 'var(--glass-blur)',
+                padding: isMobile ? '1rem' : '2rem',
                 borderRadius: 'var(--radius)',
-                cursor: 'pointer',
-                marginTop: '2rem'
-              }}
-            >
-              Los geht's! 🚀
-            </button>
+                border: '2px solid rgba(255,215,0,0.5)',
+                minHeight: isMobile ? '60px' : '100px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <p style={{ 
+                  fontSize: isMobile ? '0.95rem' : '1.3rem',
+                  color: 'var(--ancient-marble)',
+                  fontWeight: '600',
+                  lineHeight: '1.4',
+                  textAlign: 'center'
+                }}>
+                  {currentTask}
+                </p>
+              </div>
+
+              <div style={{
+                marginTop: '1rem',
+                color: 'var(--olympic-flame)',
+                fontSize: isMobile ? '0.8rem' : '1.1rem',
+                fontStyle: 'italic',
+                fontWeight: 'bold'
+              }}>
+                🔥 Das Urteil der Götter! 🔥
+              </div>
+            </div>
+
+            {/* Action Buttons - Touch optimiert */}
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: isMobile ? '10px' : '15px',
+              maxWidth: isMobile ? '100%' : '400px',
+              margin: '0 auto'
+            }}>
+              <button
+                onClick={waitForAction}
+                style={{
+                  padding: isMobile ? '15px 25px' : '20px 40px',
+                  fontSize: isMobile ? '1rem' : '1.3rem',
+                  background: 'linear-gradient(135deg, var(--olympic-victory), #DAA520)',
+                  color: 'var(--ancient-night)',
+                  border: `3px solid var(--olympic-flame)`,
+                  borderRadius: 'var(--radius)',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 8px 25px rgba(218,165,32,0.4)',
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
+                }}
+              >
+                ⚡ ICH BIN BEREIT ⚡
+              </button>
+
+              <button
+                onClick={handleTaskSkipped}
+                style={{
+                  padding: isMobile ? '12px 20px' : '18px 28px',
+                  fontSize: isMobile ? '0.85rem' : '1.1rem',
+                  background: 'linear-gradient(135deg, #FF9800, #F57C00)',
+                  color: 'white',
+                  border: '3px solid #FF8F00',
+                  borderRadius: 'var(--radius)',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 6px 20px rgba(255,152,0,0.4)',
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
+                }}
+              >
+                ⏭️ NÄCHSTE PRÜFUNG! ⏭️
+              </button>
+
+              <button
+                onClick={endGame}
+                style={{
+                  padding: isMobile ? '10px 15px' : '15px 25px',
+                  fontSize: isMobile ? '0.8rem' : '1rem',
+                  background: 'transparent',
+                  color: 'var(--ancient-stone)',
+                  border: '2px solid var(--ancient-stone)',
+                  borderRadius: 'var(--radius)',
+                  cursor: 'pointer',
+                  marginTop: isMobile ? '10px' : '20px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  transition: 'all 0.3s ease',
+                  touchAction: 'manipulation'
+                }}
+              >
+                💀 ARENA VERLASSEN 💀
+              </button>
+            </div>
           </div>
         )
 
       case 'waiting-action':
         return (
           <div style={{ textAlign: 'center', padding: '10px' }}>
-            {/* Kompakter Header */}
+            {/* Kompakter Runden-Header */}
             <div style={{ 
               background: 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))', 
               color: 'var(--ancient-night)', 
@@ -863,16 +1001,17 @@ export function ArenaScreen() {
 
       case 'drinking-result':
         return (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '10px' }}>
             <div style={{ 
               background: 'var(--gradient-gold)', 
               color: 'var(--ancient-night)', 
-              padding: '15px 30px', 
+              padding: isMobile ? '10px 20px' : '15px 30px', 
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               display: 'inline-block',
               border: '2px solid var(--ancient-gold)',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: isMobile ? '1rem' : '1.2rem'
             }}>
               🏛️ Runde {currentRound} - Olympisches Urteil! 🍷
             </div>
@@ -881,14 +1020,14 @@ export function ArenaScreen() {
               background: taskResult === 'success' 
                 ? 'linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(218, 165, 32, 0.1))'
                 : 'linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(139, 125, 107, 0.1))',
-              padding: '30px',
+              padding: isMobile ? '20px' : '30px',
               borderRadius: 'var(--radius)',
-              marginBottom: '2rem',
+              marginBottom: '1rem',
               border: `3px solid ${taskResult === 'success' ? 'var(--olympic-victory)' : 'var(--ancient-bronze)'}`,
               backdropFilter: 'var(--glass-blur)',
               position: 'relative'
             }}>
-              <div style={{ fontSize: '5rem', marginBottom: '15px' }}>
+              <div style={{ fontSize: isMobile ? '3rem' : '5rem', marginBottom: '15px' }}>
                 {taskResult === 'success' ? '🏆' : '⚱️'}
               </div>
 
@@ -907,7 +1046,7 @@ export function ArenaScreen() {
               <h2 style={{ 
                 color: taskResult === 'success' ? 'var(--olympic-victory)' : 'var(--ancient-bronze)',
                 marginBottom: '20px',
-                fontSize: '1.8rem',
+                fontSize: isMobile ? '1.4rem' : '1.8rem',
                 fontWeight: 'bold'
               }}>
                 {taskResult === 'success' ? '🎊 Olympischer Sieg! 🎊' : '⚔️ Ehrenvolle Niederlage ⚔️'}
@@ -916,12 +1055,12 @@ export function ArenaScreen() {
               <div style={{
                 background: taskResult === 'success' ? '#4CAF50' : '#F44336',
                 color: 'white',
-                padding: '20px',
+                padding: isMobile ? '15px' : '20px',
                 borderRadius: 'var(--radius)',
-                fontSize: '1.3rem',
+                fontSize: isMobile ? '1.1rem' : '1.3rem',
                 fontWeight: 'bold'
               }}>
-                <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🥃</div>
+                <div style={{ fontSize: isMobile ? '1.5rem' : '2rem', marginBottom: '10px' }}>🥃</div>
                 <div>
                   {drinkingSips} {drinkingSips === 1 ? 'Schluck' : 'Schlücke'}
                 </div>
@@ -929,7 +1068,7 @@ export function ArenaScreen() {
 
               <p style={{ 
                 marginTop: '20px', 
-                fontSize: '1.2rem',
+                fontSize: isMobile ? '1rem' : '1.2rem',
                 color: taskResult === 'success' ? '#4CAF50' : '#F44336',
                 fontWeight: '600'
               }}>
@@ -943,14 +1082,17 @@ export function ArenaScreen() {
             <button
               onClick={nextRound}
               style={{
-                padding: '20px 40px',
-                fontSize: '1.3rem',
+                padding: isMobile ? '15px 25px' : '20px 40px',
+                fontSize: isMobile ? '1rem' : '1.3rem',
                 background: 'var(--primary)',
                 color: 'var(--bg)',
                 border: 'none',
                 borderRadius: 'var(--radius)',
                 cursor: 'pointer',
-                marginBottom: '1rem'
+                marginBottom: '1rem',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
               }}
             >
               Nächste Runde! 🎮
@@ -993,6 +1135,10 @@ export function ArenaScreen() {
       paddingBottom: window.innerWidth < 768 ? '80px' : '24px' // Platz für Bottom Nav
     }}>
       {renderGameContent()}
+      <AchievementNotification
+        notification={achievementNotification}
+        onClose={() => setAchievementNotification(null)}
+      />
     </div>
   )
 }

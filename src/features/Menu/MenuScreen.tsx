@@ -9,6 +9,10 @@ import { nationalityOptions } from '../../lib/options';
 import styles from './MenuScreen.module.css';
 import CachePerformanceDashboard from '../../components/CachePerformanceDashboard';
 import GDPRCompliance from '../../components/GDPRCompliance';
+// Placeholder for the AchievementScreen component
+const AchievementScreen = () => <div>Achievement Screen Content</div>;
+// Placeholder for BottomNavigation component
+const BottomNavigation = () => <div style={{ height: '60px', backgroundColor: '#f0f0f0', marginTop: '20px' }}>Bottom Nav</div>;
 
 
 interface UserProfile {
@@ -173,6 +177,12 @@ export function MenuScreen() {
           {t('menu.profile')}
         </button>
         <button
+          className={`${styles.tab} ${currentTab === 'achievements' ? styles.active : ''}`}
+          onClick={() => handleTabChange('achievements')}
+        >
+          🏆 Erfolge
+        </button>
+        <button
           className={`${styles.tab} ${currentTab === 'settings' ? styles.active : ''}`}
           onClick={() => handleTabChange('settings')}
         >
@@ -197,104 +207,102 @@ export function MenuScreen() {
                 <p><strong>{t('profile.email')}:</strong> {user.email || t('profile.anonymous')}</p>
 
                 {!user.isAnonymous && userProfile && (
-                  <>
-                    {!isEditing ? (
-                      <div className={styles.profileData}>
-                        <p><strong>{t('profile.displayName')}:</strong> {userProfile.displayName || userProfile.email || 'Unbekannter Benutzer'}</p>
-                        {userProfile.birthdate && (
-                          <p>
-                            <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthdate)}
-                            {calcAgeFromISO(userProfile.birthdate) && (
-                              <span className={styles.age}>
-                                ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthdate) || 0 })})
-                              </span>
-                            )}
-                          </p>
+                  <div className={styles.profileData}>
+                    <p><strong>{t('profile.displayName')}:</strong> {userProfile.displayName || userProfile.email || 'Unbekannter Benutzer'}</p>
+                    {userProfile.birthdate && (
+                      <p>
+                        <strong>{t('profile.birthdate')}:</strong> {formatISOToDob(userProfile.birthdate)}
+                        {calcAgeFromISO(userProfile.birthdate) && (
+                          <span className={styles.age}>
+                            ({t('profile.ageYears', { count: calcAgeFromISO(userProfile.birthdate) || 0 })})
+                          </span>
                         )}
-                        {userProfile.gender && (
-                          <p><strong>{t('profile.gender')}:</strong> {t(`profile.gender_${userProfile.gender}`)}</p>
-                        )}
-                        {userProfile.nationality && (
-                          <p><strong>{t('profile.nationality')}:</strong> {t(`countries.${userProfile.nationality}`)}</p>
-                        )}
-
-                        <button
-                          onClick={() => setIsEditing(true)}
-                          className={styles.editButton}
-                        >
-                          {t('profile.edit')}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className={styles.editForm}>
-                        <input
-                          type="text"
-                          value={editForm.displayName}
-                          onChange={(e) => setEditForm({...editForm, displayName: e.target.value})}
-                          placeholder={t('profile.displayName')}
-                          className={styles.input}
-                        />
-                        <input
-                          type="text"
-                          value={editForm.birthDate}
-                          onChange={(e) => setEditForm({...editForm, birthDate: e.target.value})}
-                          placeholder="DD.MM.YYYY"
-                          className={styles.input}
-                        />
-
-                        <div className={styles.genderGroup}>
-                          <label className={styles.label}>{t('profile.gender')}</label>
-                          <div className={styles.buttonGroup}>
-                            {genderOptions.map(option => (
-                              <button
-                                key={option.value}
-                                type="button"
-                                className={`${styles.genderButton} ${editForm.gender === option.value ? styles.active : ''}`}
-                                onClick={() => setEditForm({...editForm, gender: option.value as any})}
-                              >
-                                {t(option.labelKey)}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <select
-                          value={editForm.nationality}
-                          onChange={(e) => setEditForm({...editForm, nationality: e.target.value})}
-                          className={styles.input}
-                        >
-                          <option value="">{t('profile.nationality')}</option>
-                          {nationalityOptions.map(country => (
-                            <option key={country} value={country}>
-                              {t(`countries.${country}`)}
-                            </option>
-                          ))}
-                        </select>
-
-                        <div className={styles.buttonGroup}>
-                          <button
-                            onClick={handleEditSave}
-                            className={styles.saveButton}
-                            disabled={profileLoading}
-                          >
-                            {profileLoading ? t('common.loading') : t('profile.save')}
-                          </button>
-                          <button
-                            onClick={handleEditCancel}
-                            className={styles.cancelButton}
-                          >
-                            Abbrechen
-                          </button>
-                        </div>
-
-                        {message && (
-                          <p className={message.includes(t('profile.saved')) ? styles.success : styles.error}>
-                            {message}
-                          </p>
-                        )}
-                      </div>
+                      </p>
                     )}
-                  </>
+                    {userProfile.gender && (
+                      <p><strong>{t('profile.gender')}:</strong> {t(`profile.gender_${userProfile.gender}`)}</p>
+                    )}
+                    {userProfile.nationality && (
+                      <p><strong>{t('profile.nationality')}:</strong> {t(`countries.${userProfile.nationality}`)}</p>
+                    )}
+
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className={styles.editButton}
+                    >
+                      {t('profile.edit')}
+                    </button>
+                  </div>
+                )}
+
+                {!isEditing && !user.isAnonymous && userProfile && (
+                  <div className={styles.editForm}>
+                    <input
+                      type="text"
+                      value={editForm.displayName}
+                      onChange={(e) => setEditForm({...editForm, displayName: e.target.value})}
+                      placeholder={t('profile.displayName')}
+                      className={styles.input}
+                    />
+                    <input
+                      type="text"
+                      value={editForm.birthDate}
+                      onChange={(e) => setEditForm({...editForm, birthDate: e.target.value})}
+                      placeholder="DD.MM.YYYY"
+                      className={styles.input}
+                    />
+
+                    <div className={styles.genderGroup}>
+                      <label className={styles.label}>{t('profile.gender')}</label>
+                      <div className={styles.buttonGroup}>
+                        {genderOptions.map(option => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            className={`${styles.genderButton} ${editForm.gender === option.value ? styles.active : ''}`}
+                            onClick={() => setEditForm({...editForm, gender: option.value as any})}
+                          >
+                            {t(option.labelKey)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <select
+                      value={editForm.nationality}
+                      onChange={(e) => setEditForm({...editForm, nationality: e.target.value})}
+                      className={styles.input}
+                    >
+                      <option value="">{t('profile.nationality')}</option>
+                      {nationalityOptions.map(country => (
+                        <option key={country} value={country}>
+                          {t(`countries.${country}`)}
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className={styles.buttonGroup}>
+                      <button
+                        onClick={handleEditSave}
+                        className={styles.saveButton}
+                        disabled={profileLoading}
+                      >
+                        {profileLoading ? t('common.loading') : t('profile.save')}
+                      </button>
+                      <button
+                        onClick={handleEditCancel}
+                        className={styles.cancelButton}
+                      >
+                        Abbrechen
+                      </button>
+                    </div>
+
+                    {message && (
+                      <p className={message.includes(t('profile.saved')) ? styles.success : styles.error}>
+                        {message}
+                      </p>
+                    )}
+                  </div>
                 )}
 
                 {!user.isAnonymous && userProfile && (
@@ -335,6 +343,10 @@ export function MenuScreen() {
               </div>
             )}
           </div>
+        )}
+
+        {currentTab === 'achievements' && (
+          <AchievementScreen />
         )}
 
         {currentTab === 'settings' && (

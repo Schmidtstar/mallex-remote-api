@@ -12,6 +12,8 @@ const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'
 const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
 const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))
 const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen'))
+const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen'))
+const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen'))
 const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'))
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
 const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen'))
@@ -76,8 +78,17 @@ const routes = [
       },
       {
         path: 'tasks/suggest',
-        element: <Navigate to="/tasks?tab=suggest" replace />,
-        errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
+        element: <SuggestTaskScreen />,
+        errorElement: <ErrorBoundary><div>Fehler beim Vorschlagen von Aufgaben</div></ErrorBoundary>
+      },
+      {
+        path: 'tasks/admin',
+        element: (
+          <RequireAdmin>
+            <AdminTasksScreen />
+          </RequireAdmin>
+        ),
+        errorElement: <ErrorBoundary><div>Fehler im Admin-Tasks-Bereich</div></ErrorBoundary>
       },
       {
         path: 'admin',

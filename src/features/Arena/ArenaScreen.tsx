@@ -16,7 +16,7 @@ import { FirebaseOptimizer } from '../../lib/firebase-optimized'
 import { AchievementSystem, NotificationData } from '../../lib/achievement-system'
 import AchievementNotification from '../../components/AchievementNotification'
 // Assume SoundManager is imported and configured elsewhere
-import { SoundManager } from '../../lib/soundManager' // Placeholder import
+import { SoundManager } from '../../lib/sound-manager'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 

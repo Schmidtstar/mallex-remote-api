@@ -9,6 +9,7 @@ import { AdminSettingsProvider } from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import AppIntro from './components/AppIntro'
+import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
 
@@ -42,6 +43,7 @@ const App: React.FC = () => {
   return (
     <ContextProviders>
       <RouterProvider key="main-router" router={router} />
+      <PrivacyBanner />
     </ContextProviders>
   )
 }

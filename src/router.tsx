@@ -18,8 +18,7 @@ const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
 const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen'))
 const PostfachScreen = React.lazy(() => import('./components/NotificationCenter'))
-
-import { LoadingSpinner } from '../components/LoadingSpinner'
+import PrivacyDashboard from './features/Privacy/PrivacyDashboard'
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
@@ -83,46 +82,16 @@ const routes = [
         errorElement: <ErrorBoundary><div>Fehler beim Weiterleiten</div></ErrorBoundary>
       },
       {
-        path: 'admin',
-        element: <RequireAdmin />,
-        errorElement: <ErrorBoundary><div>Fehler beim Admin-Zugriff</div></ErrorBoundary>,
-        children: [
-          {
-            index: true,
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
-          },
-          {
-            path: 'dashboard',
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler im Admin Dashboard</div></ErrorBoundary>
-          },
-          {
-            path: 'users',
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler in Benutzerverwaltung</div></ErrorBoundary>
-          },
-          {
-            path: 'settings',
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler in Admin-Einstellungen</div></ErrorBoundary>
-          },
-          {
-            path: 'admins',
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler in Admin-Verwaltung</div></ErrorBoundary>
-          },
-          {
-            path: 'notifications',
-            element: <AdminDashboard />,
-            errorElement: <ErrorBoundary><div>Fehler in Benachrichtigungen</div></ErrorBoundary>
-          },
-          {
-            path: 'tasks',
-            element: <AdminTasksScreen />,
-            errorElement: <ErrorBoundary><div>Fehler im Adminbereich</div></ErrorBoundary>
-          }
-        ]
+        path: '/admin',
+        element: (
+          <RequireAdmin>
+            <AdminDashboard />
+          </RequireAdmin>
+        )
+      },
+      {
+        path: '/privacy',
+        element: <PrivacyDashboard />
       },
       {
         path: 'profile',

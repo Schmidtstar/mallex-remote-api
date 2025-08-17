@@ -1,0 +1,450 @@
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a2332 0%, #2a3441 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--olympic-gold);
+}
+
+.header h1 {
+  color: var(--olympic-gold);
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.header p {
+  color: #b8c5d1;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section h2 {
+  color: var(--olympic-gold);
+  font-size: 1.4rem;
+  margin: 0 0 16px 0;
+  font-weight: 600;
+}
+
+.section p {
+  color: #b8c5d1;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.settingsGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settingInfo {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.settingInfo strong {
+  color: var(--olympic-gold);
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.settingInfo p {
+  color: #8a9ba8;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.settingInfo small {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 12px;
+  display: block;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #6c757d;
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle input:checked + .slider {
+  background-color: var(--olympic-gold);
+}
+
+.toggle input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.exportButton {
+  background: linear-gradient(135deg, var(--olympic-gold), #e6b800);
+  color: #1a2332;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exportButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e6b800, #ccaa00);
+  transform: translateY(-1px);
+}
+
+.exportButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.exportInfo {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 8px;
+}
+
+.exportInfo h3 {
+  color: #28a745;
+  margin: 0 0 16px 0;
+}
+
+.exportStats {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  color: #b8c5d1;
+  font-size: 0.9rem;
+}
+
+.stat strong {
+  color: var(--olympic-gold);
+}
+
+.downloadButton {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.downloadButton:hover {
+  background: linear-gradient(135deg, #218838, #1abc9c);
+  transform: translateY(-1px);
+}
+
+.actionGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.actionCard {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.actionCard h3 {
+  color: var(--olympic-gold);
+  margin: 0 0 12px 0;
+}
+
+.actionCard p {
+  color: #b8c5d1;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.anonymizeButton {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  color: #1a2332;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.anonymizeButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e0a800, #d39e00);
+  transform: translateY(-1px);
+}
+
+.deleteButton {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+  transform: translateY(-1px);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: linear-gradient(135deg, #1a2332 0%, #2a3441 100%);
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  border: 2px solid #dc3545;
+}
+
+.modalContent h2 {
+  color: #dc3545;
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.modalContent p {
+  color: #b8c5d1;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.confirmInput {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #dc3545;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.confirmInput::placeholder {
+  color: #8a9ba8;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirmDelete {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmDelete:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+}
+
+.confirmDelete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelDelete {
+  background: transparent;
+  color: #b8c5d1;
+  padding: 12px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelDelete:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.legalSection {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.legalLinks {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.legalLinks a {
+  color: var(--olympic-gold);
+  text-decoration: none;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.legalLinks a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e6b800;
+  transform: translateY(-1px);
+}
+
+.notLoggedIn {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.notLoggedIn h2 {
+  color: var(--olympic-gold);
+  font-family: 'Dancing Script', cursive;
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.notLoggedIn p {
+  color: #b8c5d1;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .section {
+    padding: 20px 16px;
+  }
+  
+  .setting {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .settingInfo {
+    margin-right: 0;
+  }
+  
+  .actionGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modalContent {
+    padding: 24px 20px;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+  }
+  
+  .legalLinks {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider,
+  .exportButton,
+  .downloadButton,
+  .anonymizeButton,
+  .deleteButton,
+  .confirmDelete,
+  .cancelDelete,
+  .legalLinks a {
+    transition: none !important;
+  }
+}

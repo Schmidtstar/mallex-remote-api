@@ -1,22 +1,45 @@
-
 /* Antikes MALLEX Base Styling */
 *{
   box-sizing: border-box;
 }
 
-html, body, #root {
-  height: 100%;
-}
-
-body {
+/* Base Styles with Performance Optimizations */
+html, body {
   margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Georgia', 'Times New Roman', serif;
-  font-weight: var(--font-weight-normal);
-  line-height: 1.6;
+  padding: 0;
+  font-family: var(--font-primary);
+  background: var(--ancient-night);
+  color: var(--ancient-marble);
+  overflow-x: hidden;
+  /* Performance Optimizations */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  will-change: scroll-position;
+}
+
+/* GPU Acceleration für Animationen */
+.arena-container,
+.player-card,
+.challenge-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Touch Optimizations */
+button, 
+.touchable {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Scroll Performance */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 /* Antike Schriftarten Hierarchie */
@@ -169,15 +192,15 @@ button.danger {
   .md\:hidden {
     display: none !important;
   }
-  
+
   h1 {
     font-size: var(--font-size-2xl);
   }
-  
+
   h2 {
     font-size: var(--font-size-xl);
   }
-  
+
   button {
     min-height: var(--mobile-touch-target);
   }

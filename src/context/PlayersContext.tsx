@@ -185,9 +185,6 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           setupFirebaseListener(player)
         })
         
-        // Prevent infinite re-renders
-        setLoading(false)
-        
         console.log('✅ Players mit Firebase-Punkten und Live-Sync geladen:', playersWithFirebasePoints);
         setLoading(false);
       } catch (error) {
@@ -226,14 +223,19 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     }
     
     // XSS-Schutz: Gefährliche Zeichen entfernen
-    const dangerousChars = /<|>|"|'|&|script|javascript|onerror|onload|onclick|onmouseover|eval|alert/gi
+    const dangerousChars = /<|>|"|'|&|script|javascript|onerror|onload|onclick|onmouseover|eval|alert|iframe|object|embed|form|input/gi
     if (dangerousChars.test(trimmedName)) {
       return { isValid: false, error: 'Name enthält unerlaubte Zeichen' }
     }
     
-    // Zusätzlicher Unicode-Schutz
-    if (!/^[\w\säöüÄÖÜß\-_.]+$/u.test(trimmedName)) {
+    // Zusätzlicher Unicode-Schutz und SQL-Injection-Prävention
+    if (!/^[\w\säöüÄÖÜß\-_.]+$/u.test(trimmedName) || /['";\\]/g.test(trimmedName)) {
       return { isValid: false, error: 'Name enthält ungültige Zeichen' }
+    }
+    
+    // Whitespace-Only Namen verhindern
+    if (!/[a-zA-ZäöüÄÖÜß]/.test(trimmedName)) {
+      return { isValid: false, error: 'Name muss mindestens einen Buchstaben enthalten' }
     }
     
     // Prüfe auf doppelte Namen

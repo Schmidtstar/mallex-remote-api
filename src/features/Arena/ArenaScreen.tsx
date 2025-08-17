@@ -30,7 +30,7 @@ export function ArenaScreen() {
   // Oracle Animation State
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinningCategory, setSpinningCategory] = useState<string>('')
-  
+
   // Anti-Repeat System
   const [recentTasks, setRecentTasks] = useState<string[]>([])
   const MAX_RECENT_TASKS = 5
@@ -106,7 +106,7 @@ export function ArenaScreen() {
 
     // Translate and return
     const translatedTask = staticTasks.includes(selectedTask) ? t(selectedTask) : selectedTask
-    
+
     // Aktualisiere Recent Tasks
     setRecentTasks(prev => {
       const updated = [translatedTask, ...prev].slice(0, MAX_RECENT_TASKS)
@@ -148,7 +148,7 @@ export function ArenaScreen() {
         clearInterval(spinInterval)
         setIsSpinning(false)
         setGameState('waiting-action')
-        
+
         // Final haptic feedback
         if ('vibrate' in navigator) {
           navigator.vibrate([50, 100, 50])
@@ -171,12 +171,12 @@ export function ArenaScreen() {
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
       console.log(`🎯 Arena Update startet: ${playerName} soll ${pointsToAdd} Punkte erhalten`)
-      
+
       // Direkte Nutzung des optimierten PlayersContext
       await updatePlayerArenaPoints(playerName, pointsToAdd)
-      
+
       console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte (Real-time Sync aktiv)!`)
-      
+
       // Validierung: Prüfe ob Punkte korrekt gespeichert wurden
       const updatedPlayer = players.find(p => p.name.toLowerCase() === playerName.toLowerCase())
       if (updatedPlayer) {
@@ -184,7 +184,7 @@ export function ArenaScreen() {
       } else {
         console.warn(`⚠️ Spieler ${playerName} nach Update nicht gefunden!`)
       }
-      
+
     } catch (error) {
       console.error('❌ Arena-Punkte Update fehlgeschlagen:', error)
       alert(`Fehler beim Speichern der Punkte für ${playerName}. Bitte versuche es erneut.`)
@@ -248,7 +248,7 @@ export function ArenaScreen() {
 
   // Memoize mobile detection to prevent re-calculations
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768)
-  
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768)
     window.addEventListener('resize', handleResize)

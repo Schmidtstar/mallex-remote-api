@@ -8,6 +8,7 @@ import { calcAgeFromISO } from '../../lib/date';
 import { nationalityOptions } from '../../lib/options';
 import styles from './MenuScreen.module.css';
 import CachePerformanceDashboard from '../../components/CachePerformanceDashboard';
+import GDPRCompliance from '../../components/GDPRCompliance';
 
 
 interface UserProfile {
@@ -80,6 +81,7 @@ export function MenuScreen() {
   const [message, setMessage] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
   const [showCacheDashboard, setShowCacheDashboard] = useState(false);
+  const [showGDPRModal, setShowGDPRModal] = useState(false);
 
   // Load user profile
   useEffect(() => {
@@ -435,6 +437,13 @@ export function MenuScreen() {
             <div className={styles.tileSubtitle}>Cache & PWA Metrics</div>
           </div>
 
+          {/* GDPR Privacy Manager */}
+          <div className={styles.tile} onClick={() => setShowGDPRModal(true)}>
+            <div className={styles.tileIcon}>🔒</div>
+            <div className={styles.tileTitle}>DSGVO / GDPR</div>
+            <div className={styles.tileSubtitle}>Datenschutz & Privacy</div>
+          </div>
+
           <div className={styles.tile} onClick={() => navigate('/admin')}>
             <div className={styles.tileIcon}>⚙️</div>
             <div className={styles.tileTitle}>{t('menu.admin')}</div>
@@ -448,6 +457,12 @@ export function MenuScreen() {
       <CachePerformanceDashboard 
         isVisible={showCacheDashboard}
         onClose={() => setShowCacheDashboard(false)}
+      />
+
+      {/* GDPR Privacy Manager */}
+      <GDPRCompliance 
+        isOpen={showGDPRModal}
+        onClose={() => setShowGDPRModal(false)}
       />
     </div>
   );

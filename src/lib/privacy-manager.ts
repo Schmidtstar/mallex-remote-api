@@ -1,4 +1,3 @@
-
 import { collection, doc, getDoc, getDocs, query, where, deleteDoc, writeBatch } from 'firebase/firestore'
 import { deleteUser, User } from 'firebase/auth'
 import { db, auth } from './firebase'
@@ -26,6 +25,8 @@ export interface PrivacySettings {
 export class PrivacyManager {
   private static readonly CONSENT_VERSION = '1.0.0'
   private static readonly EXPORT_TIMEOUT = 30000 // 30 Sekunden
+  private static readonly STORAGE_KEY = 'mallex_privacy_settings'
+  private static readonly COOKIE_CONSENT_KEY = 'mallex_cookie_consent'
 
   /**
    * Exportiert alle Benutzerdaten GDPR-konform
@@ -33,7 +34,7 @@ export class PrivacyManager {
   static async exportUserData(userId: string): Promise<UserDataExport> {
     try {
       MonitoringService.trackUserAction('gdpr_data_export_started', { userId })
-      
+
       const exportData: UserDataExport = {
         userData: null,
         playerData: null,
@@ -100,9 +101,9 @@ export class PrivacyManager {
         ...doc.data()
       }))
 
-      MonitoringService.trackUserAction('gdpr_data_export_completed', { 
+      MonitoringService.trackUserAction('gdpr_data_export_completed', {
         userId,
-        dataSize: JSON.stringify(exportData).length 
+        dataSize: JSON.stringify(exportData).length
       })
 
       return exportData
@@ -119,7 +120,7 @@ export class PrivacyManager {
   static async deleteUserData(userId: string, deleteAuth = false): Promise<void> {
     try {
       MonitoringService.trackUserAction('gdpr_data_deletion_started', { userId })
-      
+
       const batch = writeBatch(db)
       let deletedItems = 0
 
@@ -188,7 +189,7 @@ export class PrivacyManager {
         }
       }
 
-      MonitoringService.trackUserAction('gdpr_data_deletion_completed', { 
+      MonitoringService.trackUserAction('gdpr_data_deletion_completed', {
         userId,
         deletedItems,
         authDeleted: deleteAuth
@@ -206,7 +207,7 @@ export class PrivacyManager {
   static async anonymizeUserData(userId: string): Promise<void> {
     try {
       MonitoringService.trackUserAction('gdpr_data_anonymization_started', { userId })
-      
+
       const batch = writeBatch(db)
       const anonymousId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
@@ -242,7 +243,7 @@ export class PrivacyManager {
 
       await batch.commit()
 
-      MonitoringService.trackUserAction('gdpr_data_anonymization_completed', { 
+      MonitoringService.trackUserAction('gdpr_data_anonymization_completed', {
         userId,
         anonymousId
       })
@@ -270,7 +271,7 @@ export class PrivacyManager {
       const privacyRef = doc(db, 'privacySettings', userId)
       await privacyRef.set(privacySettings)
 
-      MonitoringService.trackUserAction('privacy_settings_updated', { 
+      MonitoringService.trackUserAction('privacy_settings_updated', {
         userId,
         settings: privacySettings
       })
@@ -287,11 +288,11 @@ export class PrivacyManager {
   static async getPrivacySettings(userId: string): Promise<PrivacySettings | null> {
     try {
       const privacyDoc = await getDoc(doc(db, 'privacySettings', userId))
-      
+
       if (privacyDoc.exists()) {
         return privacyDoc.data() as PrivacySettings
       }
-      
+
       return null
 
     } catch (error) {
@@ -305,9 +306,9 @@ export class PrivacyManager {
    */
   static async hasValidConsent(userId: string): Promise<boolean> {
     const settings = await this.getPrivacySettings(userId)
-    
+
     if (!settings) return false
-    
+
     // Prüfe ob Consent-Version aktuell ist
     return settings.consentVersion === this.CONSENT_VERSION
   }
@@ -319,7 +320,7 @@ export class PrivacyManager {
     const jsonString = JSON.stringify(exportData, null, 2)
     const blob = new Blob([jsonString], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
-    
+
     const link = document.createElement('a')
     link.href = url
     link.download = filename || `mallex-datenexport-${new Date().toISOString().split('T')[0]}.json`
@@ -357,7 +358,7 @@ export class PrivacyManager {
       const privacySnapshot = await getDocs(collection(db, 'privacySettings'))
       privacySnapshot.docs.forEach(doc => {
         const data = doc.data()
-        
+
         // Consent-Versionen zählen
         const version = data.consentVersion || 'unknown'
         report.consentVersions[version] = (report.consentVersions[version] || 0) + 1
@@ -373,6 +374,208 @@ export class PrivacyManager {
     } catch (error) {
       MonitoringService.trackError('gdpr_report_generation_failed', { error: error.message })
       throw error
+    }
+  }
+
+  // --- New GDPR Functions ---
+
+  static getConsentStatus(): PrivacySettings {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY)
+      if (stored) {
+        return JSON.parse(stored)
+      }
+    } catch (error) {
+      console.warn('Error reading privacy settings:', error)
+    }
+
+    return {
+      analytics: false,
+      marketing: false,
+      necessary: true, // Always required
+      performance: false,
+      lastUpdated: new Date(),
+      consentVersion: this.CONSENT_VERSION
+    }
+  }
+
+  // GDPR Data Export (Art. 20)
+  static async exportUserData(userId: string): Promise<any> {
+    try {
+      const { getUserProfile } = await import('./userApi')
+      const { db } = await import('./firebase')
+      const { collection, query, where, getDocs, doc } = await import('firebase/firestore')
+
+      console.log('🔒 GDPR: Exporting user data for:', userId)
+
+      // User Profile
+      const profile = await getUserProfile(userId)
+
+      // Game History
+      const gameHistoryQuery = query(
+        collection(db, 'gameHistory'),
+        where('userId', '==', userId)
+      )
+      const gameHistorySnapshot = await getDocs(gameHistoryQuery)
+      const gameHistory = gameHistorySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+
+      // Achievements (if available)
+      const achievementsQuery = query(
+        collection(db, 'achievements'),
+        where('userId', '==', userId)
+      )
+      const achievementsSnapshot = await getDocs(achievementsQuery)
+      const achievements = achievementsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+
+      // Privacy Settings
+      const privacySettings = this.getConsentStatus()
+
+      // Task Suggestions (if any)
+      const taskSuggestionsQuery = query(
+        collection(db, 'taskSuggestions'),
+        where('userId', '==', userId) // Assuming userId is used here
+      )
+      const taskSuggestionsSnapshot = await getDocs(taskSuggestionsQuery)
+      const taskSuggestions = taskSuggestionsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+
+      const exportData = {
+        profile,
+        gameHistory,
+        achievements,
+        taskSuggestions,
+        preferences: {
+          privacy: privacySettings,
+          language: localStorage.getItem('i18nextLng') || 'de'
+        },
+        metadata: {
+          exportDate: new Date().toISOString(),
+          userId,
+          version: '1.0.0'
+        }
+      }
+
+      console.log('✅ GDPR: User data exported successfully', {
+        profileExists: !!profile,
+        gameHistoryCount: gameHistory.length,
+        achievementsCount: achievements.length,
+        taskSuggestionsCount: taskSuggestions.length
+      })
+
+      return exportData
+
+    } catch (error) {
+      console.error('❌ GDPR: Data export failed:', error)
+      throw new Error('Data export failed: ' + (error as Error).message)
+    }
+  }
+
+  // GDPR Data Deletion (Art. 17)
+  static async deleteUserData(userId: string): Promise<void> {
+    try {
+      const { db, auth } = await import('./firebase')
+      const {
+        collection,
+        query,
+        where,
+        getDocs,
+        deleteDoc,
+        doc,
+        writeBatch
+      } = await import('firebase/firestore')
+      const { deleteUser } = await import('firebase/auth')
+
+      console.log('🔒 GDPR: Starting account deletion for:', userId)
+
+      const batch = writeBatch(db)
+
+      // Delete user profile
+      const userProfileRef = doc(db, 'users', userId)
+      batch.delete(userProfileRef)
+
+      // Delete game history
+      const gameHistoryQuery = query(
+        collection(db, 'gameHistory'),
+        where('userId', '==', userId)
+      )
+      const gameHistorySnapshot = await getDocs(gameHistoryQuery)
+      gameHistorySnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref)
+      })
+
+      // Delete achievements
+      const achievementsQuery = query(
+        collection(db, 'achievements'),
+        where('userId', '==', userId)
+      )
+      const achievementsSnapshot = await getDocs(achievementsQuery)
+      achievementsSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref)
+      })
+
+      // Delete task suggestions
+      const taskSuggestionsQuery = query(
+        collection(db, 'taskSuggestions'),
+        where('userId', '==', userId) // Assuming userId is used here
+      )
+      const taskSuggestionsSnapshot = await getDocs(taskSuggestionsQuery)
+      taskSuggestionsSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref)
+      })
+
+      // Execute batch deletion
+      await batch.commit()
+
+      // Delete Firebase Auth user
+      if (auth.currentUser && auth.currentUser.uid === userId) {
+        await deleteUser(auth.currentUser)
+      }
+
+      // Clear local storage
+      this.clearAllLocalData()
+
+      console.log('✅ GDPR: Account deletion completed successfully')
+
+    } catch (error) {
+      console.error('❌ GDPR: Account deletion failed:', error)
+      throw new Error('Account deletion failed: ' + (error as Error).message)
+    }
+  }
+
+  // Clear all cookies and local data
+  static clearAllCookies(): void {
+    // Clear all cookies
+    document.cookie.split(";").forEach((cookie) => {
+      const eqPos = cookie.indexOf("=")
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${window.location.hostname}`
+    })
+
+    this.clearAllLocalData()
+
+    console.log('🍪 All cookies and local data cleared')
+  }
+
+  private static clearAllLocalData(): void {
+    // Clear localStorage
+    localStorage.clear()
+
+    // Clear sessionStorage
+    sessionStorage.clear()
+
+    // Clear IndexedDB (Firebase cache)
+    if ('indexedDB' in window) {
+      indexedDB.deleteDatabase('firebaseLocalStorageDb')
     }
   }
 }

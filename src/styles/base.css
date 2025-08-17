@@ -258,17 +258,50 @@ button.danger {
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--ancient-night);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--ancient-gold);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
 
+::-webkit-scrollbar-thumb {
+  background: var(--ancient-bronze);
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--olympic-victory);
+  background: var(--ancient-gold);
+  opacity: 1;
+}
+
+/* Virtual Scrolling Performance */
+.react-window-list {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.react-window-list:focus {
+  outline: 2px solid var(--ancient-gold);
+  outline-offset: 2px;
+}
+
+/* Mobile Touch Scrolling */
+@media (max-width: 768px) {
+  .react-window-list {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Touch-friendly scrollbars */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--ancient-gold);
+    opacity: 0.8;
+  }
 }

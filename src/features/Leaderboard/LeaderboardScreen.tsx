@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import styles from './LeaderboardScreen.module.css'
 import { useAuth } from '@/context/AuthContext'
 import { usePlayersContext } from '@/context/PlayersContext'
+import { VirtualizedLeaderboard } from '@/components/VirtualizedLeaderboard'
 
 interface Player {
   id: string
@@ -100,44 +101,10 @@ export function LeaderboardScreen() {
         </div>
       </header>
 
-      <div className={styles.leaderboard}>
-        {players.length === 0 ? (
-          <div className={styles.empty}>
-            {t('leaderboard.empty')}
-          </div>
-        ) : (
-          players.map((player) => (
-            <div 
-              key={player.id} 
-              className={`${styles.playerRow} ${player.rank <= 3 ? styles.topThree : ''}`}
-            >
-              <div className={styles.rankSection}>
-                <span className={styles.medal}>
-                  {getMedalIcon(player.rank)}
-                </span>
-                <span className={styles.rank}>
-                  {getRankDisplay(player.rank)}
-                </span>
-              </div>
-
-              <div className={styles.playerInfo}>
-                <span className={styles.playerName}>
-                  {player.name}
-                </span>
-              </div>
-
-              <div className={styles.points}>
-                <span className={styles.pointsNumber}>
-                  {player.arenaPoints}
-                </span>
-                <span className={styles.pointsLabel}>
-                  {t('leaderboard.points')}
-                </span>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      <VirtualizedLeaderboard 
+        players={players} 
+        loading={playersLoading}
+      />
 
       <div className={styles.footer}>
         <div style={{

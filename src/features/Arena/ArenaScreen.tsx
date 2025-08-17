@@ -10,6 +10,8 @@ import { usePlayersContext } from '../../context/PlayersContext'
 import styles from '../../layouts/TabLayout.module.css'
 import { useAuth } from '../../context/AuthContext'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import { MonitoringService } from '../../lib/monitoring'
+import { SecurityManager } from '../../lib/security'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 
@@ -117,15 +119,25 @@ export function ArenaScreen() {
   }
 
   const startGame = () => {
-    const category = getRandomCategory()
-    const player = getRandomPlayer()
-    const task = getRandomTask(category.id)
+    const endTimer = MonitoringService.startTimer('arena_game_start')
+    MonitoringService.trackUserAction('arena_start', { playersCount: players.length })
+    
+    try {
+      const category = getRandomCategory()
+      const player = getRandomPlayer()
+      const task = getRandomTask(category.id)
 
-    setSelectedCategory(category.id)
-    setSelectedPlayer(player)
-    setCurrentTask(task)
-    setCurrentRound(1)
-    setGameState('playing')
+      setSelectedCategory(category.id)
+      setSelectedPlayer(player)
+      setCurrentTask(task)
+      setCurrentRound(1)
+      setGameState('playing')
+      
+      endTimer()
+    } catch (error) {
+      MonitoringService.trackError(error as Error, { context: 'arena_start' })
+      console.error('❌ Arena start failed:', error)
+    }
   }
 
   const revealTask = () => {

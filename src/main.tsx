@@ -9,7 +9,8 @@ import { AdminSettingsProvider } from './context/AdminSettingsContext' // Assumi
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import AppIntro from './components/AppIntro'
-
+import { MonitoringService } from './lib/monitoring'
+import { FirebaseOptimizer } from './lib/firebase-optimized'
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
@@ -46,6 +47,21 @@ const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
   const root = createRoot(rootElement)
+
+  // Initialize monitoring
+  MonitoringService.trackUserAction('app_start')
+  FirebaseOptimizer.monitorConnection()
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    FirebaseOptimizer.cleanup()
+
+    if (import.meta.env.DEV) {
+      const report = MonitoringService.getPerformanceReport()
+      console.log('📊 Session Performance Report:', report)
+    }
+  })
+
   root.render(<App />)
 }
 

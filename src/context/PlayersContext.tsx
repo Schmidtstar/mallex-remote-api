@@ -61,7 +61,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     
     // Verhindere doppelte Listener
     if (firebaseListeners.has(playerId)) {
-      return
+      firebaseListeners.get(playerId)?.() // Cleanup existing
     }
 
     try {
@@ -248,16 +248,22 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   }, [players])
 
   const handleAddPlayer = useCallback(async (name: string) => {
+    // Rate limiting check
+    if (SecurityManager.isRateLimited('add_player', 5, 60000)) {
+      throw new Error('Zu viele Versuche. Bitte warte eine Minute.')
+    }
+    
     const validation = validatePlayerName(name)
     if (!validation.isValid) {
       throw new Error(validation.error)
     }
 
     try {
-      // Sanitize den Namen
-      const sanitizedName = name.trim()
-        .replace(/[<>]/g, '') // Entferne gefährliche HTML-Zeichen
-        .substring(0, 20) // Begrenze Länge
+      // Enhanced sanitization
+      const sanitizedName = SecurityManager.sanitizeUserInput(name)
+      if (!SecurityManager.isSecureInput(sanitizedName)) {
+        throw new Error('Ungültiger Name erkannt')
+      }
       
       const newPlayer: Player = {
         id: `player_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,

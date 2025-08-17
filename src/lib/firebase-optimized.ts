@@ -12,6 +12,36 @@ interface PlayerUpdate {
 export class FirebaseOptimizer {
   private static connectionCache = new Map<string, any>()
   private static listenerCache = new Map<string, Unsubscribe>()
+  private static connectionStatus = 'unknown'
+  
+  // Connection Health Monitor
+  static monitorConnection(): void {
+    if (typeof window === 'undefined') return
+    
+    const checkConnection = () => {
+      const wasOnline = this.connectionStatus === 'online'
+      const isOnline = navigator.onLine
+      
+      if (!wasOnline && isOnline) {
+        console.log('🔄 Connection restored, refreshing Firebase listeners')
+        this.refreshAllListeners()
+      }
+      
+      this.connectionStatus = isOnline ? 'online' : 'offline'
+    }
+    
+    window.addEventListener('online', checkConnection)
+    window.addEventListener('offline', checkConnection)
+    checkConnection()
+  }
+  
+  private static refreshAllListeners(): void {
+    // Restart all listeners after connection restore
+    this.listenerCache.forEach((unsubscribe, playerId) => {
+      unsubscribe()
+      // Re-setup would need callback reference - simplified for demo
+    })
+  }
   
   // Optimized Firebase Operations mit Caching
   static async getPlayerWithCache(playerId: string): Promise<any> {

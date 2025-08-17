@@ -1,10 +1,44 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, lazy } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 
-// Lazy load components mit Prioritäts-System
+// Lazy load components mit Prioritäts-System und Error Fallbacks
+const LazyHomeScreen = lazy(() => 
+  import('./features/Menu/MenuScreen').catch(() => ({ default: () => <div>Menu Error</div> }))
+)
+const LazyArenaScreen = lazy(() => 
+  import('./features/Arena/ArenaScreen').catch(() => ({ default: () => <div>Arena Error</div> }))
+)
+const LazyLegendsScreen = lazy(() => 
+  import('./features/Legends/LegendsScreen').catch(() => ({ default: () => <div>Legends Error</div> }))
+)
+const LazyLeaderboardScreen = lazy(() => 
+  import('./features/Leaderboard/LeaderboardScreen').catch(() => ({ default: () => <div>Leaderboard Error</div> }))
+)
+const LazyAuthScreen = lazy(() => 
+  import('./features/Auth/AuthScreen').catch(() => ({ default: () => <div>Auth Error</div> }))
+)
+const LazyAdminDashboard = lazy(() => 
+  import('./features/Admin/AdminDashboard').catch(() => ({ default: () => <div>Admin Error</div> }))
+)
+const LazyAchievementScreen = lazy(() => 
+  import('./features/Achievements/AchievementScreen').catch(() => ({ default: () => <div>Achievement Error</div> }))
+)
+const LazyPrivacyDashboard = lazy(() => 
+  import('./features/Privacy/PrivacyDashboard').catch(() => ({ default: () => <div>Privacy Error</div> }))
+)
+const LazyTasksOverviewScreen = lazy(() => 
+  import('./features/Tasks/TasksOverviewScreen').catch(() => ({ default: () => <div>Tasks Error</div> }))
+)
+const LazySuggestTaskScreen = lazy(() => 
+  import('./features/Tasks/SuggestTaskScreen').catch(() => ({ default: () => <div>Suggest Error</div> }))
+)
+const LazyAdminTasksScreen = lazy(() => 
+  import('./features/Tasks/AdminTasksScreen').catch(() => ({ default: () => <div>Admin Tasks Error</div> }))
+)
+
 const TabLayout = React.lazy(() => import(/* webpackPreload: true */ './layouts/TabLayout'))
 const ArenaScreen = React.lazy(() => import(/* webpackPreload: true */ './features/Arena/ArenaScreen'))
 const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))

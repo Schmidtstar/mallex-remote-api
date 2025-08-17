@@ -21,7 +21,7 @@ from = "/*"
 to = "/index.html"
 
 [workflows]
-runButton = "Dev Server (Fixed)"
+runButton = "Dev Server Clean Start"
 
 [[workflows.workflow]]
 name = "Dev Server (Optimized)"
@@ -39,7 +39,32 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
+args = "pkill -f \"node.*vite\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
 args = "npm run dev -- --port 5173 --host 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Dev Server Clean Start"
+author = 45411998
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"vite\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node.*5173\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- --port 5173 --host 0.0.0.0 --force"
 
 [[ports]]
 localPort = 5000

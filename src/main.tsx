@@ -90,18 +90,18 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
 
-  // Service Worker Performance Metrics Listener - Fixed with conditional import
+  // Service Worker Performance Metrics Listener - Safe import
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-        // Dynamically import PerformanceMonitor to avoid initialization errors
+        // Safe dynamic import with error handling
         import('./lib/performance-monitor').then((module) => {
           const PerformanceMonitor = module.default || module.PerformanceMonitor
-          if (PerformanceMonitor?.trackServiceWorkerMetric) {
+          if (PerformanceMonitor && typeof PerformanceMonitor.trackServiceWorkerMetric === 'function') {
             PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
           }
-        }).catch((err) => {
-          console.log('Performance Monitor nicht verfügbar für SW-Metriken:', err.message)
+        }).catch(() => {
+          // Silent fail - Performance Monitor ist optional
         })
       }
     })
@@ -122,11 +122,17 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
 // Enhanced Service Worker Registration mit Performance-Integration
 if ('serviceWorker' in navigator) {
-  // Import PerformanceMonitor für Service Worker Integration
+  // Safe PerformanceMonitor Import
   import('./lib/performance-monitor').then(({ PerformanceMonitor }) => {
-    // Global verfügbar machen für Dashboard
-    ;(window as any).PerformanceMonitor = PerformanceMonitor
-    window.addEventListener('load', () => {
+    // Global verfügbar machen für Dashboard (nur wenn erfolgreich geladen)
+    if (PerformanceMonitor) {
+      ;(window as any).PerformanceMonitor = PerformanceMonitor
+    }
+  }).catch(() => {
+    // Silent fail - PerformanceMonitor ist optional
+  })
+  
+  window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('✅ MALLEX Service Worker v2.2.0 registriert:', registration.scope)
@@ -153,15 +159,11 @@ if ('serviceWorker' in navigator) {
             }
           })
 
-          // PerformanceMonitor & Service Worker - Fixed with proper import
-          // PerformanceMonitor bereits importiert im oberen Bereich
-        })
+          })
         .catch((error) => {
           console.error('❌ Service Worker Registration fehlgeschlagen:', error)
           MonitoringService.trackError('sw_registration_failed', { error: error.message })
         })
-
-      // Service Worker Message-Handler für Performance-Metrics - Already handled above
 
       // Offline/Online Status-Updates
       window.addEventListener('online', () => {
@@ -174,9 +176,6 @@ if ('serviceWorker' in navigator) {
         MonitoringService.trackUserAction('connection_lost')
       })
     })
-  }).catch(err => {
-    console.warn('Performance Monitor konnte nicht geladen werden:', err)
-  })
 }
 
 // Development debugging

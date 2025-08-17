@@ -1,53 +1,92 @@
+
 import React, { Suspense, lazy } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
-import { EnhancedLoadingSpinner } from './components/EnhancedLoadingSpinner'; // Assuming EnhancedLoadingSpinner is available
+import { EnhancedLoadingSpinner } from './components/EnhancedLoadingSpinner'
 
-// Placeholder for LazyLoader component, assuming it's defined elsewhere and handles lazy component loading with fallbacks.
-// For this example, we'll assume LazyLoader is a component that takes children and a fallback prop.
-// If LazyLoader is not a real component, this will need to be adjusted.
-const LazyLoader = ({ children, fallback }) => (
-  <Suspense fallback={fallback}>{children}</Suspense>
-);
+// MonitoringService Import fix
+let MonitoringService: any
+try {
+  const monitoring = await import('./lib/monitoring')
+  MonitoringService = monitoring.MonitoringService
+} catch {
+  MonitoringService = { trackError: () => {} }
+}
 
-// Safe lazy loading with explicit default handling
-const TabLayout = React.lazy(() =>
-  import('./layouts/TabLayout').then(m => ({ default: m.default || m.TabLayout || m }))
-)
-const ArenaScreen = lazy(() => import('./features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen || module.default })))
-const LegendsScreen = lazy(() => import('./features/Legends/LegendsScreen').then(module => ({ default: module.LegendsScreen || module.default })))
-const LeaderboardScreen = lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(module => ({ default: module.LeaderboardScreen || module.default })))
-const MenuScreen = lazy(() => import('./features/Menu/MenuScreen').then(module => ({ default: module.MenuScreen || module.default })))
-const TasksOverviewScreen = lazy(() => import('./features/Tasks/TasksOverviewScreen').then(module => ({ default: module.TasksOverviewScreen || module.default })))
-const SuggestTaskScreen = lazy(() => import('./features/Tasks/SuggestTaskScreen').then(module => ({ default: module.SuggestTaskScreen || module.default })))
-const AdminTasksScreen = lazy(() => import('./features/Tasks/AdminTasksScreen').then(module => ({ default: module.AdminTasksScreen || module.default })))
-const AdminDashboard = lazy(() => import('./features/Admin/AdminDashboard').then(module => ({ default: module.AdminDashboard || module.default })))
-const RequireAdmin = React.lazy(() =>
-  import('./routes/guards/RequireAdmin').then(m => ({ default: m.default || m.RequireAdmin || m }))
-)
-const AuthScreen = lazy(() => import('./features/Auth/AuthScreen').then(module => ({ default: module.AuthScreen || module.default })))
-const PostfachScreen = React.lazy(() =>
-  import('./components/NotificationCenter').then(m => ({ default: m.default || m.NotificationCenter || m }))
-)
-const PrivacyDashboard = lazy(() => import('./features/Privacy/PrivacyDashboard').then(module => ({ default: module.PrivacyDashboard || module.default })))
+// Safe lazy loading with better error handling
+const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => {
+  return lazy(async () => {
+    try {
+      const module = await importFn()
+      // Ensure we have a valid default export
+      const Component = module.default || module[componentName] || module
+      if (typeof Component !== 'function') {
+        throw new Error(`No valid component found for ${componentName}`)
+      }
+      return { default: Component }
+    } catch (error) {
+      console.error(`Failed to load ${componentName}:`, error)
+      MonitoringService?.trackError?.('lazy_loading_error', {
+        component: componentName,
+        error: error.message
+      })
+      // Return fallback component
+      return {
+        default: () => (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '60vh',
+            gap: '1rem',
+            color: 'var(--ancient-bronze)'
+          }}>
+            <div style={{ fontSize: '3rem' }}>⚠️</div>
+            <h3>{componentName} konnte nicht geladen werden</h3>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '8px 16px',
+                background: 'var(--ancient-gold)',
+                color: 'var(--ancient-night)',
+                border: 'none',
+                borderRadius: 'var(--radius)',
+                cursor: 'pointer'
+              }}
+            >
+              Seite neu laden
+            </button>
+          </div>
+        )
+      }
+    }
+  })
+}
 
-// Mock MonitoringService for demonstration purposes if it's not globally available.
-// In a real application, this would be imported from its actual location.
-const MonitoringService = {
-  trackError: (name, data) => {
-    console.log(`MonitoringService: Tracked error "${name}" with data:`, data);
-  }
-};
-
+// All lazy components with safe loading
+const TabLayout = createSafeLazy(() => import('./layouts/TabLayout'), 'TabLayout')
+const ArenaScreen = createSafeLazy(() => import('./features/Arena/ArenaScreen'), 'ArenaScreen')
+const LegendsScreen = createSafeLazy(() => import('./features/Legends/LegendsScreen'), 'LegendsScreen')
+const LeaderboardScreen = createSafeLazy(() => import('./features/Leaderboard/LeaderboardScreen'), 'LeaderboardScreen')
+const MenuScreen = createSafeLazy(() => import('./features/Menu/MenuScreen'), 'MenuScreen')
+const TasksOverviewScreen = createSafeLazy(() => import('./features/Tasks/TasksOverviewScreen'), 'TasksOverviewScreen')
+const SuggestTaskScreen = createSafeLazy(() => import('./features/Tasks/SuggestTaskScreen'), 'SuggestTaskScreen')
+const AdminTasksScreen = createSafeLazy(() => import('./features/Tasks/AdminTasksScreen'), 'AdminTasksScreen')
+const AdminDashboard = createSafeLazy(() => import('./features/Admin/AdminDashboard'), 'AdminDashboard')
+const RequireAdmin = createSafeLazy(() => import('./routes/guards/RequireAdmin'), 'RequireAdmin')
+const AuthScreen = createSafeLazy(() => import('./features/Auth/AuthScreen'), 'AuthScreen')
+const PostfachScreen = createSafeLazy(() => import('./components/NotificationCenter'), 'NotificationCenter')
+const PrivacyDashboard = createSafeLazy(() => import('./features/Privacy/PrivacyDashboard'), 'PrivacyDashboard')
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
     const { user, loading } = useAuth()
-    if (loading) return <LoadingSpinner />
+    if (loading) return <EnhancedLoadingSpinner variant="auth" size="large" />
     if (!user) return <Navigate to="/auth" replace />
-    return <Suspense fallback={<LoadingSpinner />}>{element}</Suspense>
+    return <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>{element}</Suspense>
   }
   return <Guard />
 }
@@ -55,7 +94,11 @@ function withAuth(element: React.ReactNode) {
 const routes = [
   {
     path: '/auth',
-    element: <Suspense fallback={<LoadingSpinner />}><AuthScreen /></Suspense>,
+    element: (
+      <Suspense fallback={<EnhancedLoadingSpinner variant="auth" size="large" />}>
+        <AuthScreen />
+      </Suspense>
+    ),
     errorElement: <ErrorBoundary><div>Fehler beim Laden der Anmeldung</div></ErrorBoundary>
   },
   {
@@ -66,146 +109,104 @@ const routes = [
       {
         index: true,
         element: (
-          <ErrorBoundary
-            fallback={
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '60vh',
-                gap: '1rem',
-                color: 'var(--ancient-bronze)'
-              }}>
-                <div style={{ fontSize: '3rem' }}>⚡</div>
-                <h3>Arena konnte nicht geladen werden</h3>
-                <button
-                  onClick={() => window.location.reload()}
-                  style={{
-                    padding: '8px 16px',
-                    background: 'var(--ancient-gold)',
-                    color: 'var(--ancient-night)',
-                    border: 'none',
-                    borderRadius: 'var(--radius)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Seite neu laden
-                </button>
-              </div>
-            }
-            onError={(error, errorInfo) => {
-              console.error('🚨 Arena Loading Error:', error, errorInfo)
-              MonitoringService.trackError('lazy_loading_error', {
-                component: 'ArenaScreen',
-                error: error.message
-              })
-            }}
-          >
-            <LazyLoader fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
-              <ArenaScreen />
-            </LazyLoader>
-          </ErrorBoundary>
+          <Suspense fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
+            <ArenaScreen />
+          </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
       },
       {
         path: 'arena',
         element: (
-          <ErrorBoundary
-            fallback={
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '60vh',
-                gap: '1rem',
-                color: 'var(--ancient-bronze)'
-              }}>
-                <div style={{ fontSize: '3rem' }}>⚡</div>
-                <h3>Arena konnte nicht geladen werden</h3>
-                <button
-                  onClick={() => window.location.reload()}
-                  style={{
-                    padding: '8px 16px',
-                    background: 'var(--ancient-gold)',
-                    color: 'var(--ancient-night)',
-                    border: 'none',
-                    borderRadius: 'var(--radius)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Seite neu laden
-                </button>
-              </div>
-            }
-            onError={(error, errorInfo) => {
-              console.error('🚨 Arena Loading Error:', error, errorInfo)
-              MonitoringService.trackError('lazy_loading_error', {
-                component: 'ArenaScreen',
-                error: error.message
-              })
-            }}
-          >
-            <LazyLoader fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
-              <ArenaScreen />
-            </LazyLoader>
-          </ErrorBoundary>
+          <Suspense fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
+            <ArenaScreen />
+          </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
       },
       {
         path: 'legends',
-        element: <LegendsScreen />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <LegendsScreen />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler in Legenden</div></ErrorBoundary>
       },
       {
         path: 'leaderboard',
-        element: <LeaderboardScreen />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <LeaderboardScreen />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler in Rangliste</div></ErrorBoundary>
       },
       {
         path: 'menu',
-        element: <MenuScreen />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <MenuScreen />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler im Menü</div></ErrorBoundary>
       },
       {
         path: 'postfach',
-        element: <PostfachScreen />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <PostfachScreen />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler im Postfach</div></ErrorBoundary>
       },
       {
         path: 'tasks',
-        element: <TasksOverviewScreen />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <TasksOverviewScreen />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler in Aufgaben-Übersicht</div></ErrorBoundary>
       },
       {
         path: 'tasks/suggest',
-        element: <SuggestTaskScreen />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <SuggestTaskScreen />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler beim Vorschlagen von Aufgaben</div></ErrorBoundary>
       },
       {
         path: 'tasks/admin',
         element: (
-          <RequireAdmin>
-            <AdminTasksScreen />
-          </RequireAdmin>
+          <Suspense fallback={<EnhancedLoadingSpinner variant="admin" size="medium" />}>
+            <RequireAdmin>
+              <AdminTasksScreen />
+            </RequireAdmin>
+          </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler im Admin-Tasks-Bereich</div></ErrorBoundary>
       },
       {
         path: 'admin',
         element: (
-          <RequireAdmin>
-            <AdminDashboard />
-          </RequireAdmin>
+          <Suspense fallback={<EnhancedLoadingSpinner variant="admin" size="medium" />}>
+            <RequireAdmin>
+              <AdminDashboard />
+            </RequireAdmin>
+          </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler im Admin-Bereich</div></ErrorBoundary>
       },
       {
         path: 'privacy',
-        element: <PrivacyDashboard />,
+        element: (
+          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
+            <PrivacyDashboard />
+          </Suspense>
+        ),
         errorElement: <ErrorBoundary><div>Fehler in Privacy</div></ErrorBoundary>
       },
       {

@@ -1,10 +1,10 @@
-import { useState, useRef, useCallback } from 'react'
+
+import React, { useState, useRef, useCallback } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '../components/BottomNavigation'
 import { useSwipe } from '../hooks/useSwipe'
 import { useTranslation } from 'react-i18next'
 import { HamburgerMenu } from '../components/HamburgerMenu'
-// CSS modules not used in this component
 
 export function TabLayout() {
   const location = useLocation()
@@ -54,7 +54,6 @@ export function TabLayout() {
 
   const triggerRef = useRef<HTMLButtonElement>(null)
 
-
   return (
     <div style={{
       height: '100vh',
@@ -78,5 +77,6 @@ export function TabLayout() {
   )
 }
 
-export default TabLayout
-export { TabLayout }
+// Fixed: Proper default export
+const TabLayoutComponent = TabLayout
+export default TabLayoutComponent

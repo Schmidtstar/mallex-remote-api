@@ -189,6 +189,9 @@ export class PrivacyManager {
         }
       }
 
+      // Clear local storage
+      this.clearAllLocalData()
+
       MonitoringService.trackUserAction('gdpr_data_deletion_completed', {
         userId,
         deletedItems,
@@ -377,8 +380,9 @@ export class PrivacyManager {
     }
   }
 
-  // --- New GDPR Functions ---
-
+  /**
+   * Lädt Consent-Status aus localStorage
+   */
   static getConsentStatus(): PrivacySettings {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY)
@@ -399,158 +403,9 @@ export class PrivacyManager {
     }
   }
 
-  // GDPR Data Export (Art. 20)
-  static async exportUserData(userId: string): Promise<any> {
-    try {
-      const { getUserProfile } = await import('./userApi')
-      const { db } = await import('./firebase')
-      const { collection, query, where, getDocs, doc } = await import('firebase/firestore')
-
-      console.log('🔒 GDPR: Exporting user data for:', userId)
-
-      // User Profile
-      const profile = await getUserProfile(userId)
-
-      // Game History
-      const gameHistoryQuery = query(
-        collection(db, 'gameHistory'),
-        where('userId', '==', userId)
-      )
-      const gameHistorySnapshot = await getDocs(gameHistoryQuery)
-      const gameHistory = gameHistorySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-
-      // Achievements (if available)
-      const achievementsQuery = query(
-        collection(db, 'achievements'),
-        where('userId', '==', userId)
-      )
-      const achievementsSnapshot = await getDocs(achievementsQuery)
-      const achievements = achievementsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-
-      // Privacy Settings
-      const privacySettings = this.getConsentStatus()
-
-      // Task Suggestions (if any)
-      const taskSuggestionsQuery = query(
-        collection(db, 'taskSuggestions'),
-        where('userId', '==', userId) // Assuming userId is used here
-      )
-      const taskSuggestionsSnapshot = await getDocs(taskSuggestionsQuery)
-      const taskSuggestions = taskSuggestionsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-
-      const exportData = {
-        profile,
-        gameHistory,
-        achievements,
-        taskSuggestions,
-        preferences: {
-          privacy: privacySettings,
-          language: localStorage.getItem('i18nextLng') || 'de'
-        },
-        metadata: {
-          exportDate: new Date().toISOString(),
-          userId,
-          version: '1.0.0'
-        }
-      }
-
-      console.log('✅ GDPR: User data exported successfully', {
-        profileExists: !!profile,
-        gameHistoryCount: gameHistory.length,
-        achievementsCount: achievements.length,
-        taskSuggestionsCount: taskSuggestions.length
-      })
-
-      return exportData
-
-    } catch (error) {
-      console.error('❌ GDPR: Data export failed:', error)
-      throw new Error('Data export failed: ' + (error as Error).message)
-    }
-  }
-
-  // GDPR Data Deletion (Art. 17)
-  static async deleteUserData(userId: string): Promise<void> {
-    try {
-      const { db, auth } = await import('./firebase')
-      const {
-        collection,
-        query,
-        where,
-        getDocs,
-        deleteDoc,
-        doc,
-        writeBatch
-      } = await import('firebase/firestore')
-      const { deleteUser } = await import('firebase/auth')
-
-      console.log('🔒 GDPR: Starting account deletion for:', userId)
-
-      const batch = writeBatch(db)
-
-      // Delete user profile
-      const userProfileRef = doc(db, 'users', userId)
-      batch.delete(userProfileRef)
-
-      // Delete game history
-      const gameHistoryQuery = query(
-        collection(db, 'gameHistory'),
-        where('userId', '==', userId)
-      )
-      const gameHistorySnapshot = await getDocs(gameHistoryQuery)
-      gameHistorySnapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref)
-      })
-
-      // Delete achievements
-      const achievementsQuery = query(
-        collection(db, 'achievements'),
-        where('userId', '==', userId)
-      )
-      const achievementsSnapshot = await getDocs(achievementsQuery)
-      achievementsSnapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref)
-      })
-
-      // Delete task suggestions
-      const taskSuggestionsQuery = query(
-        collection(db, 'taskSuggestions'),
-        where('userId', '==', userId) // Assuming userId is used here
-      )
-      const taskSuggestionsSnapshot = await getDocs(taskSuggestionsQuery)
-      taskSuggestionsSnapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref)
-      })
-
-      // Execute batch deletion
-      await batch.commit()
-
-      // Delete Firebase Auth user
-      if (auth.currentUser && auth.currentUser.uid === userId) {
-        await deleteUser(auth.currentUser)
-      }
-
-      // Clear local storage
-      this.clearAllLocalData()
-
-      console.log('✅ GDPR: Account deletion completed successfully')
-
-    } catch (error) {
-      console.error('❌ GDPR: Account deletion failed:', error)
-      throw new Error('Account deletion failed: ' + (error as Error).message)
-    }
-  }
-
-  // Clear all cookies and local data
+  /**
+   * Löscht alle Cookies und lokale Daten
+   */
   static clearAllCookies(): void {
     // Clear all cookies
     document.cookie.split(";").forEach((cookie) => {
@@ -566,6 +421,9 @@ export class PrivacyManager {
     console.log('🍪 All cookies and local data cleared')
   }
 
+  /**
+   * Löscht alle lokalen Daten
+   */
   private static clearAllLocalData(): void {
     // Clear localStorage
     localStorage.clear()

@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
@@ -7,18 +6,18 @@ import { LoadingSpinner } from './components/LoadingSpinner'
 
 // Clean lazy loading - nur EINE Definition pro Component
 const TabLayout = React.lazy(() => import('./layouts/TabLayout'))
-const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen'))
-const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))
-const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
-const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))
-const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen'))
-const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen'))
-const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen'))
-const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'))
+const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen || module.default })))
+const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen').then(module => ({ default: module.LegendsScreen || module.default })))
+const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen').then(module => ({ default: module.LeaderboardScreen || module.default })))
+const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen').then(module => ({ default: module.MenuScreen || module.default })))
+const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen').then(module => ({ default: module.TasksOverviewScreen || module.default })))
+const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen').then(module => ({ default: module.SuggestTaskScreen || module.default })))
+const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen').then(module => ({ default: module.AdminTasksScreen || module.default })))
+const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard').then(module => ({ default: module.AdminDashboard || module.default })))
 const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
-const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen'))
+const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen').then(module => ({ default: module.AuthScreen || module.default })))
 const PostfachScreen = React.lazy(() => import('./components/NotificationCenter'))
-const PrivacyDashboard = React.lazy(() => import('./features/Privacy/PrivacyDashboard'))
+const PrivacyDashboard = React.lazy(() => import('./features/Privacy/PrivacyDashboard').then(module => ({ default: module.PrivacyDashboard || module.default })))
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

@@ -5,7 +5,7 @@ import { PrivacyManager, UserDataExport, PrivacySettings } from '../../lib/priva
 import { MonitoringService } from '../../lib/monitoring'
 import s from './PrivacyDashboard.module.css'
 
-export const PrivacyDashboard: React.FC = () => {
+const PrivacyDashboard: React.FC = () => {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [privacySettings, setPrivacySettings] = useState<PrivacySettings | null>(null)
@@ -331,5 +331,8 @@ export const PrivacyDashboard: React.FC = () => {
     </div>
   )
 }
+
+export default PrivacyDashboard
+export { PrivacyDashboard }
 
 export default PrivacyDashboard

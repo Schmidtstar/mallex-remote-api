@@ -82,6 +82,15 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
 
+  // Service Worker Performance Metrics Listener
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
+        PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+      }
+    })
+  }
+
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     FirebaseOptimizer.cleanup()

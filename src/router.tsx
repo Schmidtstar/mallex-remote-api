@@ -4,6 +4,13 @@ import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 
+// Placeholder for LazyLoader component, assuming it's defined elsewhere and handles lazy component loading with fallbacks.
+// For this example, we'll assume LazyLoader is a component that takes children and a fallback prop.
+// If LazyLoader is not a real component, this will need to be adjusted.
+const LazyLoader = ({ children, fallback }) => (
+  <Suspense fallback={fallback}>{children}</Suspense>
+);
+
 // Safe lazy loading with explicit default handling
 const TabLayout = React.lazy(() => 
   import('./layouts/TabLayout').then(m => ({ default: m.default || m.TabLayout || m }))
@@ -45,6 +52,15 @@ const PrivacyDashboard = React.lazy(() =>
   import('./features/Privacy/PrivacyDashboard').then(m => ({ default: m.default || m.PrivacyDashboard || m }))
 )
 
+// Mock MonitoringService for demonstration purposes if it's not globally available.
+// In a real application, this would be imported from its actual location.
+const MonitoringService = {
+  trackError: (name, data) => {
+    console.log(`MonitoringService: Tracked error "${name}" with data:`, data);
+  }
+};
+
+
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
     const { user, loading } = useAuth()
@@ -68,12 +84,94 @@ const routes = [
     children: [
       {
         index: true,
-        element: <ArenaScreen />,
+        element: (
+          <ErrorBoundary 
+            fallback={
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '60vh',
+                gap: '1rem',
+                color: 'var(--ancient-bronze)'
+              }}>
+                <div style={{ fontSize: '3rem' }}>⚡</div>
+                <h3>Arena konnte nicht geladen werden</h3>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  style={{
+                    padding: '8px 16px',
+                    background: 'var(--ancient-gold)',
+                    color: 'var(--ancient-night)',
+                    border: 'none',
+                    borderRadius: 'var(--radius)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Seite neu laden
+                </button>
+              </div>
+            }
+            onError={(error, errorInfo) => {
+              console.error('🚨 Arena Loading Error:', error, errorInfo)
+              MonitoringService.trackError('lazy_loading_error', {
+                component: 'ArenaScreen',
+                error: error.message
+              })
+            }}
+          >
+            <LazyLoader fallback={<LoadingSpinner message="Arena wird geladen..." />}>
+              <ArenaScreen />
+            </LazyLoader>
+          </ErrorBoundary>
+        ),
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
       },
       {
         path: 'arena',
-        element: <ArenaScreen />,
+        element: (
+          <ErrorBoundary 
+            fallback={
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '60vh',
+                gap: '1rem',
+                color: 'var(--ancient-bronze)'
+              }}>
+                <div style={{ fontSize: '3rem' }}>⚡</div>
+                <h3>Arena konnte nicht geladen werden</h3>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  style={{
+                    padding: '8px 16px',
+                    background: 'var(--ancient-gold)',
+                    color: 'var(--ancient-night)',
+                    border: 'none',
+                    borderRadius: 'var(--radius)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Seite neu laden
+                </button>
+              </div>
+            }
+            onError={(error, errorInfo) => {
+              console.error('🚨 Arena Loading Error:', error, errorInfo)
+              MonitoringService.trackError('lazy_loading_error', {
+                component: 'ArenaScreen',
+                error: error.message
+              })
+            }}
+          >
+            <LazyLoader fallback={<LoadingSpinner message="Arena wird geladen..." />}>
+              <ArenaScreen />
+            </LazyLoader>
+          </ErrorBoundary>
+        ),
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
       },
       {

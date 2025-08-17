@@ -1,44 +1,54 @@
+
 import React from 'react'
 
 interface LoadingSpinnerProps {
   size?: 'small' | 'medium' | 'large'
+  color?: string
   message?: string
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
   size = 'medium', 
+  color = 'var(--ancient-gold)', 
   message = 'Laden...' 
 }) => {
-  const sizeClasses = {
-    small: '24px',
-    medium: '48px', 
-    large: '72px'
+  const sizeStyles = {
+    small: { width: '20px', height: '20px' },
+    medium: { width: '40px', height: '40px' },
+    large: { width: '60px', height: '60px' }
   }
 
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
       alignItems: 'center',
-      height: '50vh',
-      fontSize: '1rem',
-      color: '#666',
-      gap: '10px'
+      gap: '12px',
+      padding: '20px'
     }}>
       <div 
-        style={{ 
-          fontSize: sizeClasses[size],
-          animation: 'pulse 1.5s ease-in-out infinite'
+        style={{
+          ...sizeStyles[size],
+          border: `3px solid transparent`,
+          borderTop: `3px solid ${color}`,
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
         }}
-      >
-        ⚡
-      </div>
-      <div>{message}</div>
+      />
+      {message && (
+        <p style={{ 
+          margin: 0, 
+          color: 'var(--ancient-bronze)',
+          fontSize: '0.9rem',
+          fontWeight: '500'
+        }}>
+          {message}
+        </p>
+      )}
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.1); }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </div>
@@ -46,3 +56,4 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 }
 
 export default LoadingSpinner
+export { LoadingSpinner }

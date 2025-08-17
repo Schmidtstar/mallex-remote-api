@@ -78,8 +78,8 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           
           updateTimeoutRef.current = setTimeout(() => {
             setPlayers(prevPlayers => {
-              const player = prevPlayers.find(p => p.id === player.id)
-              if (player && player.arenaPoints === updatedArenaPoints) {
+              const targetPlayer = prevPlayers.find(p => p.id === player.id)
+              if (targetPlayer && targetPlayer.arenaPoints === updatedArenaPoints) {
                 return prevPlayers // Keine Änderung, verhindere Re-render
               }
               
@@ -185,6 +185,9 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           setupFirebaseListener(player)
         })
         
+        // Prevent infinite re-renders
+        setLoading(false)
+        
         console.log('✅ Players mit Firebase-Punkten und Live-Sync geladen:', playersWithFirebasePoints);
         setLoading(false);
       } catch (error) {
@@ -223,9 +226,14 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     }
     
     // XSS-Schutz: Gefährliche Zeichen entfernen
-    const dangerousChars = /<|>|"|'|&|script|javascript|onerror|onload/gi
+    const dangerousChars = /<|>|"|'|&|script|javascript|onerror|onload|onclick|onmouseover|eval|alert/gi
     if (dangerousChars.test(trimmedName)) {
       return { isValid: false, error: 'Name enthält unerlaubte Zeichen' }
+    }
+    
+    // Zusätzlicher Unicode-Schutz
+    if (!/^[\w\säöüÄÖÜß\-_.]+$/u.test(trimmedName)) {
+      return { isValid: false, error: 'Name enthält ungültige Zeichen' }
     }
     
     // Prüfe auf doppelte Namen

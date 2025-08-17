@@ -8,7 +8,8 @@ import { listApprovedTasks } from '../../lib/tasksApi'
 import { usePlayersContext } from '../../context/PlayersContext'
 // Swipe functionality handled internally
 import styles from '../../layouts/TabLayout.module.css'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 
@@ -246,7 +247,13 @@ export function ArenaScreen() {
   }
 
   // Memoize mobile detection to prevent re-calculations
-  const isMobile = useMemo(() => window.innerWidth < 768, [])
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768)
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const renderGameContent = () => {
 

@@ -1,5 +1,5 @@
-
 import React from 'react'
+import { SoundManager } from '../lib/sound-manager'
 
 interface ModernButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost'
@@ -8,6 +8,7 @@ interface ModernButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   fullWidth?: boolean
   icon?: React.ReactNode
   children: React.ReactNode
+  skipSound?: boolean
 }
 
 export function ModernButton({
@@ -19,6 +20,7 @@ export function ModernButton({
   children,
   disabled,
   className = '',
+  skipSound = false,
   ...props
 }: ModernButtonProps) {
   const classes = [
@@ -30,10 +32,20 @@ export function ModernButton({
     className
   ].filter(Boolean).join(' ')
 
+  const handleClick = () => {
+    if (!disabled) {
+      if (!skipSound) {
+        SoundManager.playButtonClick()
+      }
+      props.onClick?.()
+    }
+  }
+
   return (
     <button
       className={classes}
       disabled={disabled || loading}
+      onClick={handleClick}
       {...props}
     >
       {icon && !loading && <span className="btn-icon">{icon}</span>}

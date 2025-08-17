@@ -14,6 +14,12 @@ import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
 import ErrorBoundary from './components/ErrorBoundary'
 import PerformanceDashboard from './components/PerformanceDashboard'
+import { SoundManager } from './lib/sound-manager'
+
+// Initialize Sound System
+SoundManager.init().catch(err => 
+  console.warn('Sound system initialization failed:', err)
+)
 
 // Assuming PerformanceMonitor is defined elsewhere and imported if necessary
 // import { PerformanceMonitor } from './lib/performance-monitor'; 

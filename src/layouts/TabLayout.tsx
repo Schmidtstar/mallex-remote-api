@@ -69,9 +69,9 @@ export function TabLayout() {
       <BottomNavigation openMenu={openMenu} />
 
       {/* Hamburger Menu Drawer */}
-      <HamburgerMenu 
-        open={isMenuOpen} 
-        onClose={closeMenu} 
+      <HamburgerMenu
+        open={isMenuOpen}
+        onClose={closeMenu}
         triggerRef={triggerRef}
       />
     </div>

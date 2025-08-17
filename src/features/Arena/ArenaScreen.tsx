@@ -15,6 +15,8 @@ import { SecurityLayer } from '../../lib/security'
 import { FirebaseOptimizer } from '../../lib/firebase-optimized'
 import { AchievementSystem, NotificationData } from '../../lib/achievement-system'
 import AchievementNotification from '../../components/AchievementNotification'
+// Assume SoundManager is imported and configured elsewhere
+import { SoundManager } from '../../lib/soundManager' // Placeholder import
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 
@@ -141,6 +143,9 @@ export function ArenaScreen() {
       setGameState('playing')
       setGameStartTime(Date.now()) // Track start time
 
+      // Sound Effect für Arena-Start
+      SoundManager.playArenaStart()
+
       endTimer()
     } catch (error) {
       MonitoringService.trackError(error as Error, { context: 'arena_start' })
@@ -221,6 +226,9 @@ export function ArenaScreen() {
     setDrinkingSips(sips)
     setTaskResult('success')
     setGameState('drinking-result')
+
+    // Sound Effect für richtige Antwort
+    SoundManager.playCorrectAnswer()
   }
 
   const handleTaskFailed = async () => {
@@ -233,6 +241,9 @@ export function ArenaScreen() {
     setDrinkingSips(sips)
     setTaskResult('failed')
     setGameState('drinking-result')
+
+    // Sound Effect für falsche Antwort
+    SoundManager.playWrongAnswer()
   }
 
   const handleTaskSkipped = () => {
@@ -608,7 +619,7 @@ export function ArenaScreen() {
                 opacity: isSpinning ? 0.6 : 1
               }}
             >
-              {isSpinning ? '🌀 ORAKEL ARBEITET...' : '⚡ SCHICKSAL ENTHÜLLEN ⚡'}
+              {isSpinning ? 'dualpr ORAKEL ARBEITET...' : '⚡ SCHICKSAL ENTHÜLLEN ⚡'}
             </button>
           </div>
         )
@@ -1013,7 +1024,7 @@ export function ArenaScreen() {
               fontWeight: 'bold',
               fontSize: isMobile ? '1rem' : '1.2rem'
             }}>
-              🏛️ Runde {currentRound} - Olympisches Urteil! 🍷
+              🏛️Runde {currentRound} - Olympisches Urteil! 🍷
             </div>
 
             <div style={{

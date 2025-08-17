@@ -10,19 +10,22 @@ interface State {
   hasError: boolean
   error?: Error | null
   errorId?: string
+  retryCount: number; // Added retryCount to state
 }
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { hasError: false }
+    // Initialize retryCount to 0
+    this.state = { hasError: false, retryCount: 0 }
   }
 
   static getDerivedStateFromError(error: Error): State {
     return {
       hasError: true,
       error,
-      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      retryCount: 0 // Reset retryCount when an error occurs
     }
   }
 
@@ -38,7 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
       }, 1000)
     }
 
-    // Track error mit monitoring
+    // Track error with monitoring
     if (typeof window !== 'undefined') {
       import('../lib/monitoring').then(({ MonitoringService }) => {
         MonitoringService.trackError('error_boundary', {
@@ -53,8 +56,9 @@ class ErrorBoundary extends Component<Props, State> {
     }
   }
 
+  // Modified retry method to increment retryCount
   retry = () => {
-    this.setState({ hasError: false, error: undefined, errorId: undefined })
+    this.setState({ hasError: false, error: undefined, errorId: undefined, retryCount: this.state.retryCount + 1 })
   }
 
   render() {

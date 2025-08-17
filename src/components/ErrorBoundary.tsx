@@ -1,4 +1,3 @@
-
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 
 interface Props {
@@ -89,7 +88,7 @@ class ErrorBoundary extends Component<Props, State> {
           margin: '20px'
         }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>⚱️</div>
-          
+
           <h2 style={{ 
             color: 'var(--ancient-gold)', 
             marginBottom: '1rem',
@@ -98,7 +97,7 @@ class ErrorBoundary extends Component<Props, State> {
           }}>
             🏛️ Die Götter sind erzürnt! 🏛️
           </h2>
-          
+
           <p style={{ 
             color: 'var(--ancient-bronze)', 
             marginBottom: '2rem',
@@ -180,4 +179,5 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default ErrorBoundary
+export { ErrorBoundary };
+export default ErrorBoundary;

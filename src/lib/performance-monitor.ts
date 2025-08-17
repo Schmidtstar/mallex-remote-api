@@ -80,7 +80,7 @@ export class PerformanceMonitor {
     if (metric.type === 'FETCH_PERFORMANCE') {
       const emoji = metric.cacheHit ? '⚡' : metric.online ? '🌐' : '📱'
       const status = metric.cacheHit ? 'Cache Hit' : metric.online ? 'Network' : 'Offline'
-      
+
       console.log(`${emoji} ${status}: ${metric.url} (${Math.round(metric.duration)}ms)`, {
         strategy: metric.strategy,
         cacheHitRate: metric.stats?.cacheHitRate ? `${metric.stats.cacheHitRate}%` : 'N/A',
@@ -141,13 +141,13 @@ export class PerformanceMonitor {
 
   static trackWebVital(metric: WebVitalMetric) {
     const key = `web_vital_${metric.name.toLowerCase()}`
-    
+
     if (!this.metrics.has(key)) {
       this.metrics.set(key, [])
     }
-    
+
     this.metrics.get(key)!.push(metric.value)
-    
+
     // Performance-Bewertung mit Emojis für bessere UX
     const getPerformanceEmoji = (name: string, value: number) => {
       switch (name) {
@@ -165,7 +165,7 @@ export class PerformanceMonitor {
           return '📊'
       }
     }
-    
+
     const emoji = getPerformanceEmoji(metric.name, metric.value)
     console.log(`${emoji} Web Vital ${metric.name}: ${Math.round(metric.value)}ms`, {
       rating: emoji === '🟢' ? 'Excellent' : emoji === '🟡' ? 'Good' : 'Needs Improvement',
@@ -216,27 +216,27 @@ export class PerformanceMonitor {
     try {
       const observer = new PerformanceObserver((list) => {
         const entries = list.getEntries()
-        
+
         entries.forEach(entry => {
           if (entry.entryType === 'resource') {
             const resourceEntry = entry as PerformanceResourceTiming
             const loadTime = resourceEntry.responseEnd - resourceEntry.requestStart
-            
+
             // Nur wichtige Ressourcen tracken
-            if (resourceEntry.name.includes('firebase') || 
-                resourceEntry.name.includes('.js') || 
+            if (resourceEntry.name.includes('firebase') ||
+                resourceEntry.name.includes('.js') ||
                 resourceEntry.name.includes('.css') ||
                 resourceEntry.name.includes('/api/')) {
-              
+
               const resourceType = this.getResourceType(resourceEntry.name)
               const key = `resource_${resourceType}`
-              
+
               if (!this.metrics.has(key)) {
                 this.metrics.set(key, [])
               }
-              
+
               this.metrics.get(key)!.push(loadTime)
-              
+
               // Performance-Warnung bei langsamen Ressourcen
               if (loadTime > 2000) {
                 console.warn(`🐌 Langsame Ressource: ${resourceEntry.name} (${Math.round(loadTime)}ms)`)
@@ -245,7 +245,7 @@ export class PerformanceMonitor {
           }
         })
       })
-      
+
       observer.observe({ entryTypes: ['resource'] })
       this.observers.set('resource', observer)
     } catch (error) {

@@ -12,6 +12,7 @@ import AppIntro from './components/AppIntro'
 import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Assuming PerformanceMonitor is defined elsewhere and imported if necessary
 // import { PerformanceMonitor } from './lib/performance-monitor'; 
@@ -88,10 +89,10 @@ if ('serviceWorker' in navigator) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                   console.log('🔄 Service Worker Update verfügbar - Reload empfohlen')
-                  
+
                   // Optional: User-freundliche Update-Benachrichtigung
                   MonitoringService.trackUserAction('sw_update_available')
-                  
+
                   // Auto-Update nach 5 Sekunden (nur im Dev-Mode)
                   if (import.meta.env.DEV) {
                     setTimeout(() => {

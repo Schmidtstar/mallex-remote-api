@@ -1,4 +1,3 @@
-
 import React, { memo, useMemo, useEffect } from 'react'
 import { FixedSizeList as List } from 'react-window'
 import { useTranslation } from 'react-i18next'
@@ -76,14 +75,14 @@ export const VirtualizedLeaderboard: React.FC<VirtualizedLeaderboardProps> = mem
   // Optimierte Player-Liste mit Ranking
   const rankedPlayers = useMemo(() => {
     performanceMonitor.startRenderMeasure('leaderboard-ranking');
-    
+
     const ranked = players
       .sort((a, b) => b.arenaPoints - a.arenaPoints)
       .map((player, index) => ({
         ...player,
         rank: index + 1
       }));
-    
+
     performanceMonitor.endRenderMeasure('leaderboard-ranking', ranked.length);
     return ranked;
   }, [players])
@@ -92,7 +91,7 @@ export const VirtualizedLeaderboard: React.FC<VirtualizedLeaderboardProps> = mem
   useEffect(() => {
     if (rankedPlayers.length > 50 && import.meta.env.DEV) {
       console.log(`📊 Virtual Scrolling aktiviert für ${rankedPlayers.length} Spieler`);
-      
+
       const avgMetrics = performanceMonitor.getAverageMetrics();
       if (avgMetrics) {
         console.log('📈 Performance-Durchschnitt:', {
@@ -142,7 +141,7 @@ export const VirtualizedLeaderboard: React.FC<VirtualizedLeaderboardProps> = mem
       >
         {PlayerRow}
       </List>
-      
+
       {/* Performance Info für Dev */}
       {import.meta.env.DEV && (
         <div style={{

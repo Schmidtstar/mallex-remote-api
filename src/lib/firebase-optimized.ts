@@ -1,4 +1,3 @@
-
 import { FirebaseRetryManager } from './firebase-retry'
 import { doc, getDoc, setDoc, onSnapshot, Unsubscribe } from 'firebase/firestore'
 import { db } from './firebase'
@@ -13,28 +12,28 @@ export class FirebaseOptimizer {
   private static connectionCache = new Map<string, any>()
   private static listenerCache = new Map<string, Unsubscribe>()
   private static connectionStatus = 'unknown'
-  
+
   // Connection Health Monitor
   static monitorConnection(): void {
     if (typeof window === 'undefined') return
-    
+
     const checkConnection = () => {
       const wasOnline = this.connectionStatus === 'online'
       const isOnline = navigator.onLine
-      
+
       if (!wasOnline && isOnline) {
         console.log('🔄 Connection restored, refreshing Firebase listeners')
         this.refreshAllListeners()
       }
-      
+
       this.connectionStatus = isOnline ? 'online' : 'offline'
     }
-    
+
     window.addEventListener('online', checkConnection)
     window.addEventListener('offline', checkConnection)
     checkConnection()
   }
-  
+
   private static refreshAllListeners(): void {
     // Restart all listeners after connection restore
     this.listenerCache.forEach((unsubscribe, playerId) => {
@@ -42,35 +41,35 @@ export class FirebaseOptimizer {
       // Re-setup would need callback reference - simplified for demo
     })
   }
-  
+
   // Optimized Firebase Operations mit Caching
   static async getPlayerWithCache(playerId: string): Promise<any> {
     const cacheKey = `player_${playerId}`
     const cached = this.connectionCache.get(cacheKey)
-    
+
     if (cached && Date.now() - cached.timestamp < 30000) { // 30s Cache
       return cached.data
     }
-    
+
     try {
       const result = await FirebaseRetryManager.withRetry(async () => {
         const playerRef = doc(db, 'players', playerId)
         const playerDoc = await getDoc(playerRef)
         return playerDoc.exists() ? playerDoc.data() : null
       })
-      
+
       this.connectionCache.set(cacheKey, {
         data: result,
         timestamp: Date.now()
       })
-      
+
       return result
     } catch (error) {
       console.warn('📱 Firebase optimized get failed, using cache:', error)
       return cached?.data || null
     }
   }
-  
+
   // Batch Player Updates für bessere Performance
   static async batchUpdatePlayers(updates: PlayerUpdate[]): Promise<void> {
     const batchPromises = updates.map(update => 
@@ -82,10 +81,10 @@ export class FirebaseOptimizer {
         }, { merge: true })
       })
     )
-    
+
     await Promise.allSettled(batchPromises)
   }
-  
+
   // Optimized Listener Management
   static setupOptimizedListener(playerId: string, callback: (data: any) => void): Unsubscribe {
     // Cleanup existing listener
@@ -93,7 +92,7 @@ export class FirebaseOptimizer {
     if (existingListener) {
       existingListener()
     }
-    
+
     const playerRef = doc(db, 'players', playerId)
     const unsubscribe = onSnapshot(playerRef, 
       (doc) => {
@@ -109,11 +108,11 @@ export class FirebaseOptimizer {
         }, 2000)
       }
     )
-    
+
     this.listenerCache.set(playerId, unsubscribe)
     return unsubscribe
   }
-  
+
   // Memory Cleanup
   static cleanup(): void {
     this.connectionCache.clear()
@@ -129,16 +128,37 @@ export const performanceMonitor = {
       console.time(`⏱️ ${operation}`)
     }
   },
-  
+
   endTiming: (operation: string) => {
     if (import.meta.env.DEV) {
       console.timeEnd(`⏱️ ${operation}`)
     }
   },
-  
+
   logMetric: (metric: string, value: number) => {
     if (import.meta.env.DEV && value > 500) {
       console.warn(`🐌 Performance Warning - ${metric}: ${value}ms`)
     }
   }
 }
+
+// Firestore Connection mit Retry
+export const connectFirestore = async (): Promise<boolean> => {
+  try {
+    const testDoc = doc(db, '_test', 'connection');
+    await getDoc(testDoc);
+
+    console.log('[Firebase] ✅ Firestore connection successful');
+    return true;
+  } catch (error) {
+    console.error('[Firebase] ❌ Firestore connection failed:', error);
+
+    // Fallback für Offline-Modus
+    if (error.code === 'unavailable' || error.message.includes('offline')) {
+      console.log('[Firebase] 📱 Operating in offline mode');
+      return false; // Aber App funktioniert weiter
+    }
+
+    return false;
+  }
+};

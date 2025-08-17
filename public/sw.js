@@ -1,4 +1,3 @@
-
 const CACHE_VERSION = 'mallex-v2.2.0'
 const STATIC_CACHE = `${CACHE_VERSION}-static`
 const API_CACHE = `${CACHE_VERSION}-api`
@@ -63,7 +62,7 @@ let offlineRequestCount = 0
 // Installation - Aggressives Caching für kritische Ressourcen
 self.addEventListener('install', (event) => {
   console.log('🏛️ MALLEX Service Worker v2.2.0 Installation gestartet')
-  
+
   event.waitUntil(
     Promise.all([
       // Kritische Ressourcen vorab cachen
@@ -74,7 +73,7 @@ self.addEventListener('install', (event) => {
           // Nicht-kritischer Fehler - Installation fortsetzen
         })
       }),
-      
+
       // Offline-Fallbacks vorbereiten
       caches.open(API_CACHE).then(cache => {
         const offlineData = {
@@ -82,13 +81,13 @@ self.addEventListener('install', (event) => {
           error: 'Offline-Modus',
           message: 'Daten nicht verfügbar - Bitte Internetverbindung prüfen'
         }
-        
+
         return cache.put('/api/players/offline', new Response(
           JSON.stringify(offlineData),
           { headers: { 'Content-Type': 'application/json', 'X-Offline': 'true' }}
         ))
       }),
-      
+
       self.skipWaiting()
     ])
   )
@@ -97,7 +96,7 @@ self.addEventListener('install', (event) => {
 // Aktivierung - Intelligente Cache-Verwaltung
 self.addEventListener('activate', (event) => {
   console.log('⚡ Service Worker v2.2.0 Aktivierung')
-  
+
   event.waitUntil(
     Promise.all([
       // Cleanup alter Cache-Versionen
@@ -114,10 +113,10 @@ self.addEventListener('activate', (event) => {
             })
         )
       }),
-      
+
       // Performance-Reset
       resetPerformanceCounters(),
-      
+
       self.clients.claim()
     ])
   )
@@ -127,20 +126,20 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
-  
+
   // Skip non-GET requests und Chrome Extensions
   if (request.method !== 'GET' || url.protocol === 'chrome-extension:') {
     return
   }
-  
+
   requestCount++
   const startTime = performance.now()
-  
+
   event.respondWith(
     handleRequest(request, url).then(response => {
       const endTime = performance.now()
       const duration = endTime - startTime
-      
+
       // Performance-Metrics tracken
       broadcastPerformanceMetric({
         type: 'FETCH_PERFORMANCE',
@@ -150,7 +149,7 @@ self.addEventListener('fetch', (event) => {
         cacheHit: response.headers.get('X-Cache') === 'HIT',
         online: navigator.onLine
       })
-      
+
       return response
     }).catch(error => {
       console.warn('🚨 Fetch Error:', error.message, 'für URL:', url.href)
@@ -162,20 +161,20 @@ self.addEventListener('fetch', (event) => {
 // Intelligente Request-Behandlung mit Performance-Optimierung
 async function handleRequest(request, url) {
   const strategy = getStrategy(url.href)
-  
+
   // Spezielle Behandlung für verschiedene Request-Typen
   if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')) {
     return cacheFirstWithUpdate(request, STATIC_CACHE)
   }
-  
+
   if (url.pathname.includes('/sounds/') || url.pathname.endsWith('.mp3')) {
     return cacheFirst(request, STATIC_CACHE)
   }
-  
+
   if (url.pathname.includes('/images/') || url.pathname.endsWith('.png') || url.pathname.endsWith('.jpg')) {
     return cacheFirst(request, IMAGES_CACHE)
   }
-  
+
   switch (strategy) {
     case 'network-first':
       return networkFirst(request)
@@ -195,22 +194,22 @@ async function networkFirst(request) {
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s Timeout
-    
+
     const networkResponse = await fetch(request, { 
       signal: controller.signal 
     })
     clearTimeout(timeoutId)
-    
+
     if (networkResponse.ok) {
       // Cache erfolgreiche API-Responses
       const cache = await caches.open(API_CACHE)
       await cache.put(request, networkResponse.clone())
     }
-    
+
     return networkResponse
   } catch (error) {
     console.log('🌐 Network Error, versuche Cache-Fallback:', error.message)
-    
+
     // Intelligenter Cache-Fallback
     const cachedResponse = await caches.match(request)
     if (cachedResponse) {
@@ -218,7 +217,7 @@ async function networkFirst(request) {
       cacheHitCount++
       return addCacheHeaders(cachedResponse, true)
     }
-    
+
     throw error
   }
 }
@@ -227,7 +226,7 @@ async function networkFirst(request) {
 async function cacheFirstWithUpdate(request, cacheName) {
   const cache = await caches.open(cacheName)
   const cachedResponse = await cache.match(request)
-  
+
   if (cachedResponse) {
     // Background-Update für Freshness
     fetch(request).then(response => {
@@ -237,17 +236,17 @@ async function cacheFirstWithUpdate(request, cacheName) {
     }).catch(() => {
       // Background-Update Fehler ignorieren
     })
-    
+
     cacheHitCount++
     return addCacheHeaders(cachedResponse)
   }
-  
+
   // Nicht im Cache - Network Request
   const networkResponse = await fetch(request)
   if (networkResponse.ok) {
     await cache.put(request, networkResponse.clone())
   }
-  
+
   return networkResponse
 }
 
@@ -255,12 +254,12 @@ async function cacheFirstWithUpdate(request, cacheName) {
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName)
   const cachedResponse = await cache.match(request)
-  
+
   if (cachedResponse) {
     cacheHitCount++
     return addCacheHeaders(cachedResponse)
   }
-  
+
   try {
     const networkResponse = await fetch(request)
     if (networkResponse.ok) {
@@ -277,7 +276,7 @@ async function cacheFirst(request, cacheName) {
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(API_CACHE)
   const cachedResponse = await cache.match(request)
-  
+
   // Background-Update starten (non-blocking)
   const networkUpdate = fetch(request).then(response => {
     if (response.ok) {
@@ -287,13 +286,13 @@ async function staleWhileRevalidate(request) {
   }).catch(err => {
     console.log('🔄 Background-Update fehlgeschlagen:', err.message)
   })
-  
+
   // Cached Response sofort zurückgeben, falls vorhanden
   if (cachedResponse) {
     cacheHitCount++
     return addCacheHeaders(cachedResponse)
   }
-  
+
   // Ansonsten auf Network warten
   return networkUpdate
 }
@@ -305,14 +304,14 @@ async function cacheOnly(request) {
     cacheHitCount++
     return addCacheHeaders(cachedResponse)
   }
-  
+
   throw new Error('Ressource nicht im Cache verfügbar')
 }
 
 // Erweiterte Offline-Behandlung
 async function handleOfflineRequest(request, url) {
   offlineRequestCount++
-  
+
   // Navigation Requests - SPA-Fallback
   if (request.mode === 'navigate') {
     const cachedResponse = await caches.match('/index.html')
@@ -320,7 +319,7 @@ async function handleOfflineRequest(request, url) {
       return addCacheHeaders(cachedResponse, true)
     }
   }
-  
+
   // API Requests - Strukturierte Offline-Responses
   if (url.pathname.includes('/api/') || url.hostname.includes('firestore') || url.hostname.includes('firebase')) {
     const offlineResponse = {
@@ -330,7 +329,7 @@ async function handleOfflineRequest(request, url) {
       timestamp: new Date().toISOString(),
       cachedData: await getCachedData(request)
     }
-    
+
     return new Response(
       JSON.stringify(offlineResponse),
       {
@@ -343,13 +342,13 @@ async function handleOfflineRequest(request, url) {
       }
     )
   }
-  
+
   // Statische Ressourcen - Cache-Fallback versuchen
   const cachedFallback = await findCachedFallback(request)
   if (cachedFallback) {
     return addCacheHeaders(cachedFallback, true)
   }
-  
+
   throw new Error('Ressource offline nicht verfügbar')
 }
 
@@ -367,11 +366,11 @@ function addCacheHeaders(response, isOffline = false) {
   const headers = new Headers(response.headers)
   headers.set('X-Cache', 'HIT')
   headers.set('X-Cache-Date', new Date().toISOString())
-  
+
   if (isOffline) {
     headers.set('X-Offline-Served', 'true')
   }
-  
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -393,7 +392,7 @@ async function getCachedData(request) {
 
 async function findCachedFallback(request) {
   const cacheNames = await caches.keys()
-  
+
   for (const cacheName of cacheNames) {
     const cache = await caches.open(cacheName)
     const response = await cache.match(request)
@@ -401,7 +400,7 @@ async function findCachedFallback(request) {
       return response
     }
   }
-  
+
   return null
 }
 
@@ -424,7 +423,7 @@ function broadcastPerformanceMetric(metric) {
       offlineRequests: offlineRequestCount
     }
   }
-  
+
   self.clients.matchAll().then(clients => {
     clients.forEach(client => {
       client.postMessage({
@@ -435,18 +434,18 @@ function broadcastPerformanceMetric(metric) {
   })
 }
 
-// Background-Sync für zukünftige Offline-Updates
-self.addEventListener('sync', (event) => {
-  console.log('🔄 Background Sync Event:', event.tag)
-  
-  if (event.tag === 'player-updates') {
-    event.waitUntil(syncPlayerUpdates())
+// Background Sync für Offline-Updates
+self.addEventListener('sync', event => {
+  if (event.tag === 'background-sync-firestore') {
+    event.waitUntil(
+      syncFirestoreUpdates().catch(error => {
+        console.error('[SW] Background sync failed:', error);
+        // Retry später
+        return self.registration.sync.register('background-sync-firestore');
+      })
+    );
   }
-  
-  if (event.tag === 'performance-metrics') {
-    event.waitUntil(syncPerformanceMetrics())
-  }
-})
+});
 
 // Push-Notifications Support (für zukünftige Features)
 self.addEventListener('push', (event) => {
@@ -467,7 +466,7 @@ self.addEventListener('push', (event) => {
       }
     ]
   }
-  
+
   event.waitUntil(
     self.registration.showNotification('MALLEX', options)
   )
@@ -476,7 +475,7 @@ self.addEventListener('push', (event) => {
 // Notification Click Handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  
+
   if (event.action === 'open-arena') {
     event.waitUntil(
       clients.openWindow('/#/arena')
@@ -492,7 +491,7 @@ async function syncPerformanceMetrics() {
     offlineRequests: offlineRequestCount,
     timestamp: Date.now()
   }
-  
+
   console.log('📊 Service Worker Performance-Report:', metrics)
 }
 
@@ -501,5 +500,18 @@ async function syncPlayerUpdates() {
   console.log('🔄 Background-Sync für Spieler-Updates')
   // Hier würden Offline-Änderungen synchronisiert werden
 }
+
+// Firestore Updates Synchronisation ( Platzhalter )
+async function syncFirestoreUpdates() {
+  console.log('🔄 Synchronisiere Firestore Updates...');
+  // Implementiere hier die Logik zur Synchronisierung von Firestore-Änderungen
+  // Beispiel: Abrufen von Änderungen seit dem letzten Sync und Anwenden auf das Netzwerk
+  // oder Senden von lokalen Änderungen an den Server.
+  // Wenn erfolgreich:
+  // return Promise.resolve();
+  // Bei Fehler:
+  // return Promise.reject(new Error('Firestore sync failed'));
+}
+
 
 console.log('🏛️ MALLEX Service Worker v2.2.0 geladen - Enhanced PWA-Performance aktiv! ⚔️🚀')

@@ -4,20 +4,46 @@ import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LoadingSpinner } from './components/LoadingSpinner'
 
-// Clean lazy loading - sichere Default-Exports
-const TabLayout = React.lazy(() => import('./layouts/TabLayout'))
-const ArenaScreen = React.lazy(() => import('./features/Arena/ArenaScreen'))
-const LegendsScreen = React.lazy(() => import('./features/Legends/LegendsScreen'))
-const LeaderboardScreen = React.lazy(() => import('./features/Leaderboard/LeaderboardScreen'))
-const MenuScreen = React.lazy(() => import('./features/Menu/MenuScreen'))
-const TasksOverviewScreen = React.lazy(() => import('./features/Tasks/TasksOverviewScreen'))
-const SuggestTaskScreen = React.lazy(() => import('./features/Tasks/SuggestTaskScreen'))
-const AdminTasksScreen = React.lazy(() => import('./features/Tasks/AdminTasksScreen'))
-const AdminDashboard = React.lazy(() => import('./features/Admin/AdminDashboard'))
-const RequireAdmin = React.lazy(() => import('./routes/guards/RequireAdmin'))
-const AuthScreen = React.lazy(() => import('./features/Auth/AuthScreen'))
-const PostfachScreen = React.lazy(() => import('./components/NotificationCenter'))
-const PrivacyDashboard = React.lazy(() => import('./features/Privacy/PrivacyDashboard'))
+// Safe lazy loading with explicit default handling
+const TabLayout = React.lazy(() => 
+  import('./layouts/TabLayout').then(m => ({ default: m.default || m.TabLayout || m }))
+)
+const ArenaScreen = React.lazy(() => 
+  import('./features/Arena/ArenaScreen').then(m => ({ default: m.default || m.ArenaScreen || m }))
+)
+const LegendsScreen = React.lazy(() => 
+  import('./features/Legends/LegendsScreen').then(m => ({ default: m.default || m.LegendsScreen || m }))
+)
+const LeaderboardScreen = React.lazy(() => 
+  import('./features/Leaderboard/LeaderboardScreen').then(m => ({ default: m.default || m.LeaderboardScreen || m }))
+)
+const MenuScreen = React.lazy(() => 
+  import('./features/Menu/MenuScreen').then(m => ({ default: m.default || m.MenuScreen || m }))
+)
+const TasksOverviewScreen = React.lazy(() => 
+  import('./features/Tasks/TasksOverviewScreen').then(m => ({ default: m.default || m.TasksOverviewScreen || m }))
+)
+const SuggestTaskScreen = React.lazy(() => 
+  import('./features/Tasks/SuggestTaskScreen').then(m => ({ default: m.default || m.SuggestTaskScreen || m }))
+)
+const AdminTasksScreen = React.lazy(() => 
+  import('./features/Tasks/AdminTasksScreen').then(m => ({ default: m.default || m.AdminTasksScreen || m }))
+)
+const AdminDashboard = React.lazy(() => 
+  import('./features/Admin/AdminDashboard').then(m => ({ default: m.default || m.AdminDashboard || m }))
+)
+const RequireAdmin = React.lazy(() => 
+  import('./routes/guards/RequireAdmin').then(m => ({ default: m.default || m.RequireAdmin || m }))
+)
+const AuthScreen = React.lazy(() => 
+  import('./features/Auth/AuthScreen').then(m => ({ default: m.default || m.AuthScreen || m }))
+)
+const PostfachScreen = React.lazy(() => 
+  import('./components/NotificationCenter').then(m => ({ default: m.default || m.NotificationCenter || m }))
+)
+const PrivacyDashboard = React.lazy(() => 
+  import('./features/Privacy/PrivacyDashboard').then(m => ({ default: m.default || m.PrivacyDashboard || m }))
+)
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

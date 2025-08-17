@@ -25,14 +25,17 @@ export default defineConfig(({ mode }) => {
         ? {
             protocol: 'wss',
             host: `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.replit.dev`,
+            port: 443,
             clientPort: 443,
             overlay: false
           }
-        : {
+        : process.env.NODE_ENV === 'development'
+        ? {
             port: 5173,
-            host: 'localhost',
+            host: '0.0.0.0',
             overlay: false
-          },
+          }
+        : false,
       watch: {
         usePolling: false,
         interval: 1000,

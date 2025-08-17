@@ -11,6 +11,13 @@ interface SessionData {
   sessionId: string
 }
 
+// Global type declaration for gtag
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void
+  }
+}
+
 class MonitoringService {
   private static metrics: PerformanceMetric[] = []
   private static errorCount = 0
@@ -84,12 +91,22 @@ class MonitoringService {
         message = error.toString()
       }
 
-      // Avoid "No default value" generic errors
-      if (message === 'No default value' && error?.stack) {
-        const stackLines = error.stack.split('\n')
-        const relevantLine = stackLines.find(line => line.includes('src/'))
-        if (relevantLine) {
-          message = `Component loading error: ${relevantLine.trim()}`
+      // Avoid "No default value" generic errors and provide better context
+      if (message === 'No default value') {
+        if (error?.stack) {
+          const stackLines = error.stack.split('\n')
+          const lazyLine = stackLines.find(line => line.includes('lazy') || line.includes('Lazy'))
+          const componentLine = stackLines.find(line => line.includes('src/'))
+          
+          if (lazyLine) {
+            message = 'Lazy component loading error - missing default export'
+          } else if (componentLine) {
+            message = `Component loading error: ${componentLine.trim()}`
+          } else {
+            message = 'React component initialization error'
+          }
+        } else {
+          message = 'Component default export missing'
         }
       }
 

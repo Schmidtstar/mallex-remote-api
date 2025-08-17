@@ -334,5 +334,3 @@ const PrivacyDashboard: React.FC = () => {
 
 export default PrivacyDashboard
 export { PrivacyDashboard }
-
-export default PrivacyDashboard

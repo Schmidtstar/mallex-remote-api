@@ -1,4 +1,3 @@
-
 interface PerformanceMetrics {
   renderTime: number;
   scrollPerformance: number;
@@ -7,6 +6,122 @@ interface PerformanceMetrics {
 }
 
 class PerformanceMonitor {
+  private static metrics = new Map<string, number[]>()
+  private static observers = new Map<string, PerformanceObserver>()
+  private static serviceWorkerMetrics = new Map<string, any[]>()
+
+  static init() {
+    if (typeof window === 'undefined') return
+
+    // Web Vitals Tracking
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(this.trackWebVital.bind(this))
+      getFID(this.trackWebVital.bind(this))
+      getFCP(this.trackWebVital.bind(this))
+      getLCP(this.trackWebVital.bind(this))
+      getTTFB(this.trackWebVital.bind(this))
+    }).catch(err => {
+      if (import.meta.env.DEV) {
+        console.warn('Web Vitals nicht verfügbar:', err)
+      }
+    })
+
+    // Navigation Timing
+    this.trackNavigationTiming()
+
+    // Resource Timing
+    this.observeResourceTiming()
+
+    // Service Worker Metrics Tracking
+    this.initServiceWorkerMetrics()
+  }
+
+  static initServiceWorkerMetrics() {
+    // Service Worker Status überwachen
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        console.log('📊 Service Worker Performance-Tracking aktiv')
+        this.trackServiceWorkerStatus('ready')
+      })
+
+      // Offline/Online Events
+      window.addEventListener('online', () => {
+        this.trackServiceWorkerStatus('online')
+        console.log('🌐 Verbindung wiederhergestellt')
+      })
+
+      window.addEventListener('offline', () => {
+        this.trackServiceWorkerStatus('offline')
+        console.log('📱 Offline-Modus aktiviert')
+      })
+    }
+  }
+
+  static trackServiceWorkerMetric(metric: any) {
+    const key = `sw_${metric.type.toLowerCase()}`
+
+    if (!this.serviceWorkerMetrics.has(key)) {
+      this.serviceWorkerMetrics.set(key, [])
+    }
+
+    this.serviceWorkerMetrics.get(key)!.push({
+      ...metric,
+      timestamp: Date.now()
+    })
+
+    // Cache-Performance analysieren
+    if (metric.type === 'FETCH_PERFORMANCE') {
+      if (metric.cacheHit) {
+        console.log(`⚡ Cache Hit: ${metric.url} (${Math.round(metric.duration)}ms)`)
+      } else {
+        console.log(`🌐 Network: ${metric.url} (${Math.round(metric.duration)}ms)`)
+      }
+
+      // Performance-Thresholds
+      if (metric.duration > 2000) {
+        console.warn(`🐌 Langsamer Request: ${metric.url} (${Math.round(metric.duration)}ms)`)
+      }
+    }
+  }
+
+  static trackServiceWorkerStatus(status: string) {
+    console.log(`📱 Service Worker Status: ${status}`)
+
+    const metrics = this.serviceWorkerMetrics.get('status') || []
+    metrics.push({
+      status,
+      timestamp: Date.now(),
+      online: navigator.onLine
+    })
+    this.serviceWorkerMetrics.set('status', metrics)
+  }
+
+  static getServiceWorkerMetrics() {
+    const summary = {
+      totalRequests: 0,
+      cacheHits: 0,
+      networkRequests: 0,
+      averageResponseTime: 0,
+      offlineEvents: 0
+    }
+
+    const fetchMetrics = this.serviceWorkerMetrics.get('sw_fetch_performance') || []
+
+    summary.totalRequests = fetchMetrics.length
+    summary.cacheHits = fetchMetrics.filter(m => m.cacheHit).length
+    summary.networkRequests = fetchMetrics.filter(m => !m.cacheHit).length
+
+    if (fetchMetrics.length > 0) {
+      summary.averageResponseTime = fetchMetrics.reduce((sum, m) => sum + m.duration, 0) / fetchMetrics.length
+    }
+
+    const statusMetrics = this.serviceWorkerMetrics.get('status') || []
+    summary.offlineEvents = statusMetrics.filter(m => m.status === 'offline').length
+
+    return summary
+  }
+
+  // Existing methods from original code (kept for completeness, assuming they are still relevant)
   private metrics: PerformanceMetrics[] = [];
   private isMonitoring = import.meta.env.DEV;
 
@@ -17,16 +132,16 @@ class PerformanceMonitor {
 
   endRenderMeasure(label: string, itemCount: number): void {
     if (!this.isMonitoring) return;
-    
+
     performance.mark(`${label}-end`);
     performance.measure(label, `${label}-start`, `${label}-end`);
-    
+
     const measure = performance.getEntriesByName(label)[0];
     const renderTime = measure.duration;
-    
+
     // Memory usage estimation
     const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
-    
+
     this.metrics.push({
       renderTime,
       scrollPerformance: renderTime < 16 ? 100 : Math.max(0, 100 - (renderTime - 16) * 2),

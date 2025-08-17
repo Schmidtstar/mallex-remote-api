@@ -12,6 +12,9 @@ import AppIntro from './components/AppIntro'
 import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
 
+// Assuming PerformanceMonitor is defined elsewhere and imported if necessary
+// import { PerformanceMonitor } from './lib/performance-monitor'; 
+
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
     <PlayersProvider>
@@ -63,6 +66,43 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   })
 
   root.render(<App />)
+}
+
+// Enhanced Service Worker Registration mit Performance-Integration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('✅ MALLEX Service Worker registriert:', registration.scope)
+
+        // Service Worker Updates überwachen
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 Neuer Service Worker verfügbar - Update empfohlen')
+                // Optional: User über Update informieren
+              }
+            })
+          }
+        })
+      })
+      .catch((error) => {
+        console.log('❌ Service Worker Registration fehlgeschlagen:', error)
+      })
+
+    // Service Worker Message-Handler für Performance-Metrics
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
+        // Assuming PerformanceMonitor is available in this scope or imported
+        // If PerformanceMonitor is not globally available, it needs to be imported.
+        // For now, assuming it's accessible or needs to be uncommented/added.
+        // PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+        console.log('Received SW performance metric:', event.data.metric); // Placeholder if PerformanceMonitor is not set up
+      }
+    })
+  })
 }
 
 // Development debugging

@@ -1,14 +1,39 @@
-
 {
   "name": "MALLEX - Antike Arena",
   "short_name": "MALLEX",
   "description": "Antike Arena Herausforderungen",
   "theme_color": "#DAA520",
-  "background_color": "#1a1a1a",
+  "background_color": "#0f1c33",
   "display": "standalone",
   "orientation": "portrait",
+  "categories": ["games", "entertainment", "social"],
+  "lang": "de",
   "scope": "/",
-  "start_url": "/",
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/generated-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Arena",
+      "short_name": "Arena",
+      "description": "Direkt ins Spiel",
+      "url": "/#/arena",
+      "icons": [{ "src": "/generated-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Rangliste",
+      "short_name": "Rangliste",
+      "description": "Leaderboard anzeigen",
+      "url": "/#/leaderboard",
+      "icons": [{ "src": "/generated-icon.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/generated-icon.png",

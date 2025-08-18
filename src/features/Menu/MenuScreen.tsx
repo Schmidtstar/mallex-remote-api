@@ -436,11 +436,7 @@ export function MenuScreen() {
             <div className={styles.tileSubtitle}>{t('menu.friendsDesc')}</div>
           </div>
 
-          <div className={styles.tile} onClick={() => navigate('/leaderboard')}>
-            <div className={styles.tileIcon}>🏆</div>
-            <div className={styles.tileTitle}>{t('menu.leaderboard')}</div>
-            <div className={styles.tileSubtitle}>{t('menu.leaderboardDesc')}</div>
-          </div>
+          
 
           {/* Cache Performance Dashboard */}
           <div className={styles.tile} onClick={() => setShowCacheDashboard(true)}>

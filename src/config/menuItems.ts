@@ -26,13 +26,7 @@ export const menuItems: MenuItem[] = [
     icon: '🏛️',
     requiresAuth: false
   },
-  {
-    key: 'leaderboard',
-    path: '/leaderboard',
-    labelKey: 'nav.leaderboard',
-    icon: '🏆',
-    requiresAuth: false
-  },
+  
   {
     key: 'tasks',
     path: '/tasks',

@@ -41,7 +41,7 @@ const initializeCoreServices = () => {
 
     // Performance monitoring - Immer initialisieren, aber unterschiedliche Modi
     MonitoringService.init()
-    
+
     if (import.meta.env.DEV) {
       MonitoringService.trackUserAction('app_start')
       console.log('🔧 Development mode: Verbose logging enabled')
@@ -53,11 +53,19 @@ const initializeCoreServices = () => {
 
     // Firebase initialization - Production ready with error handling
     try {
-      FirebaseOptimizer.init()
-    } catch (err) {
-      console.warn('Firebase initialization failed:', err)
-      CriticalErrorHandler.handleError(err, {
-        severity: 'medium',
+      // Initialize Firebase Optimizer with error handling
+      if (typeof FirebaseOptimizer.init === 'function') {
+        await FirebaseOptimizer.init()
+        console.log('🔧 Firebase Optimizer initialized')
+      } else {
+        // Fallback initialization
+        console.log('🔧 Firebase Optimizer fallback initialization')
+        FirebaseOptimizer.monitorConnection?.()
+      }
+    } catch (error: any) {
+      console.warn('🟡 Firebase Optimizer failed:', error?.message)
+      CriticalErrorHandler.handleError(error, {
+        severity: 'low', // Reduced severity
         component: 'firebase',
         action: 'initialization'
       })
@@ -102,7 +110,7 @@ const App: React.FC = () => {
   // Show language selector only if no language is set
   if (showLanguageSelector) {
     return (
-      <LanguageSelector 
+      <LanguageSelector
         onLanguageSelected={handleLanguageSelected}
         showSkip={true}
       />

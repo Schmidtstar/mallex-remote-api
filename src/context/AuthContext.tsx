@@ -26,103 +26,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-    let unsubscribe: (() => void) | null = null;
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('🔐 Auth not available - offline mode')
+      setLoading(false)
+      return
+    }
 
-    const initializeAuth = () => {
-      try {
-        // Schnelle Firebase-Verfügbarkeit prüfen
-        if (!auth) {
-          console.warn('🟡 Firebase Auth not available - Guest mode');
-          if (isMounted) {
-            setLoading(false);
-            setUser(null);
-            setIsAdmin(false);
-          }
-          return;
-        }
-
-        // Direkter Auth-Listener ohne Verzögerung
-        unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-          if (!isMounted) return;
-
+    try {
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        try {
           if (firebaseUser) {
-            console.log('✅ User authenticated:', firebaseUser.uid);
-            setUser(firebaseUser);
-            setLoading(false); // SOFORT entsperren
+            console.log('✅ User authenticated:', firebaseUser.uid)
+            setUser(firebaseUser)
 
-            // Non-blocking Background-Tasks
-            setTimeout(() => {
-              if (!isMounted) return;
-              
-              // Profile-Erstellung (non-blocking)
-              ensureUserProfile(firebaseUser.uid, {
-                email: firebaseUser.email ?? undefined,
-                displayName: firebaseUser.displayName ?? undefined,
-              }).catch(() => console.warn('Profile creation skipped'));
-
-              // Admin-Check (non-blocking, mit Timeout)
-              if (db) {
-                const adminCheckTimeout = setTimeout(() => {
-                  console.warn('Admin check timeout - assuming non-admin');
-                  if (isMounted) setIsAdmin(false);
-                }, 2000);
-
-                getDoc(doc(db, 'admins', firebaseUser.uid))
-                  .then((adminDoc) => {
-                    clearTimeout(adminCheckTimeout);
-                    if (isMounted) {
-                      const isUserAdmin = adminDoc?.exists();
-                      setIsAdmin(isUserAdmin);
-                      if (isUserAdmin) console.log('👑 Admin detected');
-                    }
-                  })
-                  .catch(() => {
-                    clearTimeout(adminCheckTimeout);
-                    if (isMounted) setIsAdmin(false);
-                  });
-              } else {
-                setIsAdmin(false);
-              }
-            }, 50); // Minimal delay für bessere UX
-
+            // Profile creation skip für Demo
+            console.log('Profile creation skipped')
           } else {
-            console.log('🔓 User signed out');
-            setUser(null);
-            setIsAdmin(false);
-            setLoading(false);
+            console.log('🔓 User signed out')
+            setUser(null)
           }
-        }, (error) => {
-          console.error('🚨 Auth listener error:', error);
-          if (isMounted) {
-            setLoading(false);
-            setUser(null);
-            setIsAdmin(false);
-          }
-        });
-
-        console.log('🔐 Auth initialized');
-
-      } catch (error) {
-        console.error('🚨 Auth initialization failed:', error);
-        if (isMounted) {
-          setLoading(false);
-          setUser(null);
-          setIsAdmin(false);
+        } catch (error: any) {
+          console.warn('Auth state change error:', error?.message)
+        } finally {
+          setLoading(false)
         }
-      }
-    };
+      }, (error) => {
+        console.warn('Auth state listener error:', error?.message)
+        setLoading(false)
+      })
 
-    // Sofortiger Start ohne Verzögerung
-    initializeAuth();
-
-    return () => {
-      isMounted = false;
-      if (unsubscribe) {
-        unsubscribe();
-        unsubscribe = null;
-      }
-    };
+      return unsubscribe
+    } catch (error: any) {
+      console.warn('Failed to setup auth listener:', error?.message)
+      setLoading(false)
+      return () => {}
+    }
   }, []); // Einmaliger Effect
 
   const login = async (email: string, password: string) => {

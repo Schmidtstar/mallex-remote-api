@@ -51,9 +51,30 @@ try {
   }
 
   console.log('🔥 Firebase services initialized');
-} catch (error) {
-  console.warn('🟡 Firebase services failed - Offline mode:', error);
+} catch (error: any) {
+  console.warn('🟡 Firebase services failed - Offline mode:', error?.message || error);
+  
   // Graceful degradation - App funktioniert ohne Firebase
+  // Create mock objects to prevent crashes
+  if (!auth) {
+    auth = {
+      currentUser: null,
+      onAuthStateChanged: () => () => {},
+      signInAnonymously: () => Promise.reject(new Error('Firebase unavailable')),
+      signOut: () => Promise.reject(new Error('Firebase unavailable'))
+    }
+  }
+  
+  if (!db) {
+    db = {
+      collection: () => ({
+        doc: () => ({
+          get: () => Promise.reject(new Error('Firebase unavailable')),
+          set: () => Promise.reject(new Error('Firebase unavailable'))
+        })
+      })
+    }
+  }
 }
 
 export { auth, db, app }

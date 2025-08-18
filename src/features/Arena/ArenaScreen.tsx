@@ -63,6 +63,35 @@ export function ArenaScreen() {
   // [AI INTEGRATION]
   const [aiLoading, setAiLoading] = useState(false);
 
+  // [AI INTEGRATION]
+  async function fetchAITaskAndReveal() {
+    try {
+      setAiLoading(true);
+
+      // Spieler-Namen aus dem Context
+      const playerNames = players?.map(p => p.name) ?? [];
+
+      // KI-Vorschlag holen
+      const r = await suggestTurn(playerNames, "party", "classic", 2, false);
+      const aiText = r.suggestions?.trim() || "Keine Aufgabe erhalten";
+
+      // Setze die KI-Aufgabe direkt als aktuelle Aufgabe
+      setSelectedCategory('ai');         // optionales Pseudokürzel
+      setCurrentTask(aiText);
+      setIsSpinning(false);
+      setGameState('task-revealed');
+
+      // Screenreader-Ansage
+      announceToScreenReader(`KI-Aufgabe enthüllt: ${aiText}`);
+    } catch (e) {
+      console.error(e);
+      announceToScreenReader('Fehler beim Laden der KI-Aufgabe.');
+      alert('Konnte keine KI-Aufgabe laden.');
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
   // Task Data
   const [firestoreTasks, setFirestoreTasks] = useState<{
     [key: string]: string[];

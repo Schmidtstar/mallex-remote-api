@@ -8,7 +8,7 @@
   z-index: 9999;
   overflow: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #87ceeb 100%);
 }
 
 /* Background Layers */
@@ -21,7 +21,8 @@
 .skyLayer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, #87ceeb 0%, #98d8e8 100%);
+  background: radial-gradient(ellipse at center, #ffd700 0%, #87ceeb 40%, #1e3c72 100%);
+  opacity: 0.9;
 }
 
 .cloudsLayer {
@@ -130,9 +131,10 @@
 
 .templeContainer {
   position: relative;
-  width: 400px;
-  height: 300px;
+  width: 500px;
+  height: 350px;
   margin: 0 auto;
+  animation: templeRise 2s ease-out;
 }
 
 .templePediment {
@@ -439,6 +441,17 @@
 @keyframes driftClouds {
   from { transform: translateX(-100px); }
   to { transform: translateX(100vw); }
+}
+
+@keyframes templeRise {
+  from { 
+    transform: translateY(100px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
 }
 
 /* Responsive Design */

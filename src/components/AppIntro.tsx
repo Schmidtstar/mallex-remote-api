@@ -53,10 +53,10 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
     if (isCompleted.current) return
 
     const phaseTimings = {
-      loading: 1000,  // Verkürzt: 1s
-      logo: 1500,     // Verkürzt: 1.5s  
-      temple: 2000,   // Verkürzt: 2s
-      welcome: 4000   // Verkürzt: 4s - Gesamt: 8.5s
+      loading: 2000,  // 2s - Zeit für Ring-Animation
+      logo: 2500,     // 2.5s - Logo erscheinen lassen  
+      temple: 3500,   // 3.5s - Tempel-Bau sichtbar machen
+      welcome: 5000   // 5s - Genug Zeit zum Lesen - Gesamt: 13s
     }
 
     const currentTiming = phaseTimings[currentPhase as keyof typeof phaseTimings]
@@ -68,10 +68,11 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
       switch (currentPhase) {
         case 'loading':
           setCurrentPhase('logo')
-          setCanSkip(true)
+          // Skip erst nach Logo-Phase erlauben
           break
         case 'logo':
           setCurrentPhase('temple')
+          setCanSkip(true) // Skip erst ab Tempel-Phase
           break
         case 'temple':
           setCurrentPhase('welcome')

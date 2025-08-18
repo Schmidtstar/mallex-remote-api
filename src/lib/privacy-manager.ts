@@ -1,7 +1,7 @@
+
 // MALLEX Privacy Manager - GDPR Compliance
 import { collection, doc, getDoc, getDocs, deleteDoc, query, where, updateDoc } from 'firebase/firestore'
 import { db } from './firebase'
-import { User } from 'firebase/auth'
 
 export interface UserDataExport {
   profile: any
@@ -49,141 +49,12 @@ export class PrivacyManager {
     console.log('✅ Privacy Manager initialized')
   }
 
-  // GDPR Data Export
-  static async exportUserData(userId: string): Promise<any> {
-    console.log('📦 Exporting user data for:', userId)
-
-    try {
-      const userData = {
-        profile: await this.getUserProfile(userId),
-        gameData: await this.getGameData(userId),
-        achievements: await this.getAchievements(userId),
-        preferences: await this.getUserPreferences(userId),
-        exportDate: new Date().toISOString()
-      }
-
-      // Create downloadable file
-      const blob = new Blob([JSON.stringify(userData, null, 2)], {
-        type: 'application/json'
-      })
-
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `mallex-data-export-${userId}-${Date.now()}.json`
-      a.click()
-
-      URL.revokeObjectURL(url)
-
-      console.log('✅ Data export completed')
-      return userData
-    } catch (error) {
-      console.error('❌ Data export failed:', error)
-      throw error
-    }
-  }
-
-  // GDPR Data Deletion
-  static async deleteUserData(userId: string): Promise<boolean> {
-    console.log('🗑️ Deleting user data for:', userId)
-
-    if (!confirm('⚠️ Dies wird ALLE Ihre Daten unwiderruflich löschen. Fortfahren?')) {
-      return false
-    }
-
-    try {
-      // Delete from Firestore collections
-      const collections = ['users', 'players', 'achievements', 'game_sessions']
-
-      for (const collection of collections) {
-        await this.deleteFromCollection(collection, userId)
-      }
-
-      // Clear local storage
-      localStorage.removeItem(`mallex_user_${userId}`)
-      localStorage.removeItem(`mallex_preferences_${userId}`)
-
-      // Clear session storage
-      sessionStorage.clear()
-
-      // Clear cookies
-      this.clearAllCookies()
-
-      console.log('✅ Data deletion completed')
-
-      // Redirect to logout
-      window.location.href = '/auth?deleted=true'
-
-      return true
-    } catch (error) {
-      console.error('❌ Data deletion failed:', error)
-      throw error
-    }
-  }
-
-  private static async getUserProfile(userId: string) {
-    // Implementation depends on your Firestore structure
-    return {}
-  }
-
-  private static async getGameData(userId: string) {
-    // Implementation depends on your Firestore structure
-    return {}
-  }
-
-  private static async getAchievements(userId: string) {
-    // Implementation depends on your Firestore structure
-    return {}
-  }
-
-  private static async getUserPreferences(userId: string) {
-    return {
-      language: localStorage.getItem(`mallex_language_${userId}`),
-      theme: localStorage.getItem(`mallex_theme_${userId}`),
-      notifications: localStorage.getItem(`mallex_notifications_${userId}`)
-    }
-  }
-
-  private static async deleteFromCollection(collection: string, userId: string) {
-    // Firestore deletion implementation
-    console.log(`Deleting from ${collection} for user ${userId}`)
-  }
-
-  private static clearAllCookies() {
-    document.cookie.split(";").forEach(cookie => {
-      const eqPos = cookie.indexOf("=")
-      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-    })
-  }
-
-  private static setupDataProtection() {
-    // Data minimization principle
-    this.setupDataMinimization()
-
-    // Consent management
-    this.setupConsentManagement()
-
-    // Data retention policies
-    this.setupDataRetention()
-  }
-
-  private static setupDataMinimization() {
-    console.log('📊 Setting up data minimization')
-  }
-
-  private static setupConsentManagement() {
-    console.log('✅ Setting up consent management')
-  }
-
-  private static setupDataRetention() {
-    console.log('📅 Setting up data retention policies')
-  }
-
   /**
    * Export all user data for GDPR compliance
    */
   static async exportUserData(userId: string): Promise<UserDataExport> {
+    console.log('📦 Exporting user data for:', userId)
+
     try {
       const exportData: UserDataExport = {
         profile: null,
@@ -247,10 +118,24 @@ export class PrivacyManager {
         exportData.dataTypes.push('preferences')
       }
 
+      // Create downloadable file
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: 'application/json'
+      })
+
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `mallex-data-export-${userId}-${Date.now()}.json`
+      a.click()
+
+      URL.revokeObjectURL(url)
+
+      console.log('✅ Data export completed')
       return exportData
 
     } catch (error) {
-      console.error('Error exporting user data:', error)
+      console.error('❌ Data export failed:', error)
       throw new Error('Data export failed')
     }
   }
@@ -259,6 +144,12 @@ export class PrivacyManager {
    * Delete all user data (Right to be forgotten)
    */
   static async deleteUserData(userId: string): Promise<void> {
+    console.log('🗑️ Deleting user data for:', userId)
+
+    if (!confirm('⚠️ Dies wird ALLE Ihre Daten unwiderruflich löschen. Fortfahren?')) {
+      return
+    }
+
     try {
       const deletionPromises: Promise<void>[] = []
 
@@ -291,10 +182,23 @@ export class PrivacyManager {
       // Execute all deletions
       await Promise.all(deletionPromises)
 
-      console.log(`✅ All data for user ${userId} has been deleted`)
+      // Clear local storage
+      localStorage.removeItem(`mallex_user_${userId}`)
+      localStorage.removeItem(`mallex_preferences_${userId}`)
+
+      // Clear session storage
+      sessionStorage.clear()
+
+      // Clear cookies
+      this.clearAllCookies()
+
+      console.log('✅ Data deletion completed')
+
+      // Redirect to logout
+      window.location.href = '/auth?deleted=true'
 
     } catch (error) {
-      console.error('Error deleting user data:', error)
+      console.error('❌ Data deletion failed:', error)
       throw new Error('Data deletion failed')
     }
   }
@@ -426,6 +330,41 @@ export class PrivacyManager {
   }
 
   /**
+   * Check if user has valid consent
+   */
+  static async hasValidConsent(userId: string): Promise<boolean> {
+    try {
+      const settings = await this.getPrivacySettings(userId)
+      return !!settings.lastUpdated
+    } catch (error) {
+      console.error('Error checking valid consent:', error)
+      return false
+    }
+  }
+
+  /**
+   * Save privacy settings
+   */
+  static async savePrivacySettings(userId: string, settings: Partial<PrivacySettings>): Promise<void> {
+    return this.updatePrivacySettings(userId, settings)
+  }
+
+  /**
+   * Download user data as file
+   */
+  static downloadUserData(data: UserDataExport): void {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `mallex-data-export-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  /**
    * Cookie management
    */
   static setCookie(name: string, value: string, days: number = 365): void {
@@ -449,7 +388,38 @@ export class PrivacyManager {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`
   }
 
-  // Placeholder methods for GDPR Compliance, Consent Management, and Data Retention
+  private static clearAllCookies() {
+    document.cookie.split(";").forEach(cookie => {
+      const eqPos = cookie.indexOf("=")
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
+    })
+  }
+
+  private static setupDataProtection() {
+    // Data minimization principle
+    this.setupDataMinimization()
+
+    // Consent management
+    this.setupConsentManagement()
+
+    // Data retention policies
+    this.setupDataRetention()
+  }
+
+  private static setupDataMinimization() {
+    console.log('📊 Setting up data minimization')
+  }
+
+  private static setupConsentManagement() {
+    console.log('✅ Setting up consent management')
+  }
+
+  private static setupDataRetention() {
+    console.log('📅 Setting up data retention policies')
+  }
+
+  // Placeholder methods for GDPR Compliance
   private static setupGDPRCompliance() {
     console.log('⚖️ Setting up GDPR compliance framework')
   }

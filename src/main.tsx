@@ -136,8 +136,14 @@ const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement as any)._reactRootContainer) {
   rootElement.setAttribute('data-react-root', 'true')
 
-  // Initialize services BEFORE React
-  initializeCoreServices()
+  // Initialize services BEFORE React - wrapped in async IIFE
+  ;(async () => {
+    try {
+      await initializeCoreServices()
+    } catch (error) {
+      console.warn('⚠️ Service initialization failed:', error)
+    }
+  })()
 
   const root = createRoot(rootElement)
 

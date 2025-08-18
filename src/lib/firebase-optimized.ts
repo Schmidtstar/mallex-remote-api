@@ -277,7 +277,59 @@ class FirebaseOptimizerImpl {
 }
 
 // Export the class as FirebaseOptimizer
-export const FirebaseOptimizer = FirebaseOptimizerImpl
+export const FirebaseOptimizer = {
+  // Initialization method
+  async init() {
+    try {
+      console.log('🔧 Firebase Optimizer initializing...')
+
+      // Initialize connection monitoring
+      this.monitorConnection()
+
+      // Initialize cache if needed
+      if (typeof this.initCache === 'function') {
+        this.initCache()
+      }
+
+      console.log('✅ Firebase Optimizer initialized successfully')
+      return true
+    } catch (error) {
+      console.warn('⚠️ Firebase Optimizer init failed:', error)
+      throw error
+    }
+  },
+
+  // Connection monitoring
+  monitorConnection() {
+    // This method is already defined within the class
+    FirebaseOptimizerImpl.monitorConnection()
+  },
+
+  // Get cache statistics
+  getCacheStats() {
+    return FirebaseOptimizerImpl.getCacheStats()
+  },
+
+  // Clean up resources
+  cleanup() {
+    FirebaseOptimizerImpl.cleanup()
+  },
+
+  // Optimized query function
+  optimizedQuery: FirebaseOptimizerImpl.optimizedQuery,
+
+  // Optimized realtime subscription function
+  optimizedRealtime: FirebaseOptimizerImpl.optimizedRealtime,
+
+  // Add listener for connection changes
+  addConnectionListener: FirebaseOptimizerImpl.addConnectionListener,
+
+  // Method to clear the query cache
+  clearCache: FirebaseOptimizerImpl.clearCache,
+
+  // Method to reset all caches
+  resetCaches: FirebaseOptimizerImpl.resetCaches
+}
 
 // Default export für bessere Kompatibilität
 export default FirebaseOptimizerImpl

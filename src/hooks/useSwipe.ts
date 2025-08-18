@@ -297,8 +297,25 @@ export function useSwipe(
   }
 
   return {
-    ...swipeHandlers, // Only spread valid DOM event handlers
-    ...swipeAPI
+    // Touch events
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+
+    // Mouse events
+    onMouseDown,
+    onMouseMove,
+    onMouseUp,
+
+    // State (not passed as DOM props)
+    swipeState,
+    isSwipingInDirection: isSwipingInDirection(),
+    swipeProgress: getSwipeProgress(),
+
+    // Methods (call these, don't pass as props)
+    bindSwipe,
+    getSwipeProgress,
+    triggerHapticFeedback
   }
 }
 

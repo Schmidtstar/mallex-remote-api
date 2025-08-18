@@ -10,7 +10,7 @@
     "adminTasks": "Aufgaben verwalten"
   },
   "menu": {
-    "title": "Menü",
+    "title": "MALLEX Menü",
     "profile": "Profil",
     "settings": "Einstellungen",
     "help": "Hilfe",
@@ -19,7 +19,7 @@
     "privacy": "Datenschutz",
     "notifications": "Benachrichtigungen",
     "preferences": "Einstellungen",
-    "close": "Schließen"
+    "close": "Menü schließen"
   },
   "tabs": {
     "arena": "Arena",

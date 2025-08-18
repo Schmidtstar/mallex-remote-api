@@ -1081,7 +1081,7 @@ export function ArenaScreen() {
                   marginTop: "0.5rem",
                 }}
               >
-                🎭 {t(`arena.categories.${selectedCategory}`)} 🎭
+                🎭 {selectedCategory === 'ai' ? 'KI-AUFGABE' : t(`arena.categories.${selectedCategory}`)} 🎭
               </div>
             </div>
 
@@ -1299,7 +1299,7 @@ export function ArenaScreen() {
                   marginTop: "0.5rem",
                 }}
               >
-                🎭 {t(`arena.categories.${selectedCategory}`)} 🎭
+                🎭 {selectedCategory === 'ai' ? 'KI-AUFGABE' : t(`arena.categories.${selectedCategory}`)} 🎭
               </div>
             </div>
 

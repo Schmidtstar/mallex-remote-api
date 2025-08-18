@@ -28,6 +28,7 @@
     "@capacitor/share": "^7.0.2",
     "@capacitor/splash-screen": "^7.0.2",
     "@capacitor/status-bar": "^7.0.2",
+    "@emotion/babel-plugin": "^11.13.5",
     "@types/react-window": "^1.8.8",
     "firebase": "^10.14.1",
     "i18next": "^23.10.1",

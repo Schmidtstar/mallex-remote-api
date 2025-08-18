@@ -17,12 +17,7 @@ export default defineConfig(({ command, mode }) => {
             development: isDev
           }]
         ],
-        plugins: [
-          ['@emotion/babel-plugin', { 
-            sourceMap: isDev,
-            autoLabel: isDev ? 'dev-only' : 'never'
-          }]
-        ]
+        plugins: []
       },
       fastRefresh: isDev
     })

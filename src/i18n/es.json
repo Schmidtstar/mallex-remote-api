@@ -204,7 +204,11 @@
     "language": "Idioma",
     "german": "Alemán",
     "english": "Inglés",
+    "french": "Francés",
+    "spanish": "Español",
     "theme": "Tema",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
     "about": "Acerca de MALLEX - ¡El juego de fiesta definitivo para noches inolvidables! Desarrollado por JPS"
   },
   "language": {

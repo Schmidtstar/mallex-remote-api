@@ -48,4 +48,12 @@ if (!i18n.isInitialized) {
   console.warn('i18n not initialized, forcing sync init')
 }
 
+// Add language validation
+const validateLanguage = (lang: string): boolean => {
+  const supportedLanguages = ['de', 'en', 'es', 'fr']
+  return supportedLanguages.includes(lang)
+}
+
+// Export validation function for use in components
+export { validateLanguage }
 export default i18n

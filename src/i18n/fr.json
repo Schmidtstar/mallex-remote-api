@@ -204,7 +204,11 @@
     "language": "Langue",
     "german": "Allemand",
     "english": "Anglais",
+    "french": "Français",
+    "spanish": "Espagnol",
     "theme": "Thème",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité",
     "about": "À propos de MALLEX - Le jeu de société ultime pour des soirées inoubliables ! Développé par JPS"
   },
   "language": {

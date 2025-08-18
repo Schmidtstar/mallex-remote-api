@@ -55,10 +55,10 @@ const initializeCoreServices = async () => {
     try {
       // Import Firebase Optimizer with proper error handling
       const firebaseModule = await import('./lib/firebase-optimized')
-      
+
       if (firebaseModule.FirebaseOptimizer) {
         const optimizer = firebaseModule.FirebaseOptimizer
-        
+
         // Check if init method exists and call it
         if (typeof optimizer.init === 'function') {
           await optimizer.init()
@@ -216,7 +216,7 @@ if (typeof window !== 'undefined') {
     ]).then(([webVitals, perfMonitor]) => {
       const { getCLS, getFID, getFCP, getLCP, getTTFB } = webVitals
       const monitor = new perfMonitor.PerformanceMonitor()
-      
+
       getCLS((metric) => monitor.trackMetric('CLS', metric.value))
       getFID((metric) => monitor.trackMetric('FID', metric.value))
       getFCP((metric) => monitor.trackMetric('FCP', metric.value))

@@ -81,10 +81,29 @@ export class SoundManager {
         this.loadedSounds.set(key, audioBuffer)
         console.log(`🔊 Successfully loaded sound: ${key}`)
       } catch (decodeError) {
-        console.warn(`🔇 Audio decoding failed for ${key}:`, decodeError.message)
+        console.warn(`🔇 Could not load sound: ${key} –`, decodeError.message || 'Decoding failed')
+
+        // Try alternative format
+        const alternativeUrl = url.replace('.mp3', '.wav').replace('.wav', '.ogg')
+        if (alternativeUrl !== url) {
+          try {
+            const altResponse = await fetch(alternativeUrl)
+            if (altResponse.ok) {
+              const altBuffer = await altResponse.arrayBuffer()
+              const audioBuffer = await this.audioContext.decodeAudioData(altBuffer)
+              this.sounds.set(key, audioBuffer)
+              this.loadedSounds.set(key, audioBuffer)
+              console.log(`🔊 Alternative format loaded: ${key}`)
+              return
+            }
+          } catch (altError) {
+            console.log(`🔇 Alternative format also failed: ${key}`)
+          }
+        }
+
+        // Set as null - app continues without sound
         this.sounds.set(key, null)
         this.loadedSounds.set(key, null)
-        // Don't throw error, just mark as failed
         return
       }
     } catch (error) {

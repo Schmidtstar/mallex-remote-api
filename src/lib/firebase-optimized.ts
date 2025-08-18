@@ -90,5 +90,8 @@ export class FirebaseOptimizer {
   }
 }
 
-// Default export for backward compatibility
+// Named export for consistent imports
+export { FirebaseOptimizer }
+
+// Default export for backward compatibility  
 export default FirebaseOptimizer

@@ -279,13 +279,12 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
     <div
       key={player.id}
       className={`${styles.playerItem} ${swipeHandlers.swipeState === 'left' ? styles.swipeLeft : ''} ${swipeHandlers.swipeState === 'right' ? styles.swipeRight : ''}`}
-      // Apply only valid DOM props from swipeHandlers
-      onTouchStart={validDOMProps.onTouchStart}
-      onTouchMove={validDOMProps.onTouchMove}
-      onTouchEnd={validDOMProps.onTouchEnd}
-      onMouseDown={validDOMProps.onMouseDown}
-      onMouseMove={validDOMProps.onMouseMove}
-      onMouseUp={validDOMProps.onMouseUp}
+      onTouchStart={swipeHandlers.onTouchStart}
+      onTouchMove={swipeHandlers.onTouchMove}
+      onTouchEnd={swipeHandlers.onTouchEnd}
+      onMouseDown={swipeHandlers.onMouseDown}
+      onMouseMove={swipeHandlers.onMouseMove}
+      onMouseUp={swipeHandlers.onMouseUp}
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}

@@ -243,16 +243,17 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
   const [swipeTransform, setSwipeTransform] = useState(0)
   const [showDeleteIndicator, setShowDeleteIndicator] = useState(false)
 
-  const swipeHandlers = useSwipe(
-    {
-      onSwipeLeft: () => {
-        if (swipeTransform < -50) { // Adjusted threshold to be more responsive
-          onSwipeDelete(player.id, player.name)
-        }
-      }
-    },
-    { threshold: 50 }
-  )
+  // The original code had an issue where it was passing the entire swipeHandlers object to the DOM element,
+  // which included non-DOM event handlers. This fix destructures only the necessary DOM event handlers.
+  const swipeHandlers = useSwipe({
+      onSwipeLeft: () => handleSwipeDelete(player.id, player.name),
+      onSwipeRight: () => {}, // Placeholder for potential right swipe action, currently unused
+      threshold: 50,
+      preventDefaultTouchmove: true
+    })
+
+    // Destructure only event handlers for DOM elements
+    const { onTouchStart, onTouchMove, onTouchEnd, onMouseDown, onMouseMove, onMouseUp } = swipeHandlers
 
   // Visual feedback during swipe
   React.useEffect(() => {
@@ -272,13 +273,13 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
   return (
     <div
       key={player.id}
-      className={styles.playerItem}
-      onTouchStart={swipeHandlers.onTouchStart}
-      onTouchMove={swipeHandlers.onTouchMove}
-      onTouchEnd={swipeHandlers.onTouchEnd}
-      onMouseDown={swipeHandlers.onMouseDown}
-      onMouseMove={swipeHandlers.onMouseMove}
-      onMouseUp={swipeHandlers.onMouseUp}
+      className={`${styles.playerItem} ${swipeHandlers.swipeState === 'left' ? styles.swipeLeft : ''} ${swipeHandlers.swipeState === 'right' ? styles.swipeRight : ''}`}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}

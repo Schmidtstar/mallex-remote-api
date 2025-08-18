@@ -13,7 +13,7 @@ import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import LanguageSelector from './components/LanguageSelector'
 import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'
-import { FirebaseOptimizer } from './lib/firebase-optimized'
+// import { FirebaseOptimizer } from './lib/firebase-optimized' // Wird jetzt dynamisch importiert
 import ErrorBoundaryEnhanced from './components/ErrorBoundaryEnhanced'
 import { CriticalErrorHandler } from './lib/error-handler'
 import { AccessibilityManager } from './lib/a11y'
@@ -53,29 +53,24 @@ const initializeCoreServices = async () => {
 
     // Firebase initialization - Production ready with error handling
     try {
-      // Initialize Firebase Optimizer with proper async handling
+      // Import and initialize Firebase Optimizer correctly
+      const { FirebaseOptimizer } = await import('./lib/firebase-optimized')
+
       if (FirebaseOptimizer && typeof FirebaseOptimizer.init === 'function') {
         await FirebaseOptimizer.init()
         console.log('🔧 Firebase Optimizer initialized successfully')
       } else {
         console.warn('🟡 Firebase Optimizer init method not available - using fallback')
 
-        // Fallback: Initialize monitoring directly via static method
+        // Fallback: Initialize monitoring directly
         if (typeof FirebaseOptimizer?.monitorConnection === 'function') {
           FirebaseOptimizer.monitorConnection()
           console.log('🔧 Firebase monitoring active (fallback mode)')
-        } else {
-          // Last resort: Manual connection monitoring
-          console.log('🔧 Firebase manual monitoring fallback')
-          const { FirebaseOptimizer: FbOpt } = await import('./lib/firebase-optimized')
-          if (FbOpt?.monitorConnection) {
-            FbOpt.monitorConnection()
-          }
         }
       }
     } catch (error: any) {
       console.warn('🟡 Firebase Optimizer failed (non-critical):', error?.message)
-      // Don't track Firebase init errors as critical since app works without them
+      // Continue without Firebase optimization
     }
 
     console.log('✅ MALLEX v2.1 - Core services initialized')
@@ -153,7 +148,7 @@ if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement
     ;(window as any).MALLEX_DEV = {
       performance: () => MonitoringService.getPerformanceReport(),
       errors: () => CriticalErrorHandler.getErrorStats(),
-      cache: () => FirebaseOptimizer.getCacheStats()
+      // cache: () => FirebaseOptimizer.getCacheStats() // FirebaseOptimizer ist jetzt dynamisch, diese Prüfung muss angepasst werden
     }
     console.log('🛠️ Dev tools available: window.MALLEX_DEV')
   }
@@ -161,9 +156,16 @@ if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement
   // Cleanup on unload
   window.addEventListener('beforeunload', () => {
     try {
-      FirebaseOptimizer.cleanup()
+      // FirebaseOptimizer kann hier immer noch fehlschlagen, wenn es nie initialisiert wurde.
+      // Eine sicherere Handhabung wäre, eine globale Instanz zu prüfen.
+      // Hier wird davon ausgegangen, dass die Importfunktion die notwendige Logik enthält.
+      import('./lib/firebase-optimized').then(({ FirebaseOptimizer }) => {
+        if (FirebaseOptimizer && typeof FirebaseOptimizer.cleanup === 'function') {
+          FirebaseOptimizer.cleanup()
+        }
+      }).catch(err => console.warn('Cleanup warning:', err))
     } catch (error) {
-      console.warn('Cleanup warning:', error)
+      console.warn('Cleanup warning (general):', error)
     }
   })
 

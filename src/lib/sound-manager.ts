@@ -66,35 +66,34 @@ export class SoundManager {
     }
 
     try {
-      // Check if file exists first with HEAD request
-      const response = await fetch(url, { method: 'HEAD' })
+      // Fetch the audio file with proper error handling
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`Sound file not found at ${url} (Status: ${response.status})`)
       }
 
       const arrayBuffer = await response.arrayBuffer()
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
-      this.sounds.set(key, audioBuffer)
-      this.loadedSounds.set(key, audioBuffer) // Keep track of loaded sounds
-    } catch (error) {
-      console.warn(`🔇 Could not load sound: ${key} from ${url} –`, error.message || error)
-      this.loadedSounds.set(key, null)
-
-      // Attempt to track the error if MonitoringService is available
+      
+      // Decode audio with better error handling
       try {
-        const { MonitoringService } = require('./monitoring')
-        if (MonitoringService?.trackError) {
-          MonitoringService.trackError('sound_loading_failed', {
-            soundName: key,
-            url: url,
-            error: error.message || String(error)
-          })
-        }
-      } catch (e) {
-        // Silently fail if monitoring is not available or fails
+        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+        this.sounds.set(key, audioBuffer)
+        this.loadedSounds.set(key, audioBuffer)
+        console.log(`🔊 Successfully loaded sound: ${key}`)
+      } catch (decodeError) {
+        console.warn(`🔇 Audio decoding failed for ${key}:`, decodeError.message)
+        this.sounds.set(key, null)
+        this.loadedSounds.set(key, null)
+        // Don't throw error, just mark as failed
+        return
       }
-      // Re-throw the error to be caught by the caller (e.g., init method)
-      throw error
+    } catch (error) {
+      console.warn(`🔇 Could not fetch sound: ${key} from ${url} –`, error.message || error)
+      this.sounds.set(key, null)
+      this.loadedSounds.set(key, null)
+      
+      // Don't throw error for missing sounds - app should continue working
+      return
     }
   }
 

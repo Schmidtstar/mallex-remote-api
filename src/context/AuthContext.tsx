@@ -52,8 +52,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               }
             } catch (error: any) {
               setIsAdmin(false)
+              // Silent handling for expected permission errors
               if (error.code === 'permission-denied') {
-                console.log('🔐 Admin check skipped (insufficient permissions)')
+                // This is expected for normal users
               } else if (error.code === 'unavailable') {
                 console.log('🔐 Admin check skipped (Firebase unavailable)')
               } else {

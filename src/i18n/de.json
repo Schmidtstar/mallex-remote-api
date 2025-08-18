@@ -26,7 +26,7 @@
     "legends": "Halle der Legenden"
   },
   "auth": {
-    "title": "Willkommen bei MALLEX",
+    "title": "Anmeldung",
     "subtitle": "Die ultimative Trinkspiel-Arena",
     "anonymousLogin": "Als Gast spielen",
     "emailLogin": "Mit E-Mail anmelden",
@@ -36,20 +36,18 @@
     "register": "Registrieren",
     "displayName": "Anzeigename",
     "loginSuccess": "Erfolgreich angemeldet!",
-    "loginError": "Anmeldung fehlgeschlagen",
-    "guestMode": "Gast-Modus aktiv",
+    "registerSuccess": "Konto erstellt!",
+    "logout": "Abmelden",
     "loggingIn": "Anmeldung läuft...",
-    "signIn": "Anmelden",
-    "signOut": "Abmelden",
-    "guest": "Als Gast fortfahren",
-    "signInWithEmail": "Mit E-Mail anmelden",
-    "error": {
-      "invalidEmail": "Ungültige E-Mail-Adresse",
-      "userNotFound": "Benutzer nicht gefunden",
-      "wrongPassword": "Falsches Passwort",
-      "tooManyRequests": "Zu viele Anmeldeversuche",
-      "networkError": "Netzwerkfehler"
-    }
+    "loginError": "Anmeldung fehlgeschlagen",
+    "registerError": "Registrierung fehlgeschlagen",
+    "emailInUse": "E-Mail bereits vergeben",
+    "invalidEmail": "Ungültige E-Mail",
+    "weakPassword": "Passwort zu schwach",
+    "userNotFound": "Benutzer nicht gefunden",
+    "wrongPassword": "Falsches Passwort",
+    "tooManyRequests": "Zu viele Anmeldeversuche",
+    "networkError": "Netzwerkfehler"
   },
   "arena": {
     "title": "MALLEX Arena",

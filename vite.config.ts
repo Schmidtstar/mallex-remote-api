@@ -14,23 +14,28 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    hmr: {
-      port: 5173,
-      host: '0.0.0.0'
-    },
-    cors: true,
-    // Allow Replit dev URLs
+    strictPort: false,
     allowedHosts: [
       '.replit.dev',
       '.repl.co',
+      '.riker.replit.dev',
       'localhost'
     ],
-    // Add headers for better CORS support
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    hmr: {
+      port: 5173,
+      host: '0.0.0.0',
+      clientPort: 443,
+      overlay: false
+    },
+    cors: {
+      origin: true,
+      credentials: true
     }
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: false
   },
   build: {
     outDir: 'dist',

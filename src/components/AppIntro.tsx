@@ -2,6 +2,14 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './AppIntro.module.css'
 
+// Fallback-Styles falls CSS-Module nicht lädt
+const fallbackStyles = {
+  introContainer: 'intro-container',
+  backgroundCanvas: 'background-canvas',
+  starField: 'star-field',
+  // ... weitere fallback styles wenn nötig
+}
+
 interface AppIntroProps {
   onComplete?: () => void
   userType?: 'first-time' | 'returning' | 'admin'
@@ -13,6 +21,11 @@ type IntroPhase = 'loading' | 'logo' | 'temple' | 'features' | 'enter' | 'comple
 export function AppIntro({ onComplete, userType = 'first-time', showSkip = true }: AppIntroProps) {
   const { t } = useTranslation()
   const [currentPhase, setCurrentPhase] = useState<IntroPhase>('loading')
+  
+  // Debug-Logging
+  useEffect(() => {
+    console.log('🎬 AppIntro gestartet:', { userType, showSkip, currentPhase })
+  }, [userType, showSkip, currentPhase])
   const [isSkipping, setIsSkipping] = useState(false)
   const [progress, setProgress] = useState(0)
   const [canSkip, setCanSkip] = useState(false)

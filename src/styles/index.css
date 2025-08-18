@@ -1,8 +1,23 @@
+/* Import all style modules */
 @import './tokens.css';
 @import './base.css';
 @import './mobile.css';
 @import './design-system.css';
 @import './color-utilities.css';
+
+/* Fallback für CSS Module falls nicht geladen */
+.intro-container {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  background: linear-gradient(135deg, #0c1445 0%, #1e3c72 50%, #2a5298 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
 
 /* MALLEX - Olympische Trinkspiele Hauptlayout */
 .app-shell {

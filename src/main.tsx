@@ -106,14 +106,8 @@ const App: React.FC = () => {
     const detectedType = detectUserType()
     setUserType(detectedType)
 
-    // Für returning users und admins: Intro verkürzen oder überspringen
-    if (detectedType === 'returning' || detectedType === 'admin') {
-      // Optional: Intro ganz überspringen für admins
-      if (detectedType === 'admin') {
-        setCurrentPhase('app')
-        return
-      }
-    }
+    // Intro für alle User-Typen anzeigen (kann individuell angepasst werden)
+    // Das Intro wird basierend auf userType optimiert, aber nicht übersprungen
 
     // Mark als visited
     localStorage.setItem('mallex-visited', 'true')

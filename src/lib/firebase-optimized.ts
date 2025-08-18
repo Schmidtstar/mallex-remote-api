@@ -90,7 +90,11 @@ class FirebaseOptimizerClass {
         getCachedQuery('user-settings')
       ])
     } catch (error) {
-      console.warn('⚠️ Cache warming failed:', error)
+      console.warn('⚠️ Cache warming failed:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: (error as any)?.code || 'unknown',
+        stack: error instanceof Error ? error.stack : undefined
+      })
     }
   }
 }

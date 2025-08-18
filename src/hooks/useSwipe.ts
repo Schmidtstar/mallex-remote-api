@@ -70,6 +70,7 @@ export function useSwipe(
   }
 
   const handleTouchStart = (e: TouchEvent) => {
+    if (!e.touches || e.touches.length === 0) return
     const touch = e.touches[0]
     touchStartRef.current = {
       x: touch.clientX,
@@ -208,6 +209,11 @@ export function useSwipe(
   useEffect(() => {
     const element = elementRef.current
     if (!element) return
+
+    // Check if touch events are supported
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+    if (!isTouchDevice) return
 
     // Touch handlers with passive option for better performance
     const handleTouchStart = (e: TouchEvent) => {

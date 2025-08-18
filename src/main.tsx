@@ -30,10 +30,18 @@ import { CriticalErrorHandler } from './lib/error-handler'
 import { AccessibilityManager } from './lib/a11y'
 
 // Initialize core systems once
+let servicesInitialized = false
+
 const initializeCoreServices = async () => {
+  if (servicesInitialized) {
+    console.log('🔄 Services already initialized, skipping...')
+    return
+  }
+
   try {
     // Error handling - Critical (first)
     CriticalErrorHandler.init()
+    servicesInitialized = true
 
     // Accessibility - Essential
     AccessibilityManager.init()

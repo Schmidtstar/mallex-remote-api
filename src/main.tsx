@@ -12,24 +12,42 @@ import AppIntro from './components/AppIntro'
 import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
-import ErrorBoundary from './components/ErrorBoundary'
-import PerformanceDashboard from './components/PerformanceDashboard'
-import { SoundManager } from './lib/sound-manager'
-import './lib/capacitor-integration'
 import ErrorBoundaryEnhanced from './components/ErrorBoundaryEnhanced'
 import { CriticalErrorHandler } from './lib/error-handler'
 import { AccessibilityManager } from './lib/a11y'
-import PerformanceMonitor from './lib/performance-monitor'
+import { SoundManager } from './lib/sound-manager'
 
-// Initialize Sound System
-SoundManager.init().catch(err => 
-  console.warn('Sound system initialization failed:', err)
-)
+// Initialize core systems once
+const initializeCoreServices = () => {
+  try {
+    // Sound System - Non-blocking
+    SoundManager.init().catch(err =>
+      console.warn('Sound system failed (non-critical):', err)
+    )
 
-// Initialize Accessibility Manager
-AccessibilityManager.init()
-AccessibilityManager.addSkipLinks() 
+    // Accessibility - Essential
+    AccessibilityManager.init()
+    AccessibilityManager.addSkipLinks()
 
+    // Error handling - Critical
+    CriticalErrorHandler.init()
+
+    // Performance monitoring - Development only
+    if (import.meta.env.DEV) {
+      MonitoringService.init()
+      MonitoringService.trackUserAction('app_start')
+    }
+
+    // Firebase monitoring - Production ready
+    FirebaseOptimizer.monitorConnection()
+
+    console.log('✅ MALLEX v2.1 - Core services initialized')
+  } catch (error) {
+    console.warn('⚠️ Non-critical service initialization failed:', error)
+  }
+}
+
+// Context Providers - Memoized für Performance
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
     <PlayersProvider>
@@ -47,7 +65,6 @@ const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true)
 
   const handleIntroComplete = () => {
-    // Direkter Übergang ohne zusätzliche Loading-States
     setShowIntro(false)
   }
 
@@ -55,209 +72,72 @@ const App: React.FC = () => {
     return <AppIntro onComplete={handleIntroComplete} />
   }
 
-  // Direkt zur Hauptanwendung nach Intro
   return (
     <ContextProviders>
-      <RouterProvider key="main-router" router={router} />
+      <RouterProvider router={router} />
       <PrivacyBanner />
-      <PerformanceDashboard />
     </ContextProviders>
   )
 }
 
+// Single initialization point
 const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
+
+  // Initialize services BEFORE React
+  initializeCoreServices()
+
   const root = createRoot(rootElement)
 
-  // Initialize critical error handling
-  CriticalErrorHandler.init()
-
-  // Enhanced Performance Monitoring Initialization
-  try {
-    // Initialize PerformanceMonitor first
-    if (typeof PerformanceMonitor?.init === 'function') {
-      PerformanceMonitor.init()
-    }
-    
-    // Initialize MonitoringService
-    if (typeof MonitoringService?.init === 'function') {
-      MonitoringService.init()
-    }
-    
-    // Track app start after initialization
-    if (typeof MonitoringService?.trackUserAction === 'function') {
-      MonitoringService.trackUserAction('app_start')
-    } else {
-      console.warn('MonitoringService.trackUserAction not available')
-    }
-    
-    // Initialize Firebase monitoring
-    if (typeof FirebaseOptimizer?.monitorConnection === 'function') {
-      FirebaseOptimizer.monitorConnection()
-    }
-    
-    console.log('📊 Performance monitoring initialized successfully')
-  } catch (error) {
-    console.warn('Performance monitoring initialization failed:', error)
-  }
-
-  // Track app initialization performance with detailed metrics
-  const initStartTime = performance.now()
-  console.log('🚀 MALLEX App v2.0 initialization started')
-
-  window.addEventListener('load', () => {
-    const initTime = performance.now() - initStartTime
-    console.log(`📊 App initialized in ${Math.round(initTime)}ms`)
-
-    // Track critical performance metrics
-    PerformanceMonitor.trackMetric({ 
-      name: 'app-initialization', 
-      value: initTime, 
-      timestamp: Date.now() 
-    })
-
-    // Initialize performance dashboard in dev mode
-    if (import.meta.env.DEV) {
-      setTimeout(() => {
-        console.log('📊 Performance Dashboard available in browser console')
-        console.log('Type window.MALLEX_PERFORMANCE for metrics')
-      }, 2000)
-    }
-  })
-
-  // Global Performance API for Development
+  // Development tools
   if (import.meta.env.DEV) {
-    ;(window as any).MALLEX_PERFORMANCE = {
-      getMetrics: () => PerformanceMonitor.getPerformanceReport(),
-      generateReport: () => PerformanceMonitor.generatePerformanceReport(),
-      trackMetric: (name: string, value: number) => PerformanceMonitor.trackMetric({ name, value, timestamp: Date.now() })
+    ;(window as any).MALLEX_DEV = {
+      performance: () => MonitoringService.getPerformanceReport(),
+      errors: () => CriticalErrorHandler.getErrorStats(),
+      cache: () => FirebaseOptimizer.getCacheStats()
     }
+    console.log('🛠️ Dev tools available: window.MALLEX_DEV')
   }
 
-  // Service Worker Performance Metrics Listener
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-        try {
-          PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
-        } catch (error) {
-          console.warn('Performance Monitor tracking failed:', error)
-        }
-      }
-    })
-  }
-
-  // Cleanup on page unload
+  // Cleanup on unload
   window.addEventListener('beforeunload', () => {
     try {
       FirebaseOptimizer.cleanup()
-
-      if (import.meta.env.DEV && MonitoringService?.getPerformanceReport) {
-        const report = MonitoringService.getPerformanceReport()
-        console.log('📊 Session Performance Report:', report)
-      }
     } catch (error) {
-      console.warn('Cleanup failed:', error)
+      console.warn('Cleanup warning:', error)
     }
   })
 
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundaryEnhanced showReportDialog={import.meta.env.DEV}>
-        <App />
-      </ErrorBoundaryEnhanced>
-    </React.StrictMode>
-  )
-}
-
-// Enhanced Service Worker Registration mit Performance-Integration
-// Service Worker Registration - only in production
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  // PerformanceMonitor global verfügbar machen
-  ;(window as any).PerformanceMonitor = PerformanceMonitor
-
-  window.addEventListener('load', () => {
+  // Service Worker - Production only
+  if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('✅ MALLEX Service Worker v2.2.0 registriert:', registration)
+        .then(registration => {
+          console.log('✅ Service Worker active:', registration)
 
-          // Service Worker Updates überwachen
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('🔄 Service Worker Update verfügbar - Reload empfohlen')
-
-                  // Optional: User-freundliche Update-Benachrichtigung
-                  MonitoringService.trackUserAction('sw_update_available')
-
-                  // Auto-Update nach 5 Sekunden (nur im Dev-Mode)
-                  if (import.meta.env.DEV) {
-                    setTimeout(() => {
-                      window.location.reload()
-                    }, 5000)
-                  }
+                  console.log('🔄 App update available')
                 }
               })
             }
           })
-
-          })
-        .catch((error) => {
-          console.error('❌ Service Worker Registration fehlgeschlagen:', error)
-          MonitoringService.trackError('sw_registration_failed', { error: error.message })
         })
-
-      // Offline/Online Status-Updates
-      window.addEventListener('online', () => {
-        console.log('🌐 Verbindung wiederhergestellt')
-        MonitoringService.trackUserAction('connection_restored')
-      })
-
-      window.addEventListener('offline', () => {
-        console.log('📱 Offline-Modus aktiviert')
-        MonitoringService.trackUserAction('connection_lost')
-      })
-    })
-}
-
-// Development debugging
-if (import.meta.env.DEV) {
-  ;(window as any).__MALLEX_DEV__ = true
-
-  // Handle WebSocket connection issues for Vite HMR
-  if (typeof window !== 'undefined') {
-    window.addEventListener('error', (event) => {
-      if (event.message?.includes('WebSocket') || event.message?.includes('0.0.0.0 blocked')) {
-        console.warn('WebSocket HMR connection blocked - this is normal in some environments')
-        event.preventDefault()
-      }
+        .catch(error => {
+          console.warn('Service Worker registration failed:', error)
+        })
     })
   }
+
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundaryEnhanced showReportDialog={false}>
+        <App />
+      </ErrorBoundaryEnhanced>
+    </React.StrictMode>
+  )
 }
-
-// Initialize Performance Monitoring (Development)
-  if (import.meta.env.DEV) {
-    // Initialize monitoring defensively
-    try {
-      if (MonitoringService?.init) {
-        MonitoringService.init()
-      }
-    } catch (error) {
-      console.warn('MonitoringService initialization failed:', error)
-    }
-  }
-
-  // Initialize Mobile Performance Optimizations
-  import('./lib/mobile-performance').then((module) => {
-    const MobilePerformanceOptimizer = module.MobilePerformanceOptimizer || module.default
-    if (MobilePerformanceOptimizer?.init) {
-      MobilePerformanceOptimizer.init()
-    }
-  }).catch(() => {
-    console.warn('Mobile performance optimizer not available')
-  })
-
-// No problematic exports that break Fast Refresh

@@ -174,11 +174,11 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
             </div>
 
             <h2 className={styles.errorTitle}>
-              Oops! Etwas ist schiefgegangen
+              Oops! Etwas ist schief gelaufen
             </h2>
 
             <p className={styles.errorMessage}>
-              {suggestion}
+              Keine Sorge - das Problem wurde automatisch gemeldet und wird behoben.
             </p>
 
             {process.env.NODE_ENV === 'development' && (

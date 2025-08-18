@@ -1,75 +1,94 @@
-import { lazy } from 'react'
 
-// Lazy-loaded Screens für bessere Performance
-export const LazyArenaScreen = lazy(() =>
-  import('../features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen }))
-)
+// MALLEX Intelligent Preloading System - v2.1
+// Optimiert für bessere Performance und verhindert Endlosschleifen
 
-export const LazyLeaderboardScreen = lazy(() =>
-  import('../features/Leaderboard/LeaderboardScreen').then(module => ({ default: module.LeaderboardScreen }))
-)
+interface PreloadComponent {
+  (): Promise<any>
+}
 
-export const LazyLegendsScreen = lazy(() =>
-  import('../features/Legends/LegendsScreen').then(module => ({ default: module.LegendsScreen }))
-)
+interface PreloadComponents {
+  [key: string]: PreloadComponent
+}
 
-export const LazyAdminDashboard = lazy(() =>
-  import('../features/Admin/AdminDashboard').then(module => ({ default: module.AdminDashboard }))
-)
-
-export const LazyTasksOverviewScreen = lazy(() =>
-  import('../features/Tasks/TasksOverviewScreen').then(module => ({ default: module.TasksOverviewScreen }))
-)
-
-export const LazySuggestTaskScreen = lazy(() =>
-  import('../features/Tasks/SuggestTaskScreen').then(module => ({ default: module.SuggestTaskScreen }))
-)
-
-export const LazyAdminTasksScreen = lazy(() =>
-  import('../features/Tasks/AdminTasksScreen').then(module => ({ default: module.AdminTasksScreen }))
-)
-
-// Lazy Import Utilities mit intelligentem Preloading
-export const preloadComponents = {
+// Saubere Preload-Komponenten ohne Endlosschleifen
+const preloadComponents: PreloadComponents = {
   arena: () => import('../features/Arena/ArenaScreen'),
   legends: () => import('../features/Legends/LegendsScreen'),
   leaderboard: () => import('../features/Leaderboard/LeaderboardScreen'),
-  tasks: () => import('../features/Tasks/TasksOverviewScreen'),
-  suggestTasks: () => import('../features/Tasks/SuggestTaskScreen'),
-  adminTasks: () => import('../features/Tasks/AdminTasksScreen'),
-  adminDashboard: () => import('../features/Admin/AdminDashboard'),
   menu: () => import('../features/Menu/MenuScreen'),
-  privacy: () => import('../features/Privacy/PrivacyDashboard')
+  tasks: () => import('../features/Tasks/TasksOverviewScreen'),
+  adminTasks: () => import('../features/Tasks/AdminTasksScreen'),
+  adminDashboard: () => import('../features/Admin/AdminDashboard')
 }
 
-// Intelligentes Preloading basierend auf User-Verhalten
-export const intelligentPreload = () => {
-  // Preload kritische Komponenten nach 2 Sekunden
-  setTimeout(() => {
-    preloadComponents.arena().catch(() => {})
-    preloadComponents.menu().catch(() => {})
-  }, 2000)
+let preloadStarted = false
 
-  // Preload weitere Komponenten nach 5 Sekunden
-  setTimeout(() => {
-    preloadComponents.legends().catch(() => {})
-    preloadComponents.leaderboard().catch(() => {})
-    preloadComponents.tasks().catch(() => {})
-  }, 5000)
+export function intelligentPreload() {
+  // Verhindere doppelte Ausführung
+  if (preloadStarted) {
+    console.log('📦 Preloading already started')
+    return
+  }
+  
+  preloadStarted = true
+  console.log('📦 Starting intelligent component preloading...')
 
-  // Admin-Komponenten nur bei Bedarf preloaden
-  const user = localStorage.getItem('mallex_user')
-  if (user) {
-    try {
-      const userData = JSON.parse(user)
-      if (userData.role === 'admin') {
-        setTimeout(() => {
-          preloadComponents.adminTasks().catch(() => {})
-          preloadComponents.adminDashboard().catch(() => {})
-        }, 3000)
+  try {
+    // Immediate priority - Arena (Hauptbildschirm)
+    preloadComponents.arena()
+      .then(() => console.log('✅ Arena preloaded'))
+      .catch(err => console.warn('Arena preload failed:', err))
+
+    // High priority nach 1 Sekunde
+    setTimeout(() => {
+      Promise.all([
+        preloadComponents.legends(),
+        preloadComponents.leaderboard(),
+        preloadComponents.menu()
+      ]).then(() => {
+        console.log('✅ Core components preloaded')
+      }).catch(err => {
+        console.warn('Core preload failed:', err)
+      })
+    }, 1000)
+
+    // Medium priority nach 3 Sekunden
+    setTimeout(() => {
+      preloadComponents.tasks()
+        .then(() => console.log('✅ Tasks preloaded'))
+        .catch(err => console.warn('Tasks preload failed:', err))
+    }, 3000)
+
+    // Low priority nach 5 Sekunden (nur wenn user authenticated)
+    setTimeout(() => {
+      if (window.location.pathname.includes('admin') || 
+          localStorage.getItem('mallex-admin-user')) {
+        Promise.all([
+          preloadComponents.adminTasks(),
+          preloadComponents.adminDashboard()
+        ]).then(() => {
+          console.log('✅ Admin components preloaded')
+        }).catch(err => {
+          console.warn('Admin preload failed:', err)
+        })
       }
-    } catch (error) {
-      console.warn('User data parsing failed:', error)
-    }
+    }, 5000)
+
+  } catch (error) {
+    console.warn('Preloading error (non-critical):', error)
+  }
+}
+
+// Development utilities
+if (import.meta.env.DEV) {
+  ;(window as any).MALLEX_PRELOAD = {
+    restart: () => {
+      preloadStarted = false
+      intelligentPreload()
+    },
+    status: () => ({
+      started: preloadStarted,
+      components: Object.keys(preloadComponents)
+    })
   }
 }

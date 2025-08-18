@@ -26,108 +26,88 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Teste Firebase-Verfügbarkeit mit Timeout
-    const testFirebaseConnection = async () => {
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
+
+    const initializeAuth = async () => {
       try {
+        // Firebase Verfügbarkeitstest mit kurzer Timeout
         if (!auth) {
-          console.warn('Firebase auth not initialized - switching to guest mode');
-          setLoading(false);
-          setUser(null);
-          // setAdmin(false); // Removed unused call
-          return false;
+          console.warn('🟡 Firebase not available - Guest mode');
+          if (isMounted) {
+            setLoading(false);
+            setUser(null);
+            setIsAdmin(false);
+          }
+          return;
         }
 
-        // Quick connection test mit Timeout (verlängert für Replit)
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('timeout')), 5000)
-        );
+        // Single auth state listener - verhindert loops
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          if (!isMounted) return;
 
-        await Promise.race([
-          new Promise(resolve => {
-            const unsubscribe = onAuthStateChanged(auth, () => {
-              unsubscribe();
-              resolve(true);
-            });
-          }),
-          timeoutPromise
-        ]);
+          try {
+            if (firebaseUser) {
+              setUser(firebaseUser);
 
-        return true;
+              // Profile sicherstellen (non-blocking)
+              ensureUserProfile(firebaseUser.uid, {
+                email: firebaseUser.email ?? undefined,
+                displayName: firebaseUser.displayName ?? undefined,
+              }).catch(error => {
+                console.warn('Profile creation failed (non-critical):', error);
+              });
+
+              // Admin-Check (non-blocking)
+              getDoc(doc(db, 'admins', firebaseUser.uid))
+                .then(adminDoc => {
+                  if (isMounted) {
+                    const userIsAdmin = adminDoc.exists();
+                    setIsAdmin(userIsAdmin);
+                    console.log(userIsAdmin ? '👑 Admin user' : '👤 Regular user');
+                  }
+                })
+                .catch(error => {
+                  console.warn('Admin check failed:', error);
+                  if (isMounted) setIsAdmin(false);
+                });
+
+            } else {
+              setUser(null);
+              setIsAdmin(false);
+            }
+          } catch (error) {
+            console.warn('Auth processing error:', error);
+            if (isMounted) {
+              setUser(null);
+              setIsAdmin(false);
+            }
+          } finally {
+            if (isMounted) setLoading(false);
+          }
+        });
+
+        console.log('🔐 Auth listener initialized');
+
       } catch (error) {
-        console.warn('Firebase connection test failed - switching to guest mode:', error);
-        setLoading(false);
-        setUser(null);
-        return false;
+        console.warn('Auth initialization failed:', error);
+        if (isMounted) {
+          setLoading(false);
+          setUser(null);
+          setIsAdmin(false);
+        }
       }
     };
 
-    testFirebaseConnection().then(isOnline => {
-      if (!isOnline) {
-        console.log('🟡 App running in GUEST MODE (Firebase offline)');
-        return;
-      }
+    initializeAuth();
 
-      console.log('🟢 Firebase online - normal auth mode');
-      let isMounted = true;
-      let authTimeout: NodeJS.Timeout;
-      
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (!isMounted) return;
-        
-        // Clear any existing timeout
-        if (authTimeout) clearTimeout(authTimeout);
-        
-        setLoading(true);
-        try {
-          if (user) {
-            setUser(user);
-
-            // Versuche Profil zu laden, aber lass es nicht die App crashen
-            try {
-              await ensureUserProfile(user.uid, {
-                email: user.email ?? undefined,
-                displayName: user.displayName ?? undefined,
-              });
-            } catch (profileError) {
-              console.warn('Could not ensure user profile (offline?):', profileError);
-            }
-
-            // **ZENTRALE ADMIN-PRÜFUNG BEIM LOGIN**
-            try {
-              const adminDoc = await getDoc(doc(db, 'admins', user.uid));
-              const userIsAdmin = adminDoc.exists();
-              setIsAdmin(userIsAdmin);
-              console.log(userIsAdmin ? '👑 ADMIN LOGIN' : '👤 Normal user login');
-            } catch (adminError) {
-              console.warn('Admin check failed:', adminError);
-              setIsAdmin(false);
-            }
-          } else {
-            setUser(null);
-            setIsAdmin(false); // Reset admin status on logout
-          }
-        } catch (error) {
-          console.error('Error in auth state change:', error);
-          // Bei Firebase-Verbindungsproblemen: in Gastmodus wechseln
-          if ((error as any)?.code === 'unavailable') {
-            console.warn('🟡 Firebase became unavailable - switching to guest mode');
-            setUser(null);
-            setIsAdmin(false); // Also reset admin status in this case
-          } else {
-            setUser(null);
-            setIsAdmin(false); // Reset admin status in case of other errors
-          }
-        } finally {
-          if (isMounted) setLoading(false);
-        }
-      });
-
-      return () => {
-        isMounted = false;
+    return () => {
+      isMounted = false;
+      if (unsubscribe) {
         unsubscribe();
-      };
-    });
-  }, []);
+      }
+    };
+  }, []); // Empty dependency array - run once
 
   const login = async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);

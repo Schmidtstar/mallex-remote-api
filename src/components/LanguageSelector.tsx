@@ -43,9 +43,9 @@ export default function LanguageSelector({ onComplete, onLanguageSelected, showS
   const handleLanguageSelect = async (langCode: string) => {
     setSelectedLang(langCode)
 
-    // Das gleiche System wie in MenuScreen verwenden
-    await i18n.changeLanguage(langCode)
-    localStorage.setItem('mallex-language', langCode)
+    // Importiere den Helper dynamisch
+    const { changeLanguage } = await import('../i18n')
+    await changeLanguage(langCode)
 
     // Kurz warten für die Animation, dann weiterleiten
     setTimeout(() => {

@@ -135,7 +135,13 @@ export function AppIntro({ onComplete, userType = 'first-time', showSkip = true 
 
   // Cleanup
   useEffect(() => {
+    // Allow skipping after 2 seconds für bessere UX
+    const skipTimer = setTimeout(() => {
+      setCanSkip(true)
+    }, 2000)
+
     return () => {
+      clearTimeout(skipTimer)
       timersRef.current.forEach(timer => clearTimeout(timer))
       timersRef.current = []
     }

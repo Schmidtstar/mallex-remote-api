@@ -1,44 +1,77 @@
-/* Import all style modules */
+/* ======================================
+   MALLEX CSS ARCHITECTURE - ORDERED IMPORTS
+   ====================================== */
+
+/* 1. Design Tokens (Variablen) */
 @import './tokens.css';
+
+/* 2. Base Styles (Reset + Global) */
 @import './base.css';
-@import './mobile.css';
+
+/* 3. Design System (Components) */
 @import './design-system.css';
+
+/* 4. Color Utilities */
 @import './color-utilities.css';
 
-/* === OLYMPIA INTRO - GLOBALE STYLES === */
+/* 5. Mobile Optimizations (Last to ensure priority) */
+@import './mobile.css';
+
+/* ======================================
+   INTRO SYSTEM - ISOLATED STYLES
+   ====================================== */
+
+/* Intro Container - Isolated Layer */
 .intro-container {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 10000 !important;
-  overflow: hidden !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  background: linear-gradient(135deg, #0c1445 0%, #1e3c72 50%, #2a5298 100%) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  /* Layout Isolation */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
   
-  /* Wichtig: Überschreibt alle anderen Styles */
-  color: white !important;
+  /* Content Management */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  
+  /* Visual Design */
+  background: linear-gradient(135deg, 
+    #0c1445 0%, 
+    #1e3c72 30%, 
+    #2a5298 70%, 
+    #1e3c72 100%
+  );
+  
+  /* Typography */
+  font-family: var(--font-primary), 'Inter', system-ui, sans-serif;
+  color: var(--ancient-marble);
+  
+  /* Performance */
+  will-change: transform, opacity;
+  contain: layout style paint;
 }
 
-/* Stelle sicher dass alle Intro-Elemente sichtbar sind */
-.intro-container * {
-  box-sizing: border-box !important;
+/* Intro Elements Inheritance */
+.intro-container *,
+.intro-container *::before,
+.intro-container *::after {
+  box-sizing: border-box;
 }
 
+/* Main Content Area */
 .intro-container .main-content {
-  position: relative !important;
-  z-index: 10 !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  color: white !important;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: inherit;
 }
 
 /* Hintergrund-Elemente */

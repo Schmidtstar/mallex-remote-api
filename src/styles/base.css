@@ -32,8 +32,8 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-primary);
-  background: var(--ancient-night);
-  color: var(--ancient-marble);
+  background: var(--color-background);
+  color: var(--color-text-primary);
   overflow-x: hidden;
   /* Performance Optimizations */
   -webkit-font-smoothing: antialiased;

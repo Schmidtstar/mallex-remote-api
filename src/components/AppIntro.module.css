@@ -1,520 +1,347 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Orbitron:wght@400;500;700&display=swap');
-
-/* ========== DESIGN TOKENS ========== */
-:root {
-  --olymp-navy: #0a1628;
-  --olymp-gold: #d4af37;
-  --olymp-gold-light: #f4d03f;
-  --olymp-silver: #c0c0c0;
-  --olymp-bronze: #cd7f32;
-  --olymp-white: #ffffff;
-  --olymp-marble: #f5f5dc;
-  
-  /* Shadows */
-  --shadow-deep: 0 20px 40px rgba(0, 0, 0, 0.3);
-  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.5);
-  --shadow-marble: 0 10px 30px rgba(0, 0, 0, 0.2);
-  
-  /* Transitions */
-  --transition-smooth: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* ========== INTRO STAGE - HAUPTCONTAINER ========== */
+/* AppIntro Base Styles */
 .introStage {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: var(--olymp-navy);
-  overflow: hidden;
   z-index: 9999;
-  font-family: 'Orbitron', sans-serif;
-  
-  /* Grid-Layout für bessere Struktur */
-  display: grid;
-  grid-template-rows: 1fr auto;
-  grid-template-areas: 
-    "content"
-    "progress";
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.introStage.skipping {
-  animation: skipOut 0.3s ease-in forwards;
-}
-
-/* ========== HINTERGRUND-SYSTEM ========== */
+/* Background Layers */
 .backgroundLayers {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 1;
 }
 
 .skyLayer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    #1a237e 0%, 
-    var(--olymp-navy) 40%, 
-    #000051 100%
-  );
+  inset: 0;
+  background: linear-gradient(to bottom, #87ceeb 0%, #98d8e8 100%);
 }
 
 .cloudsLayer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 60% 60%, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
-  animation: cloudsDrift 30s linear infinite;
+  inset: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><circle cx="20" cy="10" r="8" fill="white" opacity="0.7"/><circle cx="80" cy="15" r="6" fill="white" opacity="0.5"/></svg>') repeat-x;
+  animation: driftClouds 20s infinite linear;
 }
 
 .mountainsLayer {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
+  right: 0;
   height: 30%;
-  background: linear-gradient(180deg, 
-    transparent 0%, 
-    rgba(26, 35, 126, 0.3) 50%, 
-    rgba(10, 22, 40, 0.8) 100%
-  );
-  clip-path: polygon(0 100%, 20% 60%, 40% 80%, 60% 50%, 80% 70%, 100% 40%, 100% 100%);
+  background: linear-gradient(to top, #2c3e50 0%, #34495e 70%, transparent 100%);
+  clip-path: polygon(0 100%, 25% 40%, 50% 60%, 75% 30%, 100% 50%, 100% 100%);
 }
 
-/* ========== CONTENT AREA ========== */
+/* Content Area */
 .contentArea {
-  grid-area: content;
   position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  width: 100%;
-  height: 100%;
+  height: 100vh;
+  text-align: center;
+  color: white;
 }
 
-/* ========== PHASE 1: LOADING ========== */
+/* Phase 1: Loading */
 .loadingPhase {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: phaseEnter 1s ease-out forwards;
+  animation: fadeIn 0.5s ease-in;
 }
 
 .loadingSpinner {
   margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .olympicRings {
   display: flex;
   gap: 10px;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 .ring {
-  width: 50px;
-  height: 50px;
-  border: 6px solid;
+  width: 40px;
+  height: 40px;
+  border: 4px solid;
   border-radius: 50%;
-  animation: ringPulse 2s ease-in-out infinite;
+  animation: ringPulse 1.5s ease-in-out infinite;
 }
 
-.ring:nth-child(1) { 
-  border-color: #0081c8;
-  animation-delay: 0s; 
-}
-.ring:nth-child(2) { 
-  border-color: #fcb131;
-  animation-delay: 0.2s; 
-}
-.ring:nth-child(3) { 
-  border-color: #000000;
-  animation-delay: 0.4s; 
-}
-.ring:nth-child(4) { 
-  border-color: #00a651;
-  animation-delay: 0.6s; 
-}
-.ring:nth-child(5) { 
-  border-color: #ee334e;
-  animation-delay: 0.8s; 
-}
+.ring:nth-child(1) { border-color: #0085c3; animation-delay: 0s; }
+.ring:nth-child(2) { border-color: #f4c542; animation-delay: 0.2s; }
+.ring:nth-child(3) { border-color: #000000; animation-delay: 0.4s; }
+.ring:nth-child(4) { border-color: #009639; animation-delay: 0.6s; }
+.ring:nth-child(5) { border-color: #ed334e; animation-delay: 0.8s; }
 
 .loadingText {
-  font-size: 1.2rem;
-  color: var(--olymp-gold-light);
-  font-style: italic;
+  font-size: 1.5rem;
+  font-weight: 300;
+  opacity: 0;
   animation: textGlow 2s ease-in-out infinite;
-  text-align: center;
 }
 
-/* ========== PHASE 2: LOGO ========== */
+/* Phase 2: Logo */
 .logoPhase {
-  text-align: center;
-  animation: phaseEnter 1s ease-out forwards;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  animation: scaleIn 0.8s ease-out;
 }
 
 .logoContainer {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(212, 175, 55, 0.3);
-  border-radius: 20px;
-  padding: 3rem 2rem;
-  box-shadow: var(--shadow-deep);
-  max-width: 500px;
-  width: 100%;
-}
-
-.logoIcon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: logoIconBounce 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-  display: block;
   text-align: center;
 }
 
+.logoIcon {
+  font-size: 6rem;
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
 .logoTitle {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  font-weight: 900;
-  color: var(--olymp-gold);
-  text-shadow: var(--shadow-gold);
+  font-size: 4rem;
+  font-weight: 800;
   margin: 0 0 0.5rem 0;
-  letter-spacing: 0.2em;
-  animation: logoTitleReveal 1s ease-out 0.3s forwards;
-  opacity: 0;
-  transform: translateY(30px);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  background: linear-gradient(45deg, #ffd700, #ffed4a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .logoSubtitle {
-  font-size: 1.2rem;
-  color: var(--olymp-silver);
-  font-style: italic;
-  animation: logoSubtitleReveal 1s ease-out 0.6s forwards;
-  opacity: 0;
+  font-size: 1.5rem;
+  font-weight: 300;
+  opacity: 0.9;
+  animation: slideUp 1s ease-out 0.5s both;
 }
 
-/* ========== PHASE 3: TEMPLE ========== */
+/* Phase 3: Temple */
 .templePhase {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: phaseEnter 1s ease-out forwards;
-  padding: 2rem;
-  box-sizing: border-box;
+  animation: fadeIn 1s ease-in;
 }
 
 .templeContainer {
   position: relative;
-  width: min(700px, 85vw);
-  height: min(500px, 65vh);
-  perspective: 1000px;
+  width: 400px;
+  height: 300px;
   margin: 0 auto;
 }
 
-/* Tempel-Dach */
 .templePediment {
   position: absolute;
   top: 0;
-  left: 10%;
-  right: 10%;
-  height: 25%;
-  background: linear-gradient(135deg, var(--olymp-marble) 0%, var(--olymp-silver) 100%);
-  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, #f4f4f4, #e0e0e0);
+  clip-path: polygon(10% 100%, 90% 100%, 70% 0%, 30% 0%);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-marble);
-  animation: pedimentBuild 1s ease-out 0.5s forwards;
-  transform: translateY(-100px);
-  opacity: 0;
+  animation: buildTemple 2s ease-out;
 }
 
 .templeTitle {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(0.8rem, 3vw, 1.5rem);
-  font-weight: 700;
-  color: var(--olymp-navy);
-  text-align: center;
-  padding-bottom: 1rem;
-  letter-spacing: 0.1em;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
 }
 
-/* Säulen */
 .templeColumns {
   position: absolute;
-  top: 25%;
-  left: 5%;
-  right: 5%;
-  height: 55%;
+  top: 60px;
+  left: 20px;
+  right: 20px;
+  height: 180px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: 2%;
+  align-items: end;
 }
 
 .column {
-  flex: 1;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    var(--olymp-marble) 0%, 
-    var(--olymp-silver) 50%, 
-    var(--olymp-marble) 100%
-  );
-  border-radius: 8px 8px 0 0;
-  box-shadow: var(--shadow-marble);
-  position: relative;
-  animation: columnRise 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  transform: translateY(100%);
-  opacity: 0;
+  width: 30px;
+  height: 160px;
+  background: linear-gradient(to bottom, #f8f8f8, #d0d0d0);
+  border-radius: 4px 4px 0 0;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: growColumn 0.6s ease-out forwards;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.2);
 }
 
-.column:nth-child(1) { animation-delay: 0.2s; }
-.column:nth-child(2) { animation-delay: 0.4s; }
-.column:nth-child(3) { animation-delay: 0.6s; }
-.column:nth-child(4) { animation-delay: 0.8s; }
-.column:nth-child(5) { animation-delay: 1.0s; }
-.column:nth-child(6) { animation-delay: 1.2s; }
-
-.column::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 15px;
-  background: var(--olymp-gold);
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
-}
-
-/* Türen */
 .templeDoors {
   position: absolute;
-  top: 45%;
-  left: 35%;
-  right: 35%;
-  height: 35%;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 100px;
   display: flex;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
-  z-index: 10;
 }
 
 .door {
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    var(--olymp-gold) 0%, 
-    var(--olymp-bronze) 50%, 
-    var(--olymp-gold) 100%
-  );
-  box-shadow: var(--shadow-gold);
-  transition: var(--transition-smooth);
-  opacity: 0;
-  position: relative;
-  border: 3px solid var(--olymp-navy);
+  width: 60px;
+  height: 100px;
+  background: linear-gradient(to right, #8b4513, #a0522d);
+  border: 2px solid #654321;
 }
 
 .leftDoor {
-  border-right: 2px solid var(--olymp-navy);
+  border-radius: 8px 0 0 0;
+  animation: openDoor 1.5s ease-out 2s both;
   transform-origin: left center;
-  animation: doorAppear 1s ease-out 1.5s forwards,
-             doorOpenLeft 1.5s ease-out 2.5s forwards;
 }
 
 .rightDoor {
-  border-left: 2px solid var(--olymp-navy);
+  border-radius: 0 8px 0 0;
+  animation: openDoor 1.5s ease-out 2s both;
   transform-origin: right center;
-  animation: doorAppear 1s ease-out 1.5s forwards,
-             doorOpenRight 1.5s ease-out 2.5s forwards;
 }
 
-/* Eingangsbereich */
 .templeEntrance {
   position: absolute;
   bottom: 0;
-  left: 20%;
-  right: 20%;
-  height: 20%;
-  background: linear-gradient(180deg, transparent 0%, var(--olymp-marble) 100%);
-  animation: entranceAppear 1s ease-out 2s forwards;
-  opacity: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to bottom, #c0c0c0, #a0a0a0);
 }
 
-/* ========== PHASE 4: WELCOME ========== */
+/* Phase 4: Welcome */
 .welcomePhase {
-  text-align: center;
-  animation: phaseEnter 1s ease-out forwards;
-  width: 100%;
-  max-width: 600px;
+  animation: fadeIn 0.8s ease-in;
 }
 
 .welcomeContainer {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(212, 175, 55, 0.3);
-  border-radius: 20px;
-  padding: 2.5rem;
-  box-shadow: var(--shadow-deep);
-  width: 100%;
+  max-width: 600px;
+  text-align: center;
 }
 
 .welcomeTitle {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  font-size: 3rem;
   font-weight: 700;
-  color: var(--olymp-gold);
-  text-shadow: var(--shadow-gold);
   margin-bottom: 2rem;
-  animation: welcomeTitleGlow 2s ease-in-out infinite;
+  animation: slideDown 1s ease-out;
 }
 
 .welcomeFeatures {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
 }
 
 .feature {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  transition: var(--transition-smooth);
-  animation: featureFloat 3s ease-in-out infinite;
+  font-size: 1.1rem;
+  animation: fadeInUp 1s ease-out;
 }
 
-.feature:nth-child(2) { animation-delay: 0.5s; }
-.feature:nth-child(3) { animation-delay: 1s; }
-
-.feature:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
+.feature:nth-child(1) { animation-delay: 0.2s; }
+.feature:nth-child(2) { animation-delay: 0.4s; }
+.feature:nth-child(3) { animation-delay: 0.6s; }
 
 .featureIcon {
-  font-size: 2rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  font-size: 1.5rem;
 }
 
 .enterButton {
-  background: linear-gradient(135deg, var(--olymp-gold) 0%, var(--olymp-gold-light) 100%);
-  color: var(--olymp-navy);
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  color: white;
   border: none;
-  padding: 1rem 2.5rem;
-  border-radius: 25px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 50px;
   cursor: pointer;
-  margin-top: 1.5rem;
-  transition: var(--transition-bounce);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  box-shadow: var(--shadow-gold);
+  transition: all 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
 }
 
 .enterButton:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 
-    var(--shadow-gold),
-    0 10px 25px rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
 }
 
-/* ========== SKIP BUTTON ========== */
+.enterButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Skip Button */
 .skipButton {
-  position: absolute;
+  position: fixed;
   top: 2rem;
   right: 2rem;
-  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0.75rem 1.5rem;
-  border-radius: 20px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.9rem;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  transition: var(--transition-smooth);
-  animation: skipButtonFadeIn 1s ease-out forwards;
-  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
 .skipButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.9);
 }
 
 .skipButton kbd {
   background: rgba(255, 255, 255, 0.2);
-  padding: 0.2rem 0.5rem;
+  padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* ========== FORTSCHRITTSINDIKATOR ========== */
+/* Progress Indicator */
 .progressIndicator {
-  grid-area: progress;
-  padding: 1rem 2rem;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  z-index: 50;
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
 }
 
 .progressBar {
+  width: 200px;
   height: 4px;
-  background: var(--olymp-gold);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 2px;
-  transition: width 0.8s ease-out;
   margin-bottom: 1rem;
-  box-shadow: var(--shadow-gold);
+  overflow: hidden;
 }
 
-.progressBar[data-phase="loading"] { width: 25%; }
-.progressBar[data-phase="logo"] { width: 50%; }
-.progressBar[data-phase="temple"] { width: 75%; }
-.progressBar[data-phase="welcome"] { width: 100%; }
+.progressBar::before {
+  content: '';
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #feca57);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.progressBar[data-phase="loading"]::before { width: 25%; }
+.progressBar[data-phase="logo"]::before { width: 50%; }
+.progressBar[data-phase="temple"]::before { width: 75%; }
+.progressBar[data-phase="welcome"]::before { width: 100%; }
 
 .progressDots {
   display: flex;
@@ -526,237 +353,132 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transition: var(--transition-smooth);
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
 }
 
 .progressDot.active {
-  background: var(--olymp-gold);
-  box-shadow: var(--shadow-gold);
+  background: #feca57;
   transform: scale(1.2);
 }
 
-/* ========== ANIMATIONEN ========== */
-@keyframes phaseEnter {
-  from { 
-    opacity: 0; 
-    transform: scale(0.9) translateY(20px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: scale(1) translateY(0); 
-  }
+/* Phase Transitions */
+.phase-loading { animation: fadeIn 0.5s ease-in; }
+.phase-logo { animation: scaleIn 0.8s ease-out; }
+.phase-temple { animation: slideUp 1s ease-out; }
+.phase-welcome { animation: fadeIn 0.8s ease-in; }
+
+.skipping {
+  animation: fadeOut 0.3s ease-out forwards;
 }
 
-@keyframes skipOut {
-  to { 
-    opacity: 0; 
-    transform: scale(0.8); 
-  }
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes cloudsDrift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100px); }
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes ringPulse {
-  0%, 100% { 
-    transform: scale(1); 
-    opacity: 1; 
-  }
-  50% { 
-    transform: scale(1.1); 
-    opacity: 0.7; 
-  }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
 }
 
 @keyframes textGlow {
-  0%, 100% { 
-    opacity: 0.8; 
-  }
-  50% { 
-    opacity: 1; 
-    text-shadow: 0 0 20px var(--olymp-gold-light); 
-  }
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
 }
 
-@keyframes logoIconBounce {
-  from {
-    transform: scale(0) rotate(-180deg);
-  }
-  to { 
-    transform: scale(1) rotate(0deg); 
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
-@keyframes logoTitleReveal {
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
+@keyframes growColumn {
+  to { transform: scaleY(1); }
 }
 
-@keyframes logoSubtitleReveal {
-  to { 
-    opacity: 1; 
-  }
+@keyframes buildTemple {
+  from { transform: translateY(-100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes pedimentBuild {
-  to { 
-    transform: translateY(0); 
-    opacity: 1; 
-  }
+@keyframes openDoor {
+  to { transform: rotateY(-45deg); }
 }
 
-@keyframes columnRise {
-  to { 
-    transform: translateY(0); 
-    opacity: 1; 
-  }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
-@keyframes doorAppear {
-  to { 
-    opacity: 1; 
-  }
+@keyframes driftClouds {
+  from { transform: translateX(-100px); }
+  to { transform: translateX(100vw); }
 }
 
-@keyframes doorOpenLeft {
-  to { 
-    transform: perspective(1000px) rotateY(-70deg); 
-  }
-}
-
-@keyframes doorOpenRight {
-  to { 
-    transform: perspective(1000px) rotateY(70deg); 
-  }
-}
-
-@keyframes entranceAppear {
-  to { 
-    opacity: 1; 
-  }
-}
-
-@keyframes welcomeTitleGlow {
-  0%, 100% { 
-    text-shadow: var(--shadow-gold); 
-  }
-  50% { 
-    text-shadow: 0 0 30px var(--olymp-gold); 
-  }
-}
-
-@keyframes featureFloat {
-  0%, 100% { 
-    transform: translateY(0); 
-  }
-  50% { 
-    transform: translateY(-5px); 
-  }
-}
-
-@keyframes skipButtonFadeIn {
-  to { 
-    opacity: 1; 
-  }
-}
-
-/* ========== RESPONSIVE DESIGN ========== */
+/* Responsive Design */
 @media (max-width: 768px) {
-  .contentArea {
-    padding: 1rem;
-  }
-
-  .skipButton {
-    top: 1rem;
-    right: 1rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  .welcomeContainer {
-    padding: 2rem 1.5rem;
-  }
-
-  .logoContainer {
-    padding: 2rem 1.5rem;
-  }
-
-  .welcomeFeatures {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .templeContainer {
-    width: 90vw;
-    height: min(350px, 55vh);
-  }
-
-  .templeDoors {
-    left: 30%;
-    right: 30%;
-    top: 50%;
-    height: 30%;
-  }
-
-  .templeColumns {
-    gap: 1%;
-  }
-
-  .olympicRings {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .ring {
-    width: 40px;
-    height: 40px;
-    border-width: 4px;
-  }
+  .logoTitle { font-size: 2.5rem; }
+  .logoSubtitle { font-size: 1.2rem; }
+  .welcomeTitle { font-size: 2rem; }
+  .welcomeFeatures { flex-direction: column; gap: 1rem; }
+  .templeContainer { transform: scale(0.8); }
+  .skipButton { top: 1rem; right: 1rem; }
 }
 
 @media (max-width: 480px) {
-  .progressIndicator {
-    padding: 0.75rem 1rem;
-  }
-
-  .logoIcon {
-    font-size: 3rem;
-  }
-
-  .enterButton {
-    padding: 0.75rem 2rem;
-    font-size: 1rem;
-  }
+  .logoTitle { font-size: 2rem; }
+  .welcomeTitle { font-size: 1.5rem; }
+  .enterButton { padding: 0.8rem 1.5rem; font-size: 1rem; }
 }
 
-/* ========== ACCESSIBILITY ========== */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.1s !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.1s !important;
-  }
-  
-  .cloudsLayer {
-    animation: none;
-  }
+/* Emergency fallbacks */
+.introStage * {
+  box-sizing: border-box;
 }
 
+/* High contrast mode support */
 @media (prefers-contrast: high) {
-  :root {
-    --olymp-gold: #ffff00;
-    --olymp-silver: #ffffff;
+  .introStage {
+    background: linear-gradient(135deg, #000080 0%, #000040 100%);
+  }
+
+  .logoTitle {
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
   }
 }
 
-/* ========== DARK MODE SUPPORT ========== */
-@media (prefers-color-scheme: dark) {
-  .backgroundLayers {
-    filter: brightness(0.8);
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .introStage * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

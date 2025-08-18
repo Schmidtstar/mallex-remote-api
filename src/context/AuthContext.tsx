@@ -28,32 +28,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isMounted = true;
     let unsubscribe: (() => void) | null = null;
-    let initializationAttempted = false;
 
-    const initializeAuth = async () => {
-      // Verhindere mehrfache Initialisierung
-      if (initializationAttempted) return;
-      initializationAttempted = true;
-
+    const initializeAuth = () => {
       try {
-        // Prüfe Firebase-Verfügbarkeit mit Timeout
-        const firebaseTimeout = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Firebase timeout')), 3000)
-        );
-
-        const firebaseCheck = new Promise((resolve) => {
-          if (!auth) {
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        });
-
-        const isFirebaseAvailable = await Promise.race([firebaseCheck, firebaseTimeout])
-          .catch(() => false);
-
-        if (!isFirebaseAvailable) {
-          console.warn('🟡 Firebase not available - Guest mode activated');
+        // Schnelle Firebase-Verfügbarkeit prüfen
+        if (!auth) {
+          console.warn('🟡 Firebase Auth not available - Guest mode');
           if (isMounted) {
             setLoading(false);
             setUser(null);
@@ -62,53 +42,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Einmaliger Auth-Listener ohne Rekursion
-        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        // Direkter Auth-Listener ohne Verzögerung
+        unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
           if (!isMounted) return;
 
-          try {
-            if (firebaseUser) {
-              setUser(firebaseUser);
-              setIsAdmin(false); // Standard-Wert
+          if (firebaseUser) {
+            console.log('✅ User authenticated:', firebaseUser.uid);
+            setUser(firebaseUser);
+            setLoading(false); // SOFORT entsperren
 
-              // Async Operations ohne Blockierung
-              Promise.all([
-                // Profile sicherstellen
-                ensureUserProfile(firebaseUser.uid, {
-                  email: firebaseUser.email ?? undefined,
-                  displayName: firebaseUser.displayName ?? undefined,
-                }).catch(() => console.warn('Profile creation skipped')),
-                
-                // Admin-Check mit Timeout - EINMALIG
+            // Non-blocking Background-Tasks
+            setTimeout(() => {
+              if (!isMounted) return;
+              
+              // Profile-Erstellung (non-blocking)
+              ensureUserProfile(firebaseUser.uid, {
+                email: firebaseUser.email ?? undefined,
+                displayName: firebaseUser.displayName ?? undefined,
+              }).catch(() => console.warn('Profile creation skipped'));
+
+              // Admin-Check (non-blocking, mit Timeout)
+              if (db) {
+                const adminCheckTimeout = setTimeout(() => {
+                  console.warn('Admin check timeout - assuming non-admin');
+                  if (isMounted) setIsAdmin(false);
+                }, 2000);
+
                 getDoc(doc(db, 'admins', firebaseUser.uid))
                   .then((adminDoc) => {
-                    if (isMounted && adminDoc?.exists()) {
-                      setIsAdmin(true);
-                      console.log('👑 Admin user detected');
-                    } else if (isMounted) {
-                      setIsAdmin(false);
+                    clearTimeout(adminCheckTimeout);
+                    if (isMounted) {
+                      const isUserAdmin = adminDoc?.exists();
+                      setIsAdmin(isUserAdmin);
+                      if (isUserAdmin) console.log('👑 Admin detected');
                     }
                   })
                   .catch(() => {
+                    clearTimeout(adminCheckTimeout);
                     if (isMounted) setIsAdmin(false);
-                  })
-              ]);
+                  });
+              } else {
+                setIsAdmin(false);
+              }
+            }, 50); // Minimal delay für bessere UX
 
-            } else {
-              setUser(null);
-              setIsAdmin(false);
-            }
-          } catch (error) {
-            console.warn('Auth processing error:', error);
-            if (isMounted) {
-              setUser(null);
-              setIsAdmin(false);
-            }
-          } finally {
-            if (isMounted) setLoading(false);
+          } else {
+            console.log('🔓 User signed out');
+            setUser(null);
+            setIsAdmin(false);
+            setLoading(false);
           }
         }, (error) => {
-          console.warn('Auth listener error:', error);
+          console.error('🚨 Auth listener error:', error);
           if (isMounted) {
             setLoading(false);
             setUser(null);
@@ -116,10 +101,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         });
 
-        console.log('🔐 Auth listener initialized successfully');
+        console.log('🔐 Auth initialized');
 
       } catch (error) {
-        console.warn('Auth initialization failed - Guest mode:', error);
+        console.error('🚨 Auth initialization failed:', error);
         if (isMounted) {
           setLoading(false);
           setUser(null);
@@ -128,18 +113,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Verzögerter Start für bessere Stabilität
-    const initTimer = setTimeout(initializeAuth, 100);
+    // Sofortiger Start ohne Verzögerung
+    initializeAuth();
 
     return () => {
       isMounted = false;
-      clearTimeout(initTimer);
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
       }
     };
-  }, []); // Leere Dependencies - nur einmal ausführen
+  }, []); // Einmaliger Effect
 
   const login = async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);

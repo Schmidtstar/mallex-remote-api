@@ -1,311 +1,368 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Orbitron:wght@400;500;700;900&family=Dancing+Script:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Orbitron:wght@400;500;700&display=swap');
 
+/* ========== DESIGN TOKENS ========== */
 :root {
-  /* Epic Theme Variables */
-  --epic-navy: #0a0e1a;
-  --epic-navy-light: #1a1f3a;
-  --epic-gold: #ffd166;
-  --epic-gold-bright: #ffed4e;
-  --epic-silver: #e8e9ea;
-  --epic-cosmic-blue: #4ecdc4;
-  --epic-cosmic-purple: #9b59b6;
-  --epic-fire: #ff6b6b;
-  --epic-energy: #45b7d1;
+  --olymp-navy: #0a1628;
+  --olymp-gold: #d4af37;
+  --olymp-gold-light: #f4d03f;
+  --olymp-silver: #c0c0c0;
+  --olymp-bronze: #cd7f32;
+  --olymp-white: #ffffff;
+  --olymp-marble: #f5f5dc;
   
-  /* Modern Gradients */
-  --gradient-cosmic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-fire: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
-  --gradient-energy: linear-gradient(135deg, #4ecdc4 0%, #45b7d1 100%);
-  --gradient-gold: linear-gradient(135deg, #ffd166 0%, #ffed4e 100%);
+  /* Shadows */
+  --shadow-deep: 0 20px 40px rgba(0, 0, 0, 0.3);
+  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.5);
+  --shadow-marble: 0 10px 30px rgba(0, 0, 0, 0.2);
   
-  /* Shadows & Effects */
-  --shadow-epic: 0 20px 60px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 30px rgba(255, 209, 102, 0.6);
-  --shadow-cosmic: 0 0 50px rgba(78, 205, 196, 0.4);
+  /* Transitions */
+  --transition-smooth: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* ========== EPIC STAGE ========== */
-.epicStage {
+/* ========== INTRO STAGE ========== */
+.introStage {
   position: fixed;
   inset: 0;
-  background: var(--epic-navy);
+  background: var(--olymp-navy);
   overflow: hidden;
   z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Orbitron', 'Cinzel', serif;
+  font-family: 'Orbitron', sans-serif;
+  
+  /* Basis-Layout */
+  display: grid;
+  grid-template-areas: 
+    "content"
+    "progress";
+  grid-template-rows: 1fr auto;
 }
 
-/* ========== DYNAMISCHER HINTERGRUND ========== */
-.dynamicBackground {
+/* Skipping-Animation */
+.skipping {
+  animation: skipOut 0.3s ease-in forwards;
+}
+
+/* ========== HINTERGRUND-SYSTEM ========== */
+.backgroundLayers {
   position: absolute;
   inset: 0;
   z-index: 1;
 }
 
-.gradientLayer {
+.skyLayer {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(78, 205, 196, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255, 107, 107, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 50% 10%, rgba(255, 209, 102, 0.1) 0%, transparent 60%),
-    linear-gradient(135deg, var(--epic-navy) 0%, var(--epic-navy-light) 100%);
-  animation: gradientShift 8s ease-in-out infinite;
+  background: linear-gradient(180deg, 
+    #1a237e 0%, 
+    var(--olymp-navy) 40%, 
+    #000051 100%
+  );
 }
 
-.noiseLayer {
+.cloudsLayer {
   position: absolute;
   inset: 0;
   background-image: 
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-  animation: noiseShift 20s linear infinite;
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
+  animation: cloudsDrift 30s linear infinite;
 }
 
-.templeGlow {
+.mountainsLayer {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255, 209, 102, 0.2) 0%, transparent 70%);
-  animation: templeGlowPulse 3s ease-in-out infinite;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(26, 35, 126, 0.3) 50%, 
+    rgba(10, 22, 40, 0.8) 100%
+  );
+  clip-path: polygon(0 100%, 20% 60%, 40% 80%, 60% 50%, 80% 70%, 100% 40%, 100% 100%);
 }
 
-/* ========== KOSMISCHER CANVAS ========== */
-.cosmicCanvas {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* ========== CONTENT CONTAINER ========== */
-.contentContainer {
+/* ========== CONTENT AREA ========== */
+.contentArea {
+  grid-area: content;
   position: relative;
   z-index: 10;
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
 }
 
-/* ========== INITIAL PHASE ========== */
-.initialPhase {
+/* ========== PHASE 1: LOADING ========== */
+.loadingPhase {
   text-align: center;
-  animation: initialFadeIn 2s ease-out forwards;
+  animation: phaseEnter 1s ease-out forwards;
 }
 
-.logoReveal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.logoIcon {
-  font-size: 6rem;
-  animation: logoIconReveal 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-  opacity: 0;
-  transform: scale(0) rotate(-180deg);
-}
-
-.logoText {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 900;
-  letter-spacing: 0.3em;
-  background: var(--gradient-gold);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: logoTextReveal 2s ease-out 0.5s forwards;
-  opacity: 0;
-  transform: translateY(50px);
-  text-shadow: var(--shadow-glow);
-}
-
-/* ========== COSMIC PHASE ========== */
-.cosmicPhase {
-  text-align: center;
-  animation: cosmicEntrance 2s ease-out forwards;
-}
-
-.cosmicTitle {
+.loadingSpinner {
   margin-bottom: 2rem;
 }
 
-.cosmicTitle h1 {
-  font-family: 'Orbitron', serif;
-  font-size: clamp(2.5rem, 7vw, 4.5rem);
-  font-weight: 700;
-  color: var(--epic-cosmic-blue);
-  text-shadow: var(--shadow-cosmic);
-  animation: cosmicTitleGlow 3s ease-in-out infinite;
+.olympicRings {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-.cosmicSubtitle {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
-  color: var(--epic-silver);
+.ring {
+  width: 50px;
+  height: 50px;
+  border: 6px solid;
+  border-radius: 50%;
+  animation: ringPulse 2s ease-in-out infinite;
 }
 
-.highlight {
-  background: var(--gradient-energy);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 700;
-  animation: highlightPulse 2s ease-in-out infinite;
+.ring:nth-child(1) { 
+  border-color: #0081c8;
+  animation-delay: 0s; 
+}
+.ring:nth-child(2) { 
+  border-color: #fcb131;
+  animation-delay: 0.2s; 
+}
+.ring:nth-child(3) { 
+  border-color: #000000;
+  animation-delay: 0.4s; 
+}
+.ring:nth-child(4) { 
+  border-color: #00a651;
+  animation-delay: 0.6s; 
+}
+.ring:nth-child(5) { 
+  border-color: #ee334e;
+  animation-delay: 0.8s; 
 }
 
-/* ========== TEMPLE PHASE ========== */
+.loadingText {
+  font-size: 1.2rem;
+  color: var(--olymp-gold-light);
+  font-style: italic;
+  animation: textGlow 2s ease-in-out infinite;
+}
+
+/* ========== PHASE 2: LOGO ========== */
+.logoPhase {
+  text-align: center;
+  animation: phaseEnter 1s ease-out forwards;
+}
+
+.logoContainer {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  box-shadow: var(--shadow-deep);
+}
+
+.logoIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: logoIconBounce 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  display: block;
+}
+
+.logoTitle {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 900;
+  color: var(--olymp-gold);
+  text-shadow: var(--shadow-gold);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.2em;
+  animation: logoTitleReveal 1s ease-out 0.3s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.logoSubtitle {
+  font-size: 1.2rem;
+  color: var(--olymp-silver);
+  font-style: italic;
+  animation: logoSubtitleReveal 1s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+/* ========== PHASE 3: TEMPLE ========== */
 .templePhase {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: templeEntrance 2s ease-out forwards;
+  animation: phaseEnter 1s ease-out forwards;
 }
 
-.templeStructure {
+.templeContainer {
   position: relative;
-  width: min(900px, 90vw);
-  height: min(600px, 80vh);
-  perspective: 1200px;
+  width: min(700px, 90vw);
+  height: min(500px, 70vh);
+  perspective: 1000px;
 }
 
+/* Tempel-Dach */
 .templePediment {
   position: absolute;
   top: 0;
   left: 10%;
   right: 10%;
-  height: 20%;
-  background: 
-    linear-gradient(135deg, var(--epic-silver) 0%, #f8f9fa 50%, var(--epic-silver) 100%);
+  height: 25%;
+  background: linear-gradient(135deg, var(--olymp-marble) 0%, var(--olymp-silver) 100%);
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  box-shadow: var(--shadow-epic);
-  animation: pedimentRise 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  box-shadow: var(--shadow-marble);
+  animation: pedimentBuild 1s ease-out 0.5s forwards;
   transform: translateY(-100px);
   opacity: 0;
 }
 
 .templeTitle {
   font-family: 'Cinzel', serif;
-  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-size: clamp(1rem, 3vw, 1.8rem);
   font-weight: 700;
-  color: var(--epic-navy);
-  letter-spacing: 0.2em;
+  color: var(--olymp-navy);
   text-align: center;
-  margin-top: 2rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding-bottom: 1rem;
+  letter-spacing: 0.1em;
 }
 
+/* Säulen */
 .templeColumns {
   position: absolute;
-  top: 20%;
+  top: 25%;
   left: 5%;
   right: 5%;
-  height: 60%;
+  height: 55%;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 2%;
 }
 
 .column {
-  width: 12%;
+  flex: 1;
   height: 100%;
-  background: 
-    linear-gradient(180deg, var(--epic-silver) 0%, #e8e9ea 50%, var(--epic-silver) 100%),
-    repeating-linear-gradient(90deg, transparent 0 4px, rgba(0, 0, 0, 0.1) 4px 6px);
+  background: linear-gradient(180deg, 
+    var(--olymp-marble) 0%, 
+    var(--olymp-silver) 50%, 
+    var(--olymp-marble) 100%
+  );
   border-radius: 8px 8px 0 0;
-  box-shadow: var(--shadow-epic);
-  animation: columnRise 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  box-shadow: var(--shadow-marble);
+  position: relative;
+  animation: columnRise 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   transform: translateY(100%);
   opacity: 0;
 }
 
+.column::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 15px;
+  background: var(--olymp-gold);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Türen */
 .templeDoors {
   position: absolute;
-  top: 40%;
-  left: 25%;
-  right: 25%;
-  height: 40%;
+  top: 45%;
+  left: 30%;
+  right: 30%;
+  height: 35%;
   display: flex;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .door {
   width: 50%;
   height: 100%;
-  background: 
-    linear-gradient(180deg, #d4af37 0%, #b8860b 50%, #d4af37 100%);
-  box-shadow: 
-    inset 0 0 20px rgba(0, 0, 0, 0.3),
-    var(--shadow-epic);
-  transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  animation: doorAppear 1s ease-out 1s forwards;
+  background: linear-gradient(180deg, 
+    var(--olymp-gold) 0%, 
+    var(--olymp-bronze) 50%, 
+    var(--olymp-gold) 100%
+  );
+  box-shadow: var(--shadow-gold);
+  transition: var(--transition-smooth);
+  animation: doorAppear 1s ease-out 1.5s forwards;
+  opacity: 0;
+  position: relative;
+}
+
+.leftDoor {
+  border-right: 2px solid var(--olymp-navy);
+  transform-origin: left center;
+  animation-name: doorAppear, doorOpenLeft;
+  animation-duration: 1s, 1.5s;
+  animation-delay: 1.5s, 2.5s;
+  animation-fill-mode: forwards, forwards;
+}
+
+.rightDoor {
+  border-left: 2px solid var(--olymp-navy);
+  transform-origin: right center;
+  animation-name: doorAppear, doorOpenRight;
+  animation-duration: 1s, 1.5s;
+  animation-delay: 1.5s, 2.5s;
+  animation-fill-mode: forwards, forwards;
+}
+
+/* Eingangsbereich */
+.templeEntrance {
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 20%;
+  background: linear-gradient(180deg, transparent 0%, var(--olymp-marble) 100%);
+  animation: entranceAppear 1s ease-out 2s forwards;
   opacity: 0;
 }
 
-.doorLeft {
-  border-right: 2px solid var(--epic-navy);
-  transform-origin: left center;
-  animation-delay: 1.2s;
-}
-
-.doorRight {
-  border-left: 2px solid var(--epic-navy);
-  transform-origin: right center;
-  animation-delay: 1.4s;
-}
-
-.temple .doorLeft {
-  animation: doorOpenLeft 1.5s ease-out 2s forwards;
-}
-
-.temple .doorRight {
-  animation: doorOpenRight 1.5s ease-out 2s forwards;
-}
-
-/* ========== REVELATION PHASE ========== */
-.revelationPhase {
+/* ========== PHASE 4: WELCOME ========== */
+.welcomePhase {
   text-align: center;
-  animation: revelationEntrance 2s ease-out forwards;
-  max-width: 800px;
-  padding: 2rem;
+  animation: phaseEnter 1s ease-out forwards;
+  max-width: 600px;
 }
 
-.revelationContent {
+.welcomeContainer {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
+  border: 2px solid rgba(212, 175, 55, 0.3);
   border-radius: 20px;
-  padding: 3rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow-epic);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-deep);
 }
 
-.revelationTitle {
+.welcomeTitle {
   font-family: 'Cinzel', serif;
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(2rem, 6vw, 3rem);
   font-weight: 700;
-  background: var(--gradient-gold);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--olymp-gold);
+  text-shadow: var(--shadow-gold);
   margin-bottom: 2rem;
-  animation: revelationTitleGlow 3s ease-in-out infinite;
+  animation: welcomeTitleGlow 2s ease-in-out infinite;
 }
 
-.revelationFeatures {
+.welcomeFeatures {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1.5rem;
   margin: 2rem 0;
 }
@@ -315,11 +372,11 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 1.5rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  transition: var(--transition-smooth);
   animation: featureFloat 3s ease-in-out infinite;
 }
 
@@ -329,61 +386,44 @@
 .feature:hover {
   transform: translateY(-5px);
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .featureIcon {
-  font-size: 2.5rem;
-  animation: iconSpin 4s linear infinite;
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .enterButton {
-  position: relative;
-  background: var(--gradient-energy);
-  color: white;
+  background: linear-gradient(135deg, var(--olymp-gold) 0%, var(--olymp-gold-light) 100%);
+  color: var(--olymp-navy);
   border: none;
-  padding: 1rem 3rem;
-  border-radius: 50px;
-  font-family: 'Orbitron', serif;
-  font-size: 1.2rem;
+  padding: 1rem 2.5rem;
+  border-radius: 25px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 2rem;
-  overflow: hidden;
-  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+  transition: var(--transition-bounce);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  box-shadow: var(--shadow-epic);
+  box-shadow: var(--shadow-gold);
 }
 
 .enterButton:hover {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 
-    var(--shadow-epic),
-    0 0 30px rgba(78, 205, 196, 0.6);
+    var(--shadow-gold),
+    0 10px 25px rgba(212, 175, 55, 0.4);
 }
 
-.buttonGlow {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: buttonGlowSweep 2s ease-in-out infinite;
-}
-
-/* ========== MODERNE STEUERUNG ========== */
-.modernControls {
+/* ========== SKIP BUTTON ========== */
+.skipButton {
   position: absolute;
   top: 2rem;
   right: 2rem;
   z-index: 100;
-  display: flex;
-  gap: 1rem;
-  animation: controlsFadeIn 1s ease-out 2s forwards;
-  opacity: 0;
-}
-
-.skipButton,
-.quickStartButton {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -391,16 +431,17 @@
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  font-family: 'Orbitron', serif;
+  border-radius: 20px;
+  font-family: 'Orbitron', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: var(--transition-smooth);
+  animation: skipButtonFadeIn 1s ease-out forwards;
+  opacity: 0;
 }
 
-.skipButton:hover,
-.quickStartButton:hover {
+.skipButton:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -414,92 +455,86 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.quickStartButton {
-  background: var(--gradient-energy);
-  border: none;
-}
-
-.sparkle {
-  animation: sparkleRotate 2s linear infinite;
-}
-
 /* ========== FORTSCHRITTSINDIKATOR ========== */
-.progressContainer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  z-index: 100;
+.progressIndicator {
+  grid-area: progress;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .progressBar {
-  height: 100%;
-  background: var(--gradient-energy);
-  transition: width 1s ease-out;
-  border-radius: 0 2px 2px 0;
+  height: 4px;
+  background: var(--olymp-gold);
+  border-radius: 2px;
+  transition: width 0.8s ease-out;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-gold);
 }
 
-.progressBar[data-phase="initial"] { width: 20%; }
-.progressBar[data-phase="cosmic"] { width: 40%; }
-.progressBar[data-phase="temple"] { width: 70%; }
-.progressBar[data-phase="revelation"] { width: 90%; }
-.progressBar[data-phase="complete"] { width: 100%; }
+.progressBar[data-phase="loading"] { width: 25%; }
+.progressBar[data-phase="logo"] { width: 50%; }
+.progressBar[data-phase="temple"] { width: 75%; }
+.progressBar[data-phase="welcome"] { width: 100%; }
+
+.progressDots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.progressDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: var(--transition-smooth);
+}
+
+.progressDot.active {
+  background: var(--olymp-gold);
+  box-shadow: var(--shadow-gold);
+  transform: scale(1.2);
+}
 
 /* ========== ANIMATIONEN ========== */
-@keyframes gradientShift {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.1) rotate(2deg); }
-}
-
-@keyframes noiseShift {
-  0% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-5%) translateY(5%); }
-  50% { transform: translateX(5%) translateY(-5%); }
-  75% { transform: translateX(-3%) translateY(3%); }
-  100% { transform: translateX(0) translateY(0); }
-}
-
-@keyframes templeGlowPulse {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.1); }
-}
-
-@keyframes initialFadeIn {
-  from { opacity: 0; transform: scale(0.8); }
+@keyframes phaseEnter {
+  from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes logoIconReveal {
-  to { opacity: 1; transform: scale(1) rotate(0deg); }
+@keyframes skipOut {
+  to { opacity: 0; transform: scale(0.8); }
 }
 
-@keyframes logoTextReveal {
+@keyframes cloudsDrift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100px); }
+}
+
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+@keyframes textGlow {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; text-shadow: 0 0 20px var(--olymp-gold-light); }
+}
+
+@keyframes logoIconBounce {
+  to { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes logoTitleReveal {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes cosmicEntrance {
-  from { opacity: 0; transform: translateZ(-500px); }
-  to { opacity: 1; transform: translateZ(0); }
+@keyframes logoSubtitleReveal {
+  to { opacity: 1; }
 }
 
-@keyframes cosmicTitleGlow {
-  0%, 100% { text-shadow: var(--shadow-cosmic); }
-  50% { text-shadow: 0 0 60px rgba(78, 205, 196, 0.8); }
-}
-
-@keyframes highlightPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes templeEntrance {
-  from { opacity: 0; transform: perspective(1200px) rotateX(20deg); }
-  to { opacity: 1; transform: perspective(1200px) rotateX(0deg); }
-}
-
-@keyframes pedimentRise {
+@keyframes pedimentBuild {
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -512,93 +547,61 @@
 }
 
 @keyframes doorOpenLeft {
-  to { transform: perspective(1000px) rotateY(-75deg); }
+  to { transform: perspective(1000px) rotateY(-70deg); }
 }
 
 @keyframes doorOpenRight {
-  to { transform: perspective(1000px) rotateY(75deg); }
+  to { transform: perspective(1000px) rotateY(70deg); }
 }
 
-@keyframes revelationEntrance {
-  from { opacity: 0; transform: scale(0.8) translateY(50px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes entranceAppear {
+  to { opacity: 1; }
 }
 
-@keyframes revelationTitleGlow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.2) drop-shadow(0 0 20px rgba(255, 209, 102, 0.6)); }
+@keyframes welcomeTitleGlow {
+  0%, 100% { text-shadow: var(--shadow-gold); }
+  50% { text-shadow: 0 0 30px var(--olymp-gold); }
 }
 
 @keyframes featureFloat {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-5px); }
 }
 
-@keyframes iconSpin {
-  from { transform: rotateY(0deg); }
-  to { transform: rotateY(360deg); }
-}
-
-@keyframes buttonGlowSweep {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes controlsFadeIn {
+@keyframes skipButtonFadeIn {
   to { opacity: 1; }
-}
-
-@keyframes sparkleRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
-  .modernControls {
+  .skipButton {
     top: 1rem;
     right: 1rem;
-    flex-direction: column;
-  }
-
-  .skipButton,
-  .quickStartButton {
     padding: 1rem;
-    min-height: 48px;
   }
 
-  .revelationContent {
+  .welcomeContainer {
     padding: 2rem 1.5rem;
   }
 
-  .revelationFeatures {
+  .welcomeFeatures {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 
-  .templeTitle {
-    font-size: clamp(1rem, 4vw, 1.4rem);
+  .templeContainer {
+    height: min(400px, 60vh);
+  }
+
+  .logoContainer {
+    padding: 2rem 1.5rem;
   }
 }
 
 /* ========== ACCESSIBILITY ========== */
 @media (prefers-reduced-motion: reduce) {
   * {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.1s !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-@media (prefers-contrast: high) {
-  .epicStage {
-    background: #000000;
-  }
-  
-  .cosmicTitle h1,
-  .revelationTitle {
-    color: #ffffff;
-    -webkit-text-fill-color: #ffffff;
+    transition-duration: 0.1s !important;
   }
 }

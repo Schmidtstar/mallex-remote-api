@@ -110,8 +110,12 @@ const RequireAdmin = createSafeLazy(() => import('./routes/guards/RequireAdmin')
 const MenuScreen = createSafeLazy(() => import('./features/Menu/MenuScreen'), 'MenuScreen')
 
 
-// Starte intelligent preloading
-intelligentPreload()
+// Starte intelligent preloading mit Error-Handling
+try {
+  intelligentPreload()
+} catch (error) {
+  console.warn('Intelligent preloading failed:', error)
+}
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {

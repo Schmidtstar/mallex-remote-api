@@ -172,11 +172,15 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
-    FirebaseOptimizer.cleanup()
+    try {
+      FirebaseOptimizer.cleanup()
 
-    if (import.meta.env.DEV) {
-      const report = MonitoringService.getPerformanceReport()
-      console.log('📊 Session Performance Report:', report)
+      if (import.meta.env.DEV && MonitoringService?.getPerformanceReport) {
+        const report = MonitoringService.getPerformanceReport()
+        console.log('📊 Session Performance Report:', report)
+      }
+    } catch (error) {
+      console.warn('Cleanup failed:', error)
     }
   })
 

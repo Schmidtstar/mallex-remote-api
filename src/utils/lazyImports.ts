@@ -1,60 +1,75 @@
-
 import { lazy } from 'react'
 
 // Lazy-loaded Screens für bessere Performance
-export const LazyArenaScreen = lazy(() => 
+export const LazyArenaScreen = lazy(() =>
   import('../features/Arena/ArenaScreen').then(module => ({ default: module.ArenaScreen }))
 )
 
-export const LazyLeaderboardScreen = lazy(() => 
+export const LazyLeaderboardScreen = lazy(() =>
   import('../features/Leaderboard/LeaderboardScreen').then(module => ({ default: module.LeaderboardScreen }))
 )
 
-export const LazyLegendsScreen = lazy(() => 
+export const LazyLegendsScreen = lazy(() =>
   import('../features/Legends/LegendsScreen').then(module => ({ default: module.LegendsScreen }))
 )
 
-export const LazyAdminDashboard = lazy(() => 
+export const LazyAdminDashboard = lazy(() =>
   import('../features/Admin/AdminDashboard').then(module => ({ default: module.AdminDashboard }))
 )
 
-export const LazyTasksOverviewScreen = lazy(() => 
+export const LazyTasksOverviewScreen = lazy(() =>
   import('../features/Tasks/TasksOverviewScreen').then(module => ({ default: module.TasksOverviewScreen }))
 )
 
-export const LazySuggestTaskScreen = lazy(() => 
+export const LazySuggestTaskScreen = lazy(() =>
   import('../features/Tasks/SuggestTaskScreen').then(module => ({ default: module.SuggestTaskScreen }))
 )
 
-export const LazyAdminTasksScreen = lazy(() => 
+export const LazyAdminTasksScreen = lazy(() =>
   import('../features/Tasks/AdminTasksScreen').then(module => ({ default: module.AdminTasksScreen }))
 )
 
-// Preload-Funktionen für bessere UX
+// Lazy Import Utilities mit intelligentem Preloading
 export const preloadComponents = {
   arena: () => import('../features/Arena/ArenaScreen'),
-  leaderboard: () => import('../features/Leaderboard/LeaderboardScreen'),
   legends: () => import('../features/Legends/LegendsScreen'),
-  admin: () => import('../features/Admin/AdminDashboard'),
+  leaderboard: () => import('../features/Leaderboard/LeaderboardScreen'),
   tasks: () => import('../features/Tasks/TasksOverviewScreen'),
-  suggest: () => import('../features/Tasks/SuggestTaskScreen'),
-  adminTasks: () => import('../features/Tasks/AdminTasksScreen')
+  suggestTasks: () => import('../features/Tasks/SuggestTaskScreen'),
+  adminTasks: () => import('../features/Tasks/AdminTasksScreen'),
+  adminDashboard: () => import('../features/Admin/AdminDashboard'),
+  menu: () => import('../features/Menu/MenuScreen'),
+  privacy: () => import('../features/Privacy/PrivacyDashboard')
 }
 
-// Intelligent Preloading basierend auf User-Verhalten
+// Intelligentes Preloading basierend auf User-Verhalten
 export const intelligentPreload = () => {
-  // Preload nach 2 Sekunden im Idle
+  // Preload kritische Komponenten nach 2 Sekunden
   setTimeout(() => {
-    preloadComponents.arena()
-    preloadComponents.leaderboard()
+    preloadComponents.arena().catch(() => {})
+    preloadComponents.menu().catch(() => {})
   }, 2000)
 
-  // Preload Admin-Components nur für Admins
+  // Preload weitere Komponenten nach 5 Sekunden
   setTimeout(() => {
-    const isAdmin = localStorage.getItem('mallex-is-admin') === 'true'
-    if (isAdmin) {
-      preloadComponents.admin()
-      preloadComponents.adminTasks()
-    }
+    preloadComponents.legends().catch(() => {})
+    preloadComponents.leaderboard().catch(() => {})
+    preloadComponents.tasks().catch(() => {})
   }, 5000)
+
+  // Admin-Komponenten nur bei Bedarf preloaden
+  const user = localStorage.getItem('mallex_user')
+  if (user) {
+    try {
+      const userData = JSON.parse(user)
+      if (userData.role === 'admin') {
+        setTimeout(() => {
+          preloadComponents.adminTasks().catch(() => {})
+          preloadComponents.adminDashboard().catch(() => {})
+        }, 3000)
+      }
+    } catch (error) {
+      console.warn('User data parsing failed:', error)
+    }
+  }
 }

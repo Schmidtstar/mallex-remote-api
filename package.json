@@ -17,6 +17,9 @@
     "mobile:build": "npm run build && cap sync"
   },
   "dependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.27.1",
+    "@babel/plugin-transform-react-jsx-development": "^7.27.1",
+    "@babel/preset-react": "^7.27.1",
     "@capacitor/cli": "^7.4.2",
     "@capacitor/core": "^7.4.2",
     "@capacitor/device": "^7.0.2",

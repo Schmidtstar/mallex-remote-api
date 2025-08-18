@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -7,18 +6,25 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [
     react({
-      // Fast Refresh optimieren
-      fastRefresh: true,
-      // Babel-Konfiguration für bessere Performance
+      include: "**/*.{jsx,tsx}",
       babel: {
+        presets: [
+          ['@babel/preset-react', { 
+            runtime: 'automatic',
+            development: import.meta.env.DEV
+          }]
+        ],
         plugins: [
-          // React Refresh Plugin für besseres HMR
-          ['@babel/plugin-transform-react-jsx-development', { runtime: 'automatic' }]
+          ['@emotion/babel-plugin', { 
+            sourceMap: import.meta.env.DEV,
+            autoLabel: import.meta.env.DEV ? 'dev-only' : 'never'
+          }]
         ]
-      }
+      },
+      fastRefresh: import.meta.env.DEV
     })
   ],
-  
+
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
@@ -42,7 +48,7 @@ export default defineConfig({
     port: 5173,
     strictPort: false,
     open: false, // Nicht automatisch öffnen in Replit
-    
+
     // Optimierte Replit-Hosts
     allowedHosts: [
       '.replit.dev',
@@ -51,7 +57,7 @@ export default defineConfig({
       '.replit.com',
       'localhost'
     ],
-    
+
     // HMR Optimierung für Replit
     hmr: {
       port: 5173,
@@ -62,7 +68,7 @@ export default defineConfig({
         errors: true
       }
     },
-    
+
     // CORS Optimierung
     cors: {
       origin: true,
@@ -70,7 +76,7 @@ export default defineConfig({
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
     },
-    
+
     // Cache-Optimierung
     middlewareMode: false,
     fs: {
@@ -90,11 +96,11 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     target: 'es2020',
-    
+
     // Asset-Optimierung
     assetsDir: 'assets',
     assetsInlineLimit: 4096, // 4KB inline limit
-    
+
     // Rollup-Optimierung
     rollupOptions: {
       output: {
@@ -102,10 +108,10 @@ export default defineConfig({
         manualChunks: {
           // Core React
           'react-vendor': ['react', 'react-dom'],
-          
+
           // Router
           'router': ['react-router-dom'],
-          
+
           // Firebase Bundle
           'firebase': [
             'firebase/app', 
@@ -113,14 +119,14 @@ export default defineConfig({
             'firebase/firestore',
             'firebase/analytics'
           ],
-          
+
           // Internationalization
           'i18n': [
             'i18next', 
             'react-i18next', 
             'i18next-browser-languagedetector'
           ],
-          
+
           // Capacitor für Mobile
           'capacitor': [
             '@capacitor/core',
@@ -131,21 +137,21 @@ export default defineConfig({
             '@capacitor/splash-screen',
             '@capacitor/status-bar'
           ],
-          
+
           // Virtualization
           'virtualization': [
             'react-window',
             'react-window-infinite-loader'
           ]
         },
-        
+
         // Dateinamen-Optimierung
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.')
           const extType = info[info.length - 1]
-          
+
           if (/\.(css|scss|sass|less|styl)$/.test(assetInfo.name)) {
             return 'assets/css/[name]-[hash].[ext]'
           }
@@ -155,13 +161,13 @@ export default defineConfig({
           if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
             return 'assets/fonts/[name]-[hash].[ext]'
           }
-          
+
           return `assets/${extType}/[name]-[hash].[ext]`
         },
-        
+
         chunkSizeWarningLimit: 1000
       },
-      
+
       // Externe Dependencies
       external: (id) => {
         // Capacitor als external für Web-Build
@@ -188,13 +194,13 @@ export default defineConfig({
 
     // CSS Code Splitting
     cssCodeSplit: true,
-    
+
     // Optimierte CSS-Minification
     cssMinify: 'lightningcss',
-    
+
     // Report komprimierte Größe
     reportCompressedSize: true,
-    
+
     // Chunk-Größen-Limit
     chunkSizeWarningLimit: 500
   },

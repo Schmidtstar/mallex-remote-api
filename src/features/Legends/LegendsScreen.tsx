@@ -104,7 +104,7 @@ export function LegendsScreen() {
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏛️</div>
         <h1 className={styles.title}>
           <span style={{ marginRight: '1rem' }}>⚜️</span>
-          {t('legends.title')}
+          Halle der Legenden
           <span style={{ marginLeft: '1rem' }}>⚜️</span>
         </h1>
         <div style={{ 

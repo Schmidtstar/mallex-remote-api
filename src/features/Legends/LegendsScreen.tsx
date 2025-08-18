@@ -187,12 +187,16 @@ export function LegendsScreen() {
                   {player.name}
                 </span>
                 <button
-                  onClick={() => {
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     console.log('🎯 Remove button clicked for:', player.name, 'ID:', player.id)
                     handleRemovePlayer(player.id, player.name)
                   }}
                   className={styles.removeButton}
                   title={`${player.name} aus der Halle der Legenden entfernen`}
+                  aria-label={`${player.name} aus der Halle der Legenden entfernen`}
                 >
                   🗑️ {t('common.remove') || 'Entfernen'}
                 </button>

@@ -16,11 +16,17 @@ export default defineConfig({
     port: 5173,
     hmr: {
       protocol: 'wss',
-      host: window?.location?.hostname || 'localhost',
+      host: 'localhost', // Use localhost instead of 0.0.0.0
       clientPort: 443,
       port: 5173
     },
-    cors: true
+    cors: true,
+    // Add headers for better CORS support
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    }
   },
   build: {
     outDir: 'dist',

@@ -35,36 +35,90 @@ export const db = optimizedDb
 
 // Query-Cache für wiederverwendbare Queries
 const queryCache = new Map<string, any>()
-const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
+const CACHE_DURATION = 5 * 60 * 1000 // 5 Minuten
 
-// Connection monitoring
-  static monitorConnection() {
-    if (typeof window === 'undefined') return
+class FirebaseOptimizerImpl {
+  private static instance: FirebaseOptimizerImpl
+  private isOnline = true
+  private connectionListeners: (() => void)[] = []
+  private lastNetworkState = true // Added to track network state for toggling
 
-    // Monitor online/offline status
-    window.addEventListener('online', () => {
-      this.isOnline = true
-      console.log('🌐 Firebase connection restored')
-      // Re-enable network if it was disabled
-      if (!this.lastNetworkState) {
-        this.toggleNetworkState(true)
-      }
-    })
-
-    window.addEventListener('offline', () => {
-      this.isOnline = false
-      console.log('📡 Firebase connection lost')
-      // Disable network if it was enabled
-      if (this.lastNetworkState) {
-        this.toggleNetworkState(false)
-      }
-    })
-
-    console.log('🔍 Firebase connection monitoring active')
+  static getInstance(): FirebaseOptimizerImpl {
+    if (!this.instance) {
+      this.instance = new FirebaseOptimizerImpl()
+    }
+    return this.instance
   }
 
-  // Intelligenter Query-Builder mit automatischem Caching
+  static init(): Promise<void> {
+    console.log('🔧 FirebaseOptimizer initialized')
+    this.getInstance().monitorConnection()
+    return Promise.resolve()
+  }
+
+  static monitorConnection(): void {
+    this.getInstance().monitorConnection()
+  }
+
+  static getCacheStats(): any {
+    return this.getInstance().getCacheStats()
+  }
+
+  static cleanup(): void {
+    this.getInstance().cleanup()
+  }
+
   static async optimizedQuery<T>(
+    collectionName: string,
+    orderField?: string,
+    limitCount?: number,
+    useCache = true
+  ): Promise<T[]> {
+    return this.getInstance().optimizedQuery<T>(collectionName, orderField, limitCount, useCache)
+  }
+
+  private monitorConnection(): void {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => {
+        this.isOnline = true
+        console.log('🌐 Firebase connection restored')
+        // Re-enable network if it was disabled
+        if (!this.lastNetworkState) {
+          this.toggleNetworkState(true)
+        }
+        this.connectionListeners.forEach(listener => listener())
+      })
+
+      window.addEventListener('offline', () => {
+        this.isOnline = false
+        console.log('📴 Firebase connection lost - using cache')
+        // Disable network if it was enabled
+        if (this.lastNetworkState) {
+          this.toggleNetworkState(false)
+        }
+      })
+      console.log('🔍 Firebase connection monitoring active')
+    }
+  }
+
+  private getCacheStats(): any {
+    return {
+      size: queryCache.size,
+      isOnline: this.isOnline,
+      lastUpdate: new Date().toISOString()
+    }
+  }
+
+  private cleanup(): void {
+    queryCache.clear()
+    this.connectionListeners = []
+    // Consider disabling network if it was enabled on cleanup
+    if (this.lastNetworkState) {
+      this.toggleNetworkState(false)
+    }
+  }
+
+  private async optimizedQuery<T>(
     collectionName: string,
     orderField?: string,
     limitCount?: number,
@@ -83,30 +137,30 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
     // Cache-Check
     if (useCache && queryCache.has(cacheKey)) {
       const cached = queryCache.get(cacheKey)
-      if (Date.now() - cached.timestamp < CACHE_TTL) {
-        console.log(`🚀 Cache hit for ${cacheKey}`)
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        console.log(`⚡ Cache hit for ${collectionName}`)
         return cached.data
       }
     }
 
     try {
-      let q = collection(db, collectionName)
+      // Firestore query with better error handling
+      if (!db) throw new Error('Firestore not available')
+
+      let queryRef = collection(db, collectionName)
 
       if (orderField) {
-        q = query(q, orderBy(orderField, 'desc'))
+        queryRef = query(queryRef, orderBy(orderField, 'desc')) as any
       }
 
       if (limitCount) {
-        q = query(q, limit(limitCount))
+        queryRef = query(queryRef, limit(limitCount)) as any
       }
 
-      const snapshot = await getDocs(q)
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as T[]
+      const snapshot = await getDocs(queryRef)
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as T[]
 
-      // Cache-Update
+      // Cache successful result
       if (useCache) {
         queryCache.set(cacheKey, {
           data,
@@ -114,24 +168,34 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
         })
       }
 
-      console.log(`✅ Firestore query successful: ${collectionName} (${data.length} items)`)
+      console.log(`🔥 Firestore query successful: ${collectionName} (${data.length} items)`)
       return data
 
     } catch (error: any) {
-      console.error(`❌ Firestore query failed:`, error)
+      console.warn(`🟡 Firestore query failed for ${collectionName}:`, error?.code || error?.message)
 
-      // Fallback auf Cache bei Netzwerkfehlern
+      // Return cached data if available
       if (useCache && queryCache.has(cacheKey)) {
-        console.log(`🔄 Using stale cache for ${cacheKey}`)
+        console.log(`🔄 Fallback to cache for ${collectionName}`)
         return queryCache.get(cacheKey).data
       }
 
-      throw error
+      // Return empty array as last resort
+      return []
     }
   }
 
-  // Realtime-Subscription mit Reconnection-Logic
+  // Realtime-Subscription mit Reconnection-Logic (moved to class methods)
   static optimizedRealtime<T>(
+    collectionName: string,
+    callback: (data: T[]) => void,
+    orderField?: string,
+    limitCount?: number
+  ): () => void {
+    return this.getInstance().optimizedRealtime<T>(collectionName, callback, orderField, limitCount)
+  }
+
+  private optimizedRealtime<T>(
     collectionName: string,
     callback: (data: T[]) => void,
     orderField?: string,
@@ -167,6 +231,7 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
             console.log('🔄 Attempting to reconnect...')
             // Check if connection is restored before retrying
             if (this.isOnline) {
+              // Re-subscribe to the same data
               this.optimizedRealtime(collectionName, callback, orderField, limitCount)
             }
           }, 5000)
@@ -178,7 +243,7 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
   }
 
   // Netzwerk-Status Management
-  static async toggleNetworkState(enable: boolean) {
+  private async toggleNetworkState(enable: boolean): Promise<void> {
     if (this.lastNetworkState === enable) return
 
     try {
@@ -196,67 +261,46 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
   }
 
   // Cache-Management
-  static clearCache() {
+  static clearCache(): void {
     queryCache.clear()
     console.log('🗑️ Query cache cleared')
   }
 
-  static resetCaches() {
-    // Placeholder for potential future cache reset logic
+  static resetCaches(): void {
     this.clearCache()
   }
 
-  static getCacheStats() {
-    return {
-      size: queryCache.size,
-      keys: Array.from(queryCache.keys()),
-      totalSize: JSON.stringify(Array.from(queryCache.values())).length
-    }
-  }
-
-  // Cleanup-Funktion
-  static cleanup() {
-    this.isOnline = false
-    this.resetCaches()
-    console.log('🧹 Firebase Optimizer cleaned up')
+  // Add listener for connection changes
+  static addConnectionListener(listener: () => void): void {
+    this.getInstance().connectionListeners.push(listener)
   }
 }
 
-// Initialize connection monitoring on component mount or app start
-if (typeof window !== 'undefined') {
-  FirebaseOptimizer.monitorConnection()
+// Export the class as FirebaseOptimizer
+export const FirebaseOptimizer = FirebaseOptimizerImpl
 
-  // Periodische Cache-Bereinigung
+// Default export für bessere Kompatibilität
+export default FirebaseOptimizerImpl
+
+// Named function exports (if still needed, but better to use class methods)
+export const init = FirebaseOptimizer.init
+export const cleanup = FirebaseOptimizer.cleanup
+export const getCacheStats = FirebaseOptimizer.getCacheStats
+export const optimizedQuery = FirebaseOptimizer.optimizedQuery
+export const optimizedRealtime = FirebaseOptimizer.optimizedRealtime
+export const addConnectionListener = FirebaseOptimizer.addConnectionListener
+
+// Initialize connection monitoring on app start
+if (typeof window !== 'undefined') {
+  FirebaseOptimizer.init()
+
+  // Periodische Cache-Bereinigung (moved into the class or managed differently)
   setInterval(() => {
     const now = Date.now()
     for (const [key, value] of queryCache.entries()) {
-      if (now - value.timestamp > CACHE_TTL * 2) {
+      if (now - value.timestamp > CACHE_DURATION * 2) {
         queryCache.delete(key)
       }
     }
   }, 10 * 60 * 1000) // Alle 10 Minuten
 }
-
-// Add static init method to the class itself
-export class FirebaseOptimizer {
-  private static lastNetworkState = true
-  private static isOnline = true // Initial assume online
-
-  // Static initialization method
-  static init() {
-    console.log('🔧 FirebaseOptimizer initialized')
-    this.monitorConnection()
-    return Promise.resolve()
-  }
-
-// Default export für bessere Kompatibilität
-export default FirebaseOptimizer
-
-// Named function exports
-export const init = () => {
-  console.log('🔧 FirebaseOptimizer initialized')
-  FirebaseOptimizer.monitorConnection()
-  return Promise.resolve()
-}
-export const cleanup = FirebaseOptimizer.cleanup.bind(FirebaseOptimizer)
-export const getCacheStats = FirebaseOptimizer.getCacheStats.bind(FirebaseOptimizer)

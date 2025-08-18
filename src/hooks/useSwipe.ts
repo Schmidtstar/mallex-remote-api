@@ -265,18 +265,20 @@ export function useSwipe(
     triggerHapticFeedback
   }
 
-  // Filter out custom props to prevent React DOM warnings
-  const filteredEventHandlers = Object.keys(eventHandlers)
-    .filter(key => typeof (handlers as any)[key] === 'undefined')
-    .reduce((obj, key) => {
-      obj[key] = eventHandlers[key as keyof typeof eventHandlers];
-      return obj;
-    }, {} as typeof eventHandlers);
+  // Return separate objects to prevent DOM prop warnings
+  const swipeHandlers = {
+    onTouchStart: handleTouchStart,
+    onTouchMove: handleTouchMove,
+    onTouchEnd: handleTouchEnd,
+    onMouseDown: handleMouseDown,
+    onMouseMove: handleMouseMove,
+    onMouseUp: handleMouseUp,
+    onMouseLeave: handleMouseUp
+  }
 
-
-  const swipeProps = {
+  const swipeAPI = {
     swipeState: swipeState.direction,
-    bindSwipe: bindSwipe,
+    bindSwipe: () => swipeHandlers, // Return handlers as function to prevent direct spreading
     isSwipingInDirection: (direction: 'left' | 'right' | 'up' | 'down') => swipeState.isSwiping && swipeState.direction === direction,
     getSwipeProgress: () => {
       if (!swipeState.isSwiping) return 0
@@ -295,8 +297,8 @@ export function useSwipe(
   }
 
   return {
-    ...filteredEventHandlers, // Spread the filtered event handlers
-    ...swipeProps
+    ...swipeHandlers, // Only spread valid DOM event handlers
+    ...swipeAPI
   }
 }
 

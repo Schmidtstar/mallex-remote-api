@@ -271,15 +271,9 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
 
   return (
     <div
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      className={`${styles.playerItem} ${
-        swipeHandlers.isSwiping ? styles.playerItemSwiping : ''
-      } ${swipeTransform < -30 ? styles.playerItemSwipeLeft : ''}`}
+      key={player.id}
+      className={styles.playerItem}
+      {...(typeof swipeHandlers.bindSwipe === 'function' ? swipeHandlers.bindSwipe() : {})}
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}

@@ -139,11 +139,11 @@ const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   // Sofortiger Lock
   rootElement.setAttribute('data-react-root', 'true')
-  
+
   // Global flag für einmalige Initialisierung
   if (!(window as any).__MALLEX_INITIALIZED__) {
     (window as any).__MALLEX_INITIALIZED__ = true
-    
+
     // Initialize services BEFORE React - wrapped in async IIFE
     ;(async () => {
       try {

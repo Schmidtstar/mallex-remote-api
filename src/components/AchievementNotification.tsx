@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react'
 import { Achievement, NotificationData } from '../lib/achievement-system'
-import { SoundManager } from '../lib/sound-manager'
 import s from './AchievementNotification.module.css'
 
 interface AchievementNotificationProps {
@@ -20,9 +18,6 @@ export const AchievementNotification: React.FC<AchievementNotificationProps> = (
     if (notification) {
       setIsVisible(true)
       setIsAnimating(true)
-      
-      // Play Achievement Sound
-      SoundManager.playAchievement()
 
       // Auto-close nach 4 Sekunden
       const timer = setTimeout(() => {
@@ -54,7 +49,7 @@ export const AchievementNotification: React.FC<AchievementNotificationProps> = (
 
         <div className={s.content}>
           <div className={s.message}>{notification.message}</div>
-          
+
           {notification.points && (
             <div className={s.points}>
               +{notification.points} Punkte 🏆

@@ -1,47 +1,23 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read and write their own data
+    // Allow authenticated users to read/write their own data
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Privacy settings - users can read/write their own
-    match /privacy/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Allow all authenticated users to read/write players and suggestions
+    match /players/{document} {
+      allow read, write: if request.auth != null;
     }
 
-    // Players data - readable by authenticated users, writable by admins
-    match /players/{playerId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        (request.auth.uid == playerId || 
-         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    match /taskSuggestions/{document} {
+      allow read, write: if request.auth != null;
     }
 
-    // Task suggestions - users can create, admins can manage
-    match /taskSuggestions/{suggestionId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    // Game history - users can read/write their own
-    match /gameHistory/{gameId} {
-      allow read, write: if request.auth != null && 
-        (resource.data.playerId == request.auth.uid || 
-         resource.data.participants[request.auth.uid] != null);
-    }
-
-    // Admin settings - only admins
-    match /adminSettings/{document=**} {
-      allow read, write: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    // Development: Allow all operations (remove in production!)
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

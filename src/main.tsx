@@ -20,7 +20,7 @@ import { AccessibilityManager } from './lib/a11y'
 import { SoundManager } from './lib/sound-manager'
 
 // Initialize core systems once
-const initializeCoreServices = () => {
+const initializeCoreServices = async () => {
   try {
     // Error handling - Critical (first)
     CriticalErrorHandler.init()

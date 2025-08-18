@@ -273,7 +273,12 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
     <div
       key={player.id}
       className={styles.playerItem}
-      {...(typeof swipeHandlers.bindSwipe === 'function' ? swipeHandlers.bindSwipe() : {})}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}

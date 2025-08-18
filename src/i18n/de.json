@@ -38,7 +38,18 @@
     "loginSuccess": "Erfolgreich angemeldet!",
     "loginError": "Anmeldung fehlgeschlagen",
     "guestMode": "Gast-Modus aktiv",
-    "loggingIn": "Anmeldung läuft..."
+    "loggingIn": "Anmeldung läuft...",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "guest": "Als Gast fortfahren",
+    "signInWithEmail": "Mit E-Mail anmelden",
+    "error": {
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "userNotFound": "Benutzer nicht gefunden",
+      "wrongPassword": "Falsches Passwort",
+      "tooManyRequests": "Zu viele Anmeldeversuche",
+      "networkError": "Netzwerkfehler"
+    }
   },
   "arena": {
     "title": "MALLEX Arena",

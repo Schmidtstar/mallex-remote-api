@@ -22,7 +22,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
   const handleComplete = useCallback(() => {
     if (isCompleted.current) return
     
-    console.log('🎬 Intro Abgeschlossen')
+    console.log('🎬 Intro Abgeschlossen - Weiterleitung zu Sprachauswahl')
     isCompleted.current = true
     
     timersRef.current.forEach(timer => clearTimeout(timer))

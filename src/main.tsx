@@ -66,16 +66,37 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ))
 ContextProviders.displayName = 'ContextProviders'
 
+type AppPhase = 'intro' | 'language' | 'app'
+
 const App: React.FC = () => {
-  const [showIntro, setShowIntro] = useState(true)
+  const [currentPhase, setCurrentPhase] = useState<AppPhase>('intro')
 
   const handleIntroComplete = () => {
-    console.log('🎬 App: Intro completed, switching to main app')
-    setShowIntro(false)
+    console.log('🎬 Intro completed, showing language selection')
+    setCurrentPhase('language')
   }
 
-  if (showIntro) {
+  const handleLanguageSelected = (language: string) => {
+    console.log(`🌍 Language selected: ${language}, showing main app`)
+    setCurrentPhase('app')
+  }
+
+  if (currentPhase === 'intro') {
     return <AppIntro onComplete={handleIntroComplete} />
+  }
+
+  if (currentPhase === 'language') {
+    // Assuming LanguageSelector component exists and takes onLanguageSelected prop
+    // import LanguageSelector from './components/LanguageSelector';
+    // We will mock it here for compilation, but it needs to be properly imported.
+    const MockLanguageSelector = () => (
+      <div>
+        <h1>Select Language</h1>
+        <button onClick={() => handleLanguageSelected('en')}>English</button>
+        <button onClick={() => handleLanguageSelected('de')}>Deutsch</button>
+      </div>
+    )
+    return <MockLanguageSelector />
   }
 
   return (

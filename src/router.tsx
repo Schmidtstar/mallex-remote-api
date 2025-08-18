@@ -246,9 +246,11 @@ const routes = [
   }
 ]
 
-// Router configuration
-const useHash = import.meta.env.VITE_HASH_ROUTER === '1'
+// Router configuration - Default zu Hash Router für bessere Kompatibilität
+const useHash = import.meta.env.VITE_HASH_ROUTER !== '0' // Default: true, außer explizit deaktiviert
 
 export const router = useHash 
   ? createHashRouter(routes)
-  : createBrowserRouter(routes)
+  : createBrowserRouter(routes, {
+      basename: import.meta.env.BASE_URL || '/'
+    })

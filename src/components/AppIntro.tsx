@@ -1,14 +1,84 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import styles from './AppIntro.module.css'
 
-// Fallback-Styles falls CSS-Module nicht lädt
+// CSS Module Import mit Fallback
+let styles: any
+try {
+  styles = require('./AppIntro.module.css')
+} catch (e) {
+  console.warn('CSS Module nicht gefunden, verwende Fallback-Styles')
+  styles = {}
+}
+
+// Fallback-Styles für alle verwendeten Klassen
 const fallbackStyles = {
   introContainer: 'intro-container',
   backgroundCanvas: 'background-canvas',
   starField: 'star-field',
-  // ... weitere fallback styles wenn nötig
+  mountains: 'mountains',
+  clouds: 'clouds',
+  godRays: 'god-rays',
+  mainContent: 'main-content',
+  skipButton: 'skip-button',
+  loadingPhase: 'loading-phase',
+  olympicRings: 'olympic-rings',
+  ring: 'ring',
+  ringBlue: 'ring-blue',
+  ringYellow: 'ring-yellow',
+  ringBlack: 'ring-black',
+  ringGreen: 'ring-green',
+  ringRed: 'ring-red',
+  loadingText: 'loading-text',
+  loadingDots: 'loading-dots',
+  logoPhase: 'logo-phase',
+  logoContainer: 'logo-container',
+  logoIcon: 'logo-icon',
+  mainTitle: 'main-title',
+  subtitle: 'subtitle',
+  goldenBorder: 'golden-border',
+  templePhase: 'temple-phase',
+  templeStructure: 'temple-structure',
+  templeRoof: 'temple-roof',
+  roofTriangle: 'roof-triangle',
+  templeText: 'temple-text',
+  columnRow: 'column-row',
+  column: 'column',
+  templeDoors: 'temple-doors',
+  door: 'door',
+  leftDoor: 'left-door',
+  rightDoor: 'right-door',
+  templeBase: 'temple-base',
+  featuresPhase: 'features-phase',
+  featuresTitle: 'features-title',
+  featuresGrid: 'features-grid',
+  feature: 'feature',
+  feature1: 'feature-1',
+  feature2: 'feature-2',
+  feature3: 'feature-3',
+  featureIcon: 'feature-icon',
+  enterPhase: 'enter-phase',
+  enterContainer: 'enter-container',
+  enterTitle: 'enter-title',
+  enterDescription: 'enter-description',
+  enterButton: 'enter-button',
+  buttonIcon: 'button-icon',
+  buttonGlow: 'button-glow',
+  enterHint: 'enter-hint',
+  progressContainer: 'progress-container',
+  progressBar: 'progress-bar',
+  progressText: 'progress-text',
+  phaseIndicators: 'phase-indicators',
+  indicator: 'indicator',
+  active: 'active',
+  completed: 'completed',
+  skipping: 'skipping'
 }
+
+// Merge styles mit fallback
+const safeStyles = Object.keys(fallbackStyles).reduce((acc, key) => {
+  acc[key] = styles[key] || fallbackStyles[key]
+  return acc
+}, {} as any)
 
 interface AppIntroProps {
   onComplete?: () => void
@@ -165,7 +235,7 @@ export function AppIntro({ onComplete, userType = 'first-time', showSkip = true 
   }
 
   return (
-    <div className={`${styles.introContainer} ${styles[`phase-${currentPhase}`]} ${isSkipping ? styles.skipping : ''}`}>
+    <div className={`${safeStyles.introContainer} ${safeStyles[`phase-${currentPhase}`] || ''} ${isSkipping ? safeStyles.skipping : ''}`}>
       {/* Skip-Button */}
       {showSkip && currentPhase !== 'enter' && (
         <button

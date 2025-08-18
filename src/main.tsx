@@ -38,15 +38,16 @@ const initializeCoreServices = () => {
     AccessibilityManager.init()
     AccessibilityManager.addSkipLinks()
 
-    // Performance monitoring - Conditional based on environment
+    // Performance monitoring - Immer initialisieren, aber unterschiedliche Modi
+    MonitoringService.init()
+    
     if (import.meta.env.DEV) {
-      MonitoringService.init()
       MonitoringService.trackUserAction('app_start')
       console.log('🔧 Development mode: Verbose logging enabled')
     } else {
-      // Production: Only critical monitoring
-      MonitoringService.init()
+      // Production: Silent monitoring
       MonitoringService.trackUserAction('app_start', { silent: true })
+      console.log('✅ Production mode: Monitoring active')
     }
 
     // Firebase initialization - Production ready with error handling
@@ -150,9 +151,9 @@ const App: React.FC = () => {
   )
 }
 
-// Single initialization point
+// Single initialization point mit verbessertem Schutz
 const rootElement = document.getElementById('root')
-if (rootElement && !rootElement.hasAttribute('data-react-root')) {
+if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement as any)._reactRootContainer) {
   rootElement.setAttribute('data-react-root', 'true')
 
   // Initialize services BEFORE React

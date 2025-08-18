@@ -18,11 +18,16 @@ import { SoundManager } from './lib/sound-manager'
 import './lib/capacitor-integration' // Assuming CapacitorIntegration is in this path
 import ErrorBoundaryEnhanced from './components/ErrorBoundaryEnhanced'
 import { CriticalErrorHandler } from './lib/error-handler'
+import { AccessibilityManager } from './lib/a11y'
 
 // Initialize Sound System
 SoundManager.init().catch(err => 
   console.warn('Sound system initialization failed:', err)
 )
+
+// Initialize Accessibility Manager
+AccessibilityManager.init()
+AccessibilityManager.addSkipLinks()
 
 // Assuming PerformanceMonitor is defined elsewhere and imported if necessary
 // import { PerformanceMonitor } from './lib/performance-monitor'; 

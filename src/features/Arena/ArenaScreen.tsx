@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { doc, setDoc, getDoc, increment } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
@@ -22,8 +22,9 @@ type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drin
 
 export function ArenaScreen() {
   const { t } = useTranslation()
-  const { players } = usePlayersContext()
+  const { players, updatePlayerArenaPoints } = usePlayersContext() // Destructure updatePlayerArenaPoints here
   const { user } = useAuth()
+  const announcementRef = useRef<HTMLDivElement>(null) // Ref for announcement element
 
   // Game State
   const [gameState, setGameState] = useState<GameState>('idle')
@@ -42,7 +43,6 @@ export function ArenaScreen() {
   const [recentTasks, setRecentTasks] = useState<string[]>([])
   const MAX_RECENT_TASKS = 5
 
-
   // Drinking Game Data
   const [drinkingSips, setDrinkingSips] = useState<number>(0)
   const [taskResult, setTaskResult] = useState<'success' | 'failed' | ''>('')
@@ -54,6 +54,19 @@ export function ArenaScreen() {
   // Achievement Notification State
   const [achievementNotification, setAchievementNotification] = useState<NotificationData | null>(null)
   const [gameStartTime, setGameStartTime] = useState<number>(0) // Track game start time for duration
+
+  // Screen Reader Announcement State
+  const [announcement, setAnnouncement] = useState<string>('')
+
+  // Game in progress state (for button disabling)
+  const gameInProgressRef = useRef(false)
+  const resultDisplayedRef = useRef(false)
+
+  // Mock for currentChallenge and currentPlayer for the handleChoice function context
+  // In a real scenario, these would be properly managed state or props.
+  const [currentChallenge, setCurrentChallenge] = useState<{ correct: string, difficulty: string, id: string, text: string }>({ correct: '', difficulty: '', id: '', text: '' })
+  const [currentPlayer, setCurrentPlayer] = useState<any>(null) // Replace 'any' with your player type if available
+
 
   // Load all tasks for all categories on mount
   useEffect(() => {
@@ -80,13 +93,20 @@ export function ArenaScreen() {
     loadAllTasks()
   }, [])
 
+  // Helper function for screen reader announcements
+  const announceToScreenReader = (message: string) => {
+    setAnnouncement(message)
+    // Clear announcement after a short delay to allow screen reader to pick it up
+    setTimeout(() => setAnnouncement(''), 100)
+  }
+
   const getRandomCategory = () => {
     const randomIndex = Math.floor(Math.random() * categories.length)
     return categories[randomIndex]
   }
 
   const getRandomPlayer = () => {
-    if (players.length === 0) return 'Spieler'
+    if (players.length === 0) return 'Spieler' // Fallback if no players
     const randomIndex = Math.floor(Math.random() * players.length)
     return players[randomIndex].name
   }
@@ -105,6 +125,8 @@ export function ArenaScreen() {
 
     // Anti-Repeat Filter: Entferne kürzlich gespielte Aufgaben
     const availableTasks = allTasks.filter(task => {
+      // We need to be careful here. If a task is dynamic, it might not have a translation key in `t`.
+      // For simplicity in filtering, we'll assume static tasks are translated.
       const translatedTask = staticTasks.includes(task) ? t(task) : task
       return !recentTasks.includes(translatedTask)
     })
@@ -136,6 +158,16 @@ export function ArenaScreen() {
       const player = getRandomPlayer()
       const task = getRandomTask(category.id)
 
+      // Set current challenge details for handleChoice
+      setCurrentChallenge({
+        id: category.id, // Assuming category.id can be used as challenge id for now
+        text: task,
+        correct: task, // Placeholder: In a real game, 'correct' would be defined
+        difficulty: 'medium' // Placeholder: In a real game, difficulty would be defined
+      })
+      setCurrentPlayer(players.find(p => p.name === player)) // Set current player for handleChoice context
+
+
       setSelectedCategory(category.id)
       setSelectedPlayer(player)
       setCurrentTask(task)
@@ -146,10 +178,14 @@ export function ArenaScreen() {
       // Sound Effect für Arena-Start
       SoundManager.playArenaStart()
 
+      // Announce game start to screen reader
+      announceToScreenReader(`Arena gestartet. Runde 1. Spieler ${player} ist an der Reihe.`)
+
       endTimer()
     } catch (error) {
       MonitoringService.trackError(error as Error, { context: 'arena_start' })
       console.error('❌ Arena start failed:', error)
+      announceToScreenReader('Fehler beim Starten der Arena.')
     }
   }
 
@@ -157,7 +193,7 @@ export function ArenaScreen() {
     setIsSpinning(true)
     let spinCounter = 0
 
-    // Haptic Feedback für Mobile
+    // Haptic Feedback for Mobile
     if ('vibrate' in navigator) {
       navigator.vibrate(100)
     }
@@ -168,7 +204,7 @@ export function ArenaScreen() {
       const categoryIndex = (spinCounter - 1) % categories.length
       setSpinningCategory(categories[categoryIndex].id)
 
-      // Stop after 8 spins (4 seconds with 0.5s intervals) - Optimiert für bessere UX
+      // Stop after 8 spins (4 seconds with 0.5s intervals) - Optimized for better UX
       if (spinCounter >= 8) {
         clearInterval(spinInterval)
         setIsSpinning(false)
@@ -178,41 +214,44 @@ export function ArenaScreen() {
         if ('vibrate' in navigator) {
           navigator.vibrate([50, 100, 50])
         }
+        // Announce task revealed
+        const revealedCategoryName = t(`arena.categories.${spinningCategory}`)
+        announceToScreenReader(`Aufgabe enthüllt: Kategorie ${revealedCategoryName}.`)
       }
     }, 500)
   }
 
   const waitForAction = () => {
     setGameState('waiting-action')
+    // Announce state change
+    announceToScreenReader(`Spieler ${selectedPlayer} wird zur Aktion aufgefordert.`)
   }
 
   const generateRandomSips = () => {
     return Math.floor(Math.random() * 5) + 1; // 1-5 Schlücke
   }
 
-  // Nutze optimierten PlayersContext für Arena-Punkte Updates
-  const { updatePlayerArenaPoints } = usePlayersContext()
-
   const updatePlayerPoints = async (playerName: string, pointsToAdd: number) => {
     try {
-      console.log(`🎯 Arena Update startet: ${playerName} soll ${pointsToAdd} Punkte erhalten`)
-
-      // Direkte Nutzung des optimierten PlayersContext
+      // Using the destructured updatePlayerArenaPoints from context
       await updatePlayerArenaPoints(playerName, pointsToAdd)
-
       console.log(`✅ ${playerName} erhält ${pointsToAdd} Arena-Punkte (Real-time Sync aktiv)!`)
 
-      // Validierung: Prüfe ob Punkte korrekt gespeichert wurden
+      // Announce points update
+      announceToScreenReader(`${playerName} hat ${pointsEarned} Punkte erhalten.`)
+
+      // Validation: Check if points were saved correctly
       const updatedPlayer = players.find(p => p.name.toLowerCase() === playerName.toLowerCase())
       if (updatedPlayer) {
-        console.log(`🔍 Validierung: ${playerName} hat jetzt ${updatedPlayer.arenaPoints} Punkte`)
+        console.log(`🔍 Validation: ${playerName} now has ${updatedPlayer.arenaPoints} points`)
       } else {
-        console.warn(`⚠️ Spieler ${playerName} nach Update nicht gefunden!`)
+        console.warn(`⚠️ Player ${playerName} not found after update!`)
       }
 
     } catch (error) {
-      console.error('❌ Arena-Punkte Update fehlgeschlagen:', error)
+      console.error('❌ Arena points update failed:', error)
       alert(`Fehler beim Speichern der Punkte für ${playerName}. Bitte versuche es erneut.`)
+      announceToScreenReader(`Fehler beim Speichern der Punkte für ${playerName}.`)
     }
   }
 
@@ -229,6 +268,8 @@ export function ArenaScreen() {
 
     // Sound Effect für richtige Antwort
     SoundManager.playCorrectAnswer()
+    // Announce result
+    announceToScreenReader(`${selectedPlayer} hat die Aufgabe erfolgreich abgeschlossen. Sie müssen ${sips} Schlücke ${sips === 1 ? '' : ''} trinken.`)
   }
 
   const handleTaskFailed = async () => {
@@ -244,10 +285,13 @@ export function ArenaScreen() {
 
     // Sound Effect für falsche Antwort
     SoundManager.playWrongAnswer()
+    // Announce result
+    announceToScreenReader(`${selectedPlayer} hat die Aufgabe nicht erfolgreich abgeschlossen. Sie müssen ${sips} Schlücke ${sips === 1 ? '' : ''} trinken.`)
   }
 
   const handleTaskSkipped = () => {
     // Bei übersprungenen Aufgaben direkt zur nächsten Runde
+    announceToScreenReader(`${selectedPlayer} hat die Aufgabe übersprungen.`)
     nextRound()
   }
 
@@ -255,6 +299,15 @@ export function ArenaScreen() {
     const category = getRandomCategory()
     const player = getRandomPlayer()
     const task = getRandomTask(category.id)
+
+    // Set current challenge details for handleChoice
+    setCurrentChallenge({
+      id: category.id,
+      text: task,
+      correct: task, // Placeholder
+      difficulty: 'medium' // Placeholder
+    })
+    setCurrentPlayer(players.find(p => p.name === player))
 
     setSelectedCategory(category.id)
     setSelectedPlayer(player)
@@ -266,6 +319,9 @@ export function ArenaScreen() {
     setDrinkingSips(0)
     setTaskResult('')
     setGameStartTime(Date.now()) // Reset game start time for the new round
+
+    // Announce next round
+    announceToScreenReader(`Neue Runde gestartet. Runde ${currentRound + 1}. Spieler ${player} ist an der Reihe.`)
   }
 
   const endGame = () => {
@@ -277,6 +333,7 @@ export function ArenaScreen() {
     setDrinkingSips(0)
     setTaskResult('')
     setAchievementNotification(null) // Clear any pending notifications
+    announceToScreenReader('Arena-Spiel beendet.')
   }
 
   // Memoize mobile detection to prevent re-calculations
@@ -396,6 +453,12 @@ export function ArenaScreen() {
                 width: window.innerWidth < 768 ? '100%' : 'auto',
                 maxWidth: '300px'
               }}
+              aria-label={loadingTasks 
+                ? 'Warte auf die Lade der Aufgaben' 
+                : players.length === 0 
+                  ? 'Keine Spieler verfügbar zum Starten'
+                  : 'Starte das Arena-Spiel'
+              }
             >
               {loadingTasks 
                 ? '⏳ BEREIT...' 
@@ -618,8 +681,9 @@ export function ArenaScreen() {
                 touchAction: 'manipulation',
                 opacity: isSpinning ? 0.6 : 1
               }}
+              aria-label="Schicksal enthüllen"
             >
-              {isSpinning ? 'dualpr ORAKEL ARBEITET...' : '⚡ SCHICKSAL ENTHÜLLEN ⚡'}
+              {isSpinning ? 'พร ORAKEL ARBEITET...' : '⚡ SCHICKSAL ENTHÜLLEN ⚡'}
             </button>
           </div>
         )
@@ -754,6 +818,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label={`Ich bin bereit für die Aufgabe: ${currentTask}`}
               >
                 ⚡ ICH BIN BEREIT ⚡
               </button>
@@ -774,6 +839,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label="Überspringe die aktuelle Aufgabe"
               >
                 ⏭️ NÄCHSTE PRÜFUNG! ⏭️
               </button>
@@ -794,6 +860,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label="Arena-Spiel verlassen"
               >
                 💀 ARENA VERLASSEN 💀
               </button>
@@ -943,6 +1010,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label="Aufgabe erfolgreich abgeschlossen"
               >
                 🏆 TRIUMPH! 🏆
               </button>
@@ -963,6 +1031,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label="Aufgabe fehlgeschlagen"
               >
                 💀 NIEDERLAGE! 💀
               </button>
@@ -983,6 +1052,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label="Überspringe die aktuelle Aufgabe"
               >
                 ⏭️ NÄCHSTE PRÜFUNG! ⏭️
               </button>
@@ -1003,6 +1073,7 @@ export function ArenaScreen() {
                   transition: 'all 0.3s ease',
                   touchAction: 'manipulation'
                 }}
+                aria-label="Arena-Spiel verlassen"
               >
                 💀 ARENA VERLASSEN 💀
               </button>
@@ -1105,6 +1176,7 @@ export function ArenaScreen() {
                 textTransform: 'uppercase',
                 letterSpacing: '1px'
               }}
+              aria-label="Starte die nächste Runde"
             >
               Nächste Runde! 🎮
             </button>
@@ -1121,6 +1193,7 @@ export function ArenaScreen() {
                   borderRadius: 'var(--radius)',
                   cursor: 'pointer'
                 }}
+                aria-label="Spiel beenden"
               >
                 Spiel beenden
               </button>
@@ -1134,22 +1207,46 @@ export function ArenaScreen() {
   }
 
   return (
-    <div style={{
-      padding: window.innerWidth < 768 ? '10px' : '24px',
-      textAlign: 'center',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      paddingTop: window.innerWidth < 768 ? '20px' : '50px',
-      paddingBottom: window.innerWidth < 768 ? '80px' : '24px' // Platz für Bottom Nav
-    }}>
+    <div 
+      style={{
+        padding: window.innerWidth < 768 ? '10px' : '24px',
+        textAlign: 'center',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingTop: window.innerWidth < 768 ? '20px' : '50px',
+        paddingBottom: window.innerWidth < 768 ? '80px' : '24px' // Platz für Bottom Nav
+      }}
+      role="main"
+      aria-labelledby="arena-title"
+    >
+      {/* Screen Reader Announcements */}
+      <div 
+        ref={announcementRef}
+        aria-live="assertive" 
+        aria-atomic="true"
+        style={{ 
+          position: 'absolute', 
+          left: '-9999px',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden' 
+        }}
+      >
+        {announcement}
+      </div>
+
+      {/* Notification */}
+      {achievementNotification && (
+        <AchievementNotification
+          notification={achievementNotification}
+          onClose={() => setAchievementNotification(null)}
+        />
+      )}
+
       {renderGameContent()}
-      <AchievementNotification
-        notification={achievementNotification}
-        onClose={() => setAchievementNotification(null)}
-      />
     </div>
   )
 }

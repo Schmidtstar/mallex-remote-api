@@ -15,6 +15,7 @@ interface IntroStep {
   animation?: string
   interactive?: boolean
   action?: () => void
+  ariaLabel?: string // Added for ARIA labels
 }
 
 export default function AppIntro({ onComplete }: AppIntroProps) {
@@ -32,7 +33,8 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
       title: t('intro.welcome.title', 'Willkommen bei MALLEX'),
       content: t('intro.welcome.content', 'Deine olympische Trinkspiel-Arena wartet!'),
       icon: '🏛️',
-      animation: 'fadeInUp'
+      animation: 'fadeInUp',
+      ariaLabel: 'Willkommen bei MALLEX - Olympische Arena'
     },
     {
       id: 'arena',
@@ -46,28 +48,32 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
         const icon = containerRef.current?.querySelector(`.${styles.icon}`)
         icon?.classList.add(styles.bounce)
         setTimeout(() => icon?.classList.remove(styles.bounce), 600)
-      }
+      },
+      ariaLabel: 'Arena-Spiel - Kämpfe gegen andere Gladiatoren'
     },
     {
       id: 'challenges',
       title: t('intro.challenges.title', 'Herausforderungen'),
       content: t('intro.challenges.content', 'Wähle aus verschiedenen Kategorien und Schwierigkeiten'),
       icon: '🎯',
-      animation: 'slideInRight'
+      animation: 'slideInRight',
+      ariaLabel: 'Wähle Herausforderungen nach Kategorie und Schwierigkeit'
     },
     {
       id: 'features',
       title: t('intro.features.title', 'Funktionen entdecken'),
       content: t('intro.features.content', 'Leaderboards, Achievements und vieles mehr'),
       icon: '✨',
-      animation: 'zoomIn'
+      animation: 'zoomIn',
+      ariaLabel: 'Entdecke Funktionen wie Leaderboards und Achievements'
     },
     {
       id: 'ready',
       title: t('intro.ready.title', 'Bereit für den Kampf?'),
       content: t('intro.ready.content', 'Lass uns deine Reise beginnen!'),
       icon: '🚀',
-      animation: 'pulse'
+      animation: 'pulse',
+      ariaLabel: 'Bereit, deine Reise zu beginnen'
     }
   ]
 
@@ -167,33 +173,39 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
         {...swipeHandlers}
       >
         {/* Progress Bar */}
-        <div className={styles.progressBar}>
+        <div className={styles.progressBar} role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Fortschritt: ${currentStep + 1} von ${steps.length}`}>
           <div 
             className={styles.progressFill} 
             style={{ width: `${progress}%` }}
-            role="progressbar"
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
           />
         </div>
 
         {/* Step Content */}
-        <div className={`${styles.step} ${styles[currentStepData.animation || 'fadeIn']}`}>
+        <div className={`${styles.step} ${styles[currentStepData.animation || 'fadeIn']}`} role="main">
           <div 
             className={`${styles.icon} ${currentStepData.interactive ? styles.interactive : ''}`}
             onClick={currentStepData.interactive ? handleStepInteraction : undefined}
-            role={currentStepData.interactive ? 'button' : 'presentation'}
+            role={currentStepData.interactive ? 'button' : 'img'}
             tabIndex={currentStepData.interactive ? 0 : -1}
+            aria-label={currentStepData.ariaLabel || `Schritt ${currentStep + 1}: ${currentStepData.title}`}
+            onKeyDown={(e) => {
+              if (currentStepData.interactive && (e.key === 'Enter' || e.key === ' ')) {
+                handleStepInteraction()
+              }
+            }}
           >
             {currentStepData.icon}
           </div>
 
-          <h2 id="intro-title" className={styles.title}>
+          <h2 id="intro-title" className={styles.title} aria-live="polite">
             {currentStepData.title}
           </h2>
 
-          <p className={styles.content}>
+          <p 
+            id="intro-description"
+            className={styles.content}
+            aria-live="polite"
+          >
             {currentStepData.content}
           </p>
 
@@ -207,9 +219,9 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
         </div>
 
         {/* Enhanced Navigation */}
-        <div className={styles.navigation}>
+        <div className={styles.navigation} role="navigation" aria-label="Einführungs-Navigation">
           {/* Step Indicators */}
-          <div className={styles.indicators} role="tablist">
+          <div className={styles.indicators} role="tablist" aria-label="Einführungsschritte">
             {steps.map((step, index) => (
               <button
                 key={step.id}
@@ -217,7 +229,17 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
                   index === currentStep ? styles.active : ''
                 } ${completedSteps.has(index) ? styles.completed : ''}`}
                 onClick={() => goToStep(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowLeft' && index > 0) {
+                    goToStep(index - 1)
+                  } else if (e.key === 'ArrowRight' && index < steps.length - 1) {
+                    goToStep(index + 1)
+                  } else if (e.key === 'Enter' || e.key === ' ') {
+                    goToStep(index)
+                  }
+                }}
                 role="tab"
+                tabIndex={index === currentStep ? 0 : -1}
                 aria-selected={index === currentStep}
                 aria-label={`${t('intro.step')} ${index + 1}: ${step.title}`}
               />
@@ -225,7 +247,7 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
           </div>
 
           {/* Control Buttons */}
-          <div className={styles.buttons}>
+          <div className={styles.buttons} role="group" aria-label="Kontrollschaltflächen">
             <button 
               onClick={skipIntro} 
               className={styles.skipButton}
@@ -238,7 +260,7 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
               <button 
                 onClick={prevStep} 
                 className={styles.prevButton}
-                aria-label={t('intro.previous', 'Zurück')}
+                aria-label={t('intro.previous_aria', 'Vorheriger Schritt')}
               >
                 ← {t('intro.back', 'Zurück')}
               </button>
@@ -262,7 +284,7 @@ export default function AppIntro({ onComplete }: AppIntroProps) {
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className={styles.swipeHint}>
+        <div className={styles.swipeHint} aria-hidden="true">
           <span>← {t('intro.swipe', 'Wischen zum Navigieren')} →</span>
         </div>
       </div>

@@ -7,7 +7,7 @@ import styles from './LegendsScreen.module.css'
 export function LegendsScreen() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const { players, addPlayer, removePlayer, loading } = usePlayersContext()
+  const { players, addPlayer, loading } = usePlayersContext()
   const [newPlayerName, setNewPlayerName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 
@@ -51,31 +51,7 @@ export function LegendsScreen() {
     }
   }
 
-  const handleRemovePlayer = async (id: string, playerName: string) => {
-    console.log('🗑️ handleRemovePlayer called with ID:', id, 'Name:', playerName)
-    console.log('📋 Current players:', players.map(p => `${p.id}: ${p.name}`))
-    
-    const confirmed = window.confirm(`Möchtest du "${playerName}" wirklich aus der Halle der Legenden entfernen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)
-    console.log('🤔 User confirmed removal:', confirmed)
-    
-    if (confirmed) {
-      setError(null) // Clear any previous errors
-      try {
-        console.log('🚀 Calling removePlayer...')
-        await removePlayer(id)
-        setSuccessMessage(`${playerName} wurde erfolgreich entfernt!`)
-        setTimeout(() => setSuccessMessage(null), 3000)
-        console.log('✅ Remove completed successfully')
-      } catch (error: any) {
-        console.error('❌ Failed to remove player:', error)
-        const errorMessage = error?.message || 'Unbekannter Fehler beim Entfernen der Legende'
-        setError(errorMessage)
-        setTimeout(() => setError(null), 5000)
-      }
-    } else {
-      console.log('❌ User cancelled removal')
-    }
-  }
+  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -186,20 +162,6 @@ export function LegendsScreen() {
                 <span className={styles.playerName}>
                   {player.name}
                 </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    console.log('🎯 Remove button clicked for:', player.name, 'ID:', player.id)
-                    handleRemovePlayer(player.id, player.name)
-                  }}
-                  className={styles.removeButton}
-                  title={`${player.name} aus der Halle der Legenden entfernen`}
-                  aria-label={`${player.name} aus der Halle der Legenden entfernen`}
-                >
-                  🗑️ {t('common.remove') || 'Entfernen'}
-                </button>
               </div>
             ))}
           </div>

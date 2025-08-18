@@ -241,28 +241,7 @@
   animation: crownRotate 4s linear infinite reverse;
 }
 
-.removeButton {
-  background: 
-    linear-gradient(135deg, 
-      rgba(139, 69, 19, 0.2) 0%,
-      rgba(205, 127, 50, 0.1) 100%);
-  border: 1px solid rgba(205, 127, 50, 0.4);
-  color: var(--ancient-bronze);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  position: relative;
-  overflow: hidden;
-}
-
-.removeButton::before {
-  content: "⚔️";
-  margin-right: var(--space-1);
-  font-size: 0.9rem;
+t-size: 0.9rem;
 }
 
 .removeButton:hover {

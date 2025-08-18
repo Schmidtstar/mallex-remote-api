@@ -181,9 +181,9 @@ export class PrivacyManager {
   }
 
   /**
-   * Export all user data for GDPR compliance (updated implementation)
+   * Export all user data for GDPR compliance
    */
-  static async exportUserDataComplete(userId: string): Promise<UserDataExport> {
+  static async exportUserData(userId: string): Promise<UserDataExport> {
     try {
       const exportData: UserDataExport = {
         profile: null,
@@ -256,9 +256,9 @@ export class PrivacyManager {
   }
 
   /**
-   * Delete all user data (Right to be forgotten) - Enhanced version
+   * Delete all user data (Right to be forgotten)
    */
-  static async deleteUserDataComplete(userId: string): Promise<void> {
+  static async deleteUserData(userId: string): Promise<void> {
     try {
       const deletionPromises: Promise<void>[] = []
 

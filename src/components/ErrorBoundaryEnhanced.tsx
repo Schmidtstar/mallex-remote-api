@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react'
-import { PerformanceMonitor } from '../lib/performance-monitor'
+import { performanceMonitor } from '../lib/performance-monitor'
 import styles from './ErrorBoundaryEnhanced.module.css'
 
 interface Props {
@@ -48,7 +48,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
     console.error('🚨 Error Boundary caught error:', error, errorInfo)
 
     // Track error in Performance Monitor
-    PerformanceMonitor.trackError({
+    performanceMonitor.trackError({
       message: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
@@ -225,5 +225,4 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
   }
 }
 
-export { ErrorBoundaryEnhanced }
 export default ErrorBoundaryEnhanced

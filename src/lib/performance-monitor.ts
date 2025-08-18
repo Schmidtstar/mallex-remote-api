@@ -1,20 +1,21 @@
 interface PerformanceMetric {
-  name: string;
-  value: number;
-  timestamp: number;
-  type: string; // e.g., 'web-vital', 'memory', 'animation', 'interaction', 'resource', 'navigation'
-  metadata?: any;
+  name: string
+  value: number
+  timestamp: number
+  type: string
+  metadata?: any
 }
 
-interface WebVitalMetric {
-  name: string;
-  value: number;
-  delta: number;
-  id: string;
+interface ErrorMetric {
+  message: string
+  stack?: string
+  componentStack?: string
+  errorId: string
 }
 
 export default class PerformanceMonitor {
   private static metrics: PerformanceMetric[] = []
+  private static errorMetrics: ErrorMetric[] = []
   private static isEnabled = true
   private static alertThresholds = {
     LCP: 2500,    // Largest Contentful Paint
@@ -206,7 +207,7 @@ export default class PerformanceMonitor {
   private static generatePerformanceReport() {
     if (this.metrics.length === 0) return
 
-    const recentMetrics = this.metrics.filter(m => 
+    const recentMetrics = this.metrics.filter(m =>
       Date.now() - m.timestamp < 60000 // Last minute
     )
 
@@ -537,6 +538,15 @@ export default class PerformanceMonitor {
     if (this.metrics.length > 500) {
       this.metrics = this.metrics.slice(-250);
     }
+  }
+
+  // Method to track errors
+  static trackError(error: ErrorMetric) {
+    this.errorMetrics.push(error);
+    console.error('❌ Error captured:', error);
+    // Here you could send the error to an error tracking service
+    if (import.meta.env.DEV) return;
+    // Example: sendErrorToService(error);
   }
 
   // Existing methods from original code (kept for completeness, assuming they are still relevant)

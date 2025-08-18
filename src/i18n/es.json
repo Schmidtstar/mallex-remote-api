@@ -202,9 +202,9 @@
   "settings": {
     "title": "Configuración",
     "language": "Idioma",
-    "german": "Alemán",
-    "english": "Inglés",
-    "french": "Francés",
+    "german": "Deutsch",
+    "english": "English",
+    "french": "Français",
     "spanish": "Español",
     "theme": "Tema",
     "notifications": "Notificaciones",

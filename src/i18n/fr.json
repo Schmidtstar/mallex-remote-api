@@ -202,10 +202,10 @@
   "settings": {
     "title": "Paramètres",
     "language": "Langue",
-    "german": "Allemand",
-    "english": "Anglais",
+    "german": "Deutsch",
+    "english": "English",
     "french": "Français",
-    "spanish": "Espagnol",
+    "spanish": "Español",
     "theme": "Thème",
     "notifications": "Notifications",
     "privacy": "Confidentialité",

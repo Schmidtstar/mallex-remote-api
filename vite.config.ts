@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => {
+  const isDev = mode === 'development'
+  
+  return {
   plugins: [
     react({
       include: "**/*.{jsx,tsx}",
@@ -11,17 +14,17 @@ export default defineConfig({
         presets: [
           ['@babel/preset-react', { 
             runtime: 'automatic',
-            development: import.meta.env.DEV
+            development: isDev
           }]
         ],
         plugins: [
           ['@emotion/babel-plugin', { 
-            sourceMap: import.meta.env.DEV,
-            autoLabel: import.meta.env.DEV ? 'dev-only' : 'never'
+            sourceMap: isDev,
+            autoLabel: isDev ? 'dev-only' : 'never'
           }]
         ]
       },
-      fastRefresh: import.meta.env.DEV
+      fastRefresh: isDev
     })
   ],
 
@@ -244,7 +247,7 @@ export default defineConfig({
     },
     modules: {
       localsConvention: 'camelCase',
-      generateScopedName: process.env.NODE_ENV === 'development' 
+      generateScopedName: isDev 
         ? '[name]__[local]___[hash:base64:5]'
         : '[hash:base64:8]'
     }
@@ -257,9 +260,9 @@ export default defineConfig({
 
   // Environment Variables
   define: {
-    __DEV__: process.env.NODE_ENV === 'development',
-    __PROD__: process.env.NODE_ENV === 'production',
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    __DEV__: isDev,
+    __PROD__: !isDev,
+    'process.env.NODE_ENV': JSON.stringify(mode)
   },
 
   // Worker-Optimierung
@@ -273,4 +276,4 @@ export default defineConfig({
     namedExports: true,
     stringify: false
   }
-})
+}})

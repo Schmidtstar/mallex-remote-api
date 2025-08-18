@@ -1,46 +1,283 @@
 
-import { useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface SwipeConfig {
-  onSwipeLeft?: () => void
-  onSwipeRight?: () => void
-  minSwipeDistance?: number
+  threshold: number
+  velocity: number
+  enableHaptics: boolean
+  preventScroll: boolean
 }
 
-export const useSwipe = ({ onSwipeLeft, onSwipeRight, minSwipeDistance = 50 }: SwipeConfig) => {
-  let touchStartX = 0
-  let touchEndX = 0
+interface SwipeHandlers {
+  onSwipeLeft?: () => void
+  onSwipeRight?: () => void
+  onSwipeUp?: () => void
+  onSwipeDown?: () => void
+  onSwipeStart?: (e: TouchEvent) => void
+  onSwipeMove?: (e: TouchEvent, deltaX: number, deltaY: number) => void
+  onSwipeEnd?: () => void
+}
 
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    touchStartX = e.changedTouches[0].screenX
-  }, [])
+interface SwipeState {
+  isSwiping: boolean
+  direction: 'left' | 'right' | 'up' | 'down' | null
+  deltaX: number
+  deltaY: number
+  velocity: number
+}
 
-  const handleTouchEnd = useCallback((e: TouchEvent) => {
-    touchEndX = e.changedTouches[0].screenX
-    handleSwipe()
-  }, [onSwipeLeft, onSwipeRight, minSwipeDistance])
+export function useSwipe(
+  handlers: SwipeHandlers = {},
+  config: Partial<SwipeConfig> = {}
+) {
+  const defaultConfig: SwipeConfig = {
+    threshold: 50,
+    velocity: 0.3,
+    enableHaptics: true,
+    preventScroll: false
+  }
 
-  const handleSwipe = useCallback(() => {
-    const swipeDistance = touchEndX - touchStartX
-    
-    if (Math.abs(swipeDistance) > minSwipeDistance) {
-      if (swipeDistance > 0 && onSwipeRight) {
-        onSwipeRight()
-      } else if (swipeDistance < 0 && onSwipeLeft) {
-        onSwipeLeft()
+  const finalConfig = { ...defaultConfig, ...config }
+  
+  const [swipeState, setSwipeState] = useState<SwipeState>({
+    isSwiping: false,
+    direction: null,
+    deltaX: 0,
+    deltaY: 0,
+    velocity: 0
+  })
+
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
+  const elementRef = useRef<HTMLElement | null>(null)
+
+  // Haptic Feedback (für native Apps)
+  const triggerHapticFeedback = async (style: 'light' | 'medium' | 'heavy' = 'light') => {
+    if (!finalConfig.enableHaptics) return
+
+    // Capacitor Haptics (wenn verfügbar)
+    if (window.Capacitor && window.Capacitor.Plugins.Haptics) {
+      try {
+        await window.Capacitor.Plugins.Haptics.impact({ style })
+      } catch (error) {
+        console.debug('Haptic feedback not available')
       }
     }
-  }, [onSwipeLeft, onSwipeRight, minSwipeDistance, touchStartX, touchEndX])
-
-  const bindSwipe = useCallback(() => {
-    document.addEventListener('touchstart', handleTouchStart)
-    document.addEventListener('touchend', handleTouchEnd)
     
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchend', handleTouchEnd)
+    // Web Vibration API Fallback
+    if ('vibrate' in navigator) {
+      const duration = { light: 50, medium: 100, heavy: 200 }[style]
+      navigator.vibrate(duration)
     }
-  }, [handleTouchStart, handleTouchEnd])
+  }
 
-  return { bindSwipe }
+  const handleTouchStart = (e: TouchEvent) => {
+    const touch = e.touches[0]
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    }
+
+    setSwipeState(prev => ({
+      ...prev,
+      isSwiping: true,
+      direction: null,
+      deltaX: 0,
+      deltaY: 0
+    }))
+
+    if (handlers.onSwipeStart) {
+      handlers.onSwipeStart(e)
+    }
+
+    if (finalConfig.preventScroll) {
+      e.preventDefault()
+    }
+  }
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!touchStartRef.current) return
+
+    const touch = e.touches[0]
+    const deltaX = touch.clientX - touchStartRef.current.x
+    const deltaY = touch.clientY - touchStartRef.current.y
+    const timeElapsed = Date.now() - touchStartRef.current.time
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+    const velocity = timeElapsed > 0 ? distance / timeElapsed : 0
+
+    // Bestimme Swipe-Richtung
+    let direction: SwipeState['direction'] = null
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      direction = deltaX > 0 ? 'right' : 'left'
+    } else {
+      direction = deltaY > 0 ? 'down' : 'up'
+    }
+
+    setSwipeState(prev => ({
+      ...prev,
+      deltaX,
+      deltaY,
+      velocity,
+      direction
+    }))
+
+    if (handlers.onSwipeMove) {
+      handlers.onSwipeMove(e, deltaX, deltaY)
+    }
+
+    // Verhindere Scroll bei horizontalen Swipes
+    if (finalConfig.preventScroll && Math.abs(deltaX) > Math.abs(deltaY)) {
+      e.preventDefault()
+    }
+  }
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (!touchStartRef.current) return
+
+    const deltaX = swipeState.deltaX
+    const deltaY = swipeState.deltaY
+    const velocity = swipeState.velocity
+
+    // Prüfe ob Swipe-Threshold erreicht wurde
+    const isValidSwipe = 
+      (Math.abs(deltaX) > finalConfig.threshold || Math.abs(deltaY) > finalConfig.threshold) &&
+      velocity > finalConfig.velocity
+
+    if (isValidSwipe) {
+      // Trigger Haptic Feedback
+      triggerHapticFeedback('light')
+
+      // Bestimme und trigger Swipe-Handler
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal Swipe
+        if (deltaX > 0 && handlers.onSwipeRight) {
+          handlers.onSwipeRight()
+        } else if (deltaX < 0 && handlers.onSwipeLeft) {
+          handlers.onSwipeLeft()
+        }
+      } else {
+        // Vertical Swipe
+        if (deltaY > 0 && handlers.onSwipeDown) {
+          handlers.onSwipeDown()
+        } else if (deltaY < 0 && handlers.onSwipeUp) {
+          handlers.onSwipeUp()
+        }
+      }
+    }
+
+    // Reset state
+    setSwipeState({
+      isSwiping: false,
+      direction: null,
+      deltaX: 0,
+      deltaY: 0,
+      velocity: 0
+    })
+
+    touchStartRef.current = null
+
+    if (handlers.onSwipeEnd) {
+      handlers.onSwipeEnd()
+    }
+  }
+
+  // Event Listeners Setup
+  useEffect(() => {
+    const element = elementRef.current
+    if (!element) return
+
+    // Passive Listeners für bessere Performance
+    element.addEventListener('touchstart', handleTouchStart, { passive: !finalConfig.preventScroll })
+    element.addEventListener('touchmove', handleTouchMove, { passive: !finalConfig.preventScroll })
+    element.addEventListener('touchend', handleTouchEnd, { passive: true })
+
+    return () => {
+      element.removeEventListener('touchstart', handleTouchStart)
+      element.removeEventListener('touchmove', handleTouchMove)
+      element.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [handlers, finalConfig])
+
+  // Utility Functions
+  const bindSwipe = (element: HTMLElement | null) => {
+    elementRef.current = element
+  }
+
+  const isSwipingInDirection = (direction: 'left' | 'right' | 'up' | 'down') => {
+    return swipeState.isSwiping && swipeState.direction === direction
+  }
+
+  const getSwipeProgress = () => {
+    if (!swipeState.isSwiping) return 0
+    
+    const distance = Math.sqrt(swipeState.deltaX ** 2 + swipeState.deltaY ** 2)
+    return Math.min(distance / finalConfig.threshold, 1)
+  }
+
+  return {
+    // State
+    swipeState,
+    
+    // Utilities
+    bindSwipe,
+    isSwipingInDirection,
+    getSwipeProgress,
+    
+    // Manual trigger für Testing
+    triggerHapticFeedback
+  }
+}
+
+// React Hook für Pull-to-Refresh
+export function usePullToRefresh(onRefresh: () => Promise<void>) {
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [pullDistance, setPullDistance] = useState(0)
+  
+  const swipeHandlers = {
+    onSwipeMove: (e: TouchEvent, deltaX: number, deltaY: number) => {
+      // Nur bei Scroll-Position 0 und nach unten ziehen
+      if (window.scrollY === 0 && deltaY > 0) {
+        setPullDistance(Math.min(deltaY, 120))
+      }
+    },
+    
+    onSwipeEnd: async () => {
+      if (pullDistance > 80 && !isRefreshing) {
+        setIsRefreshing(true)
+        try {
+          await onRefresh()
+        } finally {
+          setIsRefreshing(false)
+          setPullDistance(0)
+        }
+      } else {
+        setPullDistance(0)
+      }
+    }
+  }
+
+  const { bindSwipe } = useSwipe(swipeHandlers, {
+    threshold: 80,
+    preventScroll: false
+  })
+
+  return {
+    bindSwipe,
+    isRefreshing,
+    pullDistance,
+    isPulling: pullDistance > 0
+  }
+}
+
+// Global Type Declaration für Capacitor
+declare global {
+  interface Window {
+    Capacitor?: {
+      Plugins: {
+        Haptics?: {
+          impact: (options: { style: 'light' | 'medium' | 'heavy' }) => Promise<void>
+        }
+      }
+    }
+  }
 }

@@ -1,58 +1,357 @@
 
-/* Mobile-First CSS Utilities */
+/* MALLEX Mobile-First Optimierungen */
 
-/* Safe Areas für iPhone Notch etc. */
-.safe-area-top {
-  padding-top: env(safe-area-inset-top);
+/* Touch-optimierte Basis-Regeln */
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
+/* Minimum Touch-Zonen für Accessibility */
+.touch-target,
+button,
+[role="button"],
+input,
+select,
+textarea,
+a {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px;
+  position: relative;
 }
 
-/* Touch-optimized interactions */
-.touch-target {
-  min-height: var(--mobile-touch-target);
-  min-width: var(--mobile-touch-target);
+/* Enhanced Touch-Targets für wichtige Elemente */
+.touch-target-large {
+  min-height: 56px;
+  min-width: 56px;
+  padding: 16px;
+}
+
+/* Mobile-optimierte Buttons */
+.mobile-button {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Mobile-specific layouts */
-@media (max-width: 480px) {
-  /* Single column layout */
-  .mobile-stack {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: var(--mobile-gap) !important;
+.mobile-button:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mobile-button:focus {
+  outline: 2px solid #4ecdc4;
+  outline-offset: 2px;
+}
+
+/* Haptic Feedback Simulation */
+.mobile-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+  pointer-events: none;
+}
+
+.mobile-button:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Safe Area Support für iPhone */
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+}
+
+.safe-area-inset-top {
+  padding-top: calc(env(safe-area-inset-top, 0) + 20px);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 20px);
+}
+
+/* Keyboard-aware Layout */
+.keyboard-aware {
+  transition: transform 0.3s ease;
+}
+
+.keyboard-open {
+  transform: translateY(-100px);
+}
+
+/* Pull-to-Refresh Indicator */
+.pull-to-refresh {
+  position: relative;
+  overflow: hidden;
+}
+
+.pull-to-refresh::before {
+  content: '↓ Ziehen zum Aktualisieren';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(78, 205, 196, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.pull-to-refresh.pulling::before {
+  transform: translateX(-50%) translateY(70px);
+}
+
+/* Swipe-Navigation Indicators */
+.swipe-indicator {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 100;
+}
+
+.swipe-indicator.left {
+  left: 20px;
+  transform: translateY(-50%);
+}
+
+.swipe-indicator.right {
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+.swipe-indicator.visible {
+  opacity: 1;
+}
+
+/* Mobile-optimierte Form-Elemente */
+.mobile-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 14px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 16px; /* Verhindert Zoom auf iOS */
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease;
+}
+
+.mobile-input:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive Typography für Mobile */
+@media (max-width: 768px) {
+  html {
+    font-size: 16px; /* Basis für bessere Touch-Targets */
   }
+
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
   
-  /* Full-width mobile buttons */
-  .mobile-full-width {
-    width: 100% !important;
-    max-width: none !important;
+  body {
+    font-size: 1rem;
+    line-height: 1.6;
   }
-  
-  /* Reduce motion for performance */
-  * {
-    animation-duration: 0.2s !important;
-    transition-duration: 0.2s !important;
+
+  /* Vergrößerte Touch-Zonen auf kleinen Screens */
+  .touch-target,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea,
+  a {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 14px 16px;
   }
 }
 
-/* Tablet optimizations */
-@media (min-width: 481px) and (max-width: 768px) {
-  .tablet-two-column {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: var(--space-6) !important;
-  }
-}
-
-/* High DPI displays (Retina etc.) */
+/* High-DPI Display Optimierungen */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .glass {
-    backdrop-filter: blur(10px); /* Bessere Qualität auf Retina */
+  .mobile-button {
+    border-width: 0.5px;
   }
+  
+  .mobile-input {
+    border-width: 1px;
+  }
+}
+
+/* Landscape-Mode Optimierungen */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-input {
+    min-height: 44px;
+    padding: 12px 14px;
+  }
+  
+  .mobile-button {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+  
+  .safe-area-inset-top {
+    padding-top: calc(env(safe-area-inset-top, 0) + 10px);
+  }
+}
+
+/* Dark Mode respektieren */
+@media (prefers-color-scheme: dark) {
+  .mobile-button {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .mobile-input {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Reduced Motion für Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-button,
+  .mobile-input,
+  .keyboard-aware,
+  .pull-to-refresh::before,
+  .swipe-indicator {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .mobile-button::after {
+    display: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .mobile-button {
+    border-width: 2px;
+    border-color: white;
+  }
+  
+  .mobile-input {
+    border-width: 2px;
+    border-color: white;
+  }
+  
+  .mobile-button:focus,
+  .mobile-input:focus {
+    border-color: #ffff00;
+    outline: 2px solid #ffff00;
+  }
+}
+
+/* Utility Classes für Mobile */
+.mobile-only { display: block; }
+.desktop-only { display: none; }
+
+@media (min-width: 769px) {
+  .mobile-only { display: none; }
+  .desktop-only { display: block; }
+}
+
+/* Loading States für Mobile */
+.mobile-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.mobile-loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Error States für Mobile */
+.mobile-error {
+  border-color: #ff6b6b !important;
+  background: rgba(255, 107, 107, 0.1) !important;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Success States für Mobile */
+.mobile-success {
+  border-color: #4ecdc4 !important;
+  background: rgba(78, 205, 196, 0.1) !important;
+}
+
+.mobile-success::after {
+  content: '✓';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4ecdc4;
+  font-weight: bold;
 }

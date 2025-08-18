@@ -59,7 +59,10 @@ class MonitoringServiceClass {
       ? { action, metadata, timestamp: Date.now() }
       : { ...action, timestamp: action.timestamp || Date.now() }
 
-    console.log('📊 User action tracked:', actionData)
+    // Only log important actions in development to reduce noise
+    if (import.meta.env.DEV && (action.toString().includes('error') || action.toString().includes('critical'))) {
+      console.log('📊 Critical action tracked:', actionData)
+    }
 
     // Track in performance monitor if available
     try {

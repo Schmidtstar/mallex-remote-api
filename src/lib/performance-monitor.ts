@@ -36,7 +36,10 @@ class PerformanceMonitor {
       try {
         const observer = new PerformanceObserver((list) => {
           list.getEntries().forEach((entry) => {
-            this.trackMetric(`resource-${entry.name}`, entry.duration)
+            // Only track slow resources (>200ms) to reduce noise
+            if (entry.duration > 200) {
+              this.trackMetric(`slow-resource-${entry.name.split('/').pop()}`, entry.duration)
+            }
           })
         })
         observer.observe({ entryTypes: ['resource'] })
@@ -66,7 +69,11 @@ class PerformanceMonitor {
         this.metrics.set(name, [])
       }
       this.metrics.get(name)?.push(value)
-      console.log(`📊 Basic Metric ${name}: ${value}ms`)
+      
+      // Reduce console spam - only log significant metrics or errors
+      if (import.meta.env.DEV && (value > 100 || name.includes('error'))) {
+        console.log(`📊 Performance Alert ${name}: ${value}ms`)
+      }
     } catch (error) {
       console.warn('Could not track metric:', error)
     }

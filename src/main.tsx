@@ -32,10 +32,15 @@ const initializeCoreServices = () => {
     // Error handling - Critical
     CriticalErrorHandler.init()
 
-    // Performance monitoring - Development only
+    // Performance monitoring - Conditional based on environment
     if (import.meta.env.DEV) {
       MonitoringService.init()
       MonitoringService.trackUserAction('app_start')
+      console.log('🔧 Development mode: Verbose logging enabled')
+    } else {
+      // Production: Only critical monitoring
+      MonitoringService.init()
+      MonitoringService.trackUserAction('app_start', { silent: true })
     }
 
     // Firebase monitoring - Production ready

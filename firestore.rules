@@ -2,177 +2,177 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // ========================================
-    // USER MANAGEMENT - Strict ownership
-    // ========================================
+
+    // ========= HELPERS =========
+    function isAdmin() {
+      // Wenn du Custom Claims nutzt: return request.auth.token.admin == true;
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function validateUserData() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['displayName','createdAt']) &&
+             d.displayName is string && d.displayName.size() > 0 && d.displayName.size() <= 50 &&
+             d.createdAt is timestamp;
+    }
+
+    function validatePlayerData() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['name','score','arenaPoints','ownerId']) &&
+             d.name is string && d.name.size() > 0 && d.name.size() <= 30 &&
+             d.score is number && d.score >= 0 &&
+             d.arenaPoints is number && d.arenaPoints >= 0 &&
+             d.ownerId is string;
+    }
+
+    function validateTaskSuggestion() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['title','category','createdBy','createdAt']) &&
+             d.title is string && d.title.size() > 5 && d.title.size() <= 200 &&
+             d.category in ['Trinken','Action','Wahrheit','Pflicht','Krass'] &&
+             d.createdBy is string &&
+             d.createdAt is timestamp &&
+             (!d.keys().hasAny(['status']) || d.status in ['pending','approved','rejected']);
+    }
+
+    function validateArenaSession() {
+      let d = request.resource.data;
+      // Falls participants als MAP: { uid: true }
+      return d.keys().hasAll(['participants','createdBy','createdAt']) &&
+             d.participants is map &&
+             d.participants.size() >= 1 && d.participants.size() <= 20 &&
+             d.createdBy is string &&
+             d.createdAt is timestamp;
+    }
+
+    // ========= USERS =========
     match /users/{userId} {
-      allow read, write: if request.auth != null 
-        && request.auth.uid == userId
-        && validateUserData();
-      
-      // User subcollections (settings, preferences, etc.)
+      // Lesen: nur Eigentümer oder Admin
+      allow read: if request.auth != null &&
+                  (request.auth.uid == userId || isAdmin());
+
+      // Erstellen: nur für sich selbst + Validierung + feste Immutables
+      allow create: if request.auth != null &&
+                    request.auth.uid == userId &&
+                    validateUserData();
+
+      // Update: nur Eigentümer oder Admin; Immutables unverändert (createdAt)
+      allow update: if request.auth != null &&
+                    (request.auth.uid == userId || isAdmin()) &&
+                    validateUserData() &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+
+      // Löschen: Eigentümer oder Admin
+      allow delete: if request.auth != null &&
+                    (request.auth.uid == userId || isAdmin());
+
+      // Subcollections: an Eigentum knüpfen
       match /{subcollection}/{docId} {
-        allow read, write: if request.auth != null 
-          && request.auth.uid == userId;
+        allow read, create, update, delete: if request.auth != null &&
+                                            (request.auth.uid == userId || isAdmin());
       }
     }
 
-    // ========================================
-    // PLAYERS COLLECTION - Global read, owner write
-    // ========================================
+    // ========= PLAYERS =========
     match /players/{playerId} {
-      // Everyone can read player data (for leaderboards)
+      // Lesen: alle authentifizierten
       allow read: if request.auth != null;
-      
-      // Only owner or admin can modify
-      allow write: if request.auth != null && (
-        request.auth.uid == resource.data.ownerId ||
-        isAdmin() ||
-        (request.auth.uid == request.resource.data.ownerId && validatePlayerData())
-      );
+
+      // Erstellen: nur wenn ownerId == uid + Validierung
+      allow create: if request.auth != null &&
+                    request.resource.data.ownerId == request.auth.uid &&
+                    validatePlayerData();
+
+      // Update: nur Besitzer oder Admin; ownerId bleibt unverändert
+      allow update: if request.auth != null &&
+                    (resource.data.ownerId == request.auth.uid || isAdmin()) &&
+                    validatePlayerData() &&
+                    request.resource.data.ownerId == resource.data.ownerId;
+
+      // Löschen: nur Besitzer oder Admin
+      allow delete: if request.auth != null &&
+                    (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
-    // ========================================
-    // TASK SUGGESTIONS - User-specific
-    // ========================================
+    // ========= TASK SUGGESTIONS =========
     match /taskSuggestions/{suggestionId} {
-      // Users can read their own suggestions + approved ones
+      // Lesen: eigener Datensatz, oder approved, oder Admin
       allow read: if request.auth != null && (
-        request.auth.uid == resource.data.createdBy ||
-        resource.data.status == 'approved' ||
+        (resource.data.createdBy == request.auth.uid) ||
+        (resource.data.status == 'approved') ||
         isAdmin()
       );
-      
-      // Users can create/modify their own suggestions
-      allow create: if request.auth != null 
-        && request.auth.uid == request.resource.data.createdBy
-        && validateTaskSuggestion();
-      
-      allow update: if request.auth != null && (
-        request.auth.uid == resource.data.createdBy ||
-        isAdmin()
-      ) && validateTaskSuggestion();
-      
-      // Only admins can delete
+
+      // Erstellen
+      allow create: if request.auth != null &&
+                    request.resource.data.createdBy == request.auth.uid &&
+                    validateTaskSuggestion();
+
+      // Update: nur Ersteller oder Admin; createdBy/createdAt unverändert
+      allow update: if request.auth != null &&
+                    (resource.data.createdBy == request.auth.uid || isAdmin()) &&
+                    validateTaskSuggestion() &&
+                    request.resource.data.createdBy == resource.data.createdBy &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+
+      // Löschen: nur Admin
       allow delete: if isAdmin();
     }
 
-    // ========================================
-    // ADMIN COLLECTIONS - Admin only
-    // ========================================
+    // ========= ADMIN =========
     match /adminSettings/{document} {
       allow read, write: if isAdmin();
     }
-    
+
     match /systemSettings/{document} {
       allow read: if request.auth != null;
       allow write: if isAdmin();
     }
 
-    // ========================================
-    // ACHIEVEMENTS SYSTEM
-    // ========================================
+    // ========= ACHIEVEMENTS =========
     match /achievements/{achievementId} {
-      // Everyone can read achievements
       allow read: if request.auth != null;
-      
-      // Only admins can modify achievements
-      allow write: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     match /userAchievements/{userId} {
-      // Users can read their own achievements
       allow read: if request.auth != null && request.auth.uid == userId;
-      
-      // System/Admin can write achievements
-      allow write: if isAdmin();
-      
+
+      // Schreiben: nur Admin (falls Server-Job/Admin setzt)
+      allow create, update, delete: if isAdmin();
+
       match /earned/{achievementId} {
         allow read: if request.auth != null && request.auth.uid == userId;
-        allow write: if isAdmin();
+        allow create, update, delete: if isAdmin();
       }
     }
 
-    // ========================================
-    // ARENA/GAME SESSIONS
-    // ========================================
+    // ========= ARENA SESSIONS =========
     match /arenaSessions/{sessionId} {
-      // Participants can read session data
+      // participants als MAP prüfen: participants[uid] == true
       allow read: if request.auth != null && (
-        request.auth.uid in resource.data.participants ||
+        (resource.data.participants[request.auth.uid] == true) ||
         isAdmin()
       );
-      
-      // Creator or admin can modify
-      allow write: if request.auth != null && (
-        request.auth.uid == resource.data.createdBy ||
-        isAdmin()
-      ) && validateArenaSession();
+
+      // Erstellen: Ersteller == uid + Validierung
+      allow create: if request.auth != null &&
+                    request.resource.data.createdBy == request.auth.uid &&
+                    validateArenaSession();
+
+      // Update: nur Ersteller/Admin; createdBy unverändert
+      allow update: if request.auth != null &&
+                    (resource.data.createdBy == request.auth.uid || isAdmin()) &&
+                    validateArenaSession() &&
+                    request.resource.data.createdBy == resource.data.createdBy;
+
+      // Löschen: Ersteller/Admin
+      allow delete: if request.auth != null &&
+                    (resource.data.createdBy == request.auth.uid || isAdmin());
     }
 
-    // ========================================
-    // HELPER FUNCTIONS
-    // ========================================
-    
-    function isAdmin() {
-      return request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-    
-    function validateUserData() {
-      let data = request.resource.data;
-      return data.keys().hasAll(['displayName', 'createdAt']) &&
-        data.displayName is string &&
-        data.displayName.size() > 0 &&
-        data.displayName.size() <= 50 &&
-        data.createdAt is timestamp;
-    }
-    
-    function validatePlayerData() {
-      let data = request.resource.data;
-      return data.keys().hasAll(['name', 'score', 'arenaPoints', 'ownerId']) &&
-        data.name is string &&
-        data.name.size() > 0 &&
-        data.name.size() <= 30 &&
-        data.score is number &&
-        data.score >= 0 &&
-        data.arenaPoints is number &&
-        data.arenaPoints >= 0 &&
-        data.ownerId is string;
-    }
-    
-    function validateTaskSuggestion() {
-      let data = request.resource.data;
-      return data.keys().hasAll(['title', 'category', 'createdBy', 'createdAt']) &&
-        data.title is string &&
-        data.title.size() > 5 &&
-        data.title.size() <= 200 &&
-        data.category is string &&
-        data.category in ['Trinken', 'Action', 'Wahrheit', 'Pflicht', 'Krass'] &&
-        data.createdBy is string &&
-        data.createdAt is timestamp &&
-        (!data.keys().hasAny(['status']) || data.status in ['pending', 'approved', 'rejected']);
-    }
-    
-    function validateArenaSession() {
-      let data = request.resource.data;
-      return data.keys().hasAll(['participants', 'createdBy', 'createdAt']) &&
-        data.participants is list &&
-        data.participants.size() >= 1 &&
-        data.participants.size() <= 20 &&
-        data.createdBy is string &&
-        data.createdAt is timestamp;
-    }
-
-    // ========================================
-    // DEVELOPMENT FALLBACK (REMOVE IN PRODUCTION!)
-    // ========================================
-    // Uncomment ONLY for development debugging
-    // match /{document=**} {
-    //   allow read, write: if request.auth != null && 
-    //     request.auth.token.email.matches('.*@your-dev-domain.com');
-    // }
+    // --- KEIN globales catch-all allow ---
   }
 }

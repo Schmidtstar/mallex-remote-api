@@ -1,66 +1,55 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
-export default defineConfig(function (_a) {
-    var mode = _a.mode;
-    console.log('[vite] 🚀 Config loaded – mode:', mode);
-    return {
-        plugins: [react()],
-        resolve: {
-            alias: {
-                '@': path.resolve(__dirname, './src')
-            }
-        },
-        server: {
-            port: 5000,
-            host: '0.0.0.0',
-            strictPort: true,
-            allowedHosts: [
-                '.replit.dev', // Wildcard for all Replit subdomains
-                '.riker.replit.dev', // Specific Replit infrastructure
-                'localhost' // Local development
-            ],
-            hmr: {
-                port: 5001,
-                host: '0.0.0.0', // Wichtig für Replit WebSocket-Zugriff
-                overlay: false,
-                timeout: 30000, // Reduzierter Timeout
-                clientErrorOverlay: false,
-                reconnectionAttempts: 2, // Weniger Reconnect-Versuche
-                skipSSLVerification: true, // Für Replit SSL-Probleme
-            },
-            watch: {
-                usePolling: false,
-                interval: 1000,
-                ignored: ['**/node_modules/**', '**/.git/**'], // Weniger File-Watching
-            },
-            cors: true, // CORS für WebSocket-Verbindungen
-        },
-        preview: {
-            host: true,
-            port: 3000,
-            allowedHosts: [
-                '.replit.dev',
-                '.riker.replit.dev'
-            ]
-        },
-        build: {
-            outDir: 'dist',
-            sourcemap: mode === 'development',
-            minify: mode === 'production' ? 'esbuild' : false,
-            target: 'es2015', // Better mobile compatibility
-            rollupOptions: {
-                output: {
-                    manualChunks: {
-                        vendor: ['react', 'react-dom'],
-                        router: ['react-router-dom'],
-                        firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
-                    }
-                }
-            }
-        },
-        optimizeDeps: {
-            include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore']
+import { resolve } from 'path';
+// https://vitejs.dev/config/
+export default defineConfig({
+    plugins: [react()],
+    resolve: {
+        alias: {
+            '@': resolve(__dirname, './src'),
         }
-    };
+    },
+    server: {
+        host: true,
+        port: 5173,
+        hmr: {
+            protocol: 'wss',
+            host: 'localhost', // Use localhost instead of 0.0.0.0
+            clientPort: 443,
+            port: 5173
+        },
+        cors: true,
+        // Add headers for better CORS support
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+    },
+    build: {
+        outDir: 'dist',
+        sourcemap: true,
+        target: 'es2020',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom'],
+                    router: ['react-router-dom'],
+                    firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+                    i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector']
+                },
+                chunkSizeWarningLimit: 1000
+            }
+        },
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true,
+                drop_debugger: true
+            }
+        }
+    },
+    optimizeDeps: {
+        include: ['firebase/app', 'firebase/auth', 'firebase/firestore']
+    }
 });

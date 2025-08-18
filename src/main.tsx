@@ -51,7 +51,7 @@ const initializeCoreServices = async () => {
       console.log('✅ Production mode: Monitoring active')
     }
 
-    // Firebase initialization - Production ready with error handling
+    // Firebase initialization - Production ready mit error handling
     try {
       // Import Firebase Optimizer with proper error handling
       const firebaseModule = await import('./lib/firebase-optimized')

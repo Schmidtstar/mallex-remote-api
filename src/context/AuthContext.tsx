@@ -38,6 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (firebaseUser) {
             console.log('✅ User authenticated:', firebaseUser.uid)
             setUser(firebaseUser)
+            
+            // Ensure user profile exists
+            try {
+              await ensureUserProfile(firebaseUser.uid, {
+                email: firebaseUser.email ?? undefined,
+                displayName: firebaseUser.displayName ?? undefined
+              })
+            } catch (profileError) {
+              console.warn('Profile creation failed (non-critical):', profileError)
+            }
 
             // Check admin status with comprehensive error handling
             try {

@@ -44,9 +44,9 @@ export function AuthScreen() {
           navigate('/arena');
         }
       }
-      // If login is successful, navigate to arena
+      // If login is successful, navigate to arena with replace to prevent back button issues
       if (isLogin) {
-        navigate('/arena');
+        navigate('/arena', { replace: true });
       }
     } catch (err: any) {
       console.error('Auth error:', err)
@@ -73,7 +73,7 @@ export function AuthScreen() {
     try {
       setLoading(true)
       await signInAnonymously(auth)
-      navigate('/arena')
+      navigate('/arena', { replace: true })
     } catch (err) {
       console.error('Guest login failed:', err)
       setError(t('auth.error'))

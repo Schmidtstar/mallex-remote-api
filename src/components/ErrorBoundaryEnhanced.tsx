@@ -1,4 +1,3 @@
-
 import React, { Component, ReactNode } from 'react'
 import { PerformanceMonitor } from '../lib/performance-monitor'
 import styles from './ErrorBoundaryEnhanced.module.css'
@@ -36,7 +35,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): Partial<State> {
     const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     return {
       hasError: true,
       error,
@@ -47,9 +46,9 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: any) {
     console.error('🚨 Error Boundary caught error:', error, errorInfo)
-    
+
     // Track error in Performance Monitor
-    PerformanceMonitor.trackError('react_error', {
+    PerformanceMonitor.trackError({
       message: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
@@ -121,9 +120,9 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
 
   private getErrorType(): string {
     if (!this.state.error) return 'unknown'
-    
+
     const message = this.state.error.message.toLowerCase()
-    
+
     if (message.includes('network') || message.includes('fetch')) {
       return 'network'
     } else if (message.includes('chunk') || message.includes('loading')) {
@@ -131,13 +130,13 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
     } else if (message.includes('permission')) {
       return 'permission'
     }
-    
+
     return 'runtime'
   }
 
   private getErrorSuggestion(): string {
     const errorType = this.getErrorType()
-    
+
     switch (errorType) {
       case 'network':
         return 'Bitte überprüfen Sie Ihre Internetverbindung'
@@ -168,11 +167,11 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
                errorType === 'loading' ? '⏳' : 
                errorType === 'permission' ? '🔒' : '⚠️'}
             </div>
-            
+
             <h2 className={styles.errorTitle}>
               Oops! Etwas ist schiefgegangen
             </h2>
-            
+
             <p className={styles.errorMessage}>
               {suggestion}
             </p>
@@ -196,7 +195,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
                   🔄 Erneut versuchen ({this.maxRetries - this.state.retryCount} verbleibend)
                 </button>
               )}
-              
+
               <button 
                 onClick={this.handleReload}
                 className={styles.reloadButton}
@@ -225,3 +224,6 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
     return this.props.children
   }
 }
+
+export { ErrorBoundaryEnhanced }
+export default ErrorBoundaryEnhanced

@@ -1,8 +1,38 @@
+// Capacitor imports with fallback for web
+let Capacitor, StatusBar, SplashScreen, Haptics, ImpactStyle, Share, PushNotifications, Device;
 
-import { Capacitor } from '@capacitor/core'
-import { StatusBar } from '@capacitor/status-bar'
-import { SplashScreen } from '@capacitor/splash-screen'
-import { Haptics, ImpactStyle } from '@capacitor/haptics'
+try {
+  const capacitorCore = await import("@capacitor/core");
+  Capacitor = capacitorCore.Capacitor;
+
+  if (Capacitor.isNativePlatform()) {
+    const statusBarModule = await import("@capacitor/status-bar");
+    StatusBar = statusBarModule.StatusBar;
+
+    const splashModule = await import("@capacitor/splash-screen");
+    SplashScreen = splashModule.SplashScreen;
+
+    const hapticsModule = await import("@capacitor/haptics");
+    Haptics = hapticsModule.Haptics;
+    ImpactStyle = hapticsModule.ImpactStyle;
+
+    const shareModule = await import("@capacitor/share");
+    Share = shareModule.Share;
+
+    const pushModule = await import("@capacitor/push-notifications");
+    PushNotifications = pushModule.PushNotifications;
+
+    const deviceModule = await import("@capacitor/device");
+    Device = deviceModule.Device;
+  }
+} catch (error) {
+  console.log('Capacitor not available, running in web mode');
+  // Web fallbacks
+  Capacitor = { 
+    isNativePlatform: () => false, 
+    getPlatform: () => 'web' 
+  };
+}
 
 export class CapacitorIntegration {
   static async init() {
@@ -12,13 +42,13 @@ export class CapacitorIntegration {
     }
 
     console.log('📱 Capacitor native platform detected')
-    
+
     // StatusBar konfigurieren
     await this.setupStatusBar()
-    
+
     // SplashScreen verwalten
     await this.setupSplashScreen()
-    
+
     // Haptic Feedback aktivieren
     this.setupHaptics()
   }
@@ -56,7 +86,7 @@ export class CapacitorIntegration {
 
   private static async hapticFeedback(style: ImpactStyle) {
     if (!Capacitor.isNativePlatform()) return
-    
+
     try {
       await Haptics.impact({ style })
     } catch (error) {

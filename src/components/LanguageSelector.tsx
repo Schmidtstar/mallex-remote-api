@@ -14,29 +14,29 @@ export default function LanguageSelector({ onComplete, onLanguageSelected, showS
 
   // Die gleichen Sprachen wie im Menu-System verwenden
   const languages = [
-    { 
-      code: 'de', 
-      name: t('language.german'), 
-      flag: '🇩🇪', 
-      description: 'Olympische Saufspiele auf Deutsch' 
+    {
+      code: 'de',
+      name: t('language.german'),
+      flag: '🇩🇪',
+      description: 'Olympische Saufspiele auf Deutsch'
     },
-    { 
-      code: 'en', 
-      name: t('language.english'), 
-      flag: '🇺🇸', 
-      description: 'Olympic Drinking Games in English' 
+    {
+      code: 'en',
+      name: t('language.english'),
+      flag: '🇺🇸',
+      description: 'Olympic Drinking Games in English'
     },
-    { 
-      code: 'fr', 
-      name: t('language.french'), 
-      flag: '🇫🇷', 
-      description: 'Jeux Olympiques de Boisson en Français' 
+    {
+      code: 'fr',
+      name: t('language.french'),
+      flag: '🇫🇷',
+      description: 'Jeux Olympiques de Boisson en Français'
     },
-    { 
-      code: 'es', 
-      name: t('language.spanish'), 
-      flag: '🇪🇸', 
-      description: 'Juegos Olímpicos de Bebida en Español' 
+    {
+      code: 'es',
+      name: t('language.spanish'),
+      flag: '🇪🇸',
+      description: 'Juegos Olímpicos de Bebida en Español'
     }
   ]
 
@@ -64,7 +64,7 @@ export default function LanguageSelector({ onComplete, onLanguageSelected, showS
         <div className={styles.header}>
           <div className={styles.icon}>🌍</div>
           <h1 className={styles.title}>
-            {selectedLang === 'de' ? 'Wähle deine Sprache' : 
+            {selectedLang === 'de' ? 'Wähle deine Sprache' :
              selectedLang === 'en' ? 'Choose your Language' :
              selectedLang === 'fr' ? 'Choisissez votre langue' :
              'Elige tu idioma'}

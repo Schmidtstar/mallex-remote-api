@@ -135,7 +135,7 @@ export function AppIntro({ onComplete, userType = 'first-time', showSkip = true 
   }, [currentPhase, handleSkip, showSkip, onComplete])
 
   useEffect(() => {
-    // Angepasste Timings basierend auf User-Type
+    // Angepasste Timings basierend auf User-Type - ALLE Phasen aktiviert für episches Intro
     const timings = {
       'first-time': {
         loading: 2000,
@@ -145,17 +145,17 @@ export function AppIntro({ onComplete, userType = 'first-time', showSkip = true 
         enter: 0
       },
       'returning': {
-        loading: 1000,
-        logo: 1500,
-        temple: 0, // Skip temple für returning users
-        features: 2000,
+        loading: 1500,
+        logo: 2500,
+        temple: 3500, // Temple aktiviert für besseres Erlebnis
+        features: 2500,
         enter: 0
       },
       'admin': {
-        loading: 500,
-        logo: 1000,
-        temple: 0,
-        features: 0, // Skip features für admin
+        loading: 1000,
+        logo: 2000,
+        temple: 3000, // Temple auch für Admin aktiviert
+        features: 2000,
         enter: 0
       }
     }

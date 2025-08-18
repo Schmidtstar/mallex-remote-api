@@ -352,21 +352,22 @@ section {
   }
 }
 
-/* Custom scrollbar */
-*::-webkit-scrollbar {
+/* Custom scrollbar - Optimized for performance */
+::-webkit-scrollbar {
   width: 8px;
 }
 
-*::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: var(--ancient-night);
 }
 
-*::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: var(--ancient-bronze);
   border-radius: 4px;
+  will-change: background;
 }
 
-*::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: var(--ancient-gold);
 }
 
@@ -377,11 +378,20 @@ section {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Epic glow animation */
+/* Epic glow animation - GPU accelerated */
 @keyframes epicGlow {
-  0% { box-shadow: 0 0 20px rgba(218, 165, 32, 0.5); }
-  50% { box-shadow: 0 0 40px rgba(255, 107, 53, 0.8), 0 0 60px rgba(218, 165, 32, 0.6); }
-  100% { box-shadow: 0 0 20px rgba(218, 165, 32, 0.5); }
+  0% { 
+    box-shadow: 0 0 20px rgba(218, 165, 32, 0.5);
+    transform: translate3d(0, 0, 0);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(255, 107, 53, 0.8), 0 0 60px rgba(218, 165, 32, 0.6);
+    transform: translate3d(0, 0, 0);
+  }
+  100% { 
+    box-shadow: 0 0 20px rgba(218, 165, 32, 0.5);
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 /* Flickering flame effect */

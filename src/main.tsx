@@ -53,20 +53,25 @@ const initializeCoreServices = async () => {
 
     // Firebase initialization - Production ready with error handling
     try {
-      // Import and initialize Firebase Optimizer correctly
-      const { FirebaseOptimizer } = await import('./lib/firebase-optimized')
-
-      if (FirebaseOptimizer && typeof FirebaseOptimizer.init === 'function') {
-        await FirebaseOptimizer.init()
-        console.log('🔧 Firebase Optimizer initialized successfully')
-      } else {
-        console.warn('🟡 Firebase Optimizer init method not available - using fallback')
-
-        // Fallback: Initialize monitoring directly
-        if (typeof FirebaseOptimizer?.monitorConnection === 'function') {
-          FirebaseOptimizer.monitorConnection()
+      // Import Firebase Optimizer with proper error handling
+      const firebaseModule = await import('./lib/firebase-optimized')
+      
+      if (firebaseModule.FirebaseOptimizer) {
+        const optimizer = firebaseModule.FirebaseOptimizer
+        
+        // Check if init method exists and call it
+        if (typeof optimizer.init === 'function') {
+          await optimizer.init()
+          console.log('🔧 Firebase Optimizer initialized successfully')
+        } else if (typeof optimizer.monitorConnection === 'function') {
+          // Fallback to monitoring only
+          optimizer.monitorConnection()
           console.log('🔧 Firebase monitoring active (fallback mode)')
+        } else {
+          console.log('🔧 Firebase Optimizer loaded but no methods available')
         }
+      } else {
+        console.warn('🟡 Firebase Optimizer module not found - continuing without optimization')
       }
     } catch (error: any) {
       console.warn('🟡 Firebase Optimizer failed (non-critical):', error?.message)
@@ -205,12 +210,18 @@ if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement
 // Web Vitals Tracking - Lazy load to reduce initial bundle
 if (typeof window !== 'undefined') {
   setTimeout(() => {
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(PerformanceMonitor.trackMetric)
-      getFID(PerformanceMonitor.trackMetric)
-      getFCP(PerformanceMonitor.trackMetric)
-      getLCP(PerformanceMonitor.trackMetric)
-      getTTFB(PerformanceMonitor.trackMetric)
+    Promise.all([
+      import('web-vitals'),
+      import('./lib/performance-monitor')
+    ]).then(([webVitals, perfMonitor]) => {
+      const { getCLS, getFID, getFCP, getLCP, getTTFB } = webVitals
+      const monitor = new perfMonitor.PerformanceMonitor()
+      
+      getCLS((metric) => monitor.trackMetric('CLS', metric.value))
+      getFID((metric) => monitor.trackMetric('FID', metric.value))
+      getFCP((metric) => monitor.trackMetric('FCP', metric.value))
+      getLCP((metric) => monitor.trackMetric('LCP', metric.value))
+      getTTFB((metric) => monitor.trackMetric('TTFB', metric.value))
     }).catch(() => {
       // Graceful degradation if web-vitals fails to load
       console.log('Web Vitals monitoring not available')

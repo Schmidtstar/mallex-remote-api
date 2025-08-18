@@ -243,17 +243,22 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
   const [swipeTransform, setSwipeTransform] = useState(0)
   const [showDeleteIndicator, setShowDeleteIndicator] = useState(false)
 
-  // The original code had an issue where it was passing the entire swipeHandlers object to the DOM element,
-  // which included non-DOM event handlers. This fix destructures only the necessary DOM event handlers.
   const swipeHandlers = useSwipe({
-      onSwipeLeft: () => handleSwipeDelete(player.id, player.name),
+      onSwipeLeft: () => onSwipeDelete(player.id, player.name),
       onSwipeRight: () => {}, // Placeholder for potential right swipe action, currently unused
       threshold: 50,
       preventDefaultTouchmove: true
     })
 
-    // Destructure only event handlers for DOM elements
-    const { onTouchStart, onTouchMove, onTouchEnd, onMouseDown, onMouseMove, onMouseUp } = swipeHandlers
+    // Filter out non-DOM props to avoid React warnings
+    const {
+      swipeState,
+      bindSwipe,
+      isSwipingInDirection,
+      getSwipeProgress,
+      triggerHapticFeedback,
+      ...validDOMProps
+    } = swipeHandlers
 
   // Visual feedback during swipe
   React.useEffect(() => {
@@ -274,12 +279,13 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
     <div
       key={player.id}
       className={`${styles.playerItem} ${swipeHandlers.swipeState === 'left' ? styles.swipeLeft : ''} ${swipeHandlers.swipeState === 'right' ? styles.swipeRight : ''}`}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
+      // Apply only valid DOM props from swipeHandlers
+      onTouchStart={validDOMProps.onTouchStart}
+      onTouchMove={validDOMProps.onTouchMove}
+      onTouchEnd={validDOMProps.onTouchEnd}
+      onMouseDown={validDOMProps.onMouseDown}
+      onMouseMove={validDOMProps.onMouseMove}
+      onMouseUp={validDOMProps.onMouseUp}
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}

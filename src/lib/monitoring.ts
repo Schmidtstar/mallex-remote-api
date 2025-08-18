@@ -1,4 +1,3 @@
-
 interface ErrorInfo {
   message: string
   stack?: string
@@ -24,16 +23,16 @@ class MonitoringServiceClass {
     if (!this.isInitialized) {
       console.warn('Monitoring not initialized, logging error anyway:', errorInfo)
     }
-    
+
     this.errorCount++
     const enrichedError = {
       ...errorInfo,
       timestamp: new Date().toISOString(),
       errorCount: this.errorCount
     }
-    
+
     console.error('🚨 Error tracked:', enrichedError)
-    
+
     // Track in performance monitor if available
     try {
       const { performanceMonitor } = require('./performance-monitor')

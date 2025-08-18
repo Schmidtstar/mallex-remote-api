@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './AppIntro.module.css'
@@ -6,14 +5,18 @@ import styles from './AppIntro.module.css'
 // Move constants outside component to avoid TDZ
 const INTRO_STEPS = [
   'welcome',
-  'features', 
+  'features',
   'navigation',
   'ready'
 ] as const
 
 const ANIMATION_DURATION = 300
 
-export function AppIntro() {
+interface AppIntroProps {
+  onComplete?: () => void
+}
+
+export function AppIntro({ onComplete }: AppIntroProps = {}) {
   const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
@@ -24,6 +27,9 @@ export function AppIntro() {
     const timer = setTimeout(() => {
       if (currentStep < INTRO_STEPS.length - 1) {
         handleNext()
+      } else if (currentStep === INTRO_STEPS.length - 1) {
+        // If it's the last step and auto-advance, also call onComplete
+        handleSkip()
       }
     }, 3000)
 
@@ -32,20 +38,30 @@ export function AppIntro() {
 
   const handleNext = () => {
     if (isAnimating) return
-    
+
     setIsAnimating(true)
-    
+
     setTimeout(() => {
-      setCurrentStep(prev => Math.min(prev + 1, INTRO_STEPS.length - 1))
+      setCurrentStep(prev => {
+        const nextStep = Math.min(prev + 1, INTRO_STEPS.length - 1)
+        if (nextStep === INTRO_STEPS.length - 1 && prev === INTRO_STEPS.length - 2) {
+          // If we are moving to the last step, call onComplete after animation
+          // but before the state update that changes the button
+          if (onComplete) {
+            onComplete();
+          }
+        }
+        return nextStep;
+      });
       setIsAnimating(false)
     }, ANIMATION_DURATION)
   }
 
   const handlePrevious = () => {
     if (isAnimating) return
-    
+
     setIsAnimating(true)
-    
+
     setTimeout(() => {
       setCurrentStep(prev => Math.max(prev - 1, 0))
       setIsAnimating(false)
@@ -54,6 +70,9 @@ export function AppIntro() {
 
   const handleSkip = () => {
     setIsVisible(false)
+    if (onComplete) {
+      onComplete()
+    }
   }
 
   if (!isVisible) {
@@ -75,14 +94,14 @@ export function AppIntro() {
         </div>
 
         <div className={styles.navigation}>
-          <button 
+          <button
             className={styles.button}
             onClick={handlePrevious}
             disabled={currentStep === 0 || isAnimating}
           >
             {t('intro.previous')}
           </button>
-          
+
           <div className={styles.indicators}>
             {INTRO_STEPS.map((_, index) => (
               <div
@@ -94,19 +113,19 @@ export function AppIntro() {
             ))}
           </div>
 
-          <button 
+          <button
             className={styles.button}
             onClick={currentStep === INTRO_STEPS.length - 1 ? handleSkip : handleNext}
             disabled={isAnimating}
           >
-            {currentStep === INTRO_STEPS.length - 1 
-              ? t('intro.start') 
+            {currentStep === INTRO_STEPS.length - 1
+              ? t('intro.start')
               : t('intro.next')
             }
           </button>
         </div>
 
-        <button 
+        <button
           className={styles.skipButton}
           onClick={handleSkip}
         >

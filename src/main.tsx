@@ -98,7 +98,10 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   // Enhanced Performance Monitoring Initialization
   try {
     PerformanceMonitor.init()
-    MonitoringService.trackUserAction('app_start')
+    // Defensive MonitoringService call
+    if (MonitoringService?.trackUserAction) {
+      MonitoringService.trackUserAction('app_start')
+    }
     FirebaseOptimizer.monitorConnection()
     console.log('📊 Performance monitoring initialized successfully')
   } catch (error) {
@@ -241,7 +244,9 @@ if (import.meta.env.DEV) {
   if (import.meta.env.DEV) {
     // Initialize monitoring defensively
     try {
-      MonitoringService.init()
+      if (MonitoringService?.init) {
+        MonitoringService.init()
+      }
     } catch (error) {
       console.warn('MonitoringService initialization failed:', error)
     }

@@ -180,6 +180,30 @@ export function useSwipe(
     }
   }
 
+  // Mouse event handlers (defined before useEffect)
+  const handleMouseDown = (e: MouseEvent) => {
+    const touch = {
+      clientX: e.clientX,
+      clientY: e.clientY
+    }
+    const touchEvent = { touches: [touch] } as TouchEvent
+    handleTouchStart(touchEvent)
+  }
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const touch = {
+      clientX: e.clientX,
+      clientY: e.clientY
+    }
+    const touchEvent = { touches: [touch] } as TouchEvent
+    handleTouchMove(touchEvent)
+  }
+
+  const handleMouseUp = (e: MouseEvent) => {
+    const touchEvent = {} as TouchEvent
+    handleTouchEnd(touchEvent)
+  }
+
   // Event Listeners Setup
   useEffect(() => {
     const element = elementRef.current
@@ -190,26 +214,10 @@ export function useSwipe(
     element.addEventListener('touchmove', handleTouchMove, { passive: !finalConfig.preventScroll })
     element.addEventListener('touchend', handleTouchEnd, { passive: true })
 
-    // Mouse Events for Web (optional, but good for compatibility)
-    const handleMouseDown = (e: MouseEvent) => {
-      const touchEvent = e as any as TouchEvent; // Cast to TouchEvent for simplicity, though proper mapping is better
-      handleTouchStart(touchEvent);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const touchEvent = e as any as TouchEvent; // Cast to TouchEvent for simplicity
-      handleTouchMove(touchEvent);
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      const touchEvent = e as any as TouchEvent; // Cast to TouchEvent for simplicity
-      handleTouchEnd(touchEvent);
-    };
-
-    element.addEventListener('mousedown', handleMouseDown, { passive: !finalConfig.preventScroll });
-    element.addEventListener('mousemove', handleMouseMove, { passive: !finalConfig.preventScroll });
-    element.addEventListener('mouseup', handleMouseUp, { passive: true });
-
+    // Mouse Events for Web compatibility
+    element.addEventListener('mousedown', handleMouseDown, { passive: !finalConfig.preventScroll })
+    element.addEventListener('mousemove', handleMouseMove, { passive: !finalConfig.preventScroll })
+    element.addEventListener('mouseup', handleMouseUp, { passive: true })
 
     return () => {
       element.removeEventListener('touchstart', handleTouchStart)
@@ -219,7 +227,7 @@ export function useSwipe(
       element.removeEventListener('mousemove', handleMouseMove)
       element.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [handlers, finalConfig, swipeState]) // Added swipeState dependency
+  }, [handlers, finalConfig])
 
   // Utility Functions
   const bindSwipe = (element: HTMLElement | null) => {

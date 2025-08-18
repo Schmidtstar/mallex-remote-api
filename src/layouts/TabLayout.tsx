@@ -36,20 +36,28 @@ export function TabLayout() {
   }, [])
 
   // Swipe navigation
-  useSwipe({
-    onSwipeLeft: () => {
-      const current = getCurrentTab()
-      if (current < tabs.length - 1) {
-        handleTabChange(current + 1)
+  const swipeHandlers = useSwipe(
+    {
+      onSwipeLeft: () => {
+        const currentIndex = tabs.findIndex(tab => tab.path === location.pathname)
+        const nextIndex = Math.min(currentIndex + 1, tabs.length - 1)
+        if (nextIndex !== currentIndex) {
+          navigate(tabs[nextIndex].path)
+        }
+      },
+      onSwipeRight: () => {
+        const currentIndex = tabs.findIndex(tab => tab.path === location.pathname)
+        const prevIndex = Math.max(currentIndex - 1, 0)
+        if (prevIndex !== currentIndex) {
+          navigate(tabs[prevIndex].path)
+        }
       }
     },
-    onSwipeRight: () => {
-      const current = getCurrentTab()
-      if (current > 0) {
-        handleTabChange(current - 1)
-      }
-    }
-  })
+    { threshold: 75 }
+  )
+
+  // Extract only DOM-compatible event handlers
+  const { onTouchStart, onTouchMove, onTouchEnd, onMouseDown, onMouseMove, onMouseUp } = swipeHandlers
 
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -59,7 +67,15 @@ export function TabLayout() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <main style={{ flex: 1, overflow: 'auto' }}>
+      <main
+        className={styles.mainContent}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+      >
         <Outlet />
       </main>
 

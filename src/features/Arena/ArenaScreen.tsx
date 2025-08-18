@@ -986,6 +986,37 @@ export function ArenaScreen() {
                 ? "พร ORAKEL ARBEITET..."
                 : "⚡ SCHICKSAL ENTHÜLLEN ⚡"}
             </button>
+
+            <button
+              onClick={fetchAITaskAndReveal}
+              disabled={aiLoading}
+              style={{
+                padding: isMobile ? "12px 20px" : "18px 30px",
+                fontSize: isMobile ? "1rem" : "1.2rem",
+                background: aiLoading
+                  ? "linear-gradient(135deg, #666, #888)"
+                  : "linear-gradient(135deg, #4A90E2, #357ABD)",
+                color: "var(--ancient-marble)",
+                border: `3px solid ${aiLoading ? "#888" : "#4A90E2"}`,
+                borderRadius: "var(--radius)",
+                cursor: aiLoading ? "not-allowed" : "pointer",
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                letterSpacing: "1px",
+                boxShadow: aiLoading
+                  ? "0 4px 15px rgba(0,0,0,0.3)"
+                  : "0 8px 25px rgba(74,144,226,0.6)",
+                transition: "all 0.3s ease",
+                width: isMobile ? "100%" : "auto",
+                maxWidth: "280px",
+                touchAction: "manipulation",
+                opacity: aiLoading ? 0.6 : 1,
+                marginTop: "10px",
+              }}
+              aria-label="KI-Aufgabe anfordern"
+            >
+              {aiLoading ? '⏳ KI lädt...' : '🤖 KI-AUFGABE HOLEN'}
+            </button>
           </div>
         );
 

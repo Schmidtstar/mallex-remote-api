@@ -21,6 +21,7 @@ interface Player {
 type PlayersContextType = {
   players: Player[]
   addPlayer: (name: string) => Promise<void>
+  removePlayer: (playerId: string) => Promise<void>
   updatePlayerArenaPoints: (name: string, points: number) => Promise<void>
   mode: 'firebase' | 'localStorage'
   loading: boolean
@@ -293,6 +294,49 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
     }
   }, [players, setupFirebaseListener])
 
+  const handleRemovePlayer = useCallback(async (playerId: string) => {
+    try {
+      const playerToRemove = players.find(p => p.id === playerId)
+      if (!playerToRemove) {
+        throw new Error('Spieler nicht gefunden')
+      }
+
+      console.log('🗑️ Entferne Spieler:', playerToRemove.name)
+
+      // 1. Firebase Listener stoppen
+      const normalizedId = normalizePlayerId(playerToRemove.name)
+      const existingListener = firebaseListeners.get(normalizedId)
+      if (existingListener) {
+        existingListener()
+        setFirebaseListeners(prev => {
+          const newMap = new Map(prev)
+          newMap.delete(normalizedId)
+          return newMap
+        })
+      }
+
+      // 2. Firebase Dokument löschen
+      try {
+        const playerRef = doc(db, 'players', normalizedId)
+        await deleteDoc(playerRef)
+        console.log('✅ Firebase Dokument gelöscht für:', playerToRemove.name)
+      } catch (firebaseError) {
+        console.warn('⚠️ Firebase Löschung fehlgeschlagen:', firebaseError)
+        // Weitermachen mit localStorage
+      }
+
+      // 3. Aus lokalem State und localStorage entfernen
+      const updatedPlayers = players.filter(p => p.id !== playerId)
+      setPlayers(updatedPlayers)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
+
+      console.log(`✅ Spieler ${playerToRemove.name} erfolgreich entfernt`)
+    } catch (error) {
+      console.error('❌ Fehler beim Entfernen des Spielers:', error)
+      throw error
+    }
+  }, [players, firebaseListeners, normalizePlayerId])
+
   
 
   const handleUpdatePlayerArenaPoints = useCallback(async (name: string, points: number) => {
@@ -351,15 +395,17 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
 
   // Stabilisiere Callback-Funktionen um Context-Rekursion zu vermeiden
   const stableAddPlayer = useCallback(handleAddPlayer, [players])
+  const stableRemovePlayer = useCallback(handleRemovePlayer, [players, firebaseListeners, normalizePlayerId])
   const stableUpdateArenaPoints = useCallback(handleUpdatePlayerArenaPoints, [players, normalizePlayerId])
 
   const contextValue = useMemo(() => ({
     players,
     addPlayer: stableAddPlayer,
+    removePlayer: stableRemovePlayer,
     updatePlayerArenaPoints: stableUpdateArenaPoints,
     mode,
     loading
-  }), [players, stableAddPlayer, stableUpdateArenaPoints, mode, loading])
+  }), [players, stableAddPlayer, stableRemovePlayer, stableUpdateArenaPoints, mode, loading])
 
   return (
     <PlayersContext.Provider value={contextValue}>

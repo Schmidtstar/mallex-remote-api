@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, TouchEvent } from 'react'
 
 interface SwipeConfig {
   threshold: number
@@ -138,7 +138,7 @@ export function useSwipe(
     const velocity = swipeState.velocity
 
     // Prüfe ob Swipe-Threshold erreicht wurde
-    const isValidSwipe = 
+    const isValidSwipe =
       (Math.abs(deltaX) > finalConfig.threshold || Math.abs(deltaY) > finalConfig.threshold) &&
       velocity > finalConfig.velocity
 

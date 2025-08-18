@@ -169,6 +169,9 @@
   box-shadow: 
     0 4px 20px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
 }
 
 .playerItem:nth-child(1) { animation-delay: 0.1s; }
@@ -225,6 +228,7 @@
   letter-spacing: 0.05em;
   animation: nameShimmer 3s ease-in-out infinite;
   position: relative;
+  flex: 1;
 }
 
 .playerName::before {
@@ -241,7 +245,31 @@
   animation: crownRotate 4s linear infinite reverse;
 }
 
-t-size: 0.9rem;
+.playerStats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--gradient-marble);
+  color: var(--ancient-gold);
+  border: 1px solid var(--ancient-bronze);
+  border-radius: var(--border-radius-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal) ease;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .removeButton:hover {
@@ -406,4 +434,124 @@ t-size: 0.9rem;
       0 4px 8px rgba(0, 0, 0, 0.9);
     transform: scale(1.02);
   }
+}
+
+.playerItemSwiping {
+  transition: none !important;
+}
+
+.playerItemSwipeLeft {
+  background: linear-gradient(90deg, #ff4444, #cc0000);
+  color: white;
+}
+
+.swipeDeleteIndicator {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.swipeDeleteIndicatorVisible {
+  opacity: 1;
+}
+
+.deleteConfirmationOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.deleteConfirmationModal {
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-marble);
+  padding: var(--space-6);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(218, 165, 32, 0.2);
+}
+
+.deleteConfirmationTitle {
+  font-size: 1.5rem;
+  color: var(--ancient-gold);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.deleteConfirmationMessage {
+  color: var(--fg);
+  margin-bottom: var(--space-5);
+  line-height: 1.6;
+}
+
+.deleteConfirmationPlayerName {
+  color: var(--ancient-gold);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.deleteConfirmationButtons {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+.deleteConfirmationButton {
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius);
+  border: 1px solid var(--stroke);
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all var(--transition-normal) ease;
+  min-width: 100px;
+}
+
+.deleteConfirmationButtonCancel {
+  background: var(--glass-background);
+  color: var(--fg);
+  border-color: var(--stroke);
+}
+
+.deleteConfirmationButtonCancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.deleteConfirmationButtonConfirm {
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  color: white;
+  border-color: #ff4444;
+}
+
+.deleteConfirmationButtonConfirm:hover {
+  background: linear-gradient(135deg, #ff6666, #ff0000);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

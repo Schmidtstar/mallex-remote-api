@@ -2,17 +2,22 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlayersContext } from '@/context/PlayersContext'
 import { useAuth } from '@/context/AuthContext'
+import { useSwipe } from '@/hooks/useSwipe'
 import styles from './LegendsScreen.module.css'
 
 export function LegendsScreen() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const { players, addPlayer, loading } = usePlayersContext()
+  const { players, addPlayer, removePlayer, loading } = usePlayersContext()
   const [newPlayerName, setNewPlayerName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  
+  // Delete confirmation state
+  const [playerToDelete, setPlayerToDelete] = useState<{ id: string; name: string } | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const validatePlayerName = (name: string): string | null => {
     const trimmed = name.trim()
@@ -56,6 +61,33 @@ export function LegendsScreen() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     handleAddPlayer()
+  }
+
+  const handleSwipeDelete = (playerId: string, playerName: string) => {
+    setPlayerToDelete({ id: playerId, name: playerName })
+  }
+
+  const confirmDelete = async () => {
+    if (!playerToDelete) return
+    
+    setIsDeleting(true)
+    setError(null)
+    
+    try {
+      await removePlayer(playerToDelete.id)
+      setSuccessMessage(`${playerToDelete.name} wurde aus der Halle der Legenden entfernt`)
+      setTimeout(() => setSuccessMessage(null), 3000)
+    } catch (error) {
+      console.error('Fehler beim Löschen:', error)
+      setError('Fehler beim Entfernen des Spielers')
+    } finally {
+      setIsDeleting(false)
+      setPlayerToDelete(null)
+    }
+  }
+
+  const cancelDelete = () => {
+    setPlayerToDelete(null)
   }
 
   if (loading) {
@@ -155,18 +187,110 @@ export function LegendsScreen() {
           <h2 className={styles.playersListTitle}>{t('legends.playersList') || 'Legenden'} ({players.length})</h2>
           <div className={styles.playersGrid}>
             {players.map((player) => (
-              <div
+              <PlayerItem
                 key={player.id}
-                className={styles.playerItem}
-              >
-                <span className={styles.playerName}>
-                  {player.name}
-                </span>
-              </div>
+                player={player}
+                onSwipeDelete={handleSwipeDelete}
+              />
             ))}
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {playerToDelete && (
+        <div className={styles.deleteConfirmationOverlay}>
+          <div className={styles.deleteConfirmationModal}>
+            <h3 className={styles.deleteConfirmationTitle}>
+              🗑️ Spieler entfernen
+            </h3>
+            <p className={styles.deleteConfirmationMessage}>
+              Möchtest du <span className={styles.deleteConfirmationPlayerName}>{playerToDelete.name}</span> wirklich aus der Halle der Legenden entfernen?
+            </p>
+            <p style={{ fontSize: '0.9rem', color: 'var(--ancient-bronze)', marginBottom: '1.5rem' }}>
+              ⚠️ Alle Arena-Punkte und Statistiken gehen verloren!
+            </p>
+            <div className={styles.deleteConfirmationButtons}>
+              <button
+                className={`${styles.deleteConfirmationButton} ${styles.deleteConfirmationButtonCancel}`}
+                onClick={cancelDelete}
+                disabled={isDeleting}
+              >
+                Abbrechen
+              </button>
+              <button
+                className={`${styles.deleteConfirmationButton} ${styles.deleteConfirmationButtonConfirm}`}
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? '🗑️ Entfernen...' : '🗑️ Entfernen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Separate PlayerItem component with swipe functionality
+interface PlayerItemProps {
+  player: { id: string; name: string; arenaPoints: number }
+  onSwipeDelete: (playerId: string, playerName: string) => void
+}
+
+function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
+  const [swipeTransform, setSwipeTransform] = useState(0)
+  const [showDeleteIndicator, setShowDeleteIndicator] = useState(false)
+  
+  const swipeHandlers = useSwipe(
+    {
+      onSwipeLeft: () => {
+        if (swipeTransform < -50) {
+          onSwipeDelete(player.id, player.name)
+        }
+      }
+    },
+    { threshold: 50 }
+  )
+
+  // Visual feedback during swipe
+  React.useEffect(() => {
+    if (swipeHandlers.isSwiping && swipeHandlers.swipeDistance > 0) {
+      const transform = Math.min(swipeHandlers.swipeDistance, 100)
+      setSwipeTransform(-transform)
+      setShowDeleteIndicator(transform > 30)
+    } else if (!swipeHandlers.isSwiping) {
+      setSwipeTransform(0)
+      setShowDeleteIndicator(false)
+    }
+  }, [swipeHandlers.isSwiping, swipeHandlers.swipeDistance])
+
+  return (
+    <div
+      {...swipeHandlers}
+      className={`${styles.playerItem} ${
+        swipeHandlers.isSwiping ? styles.playerItemSwiping : ''
+      } ${swipeTransform < -30 ? styles.playerItemSwipeLeft : ''}`}
+      style={{
+        transform: `translateX(${swipeTransform}px)`
+      }}
+    >
+      <span className={styles.playerName}>
+        {player.name}
+      </span>
+      
+      <div className={styles.playerStats}>
+        <span style={{ color: 'var(--ancient-gold)', fontSize: '0.9rem' }}>
+          {player.arenaPoints || 0} Punkte
+        </span>
+      </div>
+
+      <div className={`${styles.swipeDeleteIndicator} ${
+        showDeleteIndicator ? styles.swipeDeleteIndicatorVisible : ''
+      }`}>
+        🗑️ Loslassen zum Löschen
+      </div>
     </div>
   )
 }

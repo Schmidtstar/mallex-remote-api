@@ -15,8 +15,8 @@ import { SecurityLayer } from '../../lib/security'
 import { FirebaseOptimizer } from '../../lib/firebase-optimized'
 import { AchievementSystem, NotificationData } from '../../lib/achievement-system'
 import AchievementNotification from '../../components/AchievementNotification'
-// Assume SoundManager is imported and configured elsewhere
 import { SoundManager } from '../../lib/sound-manager'
+import PerformanceMonitor from '../../lib/performance-monitor'
 
 type GameState = 'idle' | 'playing' | 'task-revealed' | 'waiting-action' | 'drinking-result'
 

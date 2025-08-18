@@ -353,6 +353,21 @@ const CACHE_STRATEGIES = {
 const CRITICAL_RESOURCES = [
   '/',
   '/index.html',
+  '/assets/index.js',
+  '/assets/index.css',
+  '/manifest.json'
+]
+
+// Performance metrics tracking
+let performanceMetrics = {
+  cacheHits: 0,
+  networkRequests: 0,
+  totalRequests: 0,
+  averageResponseTime: 0
+}iately
+const CRITICAL_RESOURCES = [
+  '/',
+  '/index.html',
   '/src/main.tsx',
   '/src/styles/base.css',
   '/sounds/click.mp3'

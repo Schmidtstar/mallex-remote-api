@@ -42,13 +42,21 @@ export class FirebaseOptimizer {
     })
   }
 
-  // Optimized Firebase Operations mit Caching
+  // Connection Pooling für optimierte Queries
+  static connectionPool = new Map<string, Promise<any>>()
+  
+  // Optimized Firebase Operations mit Enhanced Caching
   static async getPlayerWithCache(playerId: string): Promise<any> {
     const cacheKey = `player_${playerId}`
     const cached = this.connectionCache.get(cacheKey)
 
     if (cached && Date.now() - cached.timestamp < 30000) { // 30s Cache
       return cached.data
+    }
+
+    // Connection Pooling - verhindert doppelte Requests
+    if (this.connectionPool.has(cacheKey)) {
+      return this.connectionPool.get(cacheKey)!
     }
 
     try {

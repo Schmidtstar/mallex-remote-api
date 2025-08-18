@@ -86,9 +86,19 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
   const root = createRoot(rootElement)
 
-  // Initialize monitoring
+  // Initialize performance monitoring
+  PerformanceMonitor.init()
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
+  
+  // Track app initialization performance
+  const initStartTime = performance.now()
+  console.log('🚀 MALLEX App initialization started')
+  
+  window.addEventListener('load', () => {
+    const initTime = performance.now() - initStartTime
+    console.log(`📊 App initialized in ${Math.round(initTime)}ms`)
+  })
 
   // Service Worker Performance Metrics Listener - Safe import
   if ('serviceWorker' in navigator) {

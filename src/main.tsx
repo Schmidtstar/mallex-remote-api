@@ -134,17 +134,26 @@ const App: React.FC = () => {
 
 // Single initialization point mit verbessertem Schutz
 const rootElement = document.getElementById('root')
-if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement as any)._reactRootContainer) {
-  rootElement.setAttribute('data-react-root', 'true')
 
-  // Initialize services BEFORE React - wrapped in async IIFE
-  ;(async () => {
-    try {
-      await initializeCoreServices()
-    } catch (error) {
-      console.warn('⚠️ Service initialization failed:', error)
-    }
-  })()
+// Besserer Schutz vor mehrfacher Initialisierung
+if (rootElement && !rootElement.hasAttribute('data-react-root')) {
+  // Sofortiger Lock
+  rootElement.setAttribute('data-react-root', 'true')
+  
+  // Global flag für einmalige Initialisierung
+  if (!(window as any).__MALLEX_INITIALIZED__) {
+    (window as any).__MALLEX_INITIALIZED__ = true
+    
+    // Initialize services BEFORE React - wrapped in async IIFE
+    ;(async () => {
+      try {
+        await initializeCoreServices()
+        console.log('✅ MALLEX services initialized once')
+      } catch (error) {
+        console.warn('⚠️ Service initialization failed:', error)
+      }
+    })()
+  }
 
   const root = createRoot(rootElement)
 
@@ -199,11 +208,9 @@ if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement
   }
 
   root.render(
-    <React.StrictMode>
-      <ErrorBoundaryEnhanced showReportDialog={false}>
-        <App />
-      </ErrorBoundaryEnhanced>
-    </React.StrictMode>
+    <ErrorBoundaryEnhanced showReportDialog={false}>
+      <App />
+    </ErrorBoundaryEnhanced>
   )
 }
 

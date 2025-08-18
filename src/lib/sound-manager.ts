@@ -20,6 +20,12 @@ export class SoundManager {
   }
 
   static async init() {
+    // Verhindere mehrfache Initialisierung
+    if (this.isInitialized) {
+      console.log('🔊 Sound System already initialized')
+      return
+    }
+
     if (!this.isSupported()) {
       console.warn('🔇 Audio not supported in this environment')
       this.isInitialized = true // Mark as initialized even if not supported

@@ -24,11 +24,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Verhindere mehrfache Initialisierung
+    if (isInitialized) {
+      return
+    }
+
     if (!auth || typeof auth.onAuthStateChanged !== 'function') {
       console.warn('🔐 Auth not available - offline mode')
       setLoading(false)
+      setIsInitialized(true)
       return
     }
 
@@ -80,12 +87,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.warn('Auth state change error:', error?.message)
         } finally {
           setLoading(false)
+          setIsInitialized(true)
         }
       }, (error) => {
         console.warn('Auth state listener error:', error?.message)
         setLoading(false)
+        setIsInitialized(true)
       })
 
+      setIsInitialized(true)
       return unsubscribe
     } catch (error: any) {
       console.warn('Failed to setup auth listener:', error?.message)

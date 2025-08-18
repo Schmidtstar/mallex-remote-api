@@ -44,10 +44,8 @@ export function AuthScreen() {
           navigate('/arena');
         }
       }
-      // If login is successful, navigate to arena with replace to prevent back button issues
-      if (isLogin) {
-        navigate('/arena', { replace: true });
-      }
+      // Navigate after successful auth (both login and register)
+      navigate('/arena', { replace: true });
     } catch (err: any) {
       console.error('Auth error:', err)
       // Provide a more specific error message based on the error code

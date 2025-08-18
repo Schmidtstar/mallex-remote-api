@@ -234,9 +234,6 @@ if (typeof window !== 'undefined') {
   }, 10 * 60 * 1000) // Alle 10 Minuten
 }
 
-// Service export
-export { FirebaseOptimizer }
-
 // Default export für bessere Kompatibilität
 export default FirebaseOptimizer
 

@@ -49,15 +49,15 @@ const initializeCoreServices = () => {
       MonitoringService.trackUserAction('app_start', { silent: true })
     }
 
-    // Firebase monitoring - Production ready with error handling
+    // Firebase initialization - Production ready with error handling
     try {
-      FirebaseOptimizer.monitorConnection()
+      FirebaseOptimizer.init()
     } catch (err) {
-      console.warn('Firebase monitoring failed:', err)
+      console.warn('Firebase initialization failed:', err)
       CriticalErrorHandler.handleError(err, {
         severity: 'medium',
         component: 'firebase',
-        action: 'monitor_connection'
+        action: 'initialization'
       })
     }
 

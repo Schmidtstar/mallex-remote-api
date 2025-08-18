@@ -1,4 +1,3 @@
-
 // MALLEX Critical Error Handler
 import { MonitoringService } from './monitoring'
 
@@ -26,13 +25,13 @@ export class CriticalErrorHandler {
     // Global error handlers
     window.addEventListener('error', this.handleGlobalError.bind(this))
     window.addEventListener('unhandledrejection', this.handleUnhandledRejection.bind(this))
-    
+
     // Network status monitoring
     window.addEventListener('online', () => {
       this.isOnline = true
       this.processErrorQueue()
     })
-    
+
     window.addEventListener('offline', () => {
       this.isOnline = false
     })
@@ -74,7 +73,7 @@ export class CriticalErrorHandler {
 
   private static addToQueue(errorEntry: any) {
     this.errorQueue.push(errorEntry)
-    
+
     // Maintain queue size
     if (this.errorQueue.length > this.maxQueueSize) {
       this.errorQueue.shift()
@@ -187,7 +186,7 @@ export class CriticalErrorHandler {
             const cacheNames = await caches.keys()
             await Promise.all(cacheNames.map(name => caches.delete(name)))
           }
-          
+
           // Clear localStorage of non-essential data
           const keysToKeep = ['mallex-auth-token', 'mallex-user-preferences']
           Object.keys(localStorage).forEach(key => {
@@ -233,7 +232,7 @@ export class CriticalErrorHandler {
 
   private static handleUnhandledRejection(event: PromiseRejectionEvent) {
     const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason))
-    
+
     this.handleError(error, {
       severity: 'high',
       component: 'global',
@@ -245,7 +244,7 @@ export class CriticalErrorHandler {
   static getErrorStats() {
     const now = Date.now()
     const last24h = this.errorQueue.filter(e => now - e.timestamp < 24 * 60 * 60 * 1000)
-    
+
     return {
       total: this.errorQueue.length,
       last24h: last24h.length,
@@ -277,7 +276,7 @@ export function useErrorHandler() {
         ...context
       })
     },
-    
+
     withErrorHandling: <T extends any[], R>(
       fn: (...args: T) => Promise<R>,
       context: Partial<ErrorContext> = {}
@@ -290,13 +289,13 @@ export function useErrorHandler() {
             error instanceof Error ? error : new Error(String(error)),
             { severity: 'medium', ...context }
           )
-          
+
           if (recovery.canRecover && recovery.recoveryAction) {
             await recovery.recoveryAction()
             // Retry once
             return await fn(...args)
           }
-          
+
           throw error
         }
       }

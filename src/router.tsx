@@ -12,8 +12,8 @@ const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => 
       const module = await importFn()
       const Component = module.default || Object.values(module)[0]
 
-      if (typeof Component !== 'function' && typeof Component !== 'object') {
-        throw new Error(`Component ${componentName} not found`)
+      if (!Component) {
+        throw new Error(`Component ${componentName} could not be loaded`)
       }
 
       return { default: Component }

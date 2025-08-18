@@ -83,59 +83,24 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ))
 ContextProviders.displayName = 'ContextProviders'
 
-type AppPhase = 'intro' | 'language' | 'app'
-type UserType = 'first-time' | 'returning' | 'admin'
-
 const App: React.FC = () => {
-  const [currentPhase, setCurrentPhase] = useState<AppPhase>('intro')
-  const [userType, setUserType] = useState<UserType>('first-time')
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false)
 
-  // User-Type Detection beim App-Start
+  // Check if language is already set
   useEffect(() => {
-    const detectUserType = (): UserType => {
-      // Check für gespeicherte Daten
-      const hasVisitedBefore = localStorage.getItem('mallex-language') || 
-                              localStorage.getItem('mallex-visited')
-      
-      // Check für Admin-Role (falls Auth-Context verfügbar)
-      const isAdmin = localStorage.getItem('mallex-user-role') === 'admin'
-      
-      if (isAdmin) return 'admin'
-      if (hasVisitedBefore) return 'returning'
-      return 'first-time'
+    const savedLanguage = localStorage.getItem('mallex-language')
+    if (!savedLanguage) {
+      setShowLanguageSelector(true)
     }
-
-    const detectedType = detectUserType()
-    setUserType(detectedType)
-
-    // Intro für alle User-Typen anzeigen (kann individuell angepasst werden)
-    // Das Intro wird basierend auf userType optimiert, aber nicht übersprungen
-
-    // Mark als visited
-    localStorage.setItem('mallex-visited', 'true')
   }, [])
 
-  const handleIntroComplete = () => {
-    console.log('🎬 Intro completed, showing language selection')
-    setCurrentPhase('language')
-  }
-
   const handleLanguageSelected = (language: string) => {
-    console.log(`🌍 Language selected: ${language}, showing main app`)
-    setCurrentPhase('app')
+    console.log(`🌍 Language selected: ${language}`)
+    setShowLanguageSelector(false)
   }
 
-  if (currentPhase === 'intro') {
-    return (
-      <AppIntro 
-        onComplete={handleIntroComplete} 
-        userType={userType}
-        showSkip={true}
-      />
-    )
-  }
-
-  if (currentPhase === 'language') {
+  // Show language selector only if no language is set
+  if (showLanguageSelector) {
     return (
       <LanguageSelector 
         onLanguageSelected={handleLanguageSelected}

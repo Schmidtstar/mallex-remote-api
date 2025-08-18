@@ -1,3 +1,6 @@
+
+import React from 'react'
+
 export const IntroDebug = () => {
   const checkStyles = () => {
     const introElement = document.querySelector('.intro-container')

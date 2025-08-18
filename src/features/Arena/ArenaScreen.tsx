@@ -47,6 +47,9 @@ export function ArenaScreen() {
   const [drinkingSips, setDrinkingSips] = useState<number>(0)
   const [taskResult, setTaskResult] = useState<'success' | 'failed' | ''>('')
 
+  // Arena Round Players (excludes players from current round)
+  const [excludedPlayers, setExcludedPlayers] = useState<string[]>([])
+
   // Task Data
   const [firestoreTasks, setFirestoreTasks] = useState<{[key: string]: string[]}>({})
   const [loadingTasks, setLoadingTasks] = useState(false)
@@ -106,9 +109,32 @@ export function ArenaScreen() {
   }
 
   const getRandomPlayer = () => {
-    if (players.length === 0) return 'Spieler' // Fallback if no players
-    const randomIndex = Math.floor(Math.random() * players.length)
-    return players[randomIndex].name
+    // Filter out excluded players from arena round
+    const availablePlayers = players.filter(player => !excludedPlayers.includes(player.name))
+    
+    if (availablePlayers.length === 0) {
+      // If all players are excluded, reset exclusions and use all players
+      setExcludedPlayers([])
+      return players.length > 0 ? players[0].name : 'Spieler'
+    }
+    
+    const randomIndex = Math.floor(Math.random() * availablePlayers.length)
+    return availablePlayers[randomIndex].name
+  }
+
+  const removePlayerFromRound = (playerName: string) => {
+    setExcludedPlayers(prev => [...prev, playerName])
+    announceToScreenReader(`${playerName} wurde aus der aktuellen Arena-Runde entfernt.`)
+    
+    // If current player is removed, go to next round
+    if (selectedPlayer === playerName && gameState !== 'idle') {
+      nextRound()
+    }
+  }
+
+  const addPlayerBackToRound = (playerName: string) => {
+    setExcludedPlayers(prev => prev.filter(name => name !== playerName))
+    announceToScreenReader(`${playerName} wurde wieder in die Arena-Runde aufgenommen.`)
   }
 
   const getRandomTask = (categoryId: string) => {
@@ -332,6 +358,7 @@ export function ArenaScreen() {
     setCurrentTask('')
     setDrinkingSips(0)
     setTaskResult('')
+    setExcludedPlayers([]) // Reset excluded players
     setAchievementNotification(null) // Clear any pending notifications
     announceToScreenReader('Arena-Spiel beendet.')
   }
@@ -427,24 +454,118 @@ export function ArenaScreen() {
               </div>
             </div>
 
+            {/* Player Management for Arena Round */}
+            {players.length > 0 && (
+              <div style={{
+                background: 'var(--glass-background)',
+                backdropFilter: 'var(--glass-blur)',
+                border: '2px solid var(--ancient-bronze)',
+                borderRadius: 'var(--radius)',
+                padding: window.innerWidth < 768 ? '1rem' : '1.5rem',
+                marginBottom: '1rem',
+                maxWidth: '500px',
+                width: '100%'
+              }}>
+                <h3 style={{ 
+                  color: 'var(--ancient-gold)', 
+                  marginBottom: '1rem',
+                  fontSize: window.innerWidth < 768 ? '1rem' : '1.2rem',
+                  textAlign: 'center'
+                }}>
+                  ⚔️ ARENA-KÄMPFER ⚔️
+                </h3>
+                
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: window.innerWidth < 768 ? '1fr 1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '0.5rem',
+                  marginBottom: '1rem'
+                }}>
+                  {players.map(player => {
+                    const isExcluded = excludedPlayers.includes(player.name)
+                    const availablePlayers = players.filter(p => !excludedPlayers.includes(p.name))
+                    const canExclude = availablePlayers.length > 1 || isExcluded
+                    
+                    return (
+                      <div key={player.id} style={{
+                        background: isExcluded 
+                          ? 'linear-gradient(135deg, rgba(139,125,107,0.3), rgba(105,105,105,0.2))'
+                          : 'linear-gradient(135deg, rgba(218,165,32,0.3), rgba(255,215,0,0.2))',
+                        padding: '0.5rem',
+                        borderRadius: 'var(--radius)',
+                        border: isExcluded 
+                          ? '1px solid var(--ancient-stone)'
+                          : '1px solid var(--ancient-gold)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        opacity: isExcluded ? 0.6 : 1,
+                        transition: 'all 0.3s ease'
+                      }}>
+                        <span style={{
+                          color: isExcluded ? 'var(--ancient-stone)' : 'var(--ancient-marble)',
+                          fontWeight: 'bold',
+                          fontSize: window.innerWidth < 768 ? '0.8rem' : '0.9rem'
+                        }}>
+                          {isExcluded ? '💀' : '⚡'} {player.name}
+                        </span>
+                        
+                        <button
+                          onClick={() => isExcluded ? addPlayerBackToRound(player.name) : removePlayerFromRound(player.name)}
+                          disabled={!canExclude}
+                          style={{
+                            background: isExcluded ? '#4CAF50' : '#F44336',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            padding: '4px 8px',
+                            fontSize: '0.7rem',
+                            cursor: canExclude ? 'pointer' : 'not-allowed',
+                            opacity: canExclude ? 1 : 0.5,
+                            fontWeight: 'bold',
+                            minWidth: window.innerWidth < 768 ? '50px' : '60px'
+                          }}
+                          aria-label={isExcluded 
+                            ? `${player.name} wieder in die Arena aufnehmen`
+                            : `${player.name} aus der Arena entfernen`
+                          }
+                        >
+                          {isExcluded ? '↩️' : '❌'}
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div style={{
+                  textAlign: 'center',
+                  color: 'var(--ancient-bronze)',
+                  fontSize: window.innerWidth < 768 ? '0.7rem' : '0.8rem',
+                  fontStyle: 'italic'
+                }}>
+                  {players.filter(p => !excludedPlayers.includes(p.name)).length} von {players.length} Kämpfern aktiv
+                </div>
+              </div>
+            )}
+
             {/* Start Button - Mobile optimiert */}
             <button
               onClick={startGame}
-              disabled={loadingTasks || players.length === 0}
+              disabled={loadingTasks || players.length === 0 || players.filter(p => !excludedPlayers.includes(p.name)).length === 0}
               style={{
                 padding: window.innerWidth < 768 ? '15px 25px' : '25px 50px',
                 fontSize: window.innerWidth < 768 ? '1.1rem' : '1.8rem',
-                background: players.length === 0 
+                background: (players.length === 0 || players.filter(p => !excludedPlayers.includes(p.name)).length === 0)
                   ? 'linear-gradient(135deg, var(--ancient-stone), #6B6B6B)' 
                   : 'linear-gradient(135deg, var(--olympic-flame), var(--ancient-gold))',
-                color: players.length === 0 ? 'var(--ancient-marble)' : 'var(--ancient-night)',
-                border: `3px solid ${players.length === 0 ? 'var(--ancient-stone)' : 'var(--olympic-victory)'}`,
+                color: (players.length === 0 || players.filter(p => !excludedPlayers.includes(p.name)).length === 0) ? 'var(--ancient-marble)' : 'var(--ancient-night)',
+                border: `3px solid ${(players.length === 0 || players.filter(p => !excludedPlayers.includes(p.name)).length === 0) ? 'var(--ancient-stone)' : 'var(--olympic-victory)'}`,
                 borderRadius: 'var(--radius)',
-                cursor: players.length === 0 ? 'not-allowed' : 'pointer',
-                opacity: players.length === 0 ? 0.6 : 1,
+                cursor: (players.length === 0 || players.filter(p => !excludedPlayers.includes(p.name)).length === 0) ? 'not-allowed' : 'pointer',
+                opacity: (players.length === 0 || players.filter(p => !excludedPlayers.includes(p.name)).length === 0) ? 0.6 : 1,
                 fontWeight: 'bold',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                boxShadow: players.length > 0 
+                boxShadow: (players.length > 0 && players.filter(p => !excludedPlayers.includes(p.name)).length > 0)
                   ? '0 10px 25px rgba(255,107,53,0.5), inset 0 2px 10px rgba(255,215,0,0.3)' 
                   : 'none',
                 transition: 'all 0.3s ease',
@@ -455,15 +576,15 @@ export function ArenaScreen() {
               }}
               aria-label={loadingTasks 
                 ? 'Warte auf die Lade der Aufgaben' 
-                : players.length === 0 
-                  ? 'Keine Spieler verfügbar zum Starten'
+                : players.filter(p => !excludedPlayers.includes(p.name)).length === 0
+                  ? 'Keine aktiven Kämpfer verfügbar'
                   : 'Starte das Arena-Spiel'
               }
             >
               {loadingTasks 
                 ? '⏳ BEREIT...' 
-                : players.length === 0 
-                  ? '💀 KEINE KÄMPFER'
+                : players.filter(p => !excludedPlayers.includes(p.name)).length === 0
+                  ? '💀 KEINE AKTIVEN KÄMPFER'
                   : '🎯 IN DIE ARENA!'
               }
             </button>

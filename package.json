@@ -17,6 +17,7 @@
     "mobile:build": "npm run build && cap sync"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.4.2",
     "@capacitor/core": "^7.4.2",
     "@capacitor/device": "^7.0.2",
     "@capacitor/haptics": "^7.0.2",
@@ -28,6 +29,7 @@
     "firebase": "^10.14.1",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^8.2.0",
+    "mallex": "file:",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.1.2",

@@ -119,8 +119,10 @@ export class ErrorSimulator {
   }
 }
 
-// Development Console Access
-if (import.meta.env.DEV) {
+// Development Console Access - Nur in lokaler Entwicklung
+if (import.meta.env.DEV && import.meta.env.MODE === 'development') {
   (window as any).MALLEX_ERROR_SIM = ErrorSimulator
   console.log('🛠️ Error Simulator available: window.MALLEX_ERROR_SIM')
+} else {
+  console.log('🔒 Error Simulator disabled in production/staging')
 }

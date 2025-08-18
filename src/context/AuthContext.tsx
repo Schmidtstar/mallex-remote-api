@@ -39,11 +39,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('✅ User authenticated:', firebaseUser.uid)
             setUser(firebaseUser)
 
-            // Profile creation skip für Demo
-            console.log('Profile creation skipped')
+            // Check admin status with error handling
+            try {
+              const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
+              if (userDoc.exists()) {
+                const userData = userDoc.data()
+                setIsAdmin(userData.isAdmin === true)
+              }
+            } catch (error: any) {
+              if (error.code === 'permission-denied') {
+                console.log('🔐 Admin check skipped (permission denied)')
+                setIsAdmin(false)
+              } else {
+                console.warn('Admin check failed:', error?.message)
+              }
+            }
           } else {
             console.log('🔓 User signed out')
             setUser(null)
+            setIsAdmin(false)
           }
         } catch (error: any) {
           console.warn('Auth state change error:', error?.message)

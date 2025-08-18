@@ -240,15 +240,12 @@ export { FirebaseOptimizer }
 // Default export für bessere Kompatibilität
 export default FirebaseOptimizer
 
-// Extend FirebaseOptimizer with missing methods
-Object.assign(FirebaseOptimizer, {
-  // Initialize method
-  init: () => {
-    console.log('🔧 FirebaseOptimizer initialized')
-    FirebaseOptimizer.monitorConnection()
-    return Promise.resolve()
-  }
-})
+// Static method for initialization
+FirebaseOptimizer.init = () => {
+  console.log('🔧 FirebaseOptimizer initialized')
+  FirebaseOptimizer.monitorConnection()
+  return Promise.resolve()
+}
 
 // Named function exports
 export const init = () => {

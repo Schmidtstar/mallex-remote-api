@@ -26,14 +26,14 @@ const initializeCoreServices = () => {
     CriticalErrorHandler.init()
 
     // Sound System - Non-blocking with better error handling
-    SoundManager.init().catch(err => {
-      console.warn('Sound system failed (non-critical):', err)
-      CriticalErrorHandler.handleError(err, {
-        severity: 'low',
-        component: 'sound_system',
-        action: 'initialization'
+    try {
+      SoundManager.init().catch(err => {
+        console.warn('🔇 Sound system failed (non-critical):', err?.message || 'Audio not available')
+        // Don't track audio errors as they're non-critical
       })
-    })
+    } catch (err) {
+      console.warn('🔇 Sound system initialization skipped')
+    }
 
     // Accessibility - Essential
     AccessibilityManager.init()
@@ -54,18 +54,20 @@ const initializeCoreServices = () => {
     // Firebase initialization - Production ready with error handling
     try {
       // Initialize Firebase Optimizer with error handling
-      if (typeof FirebaseOptimizer.init === 'function') {
-        await FirebaseOptimizer.init()
+      if (FirebaseOptimizer && typeof FirebaseOptimizer.init === 'function') {
+        FirebaseOptimizer.init()
         console.log('🔧 Firebase Optimizer initialized')
       } else {
         // Fallback initialization
         console.log('🔧 Firebase Optimizer fallback initialization')
-        FirebaseOptimizer.monitorConnection?.()
+        if (FirebaseOptimizer && typeof FirebaseOptimizer.monitorConnection === 'function') {
+          FirebaseOptimizer.monitorConnection()
+        }
       }
     } catch (error: any) {
-      console.warn('🟡 Firebase Optimizer failed:', error?.message)
+      console.warn('🟡 Firebase Optimizer failed (non-critical):', error?.message)
       CriticalErrorHandler.handleError(error, {
-        severity: 'low', // Reduced severity
+        severity: 'low',
         component: 'firebase',
         action: 'initialization'
       })

@@ -11,44 +11,34 @@
   },
   "menu": {
     "title": "Menü",
-    "close": "Schließen",
     "profile": "Profil",
     "settings": "Einstellungen",
-    "achievements": "Erfolge",
+    "help": "Hilfe",
+    "about": "Über MALLEX",
+    "logout": "Abmelden",
     "privacy": "Datenschutz",
-    "admin": "Admin",
-    "tasks": "Aufgaben",
-    "logout": "Abmelden"
+    "notifications": "Benachrichtigungen",
+    "preferences": "Einstellungen",
+    "close": "Schließen"
   },
   "tabs": {
     "arena": "Arena",
     "legends": "Halle der Legenden"
   },
   "auth": {
-    "loginTitle": "Anmelden",
-    "registerTitle": "Registrieren",
+    "title": "Willkommen bei MALLEX",
+    "subtitle": "Die ultimative Trinkspiel-Arena",
+    "anonymousLogin": "Als Gast spielen",
+    "emailLogin": "Mit E-Mail anmelden",
     "email": "E-Mail",
     "password": "Passwort",
-    "displayName": "Anzeigename",
     "login": "Anmelden",
     "register": "Registrieren",
-    "loggingIn": "Anmelden...",
-    "registering": "Registrieren...",
-    "loginLink": "Bereits ein Konto? Anmelden",
-    "registerLink": "Kein Konto? Registrieren",
-    "guestButton": "Als Gast fortfahren",
-    "error": "Anmeldung fehlgeschlagen",
-    "invalidCredentials": "Ungültige Anmeldedaten",
-    "emailAlreadyInUse": "E-Mail bereits in Verwendung",
-    "weakPassword": "Passwort zu schwach",
-    "additionalInfo": "Zusätzliche Informationen (optional)",
-    "passwordReset": {
-      "button": "Passwort zurücksetzen",
-      "emailRequired": "E-Mail-Adresse erforderlich",
-      "success": "Passwort-Reset-E-Mail gesendet",
-      "userNotFound": "Benutzer nicht gefunden",
-      "invalidEmail": "Ungültige E-Mail-Adresse"
-    }
+    "displayName": "Anzeigename",
+    "loginSuccess": "Erfolgreich angemeldet!",
+    "loginError": "Anmeldung fehlgeschlagen",
+    "guestMode": "Gast-Modus aktiv",
+    "loggingIn": "Anmeldung läuft..."
   },
   "arena": {
     "title": "MALLEX Arena",

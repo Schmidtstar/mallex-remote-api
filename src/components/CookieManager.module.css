@@ -1,0 +1,188 @@
+
+.cookieBanner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--temple-stone);
+  color: var(--marble-white);
+  padding: 1rem;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transform: translateZ(0);
+}
+
+.bannerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bannerText h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--olympic-gold);
+  font-size: 1.2rem;
+}
+
+.bannerText p {
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.bannerActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.bannerActions button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: translateZ(0);
+}
+
+.acceptAll {
+  background: var(--olympic-gold);
+  color: var(--temple-stone);
+}
+
+.acceptAll:hover {
+  background: #c19400;
+  transform: translateY(-1px);
+}
+
+.rejectAll {
+  background: transparent;
+  color: var(--marble-white);
+  border: 2px solid var(--marble-white);
+}
+
+.rejectAll:hover {
+  background: var(--marble-white);
+  color: var(--temple-stone);
+}
+
+.customize {
+  background: var(--ancient-bronze);
+  color: var(--marble-white);
+}
+
+.customize:hover {
+  background: #b8692d;
+  transform: translateY(-1px);
+}
+
+.detailsPanel {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1rem;
+}
+
+.cookieOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cookieOption label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.cookieOption input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--olympic-gold);
+}
+
+.cookieOption input[type="checkbox"]:disabled {
+  opacity: 0.6;
+}
+
+.cookieLabel {
+  flex: 1;
+}
+
+.cookieLabel strong {
+  display: block;
+  color: var(--olympic-gold);
+  margin-bottom: 0.25rem;
+}
+
+.cookieLabel small {
+  display: block;
+  opacity: 0.8;
+  line-height: 1.3;
+}
+
+.detailsActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.acceptSelected {
+  background: var(--olympic-gold);
+  color: var(--temple-stone);
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.acceptSelected:hover {
+  background: #c19400;
+  transform: translateY(-1px);
+}
+
+.back {
+  background: transparent;
+  color: var(--marble-white);
+  border: 2px solid var(--marble-white);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back:hover {
+  background: var(--marble-white);
+  color: var(--temple-stone);
+}
+
+/* Mobile Optimierung */
+@media (max-width: 768px) {
+  .cookieBanner {
+    padding: 1rem;
+  }
+  
+  .bannerActions,
+  .detailsActions {
+    flex-direction: column;
+  }
+  
+  .bannerActions button,
+  .detailsActions button {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .cookieOptions {
+    gap: 0.75rem;
+  }
+  
+  .cookieOption label {
+    gap: 0.5rem;
+  }
+}

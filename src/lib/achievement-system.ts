@@ -44,6 +44,134 @@ export interface NotificationData {
 
 export class AchievementSystem {
   private static readonly ACHIEVEMENTS: Achievement[] = [
+    // 🏆 Arena Achievements
+    {
+      id: 'first_victory',
+      title: 'Erster Triumph',
+      description: 'Gewinne dein erstes Arena-Duell',
+      icon: '🥇',
+      category: 'arena',
+      requirement: { type: 'wins', value: 1 },
+      reward: { arenaPoints: 5, title: 'Novize' }
+    },
+    {
+      id: 'gladiator',
+      title: 'Gladiator',
+      description: 'Erreiche 10 Siege in der Arena',
+      icon: '⚔️',
+      category: 'arena',
+      requirement: { type: 'wins', value: 10 },
+      reward: { arenaPoints: 20, title: 'Gladiator' }
+    },
+    {
+      id: 'champion',
+      title: 'Champion der Arena',
+      description: 'Erreiche 50 Siege in der Arena',
+      icon: '👑',
+      category: 'arena',
+      requirement: { type: 'wins', value: 50 },
+      reward: { arenaPoints: 100, title: 'Champion' }
+    },
+    {
+      id: 'legend',
+      title: 'Legende des Olymps',
+      description: 'Erreiche 100 Siege in der Arena',
+      icon: '🏛️',
+      category: 'arena',
+      requirement: { type: 'wins', value: 100 },
+      reward: { arenaPoints: 250, title: 'Legende' }
+    },
+
+    // 🎯 Skill Achievements  
+    {
+      id: 'categories_master',
+      title: 'Meister aller Kategorien',
+      description: 'Spiele in allen 5 Kategorien',
+      icon: '🎭',
+      category: 'skill',
+      requirement: { type: 'categories_played', value: 5 },
+      reward: { arenaPoints: 30, title: 'Universalgelehrter' }
+    },
+    {
+      id: 'streak_master',
+      title: 'Siegesserie',
+      description: 'Gewinne 5 Spiele in Folge',
+      icon: '🔥',
+      category: 'skill',
+      requirement: { type: 'win_streak', value: 5 },
+      reward: { arenaPoints: 25, title: 'Streaker' }
+    },
+    {
+      id: 'comeback_king',
+      title: 'Comeback-König',
+      description: 'Gewinne nach 5 Niederlagen in Folge',
+      icon: '💪',
+      category: 'skill',
+      requirement: { type: 'comeback', value: 1 },
+      reward: { arenaPoints: 15, title: 'Unbesiegbar' }
+    },
+
+    // 🎉 Social Achievements
+    {
+      id: 'party_starter',
+      title: 'Party-Starter',
+      description: 'Spiele 10 verschiedene Aufgaben',
+      icon: '🎉',
+      category: 'social',
+      requirement: { type: 'tasks_played', value: 10 },
+      reward: { arenaPoints: 15, title: 'Entertainer' }
+    },
+    {
+      id: 'social_butterfly',
+      title: 'Gesellschaftsprofi',
+      description: 'Spiele 100 verschiedene Aufgaben',
+      icon: '🦋',
+      category: 'social',
+      requirement: { type: 'tasks_played', value: 100 },
+      reward: { arenaPoints: 75, title: 'Sozialexperte' }
+    },
+
+    // ⏰ Time-based Achievements
+    {
+      id: 'weekend_warrior',
+      title: 'Wochenend-Krieger',
+      description: 'Spiele an 3 Wochenenden in Folge',
+      icon: '🍺',
+      category: 'time',
+      requirement: { type: 'weekend_sessions', value: 3 },
+      reward: { arenaPoints: 20, title: 'Partylöwe' }
+    },
+    {
+      id: 'night_owl',
+      title: 'Nachteule',
+      description: 'Spiele nach 23:00 Uhr',
+      icon: '🦉',
+      category: 'time',
+      requirement: { type: 'late_night_play', value: 1 },
+      reward: { arenaPoints: 10, title: 'Nachtschwärmer' }
+    },
+
+    // 🏅 Special Achievements
+    {
+      id: 'beta_tester',
+      title: 'Beta-Tester',
+      description: 'Einer der ersten 100 Spieler',
+      icon: '🧪',
+      category: 'special',
+      requirement: { type: 'early_adopter', value: 1 },
+      reward: { arenaPoints: 50, title: 'Pionier' }
+    },
+    {
+      id: 'feedback_hero',
+      title: 'Feedback-Held',
+      description: 'Sende 5 Aufgaben-Vorschläge ein',
+      icon: '💡',
+      category: 'special',
+      requirement: { type: 'suggestions_sent', value: 5 },
+      reward: { arenaPoints: 25, title: 'Ideengeber' }
+    }
+  ]
+  private static readonly ACHIEVEMENTS: Achievement[] = [
     // Arena Achievements
     {
       id: 'first_victory',

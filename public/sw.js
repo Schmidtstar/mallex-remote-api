@@ -325,4 +325,222 @@ self.addEventListener('push', (event) => {
   )
 })
 
-console.log('🚀 MALLEX Service Worker v2.3.0 ready - Enhanced PWA features loaded')
+// MALLEX Service Worker v3.0 - Enterprise PWA
+const CACHE_NAME = 'mallex-v3'
+const DYNAMIC_CACHE = 'mallex-dynamic-v3'
+
+// Intelligent caching strategies
+const CACHE_STRATEGIES = {
+  'network-first': [
+    'firestore.googleapis.com',
+    'identitytoolkit.googleapis.com'
+  ],
+  'cache-first': [
+    '/static/',
+    '/assets/',
+    '/sounds/',
+    '.js',
+    '.css',
+    '.woff2'
+  ],
+  'stale-while-revalidate': [
+    '/i18n/',
+    'challenges'
+  ]
+}
+
+// Critical resources to cache immediately
+const CRITICAL_RESOURCES = [
+  '/',
+  '/index.html',
+  '/src/main.tsx',
+  '/src/styles/base.css',
+  '/sounds/click.mp3'
+]
+
+// Install event - cache critical resources
+self.addEventListener('install', (event) => {
+  console.log('🔄 Installing MALLEX Service Worker v3.0')
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('📦 Caching critical resources')
+        return cache.addAll(CRITICAL_RESOURCES)
+      })
+      .then(() => {
+        console.log('✅ Service Worker installed successfully')
+        return self.skipWaiting()
+      })
+  )
+})
+
+// Activate event - clean old caches
+self.addEventListener('activate', (event) => {
+  console.log('⚡ Activating MALLEX Service Worker v3.0')
+  
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames
+            .filter(cacheName => cacheName !== CACHE_NAME && cacheName !== DYNAMIC_CACHE)
+            .map(cacheName => {
+              console.log('🗑️ Deleting old cache:', cacheName)
+              return caches.delete(cacheName)
+            })
+        )
+      })
+      .then(() => {
+        console.log('🎯 Service Worker activated')
+        return self.clients.claim()
+      })
+  )
+})
+
+// Fetch event - intelligent caching
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url)
+  
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return
+  
+  // Determine cache strategy
+  let strategy = 'network-first' // default
+  
+  for (const [strategyName, patterns] of Object.entries(CACHE_STRATEGIES)) {
+    if (patterns.some(pattern => url.href.includes(pattern))) {
+      strategy = strategyName
+      break
+    }
+  }
+  
+  event.respondWith(handleRequest(event.request, strategy))
+})
+
+// Strategy implementations
+async function handleRequest(request, strategy) {
+  const startTime = performance.now()
+  
+  try {
+    switch (strategy) {
+      case 'cache-first':
+        return await cacheFirst(request)
+      case 'network-first':
+        return await networkFirst(request)
+      case 'stale-while-revalidate':
+        return await staleWhileRevalidate(request)
+      default:
+        return await networkFirst(request)
+    }
+  } finally {
+    const duration = performance.now() - startTime
+    console.log(`🔍 ${strategy}: ${request.url.split('/').pop()} (${duration.toFixed(0)}ms)`)
+  }
+}
+
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME)
+  const cached = await cache.match(request)
+  
+  if (cached) {
+    return cached
+  }
+  
+  try {
+    const response = await fetch(request)
+    if (response.ok) {
+      cache.put(request, response.clone())
+    }
+    return response
+  } catch (error) {
+    console.warn('🚨 Network failed, no cache available:', request.url)
+    throw error
+  }
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request)
+    if (response.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE)
+      cache.put(request, response.clone())
+    }
+    return response
+  } catch (error) {
+    const cache = await caches.open(CACHE_NAME)
+    const cached = await cache.match(request)
+    if (cached) {
+      console.log('📱 Serving from cache (offline):', request.url)
+      return cached
+    }
+    throw error
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME)
+  const cached = await cache.match(request)
+  
+  // Update cache in background
+  const fetchPromise = fetch(request).then(response => {
+    if (response.ok) {
+      cache.put(request, response.clone())
+    }
+    return response
+  }).catch(() => {})
+  
+  // Return cached version immediately, or wait for network
+  return cached || await fetchPromise
+}
+
+// Background sync for offline actions
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'background-sync') {
+    console.log('🔄 Background sync triggered')
+    event.waitUntil(syncOfflineActions())
+  }
+})
+
+async function syncOfflineActions() {
+  // Sync pending arena updates, player actions, etc.
+  const pendingActions = await getStoredActions()
+  
+  for (const action of pendingActions) {
+    try {
+      await processAction(action)
+      await removeStoredAction(action.id)
+    } catch (error) {
+      console.warn('⚠️ Failed to sync action:', action, error)
+    }
+  }
+}
+
+// Message handling from main app
+self.addEventListener('message', (event) => {
+  const { type, payload } = event.data
+  
+  switch (type) {
+    case 'SKIP_WAITING':
+      self.skipWaiting()
+      break
+    case 'CACHE_RESOURCE':
+      cacheResource(payload.url)
+      break
+    case 'CLEAR_CACHE':
+      clearAllCaches()
+      break
+  }
+})
+
+async function cacheResource(url) {
+  const cache = await caches.open(DYNAMIC_CACHE)
+  await cache.add(url)
+}
+
+async function clearAllCaches() {
+  const cacheNames = await caches.keys()
+  await Promise.all(cacheNames.map(name => caches.delete(name)))
+}
+
+console.log('🚀 MALLEX Service Worker v3.0 ready - Enterprise PWA features') loaded')

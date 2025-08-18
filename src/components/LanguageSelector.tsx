@@ -8,7 +8,7 @@ interface LanguageSelectorProps {
   showSkip?: boolean
 }
 
-export function LanguageSelector({ onComplete, onLanguageSelected, showSkip = false }: LanguageSelectorProps) {
+export default function LanguageSelector({ onComplete, onLanguageSelected, showSkip = false }: LanguageSelectorProps) {
   const { i18n, t } = useTranslation()
   const [selectedLang, setSelectedLang] = useState(i18n.language || 'de')
 

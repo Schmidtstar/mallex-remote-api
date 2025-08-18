@@ -1,111 +1,137 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './AppIntro.module.css'
 
 interface AppIntroProps {
   onComplete?: () => void
+  userType?: 'first-time' | 'returning' | 'admin'
+  showSkip?: boolean
 }
 
 type IntroPhase = 'loading' | 'logo' | 'temple' | 'features' | 'enter' | 'complete'
 
-export function AppIntro({ onComplete }: AppIntroProps = {}) {
+export function AppIntro({ onComplete, userType = 'first-time', showSkip = true }: AppIntroProps) {
   const { t } = useTranslation()
   const [currentPhase, setCurrentPhase] = useState<IntroPhase>('loading')
-  const [canSkip, setCanSkip] = useState(false)
   const [isSkipping, setIsSkipping] = useState(false)
   const [progress, setProgress] = useState(0)
-  
+  const [canSkip, setCanSkip] = useState(false)
+
   const isCompleted = useRef(false)
   const timersRef = useRef<NodeJS.Timeout[]>([])
 
   const handleComplete = useCallback(() => {
     if (isCompleted.current) return
-    
+
     console.log('🎬 Intro Abgeschlossen - Weiterleitung zu Sprachauswahl')
     isCompleted.current = true
-    
+
     timersRef.current.forEach(timer => clearTimeout(timer))
     timersRef.current = []
-    
+
     setCurrentPhase('complete')
-    
+
     setTimeout(() => {
       onComplete?.()
     }, 200)
   }, [onComplete])
 
   const handleSkip = useCallback(() => {
-    if (!canSkip || isCompleted.current) return
-    
     setIsSkipping(true)
-    setTimeout(() => {
-      handleComplete()
-    }, 500)
-  }, [canSkip, handleComplete])
+    setTimeout(onComplete, 500)
+  }, [onComplete])
 
-  // Phase-Management mit verbessertem Timing
-  useEffect(() => {
-    if (isCompleted.current) return
-
-    const phaseTimings = {
-      loading: 3000,   // 3s - Olympische Ringe + Aufbau-Animation
-      logo: 2500,      // 2.5s - Logo mit goldenen Effekten
-      temple: 3000,    // 3s - Tempel mit Säulen-Animation
-      features: 4000,  // 4s - Feature-Showcase
-      enter: 0         // Unbegrenzt - Warten auf User-Input
-    }
-
-    const currentTiming = phaseTimings[currentPhase as keyof typeof phaseTimings]
-    if (currentTiming === 0) return // Enter-Phase wartet auf User
-
-    // Progress-Update
-    const phases = Object.keys(phaseTimings)
-    const currentIndex = phases.indexOf(currentPhase)
-    setProgress((currentIndex + 1) / phases.length * 100)
-
-    const timer = setTimeout(() => {
-      if (isCompleted.current) return
-
-      switch (currentPhase) {
-        case 'loading':
-          setCurrentPhase('logo')
-          break
-        case 'logo':
-          setCurrentPhase('temple')
-          setCanSkip(true) // Skip ab Tempel-Phase
-          break
-        case 'temple':
-          setCurrentPhase('features')
-          break
-        case 'features':
-          setCurrentPhase('enter')
-          break
-      }
-    }, currentTiming)
-
-    timersRef.current.push(timer)
-
-    return () => {
-      clearTimeout(timer)
-      timersRef.current = timersRef.current.filter(t => t !== timer)
-    }
-  }, [currentPhase])
-
-  // Keyboard-Support
+  // Keyboard-Navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && canSkip) {
+      if (e.key === 'Escape' && showSkip) {
         handleSkip()
       }
       if (e.key === 'Enter' && currentPhase === 'enter') {
-        handleComplete()
+        onComplete()
       }
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [canSkip, currentPhase, handleSkip, handleComplete])
+  }, [currentPhase, handleSkip, showSkip, onComplete])
+
+  useEffect(() => {
+    // Angepasste Timings basierend auf User-Type
+    const timings = {
+      'first-time': {
+        loading: 2000,
+        logo: 3000,
+        temple: 4000,
+        features: 3000,
+        enter: 0
+      },
+      'returning': {
+        loading: 1000,
+        logo: 1500,
+        temple: 0, // Skip temple für returning users
+        features: 2000,
+        enter: 0
+      },
+      'admin': {
+        loading: 500,
+        logo: 1000,
+        temple: 0,
+        features: 0, // Skip features für admin
+        enter: 0
+      }
+    }
+
+    const currentTimings = timings[userType]
+
+    if (isSkipping) return
+
+    const interval = setInterval(() => {
+      setProgress(prev => Math.min(prev + 2, 100))
+    }, 100)
+
+    const timing = currentTimings[currentPhase]
+    if (timing === 0) {
+      // Skip-Phase sofort
+      if (currentPhase === 'temple' && userType !== 'first-time') {
+        setCurrentPhase('features')
+        setProgress(70)
+      } else if (currentPhase === 'features' && userType === 'admin') {
+        setCurrentPhase('enter')
+        setProgress(100)
+      }
+      return () => clearInterval(interval)
+    }
+
+    const timer = setTimeout(() => {
+      if (currentPhase === 'loading') {
+        setCurrentPhase('logo')
+        setProgress(20)
+      } else if (currentPhase === 'logo') {
+        if (userType === 'first-time') {
+          setCurrentPhase('temple')
+          setProgress(40)
+        } else {
+          setCurrentPhase('features')
+          setProgress(70)
+        }
+      } else if (currentPhase === 'temple') {
+        setCurrentPhase('features')
+        setProgress(70)
+      } else if (currentPhase === 'features') {
+        setCurrentPhase('enter')
+        setProgress(100)
+      }
+    }, timing)
+
+    timersRef.current.push(timer)
+
+    return () => {
+      clearTimeout(timer)
+      clearInterval(interval)
+      timersRef.current = timersRef.current.filter(t => t !== timer)
+    }
+  }, [currentPhase, userType, isSkipping, onComplete, handleSkip, showSkip])
 
   // Cleanup
   useEffect(() => {
@@ -121,8 +147,18 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
   return (
     <div className={`${styles.introContainer} ${styles[`phase-${currentPhase}`]} ${isSkipping ? styles.skipping : ''}`}>
-      
-      {/* Animierter Hintergrund */}
+      {/* Skip-Button */}
+      {showSkip && currentPhase !== 'enter' && (
+        <button
+          className={styles.skipButton}
+          onClick={handleSkip}
+          aria-label="Intro überspringen"
+        >
+          ⏭️ Überspringen <kbd>ESC</kbd>
+        </button>
+      )}
+
+      {/* Hintergrund-Elemente */}
       <div className={styles.backgroundCanvas}>
         <div className={styles.starField}></div>
         <div className={styles.mountains}></div>
@@ -172,22 +208,22 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
                 <div className={styles.roofTriangle}></div>
                 <div className={styles.templeText}>ARENA DER CHAMPIONS</div>
               </div>
-              
+
               <div className={styles.columnRow}>
                 {Array.from({ length: 6 }, (_, i) => (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className={styles.column}
                     style={{ animationDelay: `${i * 0.3}s` }}
                   ></div>
                 ))}
               </div>
-              
+
               <div className={styles.templeDoors}>
                 <div className={`${styles.door} ${styles.leftDoor}`}></div>
                 <div className={`${styles.door} ${styles.rightDoor}`}></div>
               </div>
-              
+
               <div className={styles.templeBase}></div>
             </div>
           </div>
@@ -225,8 +261,8 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
               <p className={styles.enterDescription}>
                 Tritt ein in die Arena der Götter und beweise deinen Mut
               </p>
-              
-              <button 
+
+              <button
                 className={styles.enterButton}
                 onClick={handleComplete}
                 disabled={isCompleted.current}
@@ -235,7 +271,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
                 <span>Arena betreten</span>
                 <div className={styles.buttonGlow}></div>
               </button>
-              
+
               <div className={styles.enterHint}>
                 <kbd>Enter</kbd> oder klicken zum Fortfahren
               </div>
@@ -245,21 +281,9 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
       </div>
 
-      {/* Skip-Button */}
-      {canSkip && !isSkipping && !isCompleted.current && (
-        <button
-          className={styles.skipButton}
-          onClick={handleSkip}
-          aria-label="Intro überspringen"
-        >
-          <span>Überspringen</span>
-          <kbd>ESC</kbd>
-        </button>
-      )}
-
       {/* Progress-Bar */}
       <div className={styles.progressContainer}>
-        <div 
+        <div
           className={styles.progressBar}
           style={{ width: `${progress}%` }}
         ></div>
@@ -274,7 +298,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
           <div
             key={phase}
             className={`${styles.indicator} ${
-              currentPhase === phase ? styles.active : 
+              currentPhase === phase ? styles.active :
               ['loading', 'logo', 'temple', 'features', 'enter'].indexOf(currentPhase) > index ? styles.completed : ''
             }`}
           ></div>

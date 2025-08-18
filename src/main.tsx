@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
@@ -68,9 +68,42 @@ const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ 
 ContextProviders.displayName = 'ContextProviders'
 
 type AppPhase = 'intro' | 'language' | 'app'
+type UserType = 'first-time' | 'returning' | 'admin'
 
 const App: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<AppPhase>('intro')
+  const [userType, setUserType] = useState<UserType>('first-time')
+
+  // User-Type Detection beim App-Start
+  useEffect(() => {
+    const detectUserType = (): UserType => {
+      // Check für gespeicherte Daten
+      const hasVisitedBefore = localStorage.getItem('mallex-language') || 
+                              localStorage.getItem('mallex-visited')
+      
+      // Check für Admin-Role (falls Auth-Context verfügbar)
+      const isAdmin = localStorage.getItem('mallex-user-role') === 'admin'
+      
+      if (isAdmin) return 'admin'
+      if (hasVisitedBefore) return 'returning'
+      return 'first-time'
+    }
+
+    const detectedType = detectUserType()
+    setUserType(detectedType)
+
+    // Für returning users und admins: Intro verkürzen oder überspringen
+    if (detectedType === 'returning' || detectedType === 'admin') {
+      // Optional: Intro ganz überspringen für admins
+      if (detectedType === 'admin') {
+        setCurrentPhase('app')
+        return
+      }
+    }
+
+    // Mark als visited
+    localStorage.setItem('mallex-visited', 'true')
+  }, [])
 
   const handleIntroComplete = () => {
     console.log('🎬 Intro completed, showing language selection')
@@ -83,7 +116,13 @@ const App: React.FC = () => {
   }
 
   if (currentPhase === 'intro') {
-    return <AppIntro onComplete={handleIntroComplete} />
+    return (
+      <AppIntro 
+        onComplete={handleIntroComplete} 
+        userType={userType}
+        showSkip={true}
+      />
+    )
   }
 
   if (currentPhase === 'language') {

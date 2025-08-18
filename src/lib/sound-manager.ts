@@ -73,7 +73,7 @@ export class SoundManager {
       }
 
       const arrayBuffer = await response.arrayBuffer()
-      
+
       // Decode audio with better error handling
       try {
         const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
@@ -91,7 +91,7 @@ export class SoundManager {
       console.warn(`🔇 Could not fetch sound: ${key} from ${url} –`, error.message || error)
       this.sounds.set(key, null)
       this.loadedSounds.set(key, null)
-      
+
       // Don't throw error for missing sounds - app should continue working
       return
     }

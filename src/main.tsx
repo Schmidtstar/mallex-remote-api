@@ -201,3 +201,19 @@ if (rootElement && !rootElement.hasAttribute('data-react-root') && !(rootElement
     </React.StrictMode>
   )
 }
+
+// Web Vitals Tracking - Lazy load to reduce initial bundle
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(PerformanceMonitor.trackMetric)
+      getFID(PerformanceMonitor.trackMetric)
+      getFCP(PerformanceMonitor.trackMetric)
+      getLCP(PerformanceMonitor.trackMetric)
+      getTTFB(PerformanceMonitor.trackMetric)
+    }).catch(() => {
+      // Graceful degradation if web-vitals fails to load
+      console.log('Web Vitals monitoring not available')
+    })
+  }, 1000)
+}

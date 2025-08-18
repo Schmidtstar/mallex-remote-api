@@ -28,10 +28,7 @@ SoundManager.init().catch(err =>
 
 // Initialize Accessibility Manager
 AccessibilityManager.init()
-AccessibilityManager.addSkipLinks()
-
-// Assuming PerformanceMonitor is defined elsewhere and imported if necessary
-// import { PerformanceMonitor } from './lib/performance-monitor'; 
+AccessibilityManager.addSkipLinks() 
 
 const ContextProviders: React.FC<{ children: React.ReactNode }> = React.memo(({ children }) => (
   <AuthProvider>
@@ -99,9 +96,14 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   CriticalErrorHandler.init()
 
   // Enhanced Performance Monitoring Initialization
-  PerformanceMonitor.init()
-  MonitoringService.trackUserAction('app_start')
-  FirebaseOptimizer.monitorConnection()
+  try {
+    PerformanceMonitor.init()
+    MonitoringService.trackUserAction('app_start')
+    FirebaseOptimizer.monitorConnection()
+    console.log('📊 Performance monitoring initialized successfully')
+  } catch (error) {
+    console.warn('Performance monitoring initialization failed:', error)
+  }
 
   // Track app initialization performance with detailed metrics
   const initStartTime = performance.now()
@@ -176,7 +178,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('✅ MALLEX Service Worker v2.2.0 registriert:', registration.scope)
+          console.log('✅ MALLEX Service Worker v2.2.0 registriert:', registration)
 
           // Service Worker Updates überwachen
           registration.addEventListener('updatefound', () => {
@@ -222,6 +224,16 @@ if ('serviceWorker' in navigator) {
 // Development debugging
 if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
+  
+  // Handle WebSocket connection issues for Vite HMR
+  if (typeof window !== 'undefined') {
+    window.addEventListener('error', (event) => {
+      if (event.message?.includes('WebSocket') || event.message?.includes('0.0.0.0 blocked')) {
+        console.warn('WebSocket HMR connection blocked - this is normal in some environments')
+        event.preventDefault()
+      }
+    })
+  }
 }
 
 // Initialize Performance Monitoring (Development)

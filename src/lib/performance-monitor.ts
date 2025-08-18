@@ -2,7 +2,7 @@ interface PerformanceMetric {
   name: string
   value: number
   timestamp: number
-  type: string
+  type?: string
   metadata?: any
 }
 
@@ -26,7 +26,7 @@ interface PerformanceMetrics {
   itemsRendered: number
 }
 
-export default class PerformanceMonitor {
+class PerformanceMonitor {
   private static metrics: PerformanceMetric[] = []
   private static errorMetrics: ErrorMetric[] = []
   private static isEnabled = true
@@ -269,6 +269,7 @@ export default class PerformanceMonitor {
   // Existing methods from original code (kept for completeness, assuming they are still relevant)
   private static observers = new Map<string, PerformanceObserver>()
   private static serviceWorkerMetrics = new Map<string, any[]>()
+  private static metricsMap = new Map<string, number[]>()
 
   static initBasicMonitoring() {
     // Basic performance monitoring without web-vitals
@@ -623,13 +624,18 @@ export default class PerformanceMonitor {
 
   static trackMetric(metric: { name: string; value: number; timestamp: number }) {
     const key = `basic_${metric.name}`;
-    if (!this.metrics.has(key)) {
-      this.metrics.set(key, []);
+    if (!this.metricsMap.has(key)) {
+      this.metricsMap.set(key, []);
     }
-    this.metrics.get(key)!.push(metric.value);
+    this.metricsMap.get(key)!.push(metric.value);
     console.log(`📊 Basic Metric ${metric.name}: ${Math.round(metric.value)}ms`);
   }
 }
+
+// Export both the class and an instance
+export const performanceMonitor = new PerformanceMonitor();
+export { PerformanceMonitor };
+export default PerformanceMonitor;
 
 // Export both the class and an instance
 export const performanceMonitor = new PerformanceMonitor();

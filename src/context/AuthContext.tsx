@@ -28,12 +28,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isMounted = true;
     let unsubscribe: (() => void) | null = null;
+    let initializationAttempted = false;
 
     const initializeAuth = async () => {
+      // Verhindere mehrfache Initialisierung
+      if (initializationAttempted) return;
+      initializationAttempted = true;
+
       try {
-        // Firebase Verfügbarkeitstest mit kurzer Timeout
-        if (!auth) {
-          console.warn('🟡 Firebase not available - Guest mode');
+        // Prüfe Firebase-Verfügbarkeit mit Timeout
+        const firebaseTimeout = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Firebase timeout')), 3000)
+        );
+
+        const firebaseCheck = new Promise((resolve) => {
+          if (!auth) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
+
+        const isFirebaseAvailable = await Promise.race([firebaseCheck, firebaseTimeout])
+          .catch(() => false);
+
+        if (!isFirebaseAvailable) {
+          console.warn('🟡 Firebase not available - Guest mode activated');
           if (isMounted) {
             setLoading(false);
             setUser(null);
@@ -42,35 +62,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Single auth state listener - verhindert loops
+        // Einmaliger Auth-Listener ohne Rekursion
         unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
           if (!isMounted) return;
 
           try {
             if (firebaseUser) {
               setUser(firebaseUser);
+              setIsAdmin(false); // Standard-Wert
 
-              // Profile sicherstellen (non-blocking)
-              ensureUserProfile(firebaseUser.uid, {
-                email: firebaseUser.email ?? undefined,
-                displayName: firebaseUser.displayName ?? undefined,
-              }).catch(error => {
-                console.warn('Profile creation failed (non-critical):', error);
-              });
-
-              // Admin-Check (non-blocking)
-              getDoc(doc(db, 'admins', firebaseUser.uid))
-                .then(adminDoc => {
-                  if (isMounted) {
-                    const userIsAdmin = adminDoc.exists();
-                    setIsAdmin(userIsAdmin);
-                    console.log(userIsAdmin ? '👑 Admin user' : '👤 Regular user');
+              // Async Operations ohne Blockierung
+              Promise.all([
+                // Profile sicherstellen
+                ensureUserProfile(firebaseUser.uid, {
+                  email: firebaseUser.email ?? undefined,
+                  displayName: firebaseUser.displayName ?? undefined,
+                }).catch(() => console.warn('Profile creation skipped')),
+                
+                // Admin-Check mit Timeout
+                Promise.race([
+                  getDoc(doc(db, 'admins', firebaseUser.uid)),
+                  new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+                ]).then((adminDoc: any) => {
+                  if (isMounted && adminDoc?.exists()) {
+                    setIsAdmin(true);
+                    console.log('👑 Admin user detected');
                   }
-                })
-                .catch(error => {
-                  console.warn('Admin check failed:', error);
+                }).catch(() => {
                   if (isMounted) setIsAdmin(false);
-                });
+                })
+              ]);
 
             } else {
               setUser(null);
@@ -85,12 +106,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } finally {
             if (isMounted) setLoading(false);
           }
+        }, (error) => {
+          console.warn('Auth listener error:', error);
+          if (isMounted) {
+            setLoading(false);
+            setUser(null);
+            setIsAdmin(false);
+          }
         });
 
-        console.log('🔐 Auth listener initialized');
+        console.log('🔐 Auth listener initialized successfully');
 
       } catch (error) {
-        console.warn('Auth initialization failed:', error);
+        console.warn('Auth initialization failed - Guest mode:', error);
         if (isMounted) {
           setLoading(false);
           setUser(null);
@@ -99,15 +127,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    initializeAuth();
+    // Verzögerter Start für bessere Stabilität
+    const initTimer = setTimeout(initializeAuth, 100);
 
     return () => {
       isMounted = false;
+      clearTimeout(initTimer);
       if (unsubscribe) {
         unsubscribe();
+        unsubscribe = null;
       }
     };
-  }, []); // Empty dependency array - run once
+  }, []); // Leere Dependencies - nur einmal ausführen
 
   const login = async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);

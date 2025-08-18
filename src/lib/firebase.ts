@@ -31,25 +31,29 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig) // This line was commented out in the provided original code.
 
-// Development: Fix WebSocket binding for Replit
-if (import.meta.env.DEV) {
-  // Force offline mode during development to prevent WebSocket errors
-  console.log('🔧 Development mode: Using offline-first Firebase')
-}
-
-// Synchrone Initialisierung für bessere Performance
+// Robuste Firebase-Services Initialisierung
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
-// Initialize Firebase services synchronously
-const auth = getAuth(app)
-const db = getFirestore(app)
+let auth: any = null;
+let db: any = null;
 
-// Setup auth persistence
-if (typeof window !== 'undefined') {
-  setPersistence(auth, browserLocalPersistence).catch((e) =>
-    console.warn('Auth persistence warning:', e?.message || e)
-  )
+try {
+  // Firebase Services mit Fehlerbehandlung
+  auth = getAuth(app);
+  db = getFirestore(app);
+
+  // Auth Persistence nur im Browser
+  if (typeof window !== 'undefined' && auth) {
+    setPersistence(auth, browserLocalPersistence).catch((e) => {
+      console.warn('Auth persistence skipped:', e?.code || 'unknown');
+    });
+  }
+
+  console.log('🔥 Firebase services initialized');
+} catch (error) {
+  console.warn('🟡 Firebase services failed - Offline mode:', error);
+  // Graceful degradation - App funktioniert ohne Firebase
 }
 
 export { auth, db, app }

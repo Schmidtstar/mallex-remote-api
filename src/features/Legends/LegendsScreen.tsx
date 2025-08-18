@@ -289,6 +289,7 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
         transform: `translateX(${swipeTransform}px)`
       }}
       aria-label={`Spieler ${player.name}`}
+      {...validDOMProps}
     >
       <span className={styles.playerName}>
         {player.name}

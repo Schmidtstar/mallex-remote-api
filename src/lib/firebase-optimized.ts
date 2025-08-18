@@ -37,61 +37,63 @@ export const db = optimizedDb
 const queryCache = new Map<string, any>()
 const CACHE_DURATION = 5 * 60 * 1000 // 5 Minuten
 
-export class FirebaseOptimizer {
-  private static initialized = false
-  private static connectionMonitor: any = null
+// Optimierte Firebase-Klasse
+class FirebaseOptimizerClass {
+  private static retryCount = 0
+  private static maxRetries = 3
+  private static backoffDelay = 1000
 
-  static async init(): Promise<void> {
-    if (this.initialized) {
-      console.log('🔧 Firebase Optimizer already initialized')
-      return
-    }
-
+  static async init() {
     try {
-      // Initialize Firebase connection monitoring
-      this.monitorConnection()
-      this.initialized = true
-      console.log('🔧 Firebase Optimizer initialized successfully')
+      // Netzwerk-Status prüfen
+      if (!navigator.onLine) {
+        await this.waitForConnection()
+      }
+
+      // Cache warming für bessere Performance
+      await this.warmCache()
+
+      console.log('🔥 FirebaseOptimizer initialized')
+      return true
     } catch (error) {
-      console.warn('🟡 Firebase Optimizer initialization failed:', error)
+      console.error('❌ FirebaseOptimizer failed:', error)
+
+      if (this.retryCount < this.maxRetries) {
+        this.retryCount++
+        console.log(`🔄 Retrying FirebaseOptimizer (${this.retryCount}/${this.maxRetries})`)
+        await new Promise(resolve => setTimeout(resolve, this.backoffDelay * this.retryCount))
+        return this.init()
+      }
+
       throw error
     }
   }
 
-  static monitorConnection(): void {
-    if (this.connectionMonitor) return
-
-    try {
-      import('./firebase').then(({ db }) => {
-        if (db) {
-          console.log('🔍 Firebase connection monitoring active')
-          this.connectionMonitor = true
+  private static async waitForConnection(): Promise<void> {
+    return new Promise((resolve) => {
+      const checkConnection = () => {
+        if (navigator.onLine) {
+          resolve()
+        } else {
+          setTimeout(checkConnection, 1000)
         }
-      }).catch(err => {
-        console.warn('🟡 Firebase monitoring setup failed:', err)
-      })
+      }
+      checkConnection()
+    })
+  }
+
+  private static async warmCache() {
+    try {
+      // Pre-load kritische Queries
+      await Promise.all([
+        getCachedQuery('players-leaderboard'),
+        getCachedQuery('user-settings')
+      ])
     } catch (error) {
-      console.warn('🟡 Connection monitoring failed:', error)
-    }
-  }
-
-  static cleanup(): void {
-    this.initialized = false
-    this.connectionMonitor = null
-    console.log('🧹 Firebase Optimizer cleaned up')
-  }
-
-  static getCacheStats() {
-    return {
-      initialized: this.initialized,
-      monitoring: !!this.connectionMonitor,
-      timestamp: new Date().toISOString()
+      console.warn('⚠️ Cache warming failed:', error)
     }
   }
 }
 
-// Named export for consistent imports
-export { FirebaseOptimizer }
-
-// Default export for backward compatibility  
-export default FirebaseOptimizer
+// Single named export
+export const FirebaseOptimizer = FirebaseOptimizerClass

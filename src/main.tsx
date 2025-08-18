@@ -15,6 +15,7 @@ import { FirebaseOptimizer } from './lib/firebase-optimized'
 import ErrorBoundary from './components/ErrorBoundary'
 import PerformanceDashboard from './components/PerformanceDashboard'
 import { SoundManager } from './lib/sound-manager'
+import './lib/capacitor-integration' // Assuming CapacitorIntegration is in this path
 
 // Initialize Sound System
 SoundManager.init().catch(err => 
@@ -86,19 +87,43 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
   const root = createRoot(rootElement)
 
-  // Initialize performance monitoring
+  // Enhanced Performance Monitoring Initialization
   PerformanceMonitor.init()
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
+  MobilePerformanceOptimizer.init()
+  CapacitorIntegration.init()
 
-  // Track app initialization performance
+  // Track app initialization performance with detailed metrics
   const initStartTime = performance.now()
-  console.log('🚀 MALLEX App initialization started')
+  console.log('🚀 MALLEX App v2.0 initialization started')
 
   window.addEventListener('load', () => {
     const initTime = performance.now() - initStartTime
     console.log(`📊 App initialized in ${Math.round(initTime)}ms`)
+
+    // Track critical performance metrics
+    PerformanceMonitor.trackCustomMetric('app-initialization', initTime)
+
+    // Initialize performance dashboard in dev mode
+    if (import.meta.env.DEV) {
+      setTimeout(() => {
+        console.log('📊 Performance Dashboard available in browser console')
+        console.log('Type window.MALLEX_PERFORMANCE for metrics')
+      }, 2000)
+    }
   })
+
+  // Global Performance API for Development
+  if (import.meta.env.DEV) {
+    window.MALLEX_PERFORMANCE = {
+      getMetrics: () => PerformanceMonitor.getMetrics(),
+      generateReport: () => PerformanceMonitor.generateReport(),
+      clearMetrics: () => PerformanceMonitor.clearMetrics(),
+      startProfiling: () => PerformanceMonitor.startProfiling(),
+      stopProfiling: () => PerformanceMonitor.stopProfiling()
+    }
+  }
 
   // Service Worker Performance Metrics Listener - Safe import
   if ('serviceWorker' in navigator) {

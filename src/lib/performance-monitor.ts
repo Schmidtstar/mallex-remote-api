@@ -1,8 +1,9 @@
-interface PerformanceMetrics {
-  renderTime: number;
-  scrollPerformance: number;
-  memoryUsage: number;
-  itemsRendered: number;
+interface PerformanceMetric {
+  name: string;
+  value: number;
+  timestamp: number;
+  type: string; // e.g., 'web-vital', 'memory', 'animation', 'interaction', 'resource', 'navigation'
+  metadata?: any;
 }
 
 interface WebVitalMetric {
@@ -13,35 +14,247 @@ interface WebVitalMetric {
 }
 
 export default class PerformanceMonitor {
-  private static metrics = new Map<string, number[]>()
-  private static observers = new Map<string, PerformanceObserver>()
-  private static serviceWorkerMetrics = new Map<string, any[]>()
+  private static metrics: PerformanceMetric[] = []
+  private static isEnabled = true
+  private static alertThresholds = {
+    LCP: 2500,    // Largest Contentful Paint
+    FID: 100,     // First Input Delay
+    CLS: 0.1,     // Cumulative Layout Shift
+    FCP: 1800,    // First Contentful Paint
+    TTFB: 800     // Time to First Byte
+  }
 
   static init() {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return
 
-    // Optional web-vitals import with fallback
-    import("web-vitals").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(this.trackWebVital.bind(this));
-      getFID(this.trackWebVital.bind(this));
-      getFCP(this.trackWebVital.bind(this));
-      getLCP(this.trackWebVital.bind(this));
-      getTTFB(this.trackWebVital.bind(this));
-      console.log('📊 Web Vitals monitoring active');
-    }).catch(() => {
-      console.log('📊 Web Vitals not available, using basic performance monitoring');
-      this.initBasicMonitoring();
-    });
-
-    // Navigation Timing
-    this.trackNavigationTiming()
-
-    // Resource Timing
-    this.observeResourceTiming()
-
-    // Service Worker Metrics Tracking
-    this.initServiceWorkerMetrics()
+    console.log('📊 Performance Monitor v2.0 initialized')
+    this.setupWebVitals()
+    this.setupResourceTiming()
+    this.setupNavigationTiming()
+    this.setupMemoryMonitoring()
+    this.setupFrameRateMonitoring()
+    this.setupUserInteractionMetrics()
+    this.startPeriodicReporting()
   }
+
+  // Enhanced Web Vitals mit Real-Time Alerts
+  private static setupWebVitals() {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const metric: PerformanceMetric = {
+          name: entry.name,
+          value: entry.value || entry.duration,
+          timestamp: Date.now(),
+          type: 'web-vital'
+        }
+
+        this.addMetric(metric)
+        this.checkPerformanceAlert(metric)
+      }
+    })
+
+    try {
+      observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] })
+    } catch (error) {
+      console.warn('Web Vitals observer not supported:', error)
+    }
+  }
+
+  // Memory-Überwachung für Mobile-Optimierung
+  private static setupMemoryMonitoring() {
+    if ('memory' in performance) {
+      setInterval(() => {
+        const memory = (performance as any).memory
+        const memoryMetric: PerformanceMetric = {
+          name: 'memory-usage',
+          value: memory.usedJSHeapSize,
+          timestamp: Date.now(),
+          type: 'memory',
+          metadata: {
+            total: memory.totalJSHeapSize,
+            limit: memory.jsHeapSizeLimit,
+            percentage: (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100
+          }
+        }
+
+        this.addMetric(memoryMetric)
+
+        // Memory-Warning bei > 80%
+        if (memoryMetric.metadata.percentage > 80) {
+          console.warn('🚨 High memory usage:', `${Math.round(memoryMetric.metadata.percentage)}%`)
+          this.triggerPerformanceOptimization('memory')
+        }
+      }, 15000) // Check every 15 seconds
+    }
+  }
+
+  // Frame Rate Monitoring für flüssige Animationen
+  private static setupFrameRateMonitoring() {
+    let lastTime = performance.now()
+    let frameCount = 0
+    const targetFPS = 60
+
+    const measureFrameRate = () => {
+      frameCount++
+      const currentTime = performance.now()
+      const elapsed = currentTime - lastTime
+
+      if (elapsed >= 1000) { // Measure every second
+        const fps = Math.round((frameCount * 1000) / elapsed)
+
+        const fpsMetric: PerformanceMetric = {
+          name: 'frame-rate',
+          value: fps,
+          timestamp: Date.now(),
+          type: 'animation'
+        }
+
+        this.addMetric(fpsMetric)
+
+        if (fps < targetFPS * 0.8) { // Below 48 FPS
+          console.warn('🎭 Low frame rate detected:', `${fps} FPS`)
+        }
+
+        frameCount = 0
+        lastTime = currentTime
+      }
+
+      requestAnimationFrame(measureFrameRate)
+    }
+
+    requestAnimationFrame(measureFrameRate)
+  }
+
+  // User Interaction Metriken
+  private static setupUserInteractionMetrics() {
+    let clickStartTime: number
+
+    document.addEventListener('mousedown', () => {
+      clickStartTime = performance.now()
+    })
+
+    document.addEventListener('mouseup', () => {
+      if (clickStartTime) {
+        const responseTime = performance.now() - clickStartTime
+
+        const interactionMetric: PerformanceMetric = {
+          name: 'click-response',
+          value: responseTime,
+          timestamp: Date.now(),
+          type: 'interaction'
+        }
+
+        this.addMetric(interactionMetric)
+
+        if (responseTime > 100) {
+          console.warn('🖱️ Slow click response:', `${Math.round(responseTime)}ms`)
+        }
+      }
+    })
+  }
+
+  // Performance-Alert System
+  private static checkPerformanceAlert(metric: PerformanceMetric) {
+    const threshold = this.alertThresholds[metric.name as keyof typeof this.alertThresholds]
+
+    if (threshold && metric.value > threshold) {
+      console.warn(`🚨 Performance Alert: ${metric.name} exceeded threshold`)
+      console.warn(`Value: ${Math.round(metric.value)}ms, Threshold: ${threshold}ms`)
+
+      // Trigger automatic optimization
+      this.triggerPerformanceOptimization(metric.name)
+    }
+  }
+
+  // Automatische Performance-Optimierung
+  private static triggerPerformanceOptimization(metricName: string) {
+    switch (metricName) {
+      case 'memory':
+        // Trigger garbage collection hint
+        if (window.gc) window.gc()
+        break
+
+      case 'largest-contentful-paint':
+        // Lazy load non-critical resources
+        this.optimizeLazyLoading()
+        break
+
+      case 'frame-rate':
+        // Reduce animation complexity
+        document.body.classList.add('reduced-motion')
+        break
+    }
+  }
+
+  private static optimizeLazyLoading() {
+    // Implementierung der Lazy Loading Optimierung
+    const images = document.querySelectorAll('img[loading="lazy"]')
+    images.forEach(img => {
+      if (!img.hasAttribute('data-optimized')) {
+        img.setAttribute('data-optimized', 'true')
+      }
+    })
+  }
+
+  // Periodische Berichte
+  private static startPeriodicReporting() {
+    setInterval(() => {
+      this.generatePerformanceReport()
+    }, 60000) // Every minute
+  }
+
+  private static generatePerformanceReport() {
+    if (this.metrics.length === 0) return
+
+    const recentMetrics = this.metrics.filter(m => 
+      Date.now() - m.timestamp < 60000 // Last minute
+    )
+
+    const report = {
+      timestamp: Date.now(),
+      metrics: recentMetrics.length,
+      avgResponseTime: this.calculateAverageByType(recentMetrics, 'interaction'),
+      memoryUsage: this.getLatestMetricByName(recentMetrics, 'memory-usage'),
+      frameRate: this.getLatestMetricByName(recentMetrics, 'frame-rate'),
+      webVitals: {
+        LCP: this.getLatestMetricByName(recentMetrics, 'largest-contentful-paint'),
+        FID: this.getLatestMetricByName(recentMetrics, 'first-input'),
+        CLS: this.getLatestMetricByName(recentMetrics, 'layout-shift')
+      }
+    }
+
+    console.log('📊 Performance Report:', report)
+
+    // Optional: Send to analytics
+    this.sendToAnalytics(report)
+  }
+
+  private static calculateAverageByType(metrics: PerformanceMetric[], type: string): number {
+    const typeMetrics = metrics.filter(m => m.type === type)
+    if (typeMetrics.length === 0) return 0
+
+    const sum = typeMetrics.reduce((acc, m) => acc + m.value, 0)
+    return Math.round(sum / typeMetrics.length)
+  }
+
+  private static getLatestMetricByName(metrics: PerformanceMetric[], name: string): number | null {
+    const metric = metrics
+      .filter(m => m.name === name)
+      .sort((a, b) => b.timestamp - a.timestamp)[0]
+
+    return metric ? metric.value : null
+  }
+
+  private static sendToAnalytics(report: any) {
+    // Integration with Firebase Analytics oder anderer Service
+    if (import.meta.env.DEV) return
+
+    // Hier würde die Übertragung an Analytics-Service stattfinden
+  }
+
+  // Existing methods from original code (kept for completeness, assuming they are still relevant)
+  private static observers = new Map<string, PerformanceObserver>()
+  private static serviceWorkerMetrics = new Map<string, any[]>()
 
   static initBasicMonitoring() {
     // Basic performance monitoring without web-vitals
@@ -315,6 +528,15 @@ export default class PerformanceMonitor {
     }
 
     return report
+  }
+
+  // Internal helper to add metrics
+  private static addMetric(metric: PerformanceMetric) {
+    this.metrics.push(metric);
+    // Optional: Limit the number of stored metrics to prevent memory issues
+    if (this.metrics.length > 500) {
+      this.metrics = this.metrics.slice(-250);
+    }
   }
 
   // Existing methods from original code (kept for completeness, assuming they are still relevant)

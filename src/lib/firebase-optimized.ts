@@ -1,172 +1,192 @@
-import { FirebaseRetryManager } from './firebase-retry'
-import { doc, getDoc, setDoc, onSnapshot, Unsubscribe } from 'firebase/firestore'
-import { db } from './firebase'
 
-interface PlayerUpdate {
-  id: string
-  arenaPoints: number
-  lastUpdated: number
-}
+import { 
+  collection, 
+  query, 
+  orderBy, 
+  limit, 
+  getDocs, 
+  onSnapshot,
+  QuerySnapshot,
+  DocumentData,
+  enableNetwork,
+  disableNetwork,
+  getFirestore,
+  connectFirestoreEmulator,
+  initializeFirestore,
+  CACHE_SIZE_UNLIMITED
+} from 'firebase/firestore'
+import { app } from './firebase'
 
+// Optimierte Firestore-Instanz mit erweiterten Cache-Einstellungen
+export const db = initializeFirestore(app, {
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  experimentalForceLongPolling: false, // Für bessere Performance
+  ignoreUndefinedProperties: true
+})
+
+// Query-Cache für wiederverwendbare Queries
+const queryCache = new Map<string, any>()
+const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
+
+// Optimierte Query-Builder
 export class FirebaseOptimizer {
-  private static connectionCache = new Map<string, any>()
-  private static listenerCache = new Map<string, Unsubscribe>()
-  private static connectionStatus = 'unknown'
+  private static lastNetworkState = true
 
-  // Connection Health Monitor
-  static monitorConnection(): void {
-    if (typeof window === 'undefined') return
-
-    const checkConnection = () => {
-      const wasOnline = this.connectionStatus === 'online'
-      const isOnline = navigator.onLine
-
-      if (!wasOnline && isOnline) {
-        console.log('🔄 Connection restored, refreshing Firebase listeners')
-        this.refreshAllListeners()
+  // Intelligenter Query-Builder mit automatischem Caching
+  static async optimizedQuery<T>(
+    collectionName: string,
+    orderField?: string,
+    limitCount?: number,
+    useCache = true
+  ): Promise<T[]> {
+    const cacheKey = `${collectionName}_${orderField || 'none'}_${limitCount || 'all'}`
+    
+    // Cache-Check
+    if (useCache && queryCache.has(cacheKey)) {
+      const cached = queryCache.get(cacheKey)
+      if (Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log(`🚀 Cache hit for ${cacheKey}`)
+        return cached.data
       }
-
-      this.connectionStatus = isOnline ? 'online' : 'offline'
-    }
-
-    window.addEventListener('online', checkConnection)
-    window.addEventListener('offline', checkConnection)
-    checkConnection()
-  }
-
-  private static refreshAllListeners(): void {
-    // Restart all listeners after connection restore
-    this.listenerCache.forEach((unsubscribe, playerId) => {
-      unsubscribe()
-      // Re-setup would need callback reference - simplified for demo
-    })
-  }
-
-  // Connection Pooling für optimierte Queries
-  static connectionPool = new Map<string, Promise<any>>()
-  
-  // Optimized Firebase Operations mit Enhanced Caching
-  static async getPlayerWithCache(playerId: string): Promise<any> {
-    const cacheKey = `player_${playerId}`
-    const cached = this.connectionCache.get(cacheKey)
-
-    if (cached && Date.now() - cached.timestamp < 30000) { // 30s Cache
-      return cached.data
-    }
-
-    // Connection Pooling - verhindert doppelte Requests
-    if (this.connectionPool.has(cacheKey)) {
-      return this.connectionPool.get(cacheKey)!
     }
 
     try {
-      const result = await FirebaseRetryManager.withRetry(async () => {
-        const playerRef = doc(db, 'players', playerId)
-        const playerDoc = await getDoc(playerRef)
-        return playerDoc.exists() ? playerDoc.data() : null
-      })
+      let q = collection(db, collectionName)
+      
+      if (orderField) {
+        q = query(q, orderBy(orderField, 'desc'))
+      }
+      
+      if (limitCount) {
+        q = query(q, limit(limitCount))
+      }
 
-      this.connectionCache.set(cacheKey, {
-        data: result,
-        timestamp: Date.now()
-      })
+      const snapshot = await getDocs(q)
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as T[]
 
-      return result
-    } catch (error) {
-      console.warn('📱 Firebase optimized get failed, using cache:', error)
-      return cached?.data || null
+      // Cache-Update
+      if (useCache) {
+        queryCache.set(cacheKey, {
+          data,
+          timestamp: Date.now()
+        })
+      }
+
+      console.log(`✅ Firestore query successful: ${collectionName} (${data.length} items)`)
+      return data
+
+    } catch (error: any) {
+      console.error(`❌ Firestore query failed:`, error)
+      
+      // Fallback auf Cache bei Netzwerkfehlern
+      if (useCache && queryCache.has(cacheKey)) {
+        console.log(`🔄 Using stale cache for ${cacheKey}`)
+        return queryCache.get(cacheKey).data
+      }
+      
+      throw error
     }
   }
 
-  // Batch Player Updates für bessere Performance
-  static async batchUpdatePlayers(updates: PlayerUpdate[]): Promise<void> {
-    const batchPromises = updates.map(update => 
-      FirebaseRetryManager.withRetry(async () => {
-        const playerRef = doc(db, 'players', update.id)
-        await setDoc(playerRef, {
-          arenaPoints: update.arenaPoints,
-          updatedAt: new Date(update.lastUpdated)
-        }, { merge: true })
-      })
-    )
-
-    await Promise.allSettled(batchPromises)
-  }
-
-  // Optimized Listener Management
-  static setupOptimizedListener(playerId: string, callback: (data: any) => void): Unsubscribe {
-    // Cleanup existing listener
-    const existingListener = this.listenerCache.get(playerId)
-    if (existingListener) {
-      existingListener()
+  // Realtime-Subscription mit Reconnection-Logic
+  static optimizedRealtime<T>(
+    collectionName: string,
+    callback: (data: T[]) => void,
+    orderField?: string,
+    limitCount?: number
+  ): () => void {
+    let q = collection(db, collectionName)
+    
+    if (orderField) {
+      q = query(q, orderBy(orderField, 'desc'))
+    }
+    
+    if (limitCount) {
+      q = query(q, limit(limitCount))
     }
 
-    const playerRef = doc(db, 'players', playerId)
-    const unsubscribe = onSnapshot(playerRef, 
-      (doc) => {
-        if (doc.exists()) {
-          callback(doc.data())
-        }
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot: QuerySnapshot<DocumentData>) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as T[]
+
+        callback(data)
+        console.log(`🔄 Realtime update: ${collectionName} (${data.length} items)`)
       },
       (error) => {
-        console.warn(`🔥 Optimized listener error for ${playerId}:`, error)
-        // Auto-retry once after 2 seconds
-        setTimeout(() => {
-          this.setupOptimizedListener(playerId, callback)
-        }, 2000)
+        console.error(`❌ Realtime subscription error:`, error)
+        
+        // Automatischer Reconnect bei Netzwerkfehlern
+        if (error.code === 'unavailable') {
+          setTimeout(() => {
+            console.log('🔄 Attempting to reconnect...')
+            this.optimizedRealtime(collectionName, callback, orderField, limitCount)
+          }, 5000)
+        }
       }
     )
 
-    this.listenerCache.set(playerId, unsubscribe)
     return unsubscribe
   }
 
-  // Memory Cleanup
-  static cleanup(): void {
-    this.connectionCache.clear()
-    this.listenerCache.forEach(unsubscribe => unsubscribe())
-    this.listenerCache.clear()
+  // Netzwerk-Status Management
+  static async toggleNetworkState(enable: boolean) {
+    if (this.lastNetworkState === enable) return
+
+    try {
+      if (enable) {
+        await enableNetwork(db)
+        console.log('🌐 Firestore network enabled')
+      } else {
+        await disableNetwork(db)
+        console.log('📴 Firestore network disabled')
+      }
+      this.lastNetworkState = enable
+    } catch (error) {
+      console.error('Network toggle failed:', error)
+    }
+  }
+
+  // Cache-Management
+  static clearCache() {
+    queryCache.clear()
+    console.log('🗑️ Query cache cleared')
+  }
+
+  static getCacheStats() {
+    return {
+      size: queryCache.size,
+      keys: Array.from(queryCache.keys()),
+      totalSize: JSON.stringify(Array.from(queryCache.values())).length
+    }
   }
 }
 
-// Performance Monitor für Development
-export const performanceMonitor = {
-  startTiming: (operation: string) => {
-    if (import.meta.env.DEV) {
-      console.time(`⏱️ ${operation}`)
-    }
-  },
+// Automatische Netzwerk-Überwachung
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    FirebaseOptimizer.toggleNetworkState(true)
+  })
 
-  endTiming: (operation: string) => {
-    if (import.meta.env.DEV) {
-      console.timeEnd(`⏱️ ${operation}`)
-    }
-  },
+  window.addEventListener('offline', () => {
+    FirebaseOptimizer.toggleNetworkState(false)
+  })
 
-  logMetric: (metric: string, value: number) => {
-    if (import.meta.env.DEV && value > 500) {
-      console.warn(`🐌 Performance Warning - ${metric}: ${value}ms`)
+  // Periodische Cache-Bereinigung
+  setInterval(() => {
+    const now = Date.now()
+    for (const [key, value] of queryCache.entries()) {
+      if (now - value.timestamp > CACHE_TTL * 2) {
+        queryCache.delete(key)
+      }
     }
-  }
+  }, 10 * 60 * 1000) // Alle 10 Minuten
 }
 
-// Firestore Connection mit Retry
-export const connectFirestore = async (): Promise<boolean> => {
-  try {
-    const testDoc = doc(db, '_test', 'connection');
-    await getDoc(testDoc);
-
-    console.log('[Firebase] ✅ Firestore connection successful');
-    return true;
-  } catch (error) {
-    console.error('[Firebase] ❌ Firestore connection failed:', error);
-
-    // Fallback für Offline-Modus
-    if (error.code === 'unavailable' || error.message.includes('offline')) {
-      console.log('[Firebase] 📱 Operating in offline mode');
-      return false; // Aber App funktioniert weiter
-    }
-
-    return false;
-  }
-};
+export default FirebaseOptimizer

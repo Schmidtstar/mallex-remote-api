@@ -1,5 +1,4 @@
-
-import { createContext, useContext, useEffect, useState, useMemo, ReactNode, useCallback, useRef } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode, memo, useMemo, useCallback, useRef } from 'react'
 import { useAuth } from './AuthContext'
 import { doc, setDoc, getDoc, increment, deleteDoc, onSnapshot, collection, query, where, orderBy, limit } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -39,7 +38,7 @@ type PlayersProviderProps = {
 
 const STORAGE_KEY = 'mallex-players'
 
-export function PlayersProvider({ children }: PlayersProviderProps) {
+export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
   const { loading: authLoading, user } = useAuth()
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
@@ -58,7 +57,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   // Optimierter Firebase Listener mit Debouncing
   const setupFirebaseListener = useCallback((player: Player) => {
     const playerId = normalizePlayerId(player.name)
-    
+
     // Verhindere doppelte Listener
     if (firebaseListeners.has(playerId)) {
       firebaseListeners.get(playerId)?.() // Cleanup existing
@@ -70,32 +69,32 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         if (doc.exists()) {
           const firebaseData = doc.data()
           const updatedArenaPoints = firebaseData.arenaPoints || 0
-          
+
           // Debounce Updates um Performance zu verbessern
           if (updateTimeoutRef.current) {
             clearTimeout(updateTimeoutRef.current)
           }
-          
+
           updateTimeoutRef.current = setTimeout(() => {
             setPlayers(prevPlayers => {
               const targetPlayer = prevPlayers.find(p => p.id === player.id)
               if (targetPlayer && targetPlayer.arenaPoints === updatedArenaPoints) {
                 return prevPlayers // Keine Änderung, verhindere Re-render
               }
-              
+
               const newPlayers = prevPlayers.map(p => 
                 p.id === player.id 
                   ? { ...p, arenaPoints: updatedArenaPoints }
                   : p
               )
-              
+
               // Batch localStorage Update
               localStorage.setItem(STORAGE_KEY, JSON.stringify(newPlayers))
-              
+
               if (import.meta.env.DEV) {
                 console.log(`🔄 Live update für ${player.name}: ${updatedArenaPoints} Punkte`)
               }
-              
+
               return newPlayers
             })
           }, 100) // 100ms Debounce
@@ -111,7 +110,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     } catch (error) {
       console.warn(`❌ Firebase Listener Setup fehlgeschlagen für ${player.name}:`, error)
     }
-  }, [normalizePlayerId])
+  }, [normalizePlayerId, firebaseListeners]) // Added firebaseListeners to dependency array
 
   // Spieler laden beim Start
   useEffect(() => {
@@ -120,7 +119,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         let playersList = saved ? JSON.parse(saved) : [];
-        
+
         // Demo-Daten nur wenn komplett leer
         if (playersList.length === 0) {
           const demoPlayers = [
@@ -146,7 +145,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         // Reparierte Daten speichern
         localStorage.setItem(STORAGE_KEY, JSON.stringify(playersList))
         console.log('🔧 Spieler-Datenstruktur repariert:', playersList)
-        
+
         // OPTIMIERT: Batch Firebase Query für bessere Performance
         const playersWithFirebasePoints = await Promise.allSettled(
           playersList.map(async (player) => {
@@ -154,9 +153,9 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
               const playerId = normalizePlayerId(player.name)
               const playerRef = doc(db, 'players', playerId)
               const playerDoc = await getDoc(playerRef)
-              
+
               const firebasePoints = playerDoc.exists() ? playerDoc.data().arenaPoints || 0 : 0
-              
+
               return {
                 ...player,
                 arenaPoints: firebasePoints
@@ -175,16 +174,16 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
             result.status === 'fulfilled' ? result.value : result.reason
           )
         )
-        
+
         // Aktualisierte Punkte wieder speichern
         localStorage.setItem(STORAGE_KEY, JSON.stringify(playersWithFirebasePoints));
         setPlayers(playersWithFirebasePoints);
-        
+
         // Real-time Listener für jeden Spieler einrichten
         playersWithFirebasePoints.forEach(player => {
           setupFirebaseListener(player)
         })
-        
+
         console.log('✅ Players mit Firebase-Punkten und Live-Sync geladen:', playersWithFirebasePoints);
         setLoading(false);
       } catch (error) {
@@ -204,46 +203,46 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         clearTimeout(updateTimeoutRef.current)
       }
     }
-  }, [authLoading, user, setupFirebaseListener])
+  }, [authLoading, user, setupFirebaseListener, normalizePlayerId]) // Added normalizePlayerId to dependency array
 
   // Input-Validierung und XSS-Schutz
   const validatePlayerName = useCallback((name: string): { isValid: boolean; error?: string } => {
     const trimmedName = name.trim()
-    
+
     if (!trimmedName) {
       return { isValid: false, error: 'Name darf nicht leer sein' }
     }
-    
+
     if (trimmedName.length < 2) {
       return { isValid: false, error: 'Name muss mindestens 2 Zeichen haben' }
     }
-    
+
     if (trimmedName.length > 20) {
       return { isValid: false, error: 'Name darf maximal 20 Zeichen haben' }
     }
-    
+
     // XSS-Schutz: Gefährliche Zeichen entfernen
     const dangerousChars = /<|>|"|'|&|script|javascript|onerror|onload|onclick|onmouseover|eval|alert|iframe|object|embed|form|input/gi
     if (dangerousChars.test(trimmedName)) {
       return { isValid: false, error: 'Name enthält unerlaubte Zeichen' }
     }
-    
+
     // Zusätzlicher Unicode-Schutz und SQL-Injection-Prävention
     if (!/^[\w\säöüÄÖÜß\-_.]+$/u.test(trimmedName) || /['";\\]/g.test(trimmedName)) {
       return { isValid: false, error: 'Name enthält ungültige Zeichen' }
     }
-    
+
     // Whitespace-Only Namen verhindern
     if (!/[a-zA-ZäöüÄÖÜß]/.test(trimmedName)) {
       return { isValid: false, error: 'Name muss mindestens einen Buchstaben enthalten' }
     }
-    
+
     // Prüfe auf doppelte Namen
     const existingPlayer = players.find(p => p.name.toLowerCase() === trimmedName.toLowerCase())
     if (existingPlayer) {
       return { isValid: false, error: 'Dieser Name existiert bereits' }
     }
-    
+
     return { isValid: true }
   }, [players])
 
@@ -252,7 +251,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     if (SecurityManager.isRateLimited('add_player', 5, 60000)) {
       throw new Error('Zu viele Versuche. Bitte warte eine Minute.')
     }
-    
+
     const validation = validatePlayerName(name)
     if (!validation.isValid) {
       throw new Error(validation.error)
@@ -264,21 +263,21 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       if (!SecurityManager.isSecureInput(sanitizedName)) {
         throw new Error('Ungültiger Name erkannt')
       }
-      
+
       const newPlayer: Player = {
         id: `player_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
         name: sanitizedName,
         score: 0,
         arenaPoints: 0
       }
-      
+
       const updatedPlayers = [...players, newPlayer]
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
-      
+
       // Firebase Listener für neuen Spieler einrichten
       setupFirebaseListener(newPlayer)
-      
+
       console.log('✅ Spieler hinzugefügt:', newPlayer.name)
     } catch (error) {
       console.error('❌ Fehler beim Hinzufügen:', error)
@@ -291,19 +290,19 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       console.warn('❌ Keine Spieler-ID für Entfernung angegeben')
       return
     }
-    
+
     try {
       console.log('🗑️ Versuche Spieler zu entfernen. ID:', id)
       console.log('📋 Aktuelle Spieler:', players.map(p => `${p.id}: ${p.name}`))
-      
+
       const playerToRemove = players.find(p => p.id === id)
       if (!playerToRemove) {
         console.warn('❌ Spieler nicht gefunden:', id)
         throw new Error(`Spieler mit ID ${id} nicht gefunden`)
       }
-      
+
       console.log('🎯 Entferne Spieler:', playerToRemove.name)
-      
+
       // Firebase Listener entfernen
       const playerId = normalizePlayerId(playerToRemove.name)
       const unsubscribe = firebaseListeners.get(playerId)
@@ -316,16 +315,16 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
         })
         console.log('🔥 Firebase Listener entfernt für:', playerToRemove.name)
       }
-      
+
       const updatedPlayers = players.filter(p => p.id !== id)
       console.log('📝 Neue Spielerliste:', updatedPlayers.map(p => `${p.id}: ${p.name}`))
-      
+
       // State UND localStorage aktualisieren
       setPlayers(updatedPlayers)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
-      
+
       console.log('✅ Spieler erfolgreich entfernt:', playerToRemove.name)
-      
+
       // Firebase Eintrag löschen (optional)
       try {
         const playerRef = doc(db, 'players', playerId)
@@ -334,7 +333,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
       } catch (firebaseError) {
         console.warn('⚠️ Firebase Löschung fehlgeschlagen (nicht kritisch):', firebaseError)
       }
-      
+
     } catch (error) {
       console.error('❌ Fehler beim Entfernen des Spielers:', error)
       throw error
@@ -344,11 +343,11 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   const handleUpdatePlayerArenaPoints = useCallback(async (name: string, points: number) => {
     try {
       console.log('🎯 Arena-Punkte Update:', name, 'Punkte:', points)
-      
+
       // 1. Firebase Update (Hauptspeicher)
       const playerId = normalizePlayerId(name)
       const playerRef = doc(db, 'players', playerId)
-      
+
       try {
         const playerDoc = await getDoc(playerRef)
         if (playerDoc.exists()) {
@@ -367,13 +366,13 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
             updatedAt: new Date()
           })
         }
-        
+
         console.log('✅ Firebase Arena-Punkte aktualisiert:', name, 'Punkte:', points)
         // Real-time Listener wird automatisch State aktualisieren
-        
+
       } catch (firebaseError) {
         console.warn('⚠️ Firebase Update fehlgeschlagen, nur localStorage:', firebaseError)
-        
+
         // Fallback: nur localStorage mit verbesserter Validierung
         const updatedPlayers = players.map(player => {
           if (player.name.toLowerCase() === name.toLowerCase()) {
@@ -383,10 +382,10 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
           }
           return player
         })
-        
+
         setPlayers(updatedPlayers)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPlayers))
-        
+
         console.log('💾 Punkte offline gespeichert:', name, 'Neue Punkte:', updatedPlayers.find(p => p.name.toLowerCase() === name.toLowerCase())?.arenaPoints)
       }
     } catch (error) {
@@ -395,7 +394,7 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
     }
   }, [players, normalizePlayerId])
 
-  const value = useMemo(() => ({
+  const contextValue = useMemo(() => ({
     players,
     addPlayer: handleAddPlayer,
     removePlayer: handleRemovePlayer,
@@ -405,8 +404,8 @@ export function PlayersProvider({ children }: PlayersProviderProps) {
   }), [players, handleAddPlayer, handleRemovePlayer, handleUpdatePlayerArenaPoints, mode, loading])
 
   return (
-    <PlayersContext.Provider value={value}>
+    <PlayersContext.Provider value={contextValue}>
       {children}
     </PlayersContext.Provider>
   )
-}
+})

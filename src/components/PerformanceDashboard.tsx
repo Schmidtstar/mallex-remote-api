@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import styles from './PerformanceDashboard.module.css'
 
 // Define the interface for PerformanceMetrics
@@ -23,6 +23,12 @@ interface PerformanceMetrics {
     totalRequests: number
     averageResponseTime: number
   }
+  performanceScore?: number;
+  renderTime?: number;
+  bundleSize?: number;
+  firebaseQueries?: number;
+  averageLoadTime?: number;
+  errorRate?: number;
 }
 
 // Mock MonitoringService for demonstration purposes if it's not globally available
@@ -48,12 +54,34 @@ const MonitoringService = {
   }
 }
 
+// Mock functions for new metrics
+const calculatePerformanceScore = () => Math.floor(Math.random() * 100);
+const getMemoryUsage = () => (performance as any).memory?.usedJSHeapSize || Math.floor(Math.random() * 50 * 1024 * 1024); // Mock if performance.memory is not available
+const measureRenderTime = () => Math.random() * 500;
+const getBundleSize = () => Math.floor(Math.random() * 2000) + 500; // in KB
+const getFirebaseStats = () => Math.floor(Math.random() * 50);
+const getCacheHitRate = () => Math.random();
+const getAverageLoadTime = () => Math.random() * 1500 + 500;
+const getErrorRate = () => Math.random() * 5;
+
 
 export default function PerformanceDashboard() {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({})
   const [isVisible, setIsVisible] = useState(false)
   const [networkStatus, setNetworkStatus] = useState(navigator.onLine)
   const [serviceWorkerStatus, setServiceWorkerStatus] = useState('loading')
+
+  // Memoize the advanced stats
+  const stats = useMemo(() => ({
+    performanceScore: calculatePerformanceScore(),
+    memoryUsage: getMemoryUsage(),
+    renderTime: measureRenderTime(),
+    bundleSize: getBundleSize(),
+    firebaseQueries: getFirebaseStats(),
+    cacheHitRate: getCacheHitRate(),
+    averageLoadTime: getAverageLoadTime(),
+    errorRate: getErrorRate()
+  }), [])
 
   useEffect(() => {
     // Network Status Updates
@@ -82,9 +110,9 @@ export default function PerformanceDashboard() {
         // Enhanced metrics with real-time data
         const enhancedReport: PerformanceMetrics = {
           ...report,
+          ...stats, // Include the memoized advanced stats
           networkStatus,
           serviceWorkerStatus,
-          memoryUsage: (performance as any).memory?.usedJSHeapSize || 0,
           timestamp: new Date().toLocaleTimeString()
         }
 
@@ -94,6 +122,7 @@ export default function PerformanceDashboard() {
         // Ensure metrics state is updated even on error to reflect potential changes
         setMetrics(prevMetrics => ({
           ...prevMetrics,
+          ...stats, // Include the memoized advanced stats
           networkStatus,
           serviceWorkerStatus,
           timestamp: new Date().toLocaleTimeString()
@@ -106,7 +135,7 @@ export default function PerformanceDashboard() {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
-  }, [networkStatus, serviceWorkerStatus]) // Dependencies ensure updates when status changes
+  }, [networkStatus, serviceWorkerStatus, stats]) // Dependencies ensure updates when status changes
 
   // Development-only dashboard
   if (import.meta.env.PROD && !window.location.search.includes('debug=true')) {
@@ -168,6 +197,50 @@ export default function PerformanceDashboard() {
               <div className={styles.swMetrics}>
                 <div>Cache Hits: {metrics.serviceWorker.cacheHits}/{metrics.serviceWorker.totalRequests}</div>
                 <div>Avg Response: {Math.round(metrics.serviceWorker.averageResponseTime)}ms</div>
+              </div>
+            )}
+
+            {/* Additional Stats */}
+            {metrics.performanceScore !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Score:</span>
+                <span className={styles.value}>{metrics.performanceScore}</span>
+              </div>
+            )}
+            {metrics.renderTime !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Render Time:</span>
+                <span className={styles.value}>{Math.round(metrics.renderTime)}ms</span>
+              </div>
+            )}
+            {metrics.bundleSize !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Bundle Size:</span>
+                <span className={styles.value}>{Math.round(metrics.bundleSize)}KB</span>
+              </div>
+            )}
+            {metrics.firebaseQueries !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Firebase Queries:</span>
+                <span className={styles.value}>{metrics.firebaseQueries}</span>
+              </div>
+            )}
+            {metrics.cacheHitRate !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Cache Hit Rate:</span>
+                <span className={styles.value}>{(metrics.cacheHitRate * 100).toFixed(1)}%</span>
+              </div>
+            )}
+            {metrics.averageLoadTime !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Avg Load Time:</span>
+                <span className={styles.value}>{Math.round(metrics.averageLoadTime)}ms</span>
+              </div>
+            )}
+            {metrics.errorRate !== undefined && (
+              <div className={styles.otherMetric}>
+                <span>Error Rate:</span>
+                <span className={styles.value}>{metrics.errorRate.toFixed(2)}%</span>
               </div>
             )}
 

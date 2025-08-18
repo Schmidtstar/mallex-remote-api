@@ -1,9 +1,7 @@
-
 import React, { Suspense, lazy } from 'react'
-import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
+import { createHashRouter, createBrowserRouter, Navigate, Route } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
-import { LoadingSpinner } from './components/LoadingSpinner'
 import { EnhancedLoadingSpinner } from './components/EnhancedLoadingSpinner'
 
 // MonitoringService Import fix - Synchronous fallback
@@ -21,18 +19,18 @@ const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => 
   return lazy(async () => {
     try {
       const module = await importFn()
-      
+
       // Multiple fallback strategies
       const Component = module.default || Object.values(module)[0]
-      
+
       if (typeof Component !== 'function' && typeof Component !== 'object') {
         throw new Error(`No valid component found for ${componentName}`)
       }
-      
+
       return { default: Component }
     } catch (error: any) {
       console.error(`Failed to load ${componentName}:`, error)
-      
+
       // Safe error tracking
       try {
         if (MonitoringService && typeof MonitoringService.trackError === 'function') {
@@ -44,7 +42,7 @@ const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => 
       } catch (trackingError) {
         console.warn('Error tracking failed:', trackingError)
       }
-      
+
       // Return enhanced fallback component
       return {
         default: () => (
@@ -95,18 +93,23 @@ const createSafeLazy = (importFn: () => Promise<any>, componentName: string) => 
 
 // All lazy components with safe loading
 const TabLayout = createSafeLazy(() => import('./layouts/TabLayout'), 'TabLayout')
-const ArenaScreen = createSafeLazy(() => import('./features/Arena/ArenaScreen'), 'ArenaScreen')
-const LegendsScreen = createSafeLazy(() => import('./features/Legends/LegendsScreen'), 'LegendsScreen')
-const LeaderboardScreen = createSafeLazy(() => import('./features/Leaderboard/LeaderboardScreen'), 'LeaderboardScreen')
-const MenuScreen = createSafeLazy(() => import('./features/Menu/MenuScreen'), 'MenuScreen')
-const TasksOverviewScreen = createSafeLazy(() => import('./features/Tasks/TasksOverviewScreen'), 'TasksOverviewScreen')
-const SuggestTaskScreen = createSafeLazy(() => import('./features/Tasks/SuggestTaskScreen'), 'SuggestTaskScreen')
-const AdminTasksScreen = createSafeLazy(() => import('./features/Tasks/AdminTasksScreen'), 'AdminTasksScreen')
-const AdminDashboard = createSafeLazy(() => import('./features/Admin/AdminDashboard'), 'AdminDashboard')
-const RequireAdmin = createSafeLazy(() => import('./routes/guards/RequireAdmin'), 'RequireAdmin')
 const AuthScreen = createSafeLazy(() => import('./features/Auth/AuthScreen'), 'AuthScreen')
 const PostfachScreen = createSafeLazy(() => import('./components/NotificationCenter'), 'NotificationCenter')
 const PrivacyDashboard = createSafeLazy(() => import('./features/Privacy/PrivacyDashboard'), 'PrivacyDashboard')
+
+// Lazy imports for specific features
+const LazyArenaScreen = createSafeLazy(() => import('./features/Arena/ArenaScreen'), 'ArenaScreen')
+const LazyLegendsScreen = createSafeLazy(() => import('./features/Legends/LegendsScreen'), 'LegendsScreen')
+const LazyLeaderboardScreen = createSafeLazy(() => import('./features/Leaderboard/LeaderboardScreen'), 'LeaderboardScreen')
+const LazyTasksOverviewScreen = createSafeLazy(() => import('./features/Tasks/TasksOverviewScreen'), 'TasksOverviewScreen')
+const LazySuggestTaskScreen = createSafeLazy(() => import('./features/Tasks/SuggestTaskScreen'), 'SuggestTaskScreen')
+const LazyAdminTasksScreen = createSafeLazy(() => import('./features/Tasks/AdminTasksScreen'), 'AdminTasksScreen')
+const LazyAdminDashboard = createSafeLazy(() => import('./features/Admin/AdminDashboard'), 'AdminDashboard')
+const RequireAdmin = createSafeLazy(() => import('./routes/guards/RequireAdmin'), 'RequireAdmin')
+
+
+// Starte intelligent preloading
+intelligentPreload()
 
 function withAuth(element: React.ReactNode) {
   const Guard = () => {
@@ -137,7 +140,7 @@ const routes = [
         index: true,
         element: (
           <Suspense fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
-            <ArenaScreen />
+            <LazyArenaScreen />
           </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
@@ -146,7 +149,7 @@ const routes = [
         path: 'arena',
         element: (
           <Suspense fallback={<EnhancedLoadingSpinner variant="arena" size="large" />}>
-            <ArenaScreen />
+            <LazyArenaScreen />
           </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Arena</div></ErrorBoundary>
@@ -154,8 +157,8 @@ const routes = [
       {
         path: 'legends',
         element: (
-          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
-            <LegendsScreen />
+          <Suspense fallback={<EnhancedLoadingSpinner variant="legends" size="large" />}>
+            <LazyLegendsScreen />
           </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Legenden</div></ErrorBoundary>
@@ -163,8 +166,8 @@ const routes = [
       {
         path: 'leaderboard',
         element: (
-          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
-            <LeaderboardScreen />
+          <Suspense fallback={<EnhancedLoadingSpinner variant="leaderboard" size="large" />}>
+            <LazyLeaderboardScreen />
           </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Rangliste</div></ErrorBoundary>
@@ -190,8 +193,8 @@ const routes = [
       {
         path: 'tasks',
         element: (
-          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
-            <TasksOverviewScreen />
+          <Suspense fallback={<EnhancedLoadingSpinner variant="tasks" size="large" />}>
+            <LazyTasksOverviewScreen />
           </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler in Aufgaben-Übersicht</div></ErrorBoundary>
@@ -199,18 +202,18 @@ const routes = [
       {
         path: 'tasks/suggest',
         element: (
-          <Suspense fallback={<EnhancedLoadingSpinner variant="general" size="medium" />}>
-            <SuggestTaskScreen />
+          <Suspense fallback={<EnhancedLoadingSpinner variant="suggest" size="large" />}>
+            <LazySuggestTaskScreen />
           </Suspense>
         ),
         errorElement: <ErrorBoundary><div>Fehler beim Vorschlagen von Aufgaben</div></ErrorBoundary>
       },
       {
-        path: 'tasks/admin',
+        path: 'admin/tasks',
         element: (
-          <Suspense fallback={<EnhancedLoadingSpinner variant="admin" size="medium" />}>
+          <Suspense fallback={<EnhancedLoadingSpinner variant="admin" size="large" />}>
             <RequireAdmin>
-              <AdminTasksScreen />
+              <LazyAdminTasksScreen />
             </RequireAdmin>
           </Suspense>
         ),
@@ -219,9 +222,9 @@ const routes = [
       {
         path: 'admin',
         element: (
-          <Suspense fallback={<EnhancedLoadingSpinner variant="admin" size="medium" />}>
+          <Suspense fallback={<EnhancedLoadingSpinner variant="admin" size="large" />}>
             <RequireAdmin>
-              <AdminDashboard />
+              <LazyAdminDashboard />
             </RequireAdmin>
           </Suspense>
         ),

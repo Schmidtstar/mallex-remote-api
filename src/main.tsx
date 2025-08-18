@@ -4,6 +4,17 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 // Intro-Styles ZUERST laden
 import './styles/index.css'
+
+// Performance-Monitoring für Problem-Analyse
+const performanceObserver = new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    if (entry.entryType === 'measure') {
+      console.log(`Performance: ${entry.name} - ${entry.duration}ms`)
+    }
+  }
+})
+
+performanceObserver.observe({ entryTypes: ['measure', 'navigation'] })
 import './i18n'
 import { AuthProvider } from './context/AuthContext'
 import { AdminSettingsProvider } from './context/AdminSettingsContext'

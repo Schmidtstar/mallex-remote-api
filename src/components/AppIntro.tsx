@@ -1,16 +1,7 @@
+
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './AppIntro.module.css'
-
-// Move constants outside component to avoid TDZ
-const INTRO_STEPS = [
-  'welcome',
-  'features',
-  'navigation',
-  'ready'
-] as const
-
-const ANIMATION_DURATION = 300
 
 interface AppIntroProps {
   onComplete?: () => void
@@ -18,120 +9,101 @@ interface AppIntroProps {
 
 export function AppIntro({ onComplete }: AppIntroProps = {}) {
   const { t } = useTranslation()
-  const [currentStep, setCurrentStep] = useState(0)
-  const [isVisible, setIsVisible] = useState(true)
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [showTemple, setShowTemple] = useState(true)
+  const [doorsOpen, setDoorsOpen] = useState(false)
+  const [showEmergingText, setShowEmergingText] = useState(false)
+  const [showClickOverlay, setShowClickOverlay] = useState(true)
 
   useEffect(() => {
-    // Auto-advance steps
-    const timer = setTimeout(() => {
-      if (currentStep < INTRO_STEPS.length - 1) {
-        handleNext()
-      } else if (currentStep === INTRO_STEPS.length - 1) {
-        // If it's the last step and auto-advance, also call onComplete
-        handleSkip()
+    // Automatically start the intro sequence after a short delay
+    const clickTimeout = setTimeout(() => {
+      handleStartIntro()
+    }, 1000)
+
+    return () => clearTimeout(clickTimeout)
+  }, [])
+
+  const handleStartIntro = () => {
+    setShowClickOverlay(false)
+    
+    // Open doors after 800ms
+    setTimeout(() => {
+      setDoorsOpen(true)
+    }, 800)
+
+    // Show emerging text after doors open (1800ms total)
+    setTimeout(() => {
+      setShowEmergingText(true)
+    }, 1800)
+
+    // Complete intro after full animation (6000ms total)
+    setTimeout(() => {
+      setShowTemple(false)
+      if (onComplete) {
+        onComplete()
       }
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [currentStep])
-
-  const handleNext = () => {
-    if (isAnimating) return
-
-    setIsAnimating(true)
-
-    setTimeout(() => {
-      setCurrentStep(prev => {
-        const nextStep = Math.min(prev + 1, INTRO_STEPS.length - 1)
-        if (nextStep === INTRO_STEPS.length - 1 && prev === INTRO_STEPS.length - 2) {
-          // If we are moving to the last step, call onComplete after animation
-          // but before the state update that changes the button
-          if (onComplete) {
-            onComplete();
-          }
-        }
-        return nextStep;
-      });
-      setIsAnimating(false)
-    }, ANIMATION_DURATION)
-  }
-
-  const handlePrevious = () => {
-    if (isAnimating) return
-
-    setIsAnimating(true)
-
-    setTimeout(() => {
-      setCurrentStep(prev => Math.max(prev - 1, 0))
-      setIsAnimating(false)
-    }, ANIMATION_DURATION)
+    }, 6000)
   }
 
   const handleSkip = () => {
-    setIsVisible(false)
+    setShowTemple(false)
     if (onComplete) {
       onComplete()
     }
   }
 
-  if (!isVisible) {
+  if (!showTemple) {
     return null
   }
 
-  const currentStepKey = INTRO_STEPS[currentStep]
-
   return (
-    <div className={styles.overlay}>
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <h2 className={styles.title}>
-            {t(`intro.${currentStepKey}.title`)}
-          </h2>
-          <p className={styles.description}>
-            {t(`intro.${currentStepKey}.description`)}
-          </p>
+    <div className={styles.stage}>
+      {/* Himmel und Wolken */}
+      <div className={styles.sky}>
+        <div className={styles.clouds}></div>
+      </div>
+
+      {/* Tempel */}
+      <div className={styles.temple}>
+        {/* Tempel-Kopf mit Titel */}
+        <div className={styles.pediment}>
+          <div className={styles.frieze}></div>
+          <h1 className={styles.title}>
+            {t('app.title', 'Olympische Saufspiele')}
+          </h1>
         </div>
 
-        <div className={styles.navigation}>
-          <button
-            className={styles.button}
-            onClick={handlePrevious}
-            disabled={currentStep === 0 || isAnimating}
-          >
-            {t('intro.previous')}
-          </button>
+        {/* Türen */}
+        <div className={`${styles.door} ${styles.left} ${doorsOpen ? styles.open : ''}`}></div>
+        <div className={`${styles.door} ${styles.right} ${doorsOpen ? styles.open : ''}`}></div>
+      </div>
 
-          <div className={styles.indicators}>
-            {INTRO_STEPS.map((_, index) => (
-              <div
-                key={index}
-                className={`${styles.indicator} ${
-                  index === currentStep ? styles.active : ''
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            className={styles.button}
-            onClick={currentStep === INTRO_STEPS.length - 1 ? handleSkip : handleNext}
-            disabled={isAnimating}
-          >
-            {currentStep === INTRO_STEPS.length - 1
-              ? t('intro.start')
-              : t('intro.next')
-            }
-          </button>
+      {/* Emergierender Text */}
+      {showEmergingText && (
+        <div className={styles.emergingText}>
+          <h1>Willkommen bei den</h1>
+          <h2>legendären</h2>
+          <h3>Olympischen Saufspielen!</h3>
         </div>
+      )}
 
-        <button
+      {/* Click Overlay */}
+      {showClickOverlay && (
+        <div className={styles.clickOverlay} onClick={handleStartIntro}>
+          <p>Klicken Sie, um zu beginnen...</p>
+        </div>
+      )}
+
+      {/* Skip Button */}
+      {!showClickOverlay && (
+        <button 
           className={styles.skipButton}
           onClick={handleSkip}
+          aria-label={t('intro.skip', 'Intro überspringen')}
         >
-          {t('intro.skip')}
+          {t('intro.skip', 'Überspringen')}
         </button>
-      </div>
+      )}
     </div>
   )
 }

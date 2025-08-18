@@ -266,9 +266,17 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
     }
   }, [swipeHandlers.isSwiping, swipeHandlers.swipeDistance])
 
+  // Extract only the event handlers we need, filter out React-incompatible props
+  const { onTouchStart, onTouchMove, onTouchEnd, onMouseDown, onMouseMove, onMouseUp } = swipeHandlers
+
   return (
     <div
-      {...swipeHandlers}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
       className={`${styles.playerItem} ${
         swipeHandlers.isSwiping ? styles.playerItemSwiping : ''
       } ${swipeTransform < -30 ? styles.playerItemSwipeLeft : ''}`}

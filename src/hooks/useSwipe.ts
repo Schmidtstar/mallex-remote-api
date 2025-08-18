@@ -190,12 +190,36 @@ export function useSwipe(
     element.addEventListener('touchmove', handleTouchMove, { passive: !finalConfig.preventScroll })
     element.addEventListener('touchend', handleTouchEnd, { passive: true })
 
+    // Mouse Events for Web (optional, but good for compatibility)
+    const handleMouseDown = (e: MouseEvent) => {
+      const touchEvent = e as any as TouchEvent; // Cast to TouchEvent for simplicity, though proper mapping is better
+      handleTouchStart(touchEvent);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const touchEvent = e as any as TouchEvent; // Cast to TouchEvent for simplicity
+      handleTouchMove(touchEvent);
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      const touchEvent = e as any as TouchEvent; // Cast to TouchEvent for simplicity
+      handleTouchEnd(touchEvent);
+    };
+
+    element.addEventListener('mousedown', handleMouseDown, { passive: !finalConfig.preventScroll });
+    element.addEventListener('mousemove', handleMouseMove, { passive: !finalConfig.preventScroll });
+    element.addEventListener('mouseup', handleMouseUp, { passive: true });
+
+
     return () => {
       element.removeEventListener('touchstart', handleTouchStart)
       element.removeEventListener('touchmove', handleTouchMove)
       element.removeEventListener('touchend', handleTouchEnd)
+      element.removeEventListener('mousedown', handleMouseDown)
+      element.removeEventListener('mousemove', handleMouseMove)
+      element.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [handlers, finalConfig])
+  }, [handlers, finalConfig, swipeState]) // Added swipeState dependency
 
   // Utility Functions
   const bindSwipe = (element: HTMLElement | null) => {
@@ -213,17 +237,29 @@ export function useSwipe(
     return Math.min(distance / finalConfig.threshold, 1)
   }
 
-  return {
-    // State
-    swipeState,
+  // Separate DOM event handlers from utility functions
+  const eventHandlers = {
+    onTouchStart: handleTouchStart,
+    onTouchMove: handleTouchMove,
+    onTouchEnd: handleTouchEnd,
+    onMouseDown: handleMouseDown,
+    onMouseMove: handleMouseMove,
+    onMouseUp: handleMouseUp,
+  }
 
-    // Utilities
+  const swipeInfo = {
+    isSwiping: swipeState.isSwiping,
+    swipeDistance: swipeState.deltaX, // Assuming deltaX is the primary for this naming
+    swipeState,
     bindSwipe,
     isSwipingInDirection,
     getSwipeProgress,
-
-    // Manual trigger für Testing
     triggerHapticFeedback
+  }
+
+  return {
+    ...eventHandlers,
+    ...swipeInfo
   }
 }
 

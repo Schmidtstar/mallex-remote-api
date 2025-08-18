@@ -70,6 +70,7 @@ const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true)
 
   const handleIntroComplete = () => {
+    console.log('🎬 App: Intro completed, switching to main app')
     setShowIntro(false)
   }
 

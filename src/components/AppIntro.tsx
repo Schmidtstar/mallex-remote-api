@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './AppIntro.module.css'
 
@@ -14,6 +13,18 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
   const [currentPhase, setCurrentPhase] = useState<IntroPhase>('loading')
   const [canSkip, setCanSkip] = useState(false)
   const [isSkipping, setIsSkipping] = useState(false)
+  const [isCompleted, setIsCompleted] = useState(false) // State to track completion
+
+  // Fix intro completion handler and state management
+  const handleComplete = useCallback(() => {
+    if (isCompleted) return // Prevent double-execution
+
+    console.log('🎬 Intro completion triggered')
+    setIsCompleted(true)
+
+    // Immediate completion without delay
+    onComplete()
+  }, [onComplete, isCompleted])
 
   // Phasen-Management mit klarem Timing
   useEffect(() => {
@@ -37,23 +48,25 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
           setCurrentPhase('welcome')
           break
         case 'welcome':
-          setCurrentPhase('complete')
+          // Wenn der Benutzer auf "Arena betreten" klickt, wird handleComplete direkt aufgerufen
+          // Hier muss nichts weiter passieren, da der Button die Logik übernimmt
           break
         case 'complete':
-          if (onComplete) onComplete()
+          // Wenn wir bereits im 'complete'-Zustand sind, tun wir nichts weiter
           break
       }
     }, phaseTimings[currentPhase as keyof typeof phaseTimings] || 2000)
 
     return () => clearTimeout(timer)
-  }, [currentPhase, onComplete])
+  }, [currentPhase, onComplete, isCompleted, handleComplete]) // handleComplete zu Abhängigkeiten hinzugefügt
 
   // Skip-Funktionalität
   const handleSkip = () => {
     if (!canSkip) return
     setIsSkipping(true)
+    // Wenn geskippt wird, auch handleComplete aufrufen
     setTimeout(() => {
-      setCurrentPhase('complete')
+      handleComplete()
     }, 300)
   }
 
@@ -67,7 +80,20 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [canSkip])
+  }, [canSkip, handleSkip]) // handleSkip zu Abhängigkeiten hinzugefügt
+
+  // Simplify intro exit logic and improve state handling
+  // Auto-complete nach maximaler Zeit (Fallback)
+  useEffect(() => {
+    const maxTimer = setTimeout(() => {
+      if (!isCompleted) {
+        console.log('🎬 Intro auto-complete (timeout)')
+        handleComplete()
+      }
+    }, 8000) // 8 Sekunden Maximum (verkürzt)
+
+    return () => clearTimeout(maxTimer)
+  }, [handleComplete, isCompleted])
 
   if (currentPhase === 'complete') {
     return null
@@ -75,7 +101,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
   return (
     <div className={`${styles.introStage} ${styles[`phase-${currentPhase}`]} ${isSkipping ? styles.skipping : ''}`}>
-      
+
       {/* Strukturierter Hintergrund */}
       <div className={styles.backgroundLayers}>
         <div className={styles.skyLayer}></div>
@@ -85,7 +111,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
       {/* Hauptcontent nach Phase */}
       <div className={styles.contentArea}>
-        
+
         {/* PHASE 1: Loading */}
         {currentPhase === 'loading' && (
           <div className={styles.loadingPhase}>
@@ -117,29 +143,29 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
         {currentPhase === 'temple' && (
           <div className={styles.templePhase}>
             <div className={styles.templeContainer}>
-              
+
               {/* Tempel-Dach */}
               <div className={styles.templePediment}>
                 <div className={styles.templeTitle}>OLYMPISCHE ARENA</div>
               </div>
-              
+
               {/* Säulen */}
               <div className={styles.templeColumns}>
                 {[1, 2, 3, 4, 5, 6].map(num => (
-                  <div 
-                    key={num} 
+                  <div
+                    key={num}
                     className={styles.column}
                     style={{ animationDelay: `${num * 0.2}s` }}
                   ></div>
                 ))}
               </div>
-              
+
               {/* Türen */}
               <div className={styles.templeDoors}>
                 <div className={`${styles.door} ${styles.leftDoor}`}></div>
                 <div className={`${styles.door} ${styles.rightDoor}`}></div>
               </div>
-              
+
               {/* Eingangsbereich */}
               <div className={styles.templeEntrance}></div>
             </div>
@@ -167,10 +193,10 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
                   <span>Legendäre Geschichten</span>
                 </div>
               </div>
-              
-              <button 
+
+              <button
                 className={styles.enterButton}
-                onClick={() => setCurrentPhase('complete')}
+                onClick={handleComplete} // Rufen Sie handleComplete auf, wenn der Button geklickt wird
               >
                 Arena betreten
               </button>
@@ -181,7 +207,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
       {/* Skip-Button (nur wenn verfügbar) */}
       {canSkip && !isSkipping && (
-        <button 
+        <button
           className={styles.skipButton}
           onClick={handleSkip}
           aria-label="Intro überspringen"
@@ -191,12 +217,35 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
         </button>
       )}
 
+      {/* Emergency Skip (Development only) */}
+      {import.meta.env.DEV && (
+        <button
+          className={styles.emergencySkip}
+          onClick={handleComplete}
+          style={{
+            position: 'fixed',
+            top: '10px',
+            right: '10px',
+            background: 'red',
+            color: 'white',
+            border: 'none',
+            padding: '5px 10px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            zIndex: 10000
+          }}
+        >
+          DEV: Force Skip
+        </button>
+      )}
+
+
       {/* Fortschrittsindikator */}
       <div className={styles.progressIndicator}>
         <div className={styles.progressBar} data-phase={currentPhase}></div>
         <div className={styles.progressDots}>
           {['loading', 'logo', 'temple', 'welcome'].map(phase => (
-            <div 
+            <div
               key={phase}
               className={`${styles.progressDot} ${currentPhase === phase ? styles.active : ''}`}
             ></div>

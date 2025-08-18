@@ -57,4 +57,5 @@ export const intelligentPreload = () => {
       preloadComponents.adminTasks()
     }
   }, 5000)
+})
 }

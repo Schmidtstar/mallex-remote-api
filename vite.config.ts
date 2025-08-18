@@ -30,12 +30,11 @@ export default defineConfig(({ mode }) => {
             clientPort: 443,
             overlay: false
           }
-        : process.env.NODE_ENV === 'development'
-        ? {
+        : {
             port: 5173,
+            host: 'localhost',
             overlay: false
-          }
-        : false,
+          },
       watch: {
         usePolling: false,
         interval: 1000,

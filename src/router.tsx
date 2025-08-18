@@ -3,6 +3,7 @@ import { createHashRouter, createBrowserRouter, Navigate, Route } from 'react-ro
 import { useAuth } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { EnhancedLoadingSpinner } from './components/EnhancedLoadingSpinner'
+import { intelligentPreload } from './utils/lazyImports'
 
 // MonitoringService Import fix - Synchronous fallback
 let MonitoringService: any = { trackError: () => {} }
@@ -106,6 +107,7 @@ const LazySuggestTaskScreen = createSafeLazy(() => import('./features/Tasks/Sugg
 const LazyAdminTasksScreen = createSafeLazy(() => import('./features/Tasks/AdminTasksScreen'), 'AdminTasksScreen')
 const LazyAdminDashboard = createSafeLazy(() => import('./features/Admin/AdminDashboard'), 'AdminDashboard')
 const RequireAdmin = createSafeLazy(() => import('./routes/guards/RequireAdmin'), 'RequireAdmin')
+const MenuScreen = createSafeLazy(() => import('./features/Menu/MenuScreen'), 'MenuScreen')
 
 
 // Starte intelligent preloading

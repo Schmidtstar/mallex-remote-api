@@ -8,21 +8,45 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector({ onLanguageSelected }: LanguageSelectorProps) {
-  const { i18n } = useTranslation()
-  const [selectedLang, setSelectedLang] = useState('de')
+  const { i18n, t } = useTranslation()
+  const [selectedLang, setSelectedLang] = useState(i18n.language || 'de')
 
+  // Die gleichen Sprachen wie im Menu-System verwenden
   const languages = [
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪', description: 'Olympische Spiele auf Deutsch' },
-    { code: 'en', name: 'English', flag: '🇺🇸', description: 'Olympic Games in English' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷', description: 'Jeux Olympiques en Français' },
-    { code: 'es', name: 'Español', flag: '🇪🇸', description: 'Juegos Olímpicos en Español' }
+    { 
+      code: 'de', 
+      name: t('language.german'), 
+      flag: '🇩🇪', 
+      description: 'Olympische Saufspiele auf Deutsch' 
+    },
+    { 
+      code: 'en', 
+      name: t('language.english'), 
+      flag: '🇺🇸', 
+      description: 'Olympic Drinking Games in English' 
+    },
+    { 
+      code: 'fr', 
+      name: t('language.french'), 
+      flag: '🇫🇷', 
+      description: 'Jeux Olympiques de Boisson en Français' 
+    },
+    { 
+      code: 'es', 
+      name: t('language.spanish'), 
+      flag: '🇪🇸', 
+      description: 'Juegos Olímpicos de Bebida en Español' 
+    }
   ]
 
   const handleLanguageSelect = async (langCode: string) => {
     setSelectedLang(langCode)
+    
+    // Das gleiche System wie in MenuScreen verwenden
     await i18n.changeLanguage(langCode)
     localStorage.setItem('mallex-language', langCode)
     
+    // Kurz warten für die Animation, dann weiterleiten
     setTimeout(() => {
       onLanguageSelected(langCode)
     }, 800)
@@ -38,8 +62,18 @@ export function LanguageSelector({ onLanguageSelected }: LanguageSelectorProps) 
       <div className={styles.content}>
         <div className={styles.header}>
           <div className={styles.icon}>🌍</div>
-          <h1 className={styles.title}>Wähle deine Sprache</h1>
-          <h2 className={styles.subtitle}>Choose your Language</h2>
+          <h1 className={styles.title}>
+            {selectedLang === 'de' ? 'Wähle deine Sprache' : 
+             selectedLang === 'en' ? 'Choose your Language' :
+             selectedLang === 'fr' ? 'Choisissez votre langue' :
+             'Elige tu idioma'}
+          </h1>
+          <h2 className={styles.subtitle}>
+            {selectedLang === 'de' ? 'Choose your Language | Choisissez votre langue | Elige tu idioma' :
+             selectedLang === 'en' ? 'Wähle deine Sprache | Choisissez votre langue | Elige tu idioma' :
+             selectedLang === 'fr' ? 'Wähle deine Sprache | Choose your Language | Elige tu idioma' :
+             'Wähle deine Sprache | Choose your Language | Choisissez votre langue'}
+          </h2>
         </div>
 
         <div className={styles.languageGrid}>
@@ -60,11 +94,14 @@ export function LanguageSelector({ onLanguageSelected }: LanguageSelectorProps) 
         </div>
 
         <div className={styles.continueHint}>
-          <p>Sprache auswählen zum Fortfahren</p>
+          <p>
+            {selectedLang === 'de' ? 'Sprache auswählen zum Fortfahren' :
+             selectedLang === 'en' ? 'Select language to continue' :
+             selectedLang === 'fr' ? 'Sélectionner la langue pour continuer' :
+             'Seleccionar idioma para continuar'}
+          </p>
         </div>
       </div>
     </div>
   )
 }
-
-export default LanguageSelector

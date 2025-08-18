@@ -84,11 +84,16 @@ class FirebaseOptimizerClass {
 
   private static async warmCache() {
     try {
-      // Pre-load kritische Queries
+      // Pre-load kritische Queries mit grundlegender Firestore-API
+      const playersQuery = query(collection(db, 'players'), orderBy('arenaPoints', 'desc'), limit(10))
+      const settingsQuery = query(collection(db, 'settings'), limit(5))
+      
       await Promise.all([
-        getCachedQuery('players-leaderboard'),
-        getCachedQuery('user-settings')
+        getDocs(playersQuery),
+        getDocs(settingsQuery)
       ])
+      
+      console.log('🔥 Cache warmed successfully')
     } catch (error) {
       console.warn('⚠️ Cache warming failed:', {
         message: error instanceof Error ? error.message : 'Unknown error',

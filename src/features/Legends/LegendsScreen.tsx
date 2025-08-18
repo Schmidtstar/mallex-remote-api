@@ -51,24 +51,26 @@ export function LegendsScreen() {
     }
   }
 
-  const handleRemovePlayer = async (id: string) => {
-    console.log('🗑️ handleRemovePlayer called with ID:', id)
-    console.log('📋 Current players:', players)
+  const handleRemovePlayer = async (id: string, playerName: string) => {
+    console.log('🗑️ handleRemovePlayer called with ID:', id, 'Name:', playerName)
+    console.log('📋 Current players:', players.map(p => `${p.id}: ${p.name}`))
     
-    const confirmed = window.confirm('Möchtest du diese Legende wirklich entfernen?')
+    const confirmed = window.confirm(`Möchtest du "${playerName}" wirklich aus der Halle der Legenden entfernen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)
     console.log('🤔 User confirmed removal:', confirmed)
     
     if (confirmed) {
+      setError(null) // Clear any previous errors
       try {
         console.log('🚀 Calling removePlayer...')
         await removePlayer(id)
-        setSuccessMessage('Legende erfolgreich entfernt!')
-        setTimeout(() => setSuccessMessage(null), 2000)
+        setSuccessMessage(`${playerName} wurde erfolgreich entfernt!`)
+        setTimeout(() => setSuccessMessage(null), 3000)
         console.log('✅ Remove completed successfully')
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Failed to remove player:', error)
-        setError(t('legends.removeError') || 'Fehler beim Entfernen der Legende')
-        setTimeout(() => setError(null), 3000)
+        const errorMessage = error?.message || 'Unbekannter Fehler beim Entfernen der Legende'
+        setError(errorMessage)
+        setTimeout(() => setError(null), 5000)
       }
     } else {
       console.log('❌ User cancelled removal')
@@ -187,12 +189,12 @@ export function LegendsScreen() {
                 <button
                   onClick={() => {
                     console.log('🎯 Remove button clicked for:', player.name, 'ID:', player.id)
-                    handleRemovePlayer(player.id)
+                    handleRemovePlayer(player.id, player.name)
                   }}
                   className={styles.removeButton}
-                  title={t('legends.removePlayer') || 'Legende entfernen'}
+                  title={`${player.name} aus der Halle der Legenden entfernen`}
                 >
-                  {t('common.remove') || 'Entfernen'}
+                  🗑️ {t('common.remove') || 'Entfernen'}
                 </button>
               </div>
             ))}

@@ -111,13 +111,13 @@ export function ArenaScreen() {
   const getRandomPlayer = () => {
     // Filter out excluded players from arena round
     const availablePlayers = players.filter(player => !excludedPlayers.includes(player.name))
-    
+
     if (availablePlayers.length === 0) {
       // If all players are excluded, reset exclusions and use all players
       setExcludedPlayers([])
       return players.length > 0 ? players[0].name : 'Spieler'
     }
-    
+
     const randomIndex = Math.floor(Math.random() * availablePlayers.length)
     return availablePlayers[randomIndex].name
   }
@@ -125,7 +125,7 @@ export function ArenaScreen() {
   const removePlayerFromRound = (playerName: string) => {
     setExcludedPlayers(prev => [...prev, playerName])
     announceToScreenReader(`${playerName} wurde aus der aktuellen Arena-Runde entfernt.`)
-    
+
     // If current player is removed, go to next round
     if (selectedPlayer === playerName && gameState !== 'idle') {
       nextRound()
@@ -454,7 +454,7 @@ export function ArenaScreen() {
               </div>
             </div>
 
-            {/* Player Management for Arena Round */}
+            {/* Arena Fighters Info */}
             {players.length > 0 && (
               <div style={{
                 background: 'var(--glass-background)',
@@ -474,76 +474,46 @@ export function ArenaScreen() {
                 }}>
                   ⚔️ ARENA-KÄMPFER ⚔️
                 </h3>
-                
+
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: window.innerWidth < 768 ? '1fr 1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gridTemplateColumns: window.innerWidth < 768 ? '1fr 1fr' : 'repeat(auto-fit, minmax(150px, 1fr))',
                   gap: '0.5rem',
                   marginBottom: '1rem'
                 }}>
-                  {players.map(player => {
-                    const isExcluded = excludedPlayers.includes(player.name)
-                    const availablePlayers = players.filter(p => !excludedPlayers.includes(p.name))
-                    const canExclude = availablePlayers.length > 1 || isExcluded
-                    
-                    return (
-                      <div key={player.id} style={{
-                        background: isExcluded 
-                          ? 'linear-gradient(135deg, rgba(139,125,107,0.3), rgba(105,105,105,0.2))'
-                          : 'linear-gradient(135deg, rgba(218,165,32,0.3), rgba(255,215,0,0.2))',
-                        padding: '0.5rem',
-                        borderRadius: 'var(--radius)',
-                        border: isExcluded 
-                          ? '1px solid var(--ancient-stone)'
-                          : '1px solid var(--ancient-gold)',
+                  {players.filter(p => !excludedPlayers.includes(p.name)).map(player => (
+                    <div
+                      key={player.id}
+                      style={{
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
-                        opacity: isExcluded ? 0.6 : 1,
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        padding: '0.5rem',
+                        background: 'rgba(218, 165, 32, 0.1)',
+                        border: '1px solid var(--ancient-gold)',
+                        borderRadius: '8px',
                         transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <span style={{
+                        color: 'var(--ancient-gold)',
+                        fontWeight: 'bold',
+                        fontSize: window.innerWidth < 768 ? '0.8rem' : '0.9rem'
                       }}>
-                        <span style={{
-                          color: isExcluded ? 'var(--ancient-stone)' : 'var(--ancient-marble)',
-                          fontWeight: 'bold',
-                          fontSize: window.innerWidth < 768 ? '0.8rem' : '0.9rem'
-                        }}>
-                          {isExcluded ? '💀' : '⚡'} {player.name}
-                        </span>
-                        
-                        <button
-                          onClick={() => isExcluded ? addPlayerBackToRound(player.name) : removePlayerFromRound(player.name)}
-                          disabled={!canExclude}
-                          style={{
-                            background: isExcluded ? '#4CAF50' : '#F44336',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '4px 8px',
-                            fontSize: '0.7rem',
-                            cursor: canExclude ? 'pointer' : 'not-allowed',
-                            opacity: canExclude ? 1 : 0.5,
-                            fontWeight: 'bold',
-                            minWidth: window.innerWidth < 768 ? '50px' : '60px'
-                          }}
-                          aria-label={isExcluded 
-                            ? `${player.name} wieder in die Arena aufnehmen`
-                            : `${player.name} aus der Arena entfernen`
-                          }
-                        >
-                          {isExcluded ? '↩️' : '❌'}
-                        </button>
-                      </div>
-                    )
-                  })}
+                        ⚜️ {player.name}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
                 <div style={{
                   textAlign: 'center',
+                  fontSize: '0.8rem',
                   color: 'var(--ancient-bronze)',
-                  fontSize: window.innerWidth < 768 ? '0.7rem' : '0.8rem',
                   fontStyle: 'italic'
                 }}>
-                  {players.filter(p => !excludedPlayers.includes(p.name)).length} von {players.length} Kämpfern aktiv
+                  🏛️ Spieler in der Halle der Legenden verwalten
                 </div>
               </div>
             )}

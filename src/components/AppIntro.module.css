@@ -21,38 +21,46 @@
   --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* ========== INTRO STAGE ========== */
+/* ========== INTRO STAGE - HAUPTCONTAINER ========== */
 .introStage {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: var(--olymp-navy);
   overflow: hidden;
   z-index: 9999;
   font-family: 'Orbitron', sans-serif;
   
-  /* Basis-Layout */
+  /* Grid-Layout für bessere Struktur */
   display: grid;
+  grid-template-rows: 1fr auto;
   grid-template-areas: 
     "content"
     "progress";
-  grid-template-rows: 1fr auto;
 }
 
-/* Skipping-Animation */
-.skipping {
+.introStage.skipping {
   animation: skipOut 0.3s ease-in forwards;
 }
 
 /* ========== HINTERGRUND-SYSTEM ========== */
 .backgroundLayers {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1;
 }
 
 .skyLayer {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(180deg, 
     #1a237e 0%, 
     var(--olymp-navy) 40%, 
@@ -62,7 +70,10 @@
 
 .cloudsLayer {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: 
     radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
@@ -74,7 +85,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
+  width: 100%;
   height: 30%;
   background: linear-gradient(180deg, 
     transparent 0%, 
@@ -93,16 +104,25 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  width: 100%;
+  height: 100%;
 }
 
 /* ========== PHASE 1: LOADING ========== */
 .loadingPhase {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   animation: phaseEnter 1s ease-out forwards;
 }
 
 .loadingSpinner {
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .olympicRings {
@@ -110,7 +130,8 @@
   gap: 10px;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .ring {
@@ -147,12 +168,17 @@
   color: var(--olymp-gold-light);
   font-style: italic;
   animation: textGlow 2s ease-in-out infinite;
+  text-align: center;
 }
 
 /* ========== PHASE 2: LOGO ========== */
 .logoPhase {
   text-align: center;
   animation: phaseEnter 1s ease-out forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .logoContainer {
@@ -162,6 +188,8 @@
   border-radius: 20px;
   padding: 3rem 2rem;
   box-shadow: var(--shadow-deep);
+  max-width: 500px;
+  width: 100%;
 }
 
 .logoIcon {
@@ -169,11 +197,12 @@
   margin-bottom: 1rem;
   animation: logoIconBounce 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
   display: block;
+  text-align: center;
 }
 
 .logoTitle {
   font-family: 'Cinzel', serif;
-  font-size: clamp(3rem, 8vw, 5rem);
+  font-size: clamp(2.5rem, 8vw, 4rem);
   font-weight: 900;
   color: var(--olymp-gold);
   text-shadow: var(--shadow-gold);
@@ -229,7 +258,7 @@
 
 .templeTitle {
   font-family: 'Cinzel', serif;
-  font-size: clamp(1rem, 3vw, 1.8rem);
+  font-size: clamp(0.8rem, 3vw, 1.5rem);
   font-weight: 700;
   color: var(--olymp-navy);
   text-align: center;
@@ -266,6 +295,13 @@
   opacity: 0;
 }
 
+.column:nth-child(1) { animation-delay: 0.2s; }
+.column:nth-child(2) { animation-delay: 0.4s; }
+.column:nth-child(3) { animation-delay: 0.6s; }
+.column:nth-child(4) { animation-delay: 0.8s; }
+.column:nth-child(5) { animation-delay: 1.0s; }
+.column:nth-child(6) { animation-delay: 1.2s; }
+
 .column::before {
   content: '';
   position: absolute;
@@ -299,7 +335,6 @@
   );
   box-shadow: var(--shadow-gold);
   transition: var(--transition-smooth);
-  animation: doorAppear 1s ease-out 1.5s forwards;
   opacity: 0;
   position: relative;
 }
@@ -307,19 +342,15 @@
 .leftDoor {
   border-right: 2px solid var(--olymp-navy);
   transform-origin: left center;
-  animation-name: doorAppear, doorOpenLeft;
-  animation-duration: 1s, 1.5s;
-  animation-delay: 1.5s, 2.5s;
-  animation-fill-mode: forwards, forwards;
+  animation: doorAppear 1s ease-out 1.5s forwards,
+             doorOpenLeft 1.5s ease-out 2.5s forwards;
 }
 
 .rightDoor {
   border-left: 2px solid var(--olymp-navy);
   transform-origin: right center;
-  animation-name: doorAppear, doorOpenRight;
-  animation-duration: 1s, 1.5s;
-  animation-delay: 1.5s, 2.5s;
-  animation-fill-mode: forwards, forwards;
+  animation: doorAppear 1s ease-out 1.5s forwards,
+             doorOpenRight 1.5s ease-out 2.5s forwards;
 }
 
 /* Eingangsbereich */
@@ -338,6 +369,7 @@
 .welcomePhase {
   text-align: center;
   animation: phaseEnter 1s ease-out forwards;
+  width: 100%;
   max-width: 600px;
 }
 
@@ -348,11 +380,12 @@
   border-radius: 20px;
   padding: 2.5rem;
   box-shadow: var(--shadow-deep);
+  width: 100%;
 }
 
 .welcomeTitle {
   font-family: 'Cinzel', serif;
-  font-size: clamp(2rem, 6vw, 3rem);
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
   font-weight: 700;
   color: var(--olymp-gold);
   text-shadow: var(--shadow-gold);
@@ -461,6 +494,7 @@
   padding: 1rem 2rem;
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
+  z-index: 50;
 }
 
 .progressBar {
@@ -499,12 +533,21 @@
 
 /* ========== ANIMATIONEN ========== */
 @keyframes phaseEnter {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
 }
 
 @keyframes skipOut {
-  to { opacity: 0; transform: scale(0.8); }
+  to { 
+    opacity: 0; 
+    transform: scale(0.8); 
+  }
 }
 
 @keyframes cloudsDrift {
@@ -513,87 +556,164 @@
 }
 
 @keyframes ringPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.7; }
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.7; 
+  }
 }
 
 @keyframes textGlow {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; text-shadow: 0 0 20px var(--olymp-gold-light); }
+  0%, 100% { 
+    opacity: 0.8; 
+  }
+  50% { 
+    opacity: 1; 
+    text-shadow: 0 0 20px var(--olymp-gold-light); 
+  }
 }
 
 @keyframes logoIconBounce {
-  to { transform: scale(1) rotate(0deg); }
+  from {
+    transform: scale(0) rotate(-180deg);
+  }
+  to { 
+    transform: scale(1) rotate(0deg); 
+  }
 }
 
 @keyframes logoTitleReveal {
-  to { opacity: 1; transform: translateY(0); }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
 @keyframes logoSubtitleReveal {
-  to { opacity: 1; }
+  to { 
+    opacity: 1; 
+  }
 }
 
 @keyframes pedimentBuild {
-  to { transform: translateY(0); opacity: 1; }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
 }
 
 @keyframes columnRise {
-  to { transform: translateY(0); opacity: 1; }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
 }
 
 @keyframes doorAppear {
-  to { opacity: 1; }
+  to { 
+    opacity: 1; 
+  }
 }
 
 @keyframes doorOpenLeft {
-  to { transform: perspective(1000px) rotateY(-70deg); }
+  to { 
+    transform: perspective(1000px) rotateY(-70deg); 
+  }
 }
 
 @keyframes doorOpenRight {
-  to { transform: perspective(1000px) rotateY(70deg); }
+  to { 
+    transform: perspective(1000px) rotateY(70deg); 
+  }
 }
 
 @keyframes entranceAppear {
-  to { opacity: 1; }
+  to { 
+    opacity: 1; 
+  }
 }
 
 @keyframes welcomeTitleGlow {
-  0%, 100% { text-shadow: var(--shadow-gold); }
-  50% { text-shadow: 0 0 30px var(--olymp-gold); }
+  0%, 100% { 
+    text-shadow: var(--shadow-gold); 
+  }
+  50% { 
+    text-shadow: 0 0 30px var(--olymp-gold); 
+  }
 }
 
 @keyframes featureFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-5px); 
+  }
 }
 
 @keyframes skipButtonFadeIn {
-  to { opacity: 1; }
+  to { 
+    opacity: 1; 
+  }
 }
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
+  .contentArea {
+    padding: 1rem;
+  }
+
   .skipButton {
     top: 1rem;
     right: 1rem;
-    padding: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
   }
 
   .welcomeContainer {
     padding: 2rem 1.5rem;
   }
 
+  .logoContainer {
+    padding: 2rem 1.5rem;
+  }
+
   .welcomeFeatures {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .templeContainer {
     height: min(400px, 60vh);
   }
 
-  .logoContainer {
-    padding: 2rem 1.5rem;
+  .olympicRings {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ring {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .progressIndicator {
+    padding: 0.75rem 1rem;
+  }
+
+  .logoIcon {
+    font-size: 3rem;
+  }
+
+  .enterButton {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
   }
 }
 
@@ -603,5 +723,23 @@
     animation-duration: 0.1s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.1s !important;
+  }
+  
+  .cloudsLayer {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --olymp-gold: #ffff00;
+    --olymp-silver: #ffffff;
+  }
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+@media (prefers-color-scheme: dark) {
+  .backgroundLayers {
+    filter: brightness(0.8);
   }
 }

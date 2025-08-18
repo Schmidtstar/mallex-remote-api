@@ -14,7 +14,7 @@ export function LegendsScreen() {
 
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  
+
   // Delete confirmation state
   const [playerToDelete, setPlayerToDelete] = useState<{ id: string; name: string } | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -56,7 +56,7 @@ export function LegendsScreen() {
     }
   }
 
-  
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,10 +69,10 @@ export function LegendsScreen() {
 
   const confirmDelete = async () => {
     if (!playerToDelete) return
-    
+
     setIsDeleting(true)
     setError(null)
-    
+
     try {
       await removePlayer(playerToDelete.id)
       setSuccessMessage(`${playerToDelete.name} wurde aus der Halle der Legenden entfernt`)
@@ -107,11 +107,11 @@ export function LegendsScreen() {
           Halle der Legenden
           <span style={{ marginLeft: '1rem' }}>⚜️</span>
         </h1>
-        <div style={{ 
-          color: 'var(--ancient-gold)', 
+        <div style={{
+          color: 'var(--ancient-gold)',
           fontSize: '1.1rem',
           fontStyle: 'italic',
-          margin: '1rem 0' 
+          margin: '1rem 0'
         }}>
           🌿 "Nur die Würdigsten betreten diese heiligen Hallen" 🌿
         </div>
@@ -242,7 +242,7 @@ interface PlayerItemProps {
 function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
   const [swipeTransform, setSwipeTransform] = useState(0)
   const [showDeleteIndicator, setShowDeleteIndicator] = useState(false)
-  
+
   const swipeHandlers = useSwipe(
     {
       onSwipeLeft: () => {
@@ -287,7 +287,7 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
       <span className={styles.playerName}>
         {player.name}
       </span>
-      
+
       <div className={styles.playerStats}>
         <span style={{ color: 'var(--ancient-gold)', fontSize: '0.9rem' }}>
           {player.arenaPoints || 0} Punkte

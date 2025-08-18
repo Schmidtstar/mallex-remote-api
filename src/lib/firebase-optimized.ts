@@ -234,4 +234,13 @@ if (typeof window !== 'undefined') {
   }, 10 * 60 * 1000) // Alle 10 Minuten
 }
 
+// Service export
+export { FirebaseOptimizer }
+
+// Default export für bessere Kompatibilität
 export default FirebaseOptimizer
+
+// Named function exports
+export const init = FirebaseOptimizer.init.bind(FirebaseOptimizer)
+export const cleanup = FirebaseOptimizer.cleanup.bind(FirebaseOptimizer)
+export const getCacheStats = FirebaseOptimizer.getCacheStats.bind(FirebaseOptimizer)

@@ -122,7 +122,44 @@ const routes = [
         </Suspense>
       </ProtectedRoute>
     ),
-    errorElement: <ErrorBoundary><div>App nicht verfügbar</div></ErrorBoundary>,
+    errorElement: (
+      <ErrorBoundary>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          gap: '1rem',
+          color: '#c9aa71',
+          background: 'linear-gradient(135deg, #0b1327 0%, #0b0f1b 100%)',
+          padding: '2rem',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '3rem' }}>⚠️</div>
+          <h2 style={{ margin: '0.5rem 0', color: '#c9aa71' }}>
+            App wird geladen...
+          </h2>
+          <p style={{ opacity: 0.8, marginBottom: '1rem' }}>
+            Falls das Problem weiterbesteht, lade die Seite neu.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #c9aa71 0%, #8b7355 100%)',
+              color: '#0b0f1b',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            🔄 Neu laden
+          </button>
+        </div>
+      </ErrorBoundary>
+    ),
     children: [
       // Main navigation
       {

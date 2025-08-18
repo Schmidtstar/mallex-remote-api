@@ -13,6 +13,19 @@ interface ErrorMetric {
   errorId: string
 }
 
+interface WebVitalMetric {
+  name: string
+  value: number
+  id: string
+}
+
+interface PerformanceMetrics {
+  renderTime: number
+  scrollPerformance: number
+  memoryUsage: number
+  itemsRendered: number
+}
+
 export default class PerformanceMonitor {
   private static metrics: PerformanceMetric[] = []
   private static errorMetrics: ErrorMetric[] = []
@@ -618,4 +631,7 @@ export default class PerformanceMonitor {
   }
 }
 
+// Export both the class and an instance
 export const performanceMonitor = new PerformanceMonitor();
+export { PerformanceMonitor };
+export default PerformanceMonitor;

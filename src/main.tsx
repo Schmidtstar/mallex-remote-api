@@ -15,10 +15,11 @@ import { FirebaseOptimizer } from './lib/firebase-optimized'
 import ErrorBoundary from './components/ErrorBoundary'
 import PerformanceDashboard from './components/PerformanceDashboard'
 import { SoundManager } from './lib/sound-manager'
-import './lib/capacitor-integration' // Assuming CapacitorIntegration is in this path
+import './lib/capacitor-integration'
 import ErrorBoundaryEnhanced from './components/ErrorBoundaryEnhanced'
 import { CriticalErrorHandler } from './lib/error-handler'
 import { AccessibilityManager } from './lib/a11y'
+import PerformanceMonitor from './lib/performance-monitor'
 
 // Initialize Sound System
 SoundManager.init().catch(err => 
@@ -101,8 +102,6 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   PerformanceMonitor.init()
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
-  MobilePerformanceOptimizer.init()
-  CapacitorIntegration.init()
 
   // Track app initialization performance with detailed metrics
   const initStartTime = performance.now()
@@ -113,7 +112,11 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
     console.log(`📊 App initialized in ${Math.round(initTime)}ms`)
 
     // Track critical performance metrics
-    PerformanceMonitor.trackCustomMetric('app-initialization', initTime)
+    PerformanceMonitor.trackMetric({ 
+      name: 'app-initialization', 
+      value: initTime, 
+      timestamp: Date.now() 
+    })
 
     // Initialize performance dashboard in dev mode
     if (import.meta.env.DEV) {
@@ -126,29 +129,22 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
   // Global Performance API for Development
   if (import.meta.env.DEV) {
-    window.MALLEX_PERFORMANCE = {
-      getMetrics: () => PerformanceMonitor.getMetrics(),
-      generateReport: () => PerformanceMonitor.generateReport(),
-      clearMetrics: () => PerformanceMonitor.clearMetrics(),
-      startProfiling: () => PerformanceMonitor.startProfiling(),
-      stopProfiling: () => PerformanceMonitor.stopProfiling()
+    ;(window as any).MALLEX_PERFORMANCE = {
+      getMetrics: () => PerformanceMonitor.getPerformanceReport(),
+      generateReport: () => PerformanceMonitor.generatePerformanceReport(),
+      trackMetric: (name: string, value: number) => PerformanceMonitor.trackMetric({ name, value, timestamp: Date.now() })
     }
   }
 
-  // Service Worker Performance Metrics Listener - Safe import
+  // Service Worker Performance Metrics Listener
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data?.type === 'SW_PERFORMANCE_METRIC') {
-        // Safe dynamic import with error handling
-        import('./lib/performance-monitor').then((module) => {
-          const PerformanceMonitor = module.default || module.PerformanceMonitor || module
-          if (PerformanceMonitor && typeof PerformanceMonitor.trackServiceWorkerMetric === 'function') {
-            PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
-          }
-        }).catch((error) => {
-          // Silent fail - Performance Monitor ist optional
-          console.warn('Performance Monitor konnte nicht geladen werden:', error)
-        })
+        try {
+          PerformanceMonitor.trackServiceWorkerMetric(event.data.metric)
+        } catch (error) {
+          console.warn('Performance Monitor tracking failed:', error)
+        }
       }
     })
   }
@@ -174,15 +170,8 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
 // Enhanced Service Worker Registration mit Performance-Integration
 if ('serviceWorker' in navigator) {
-  // Safe PerformanceMonitor Import
-  import('./lib/performance-monitor').then(({ PerformanceMonitor }) => {
-    // Global verfügbar machen für Dashboard (nur wenn erfolgreich geladen)
-    if (PerformanceMonitor) {
-      ;(window as any).PerformanceMonitor = PerformanceMonitor
-    }
-  }).catch(() => {
-    // Silent fail - PerformanceMonitor ist optional
-  })
+  // PerformanceMonitor global verfügbar machen
+  ;(window as any).PerformanceMonitor = PerformanceMonitor
 
   window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
@@ -241,8 +230,13 @@ if (import.meta.env.DEV) {
   }
 
   // Initialize Mobile Performance Optimizations
-  import('./lib/mobile-performance').then(({ MobilePerformanceOptimizer }) => {
-    MobilePerformanceOptimizer.init()
+  import('./lib/mobile-performance').then((module) => {
+    const MobilePerformanceOptimizer = module.MobilePerformanceOptimizer || module.default
+    if (MobilePerformanceOptimizer?.init) {
+      MobilePerformanceOptimizer.init()
+    }
+  }).catch(() => {
+    console.warn('Mobile performance optimizer not available')
   })
 
 // No problematic exports that break Fast Refresh

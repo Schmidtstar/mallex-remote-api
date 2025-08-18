@@ -16,6 +16,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 import PerformanceDashboard from './components/PerformanceDashboard'
 import { SoundManager } from './lib/sound-manager'
 import './lib/capacitor-integration' // Assuming CapacitorIntegration is in this path
+import ErrorBoundaryEnhanced from './components/ErrorBoundaryEnhanced'
+import { CriticalErrorHandler } from './lib/error-handler'
 
 // Initialize Sound System
 SoundManager.init().catch(err => 
@@ -87,6 +89,9 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   rootElement.setAttribute('data-react-root', 'true')
   const root = createRoot(rootElement)
 
+  // Initialize critical error handling
+  CriticalErrorHandler.init()
+
   // Enhanced Performance Monitoring Initialization
   PerformanceMonitor.init()
   MonitoringService.trackUserAction('app_start')
@@ -153,7 +158,13 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
     }
   })
 
-  root.render(<App />)
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundaryEnhanced context={{ component: 'App', severity: 'critical' }}>
+        <App />
+      </ErrorBoundaryEnhanced>
+    </React.StrictMode>
+  )
 }
 
 // Enhanced Service Worker Registration mit Performance-Integration

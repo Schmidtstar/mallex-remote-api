@@ -172,6 +172,48 @@ service cloud.firestore {
                     (resource.data.createdBy == request.auth.uid || isAdmin());
     }
 
+    // ========= PRIVACY SETTINGS =========
+    match /privacy/{userId} {
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == userId;
+    }
+
+    match /userSettings/{userId} {
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == userId;
+    }
+
+    // ========= SUGGESTIONS (App verwendet 'suggestions' nicht 'taskSuggestions') =========
+    match /suggestions/{suggestionId} {
+      // Lesen: eigener Datensatz, oder approved, oder Admin
+      allow read: if request.auth != null && (
+        (resource.data.createdBy == request.auth.uid) ||
+        (resource.data.status == 'approved') ||
+        isAdmin()
+      );
+
+      // Erstellen
+      allow create: if request.auth != null &&
+                    request.resource.data.createdBy == request.auth.uid &&
+                    validateTaskSuggestion();
+
+      // Update: nur Ersteller oder Admin; createdBy/createdAt unverändert
+      allow update: if request.auth != null &&
+                    (resource.data.createdBy == request.auth.uid || isAdmin()) &&
+                    validateTaskSuggestion() &&
+                    request.resource.data.createdBy == resource.data.createdBy &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+
+      // Löschen: nur Admin
+      allow delete: if isAdmin();
+    }
+
+    // ========= GLOBAL SETTINGS (für App-weite Konfiguration) =========
+    match /settings/{document} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
     // --- KEIN globales catch-all allow ---
   }
 }

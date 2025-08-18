@@ -1,71 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import styles from './PerformanceDashboard.module.css'
 
-// Define the interface for PerformanceMetrics
-interface PerformanceMetrics {
-  totalRequests?: number
-  cacheHitRate?: number
-  averageResponseTime?: number
-  errorCount?: number
-  lastUpdated?: string
-  networkStatus?: boolean
-  serviceWorkerStatus?: string
-  memoryUsage?: number
-  timestamp?: string
-  webVitals?: {
-    [key: string]: {
-      latest: number
-      name: string
-    }
-  }
-  serviceWorker?: {
-    cacheHits: number
-    totalRequests: number
-    averageResponseTime: number
-  }
-  performanceScore?: number;
-  renderTime?: number;
-  bundleSize?: number;
-  firebaseQueries?: number;
-  averageLoadTime?: number;
-  errorRate?: number;
-}
-
-// Mock MonitoringService for demonstration purposes if it's not globally available
-const MonitoringService = {
-  getPerformanceReport: () => {
-    // Simulate fetching data
-    if (Math.random() > 0.3) { // Simulate occasional data availability
-      return {
-        webVitals: {
-          CLS: { latest: Math.random() * 0.2, name: 'Cumulative Layout Shift' },
-          FID: { latest: Math.random() * 150, name: 'First Input Delay' },
-          LCP: { latest: Math.random() * 2000 + 500, name: 'Largest Contentful Paint' },
-        },
-        serviceWorker: {
-          cacheHits: Math.floor(Math.random() * 100),
-          totalRequests: Math.floor(Math.random() * 200) + 50,
-          averageResponseTime: Math.random() * 800 + 100,
-        }
-      }
-    } else {
-      throw new Error('Performance report not available')
-    }
-  }
-}
-
-// Mock functions for new metrics
-const calculatePerformanceScore = () => Math.floor(Math.random() * 100);
-const getMemoryUsage = () => (performance as any).memory?.usedJSHeapSize || Math.floor(Math.random() * 50 * 1024 * 1024); // Mock if performance.memory is not available
-const measureRenderTime = () => Math.random() * 500;
-const getBundleSize = () => Math.floor(Math.random() * 2000) + 500; // in KB
-const getFirebaseStats = () => Math.floor(Math.random() * 50);
-const getCacheHitRate = () => Math.random();
-const getAverageLoadTime = () => Math.random() * 1500 + 500;
-const getErrorRate = () => Math.random() * 5;
-
-
-export default function PerformanceDashboard() {
+// Performance-optimierte Komponente mit Error Boundary
+const PerformanceDashboardCore: React.FC = () => {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({})
   const [isVisible, setIsVisible] = useState(false)
   const [networkStatus, setNetworkStatus] = useState(navigator.onLine)
@@ -254,4 +191,107 @@ export default function PerformanceDashboard() {
       )}
     </div>
   )
+}
+
+// Error Boundary Component
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // You can also log the error to an error reporting service
+    console.error("Uncaught error:", error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // You can render any custom fallback UI
+      return (
+        <div className={styles.errorFallback}>
+          <h2>Etwas ist schief gelaufen.</h2>
+          <p>Die Performance-Daten konnten nicht geladen werden.</p>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
+
+// Mock MonitoringService for demonstration purposes if it's not globally available
+const MonitoringService = {
+  getPerformanceReport: () => {
+    // Simulate fetching data
+    if (Math.random() > 0.3) { // Simulate occasional data availability
+      return {
+        webVitals: {
+          CLS: { latest: Math.random() * 0.2, name: 'Cumulative Layout Shift' },
+          FID: { latest: Math.random() * 150, name: 'First Input Delay' },
+          LCP: { latest: Math.random() * 2000 + 500, name: 'Largest Contentful Paint' },
+        },
+        serviceWorker: {
+          cacheHits: Math.floor(Math.random() * 100),
+          totalRequests: Math.floor(Math.random() * 200) + 50,
+          averageResponseTime: Math.random() * 800 + 100,
+        }
+      }
+    } else {
+      throw new Error('Performance report not available')
+    }
+  }
+}
+
+// Mock functions for new metrics
+const calculatePerformanceScore = () => Math.floor(Math.random() * 100);
+const getMemoryUsage = () => (performance as any).memory?.usedJSHeapSize || Math.floor(Math.random() * 50 * 1024 * 1024); // Mock if performance.memory is not available
+const measureRenderTime = () => Math.random() * 500;
+const getBundleSize = () => Math.floor(Math.random() * 2000) + 500; // in KB
+const getFirebaseStats = () => Math.floor(Math.random() * 50);
+const getCacheHitRate = () => Math.random();
+const getAverageLoadTime = () => Math.random() * 1500 + 500;
+const getErrorRate = () => Math.random() * 5;
+
+export default function PerformanceDashboard() {
+  return (
+    <ErrorBoundary>
+      <PerformanceDashboardCore />
+    </ErrorBoundary>
+  );
+}
+
+// Define the interface for PerformanceMetrics
+interface PerformanceMetrics {
+  totalRequests?: number
+  cacheHitRate?: number
+  averageResponseTime?: number
+  errorCount?: number
+  lastUpdated?: string
+  networkStatus?: boolean
+  serviceWorkerStatus?: string
+  memoryUsage?: number
+  timestamp?: string
+  webVitals?: {
+    [key: string]: {
+      latest: number
+      name: string
+    }
+  }
+  serviceWorker?: {
+    cacheHits: number
+    totalRequests: number
+    averageResponseTime: number
+  }
+  performanceScore?: number;
+  renderTime?: number;
+  bundleSize?: number;
+  firebaseQueries?: number;
+  averageLoadTime?: number;
+  errorRate?: number;
 }

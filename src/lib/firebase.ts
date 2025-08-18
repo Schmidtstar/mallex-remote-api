@@ -31,9 +31,6 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig) // This line was commented out in the provided original code.
 
-// Export app for use in other modules
-export { app }
-
 // Development: Fix WebSocket binding for Replit
 if (import.meta.env.DEV) {
   // Force offline mode during development to prevent WebSocket errors

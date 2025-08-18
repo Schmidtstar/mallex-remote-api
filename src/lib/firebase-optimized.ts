@@ -18,11 +18,21 @@ import {
 import { app } from './firebase'
 
 // Optimierte Firestore-Instanz mit erweiterten Cache-Einstellungen
-export const db = initializeFirestore(app, {
-  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-  experimentalForceLongPolling: false, // Für bessere Performance
-  ignoreUndefinedProperties: true
-})
+let optimizedDb: any
+
+try {
+  optimizedDb = initializeFirestore(app, {
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+    experimentalForceLongPolling: false, // Für bessere Performance
+    ignoreUndefinedProperties: true
+  })
+} catch (error) {
+  // Falls bereits initialisiert, verwende bestehende Instanz
+  optimizedDb = getFirestore(app)
+  console.log('🔄 Using existing Firestore instance')
+}
+
+export const db = optimizedDb
 
 // Query-Cache für wiederverwendbare Queries
 const queryCache = new Map<string, any>()

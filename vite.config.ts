@@ -67,7 +67,18 @@ export default defineConfig(({ mode }) => {
       }
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom']
+      include: [
+        'react', 
+        'react-dom', 
+        'react-router-dom',
+        'firebase/app',
+        'firebase/auth',
+        'firebase/firestore'
+      ],
+      exclude: ['@capacitor/core']
+    },
+    esbuild: {
+      logOverride: { 'this-is-undefined-in-esm': 'silent' }
     }
   }
 })

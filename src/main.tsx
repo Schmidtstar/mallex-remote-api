@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
+// Intro-Styles ZUERST laden
 import './styles/index.css'
 import './i18n'
 import { AuthProvider } from './context/AuthContext'

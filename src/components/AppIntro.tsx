@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { IntroDebug } from './IntroDebug'
 
-// Optimierte CSS-Klassen-Mapping - Lazy Loading für bessere Performance
+// CSS-Klassen direkt verwenden für bessere Performance und Debugging
 const styles = {
   // Core Container
   introContainer: 'intro-container',
@@ -13,7 +14,7 @@ const styles = {
   mainContent: 'main-content',
   skipButton: 'skip-button',
   
-  // Phase-spezifische Styles (werden nur bei Bedarf geladen)
+  // Phase-spezifische Styles
   loadingPhase: 'loading-phase',
   olympicRings: 'olympic-rings',
   ring: 'ring',
@@ -61,6 +62,7 @@ const styles = {
   enterButton: 'enter-button',
   buttonIcon: 'button-icon',
   buttonGlow: 'button-glow',
+  enterHint: 'enter-hint',
   
   // Progress & Navigation
   progressContainer: 'progress-container',
@@ -229,6 +231,7 @@ export function AppIntro({ onComplete, userType = 'first-time', showSkip = true 
 
   return (
     <div className={`${styles.introContainer} ${styles[`phase-${currentPhase}`] || ''} ${isSkipping ? styles.skipping : ''}`}>
+      <IntroDebug />
       {/* Skip-Button */}
       {showSkip && currentPhase !== 'enter' && (
         <button

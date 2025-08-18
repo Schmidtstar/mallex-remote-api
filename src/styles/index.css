@@ -12,13 +12,33 @@
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 9999 !important;
+  z-index: 10000 !important;
   overflow: hidden !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
   background: linear-gradient(135deg, #0c1445 0%, #1e3c72 50%, #2a5298 100%) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  
+  /* Wichtig: Überschreibt alle anderen Styles */
+  color: white !important;
+}
+
+/* Stelle sicher dass alle Intro-Elemente sichtbar sind */
+.intro-container * {
+  box-sizing: border-box !important;
+}
+
+.intro-container .main-content {
+  position: relative !important;
+  z-index: 10 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  color: white !important;
 }
 
 /* Hintergrund-Elemente */
@@ -445,6 +465,12 @@
   box-shadow: 0 12px 35px rgba(238, 90, 36, 0.6);
 }
 
+.enter-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .button-icon {
   font-size: 1.6rem;
   animation: iconPulse 2s ease-in-out infinite;
@@ -458,6 +484,22 @@
   z-index: -1;
   animation: buttonGlowRotate 3s linear infinite;
   opacity: 0.7;
+}
+
+.enter-hint {
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  animation: slideUpFade 1s ease-out 1s both;
+}
+
+.enter-hint kbd {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Progress Elements */

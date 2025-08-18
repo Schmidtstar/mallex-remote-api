@@ -9,7 +9,7 @@ import { AuthProvider } from './context/AuthContext'
 import { AdminSettingsProvider } from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
-import AppIntro from './components/AppIntro'
+
 import LanguageSelector from './components/LanguageSelector'
 import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'

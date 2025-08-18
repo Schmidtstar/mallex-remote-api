@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react'
 import { createHashRouter, createBrowserRouter, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'

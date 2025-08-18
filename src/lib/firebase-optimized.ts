@@ -283,13 +283,8 @@ export const FirebaseOptimizer = {
     try {
       console.log('🔧 Firebase Optimizer initializing...')
 
-      // Initialize connection monitoring
-      this.monitorConnection()
-
-      // Initialize cache if needed
-      if (typeof this.initCache === 'function') {
-        this.initCache()
-      }
+      // Initialize connection monitoring via the instance
+      FirebaseOptimizerImpl.getInstance().monitorConnection()
 
       console.log('✅ Firebase Optimizer initialized successfully')
       return true

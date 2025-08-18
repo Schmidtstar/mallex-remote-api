@@ -297,22 +297,22 @@ export function useSwipe(
   }
 
   return {
-    // Touch events
+    // Touch events only
     onTouchStart,
     onTouchMove,
     onTouchEnd,
 
-    // Mouse events
+    // Mouse events only  
     onMouseDown,
     onMouseMove,
     onMouseUp,
 
-    // State (not passed as DOM props)
-    swipeState,
-    isSwipingInDirection: isSwipingInDirection(),
-    swipeProgress: getSwipeProgress(),
-
-    // Methods (call these, don't pass as props)
+    // State and methods (NOT for DOM props)
+    swipeState: swipeState.direction,
+    isSwiping: swipeState.isSwiping,
+    swipeDistance: Math.abs(swipeState.deltaX),
+    
+    // Utility methods
     bindSwipe,
     getSwipeProgress,
     triggerHapticFeedback

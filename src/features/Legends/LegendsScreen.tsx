@@ -282,10 +282,7 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}
-      data-swipe-state={swipeState}
-      data-is-swiping={isSwipingInDirection}
-      data-swipe-progress={getSwipeProgress()}
-      aria-label={t('legends.playerItem', { name: player.name })}
+      aria-label={`Spieler ${player.name}`}
     >
       <span className={styles.playerName}>
         {player.name}

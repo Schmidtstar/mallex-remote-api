@@ -7,11 +7,11 @@ export class SoundManager {
 
   // Define sound paths relative to the public directory
   private static soundPaths = {
-    click: '/public/sounds/click.mp3',
-    correct: '/public/sounds/correct.mp3',
-    wrong: '/public/sounds/wrong.mp3',
-    achievement: '/public/sounds/achievement.mp3',
-    arena_start: '/public/sounds/arena_start.mp3'
+    click: '/sounds/click.mp3',
+    correct: '/sounds/correct.mp3',
+    wrong: '/sounds/wrong.mp3',
+    achievement: '/sounds/achievement.mp3',
+    arena_start: '/sounds/arena_start.mp3'
   }
 
   static async init() {

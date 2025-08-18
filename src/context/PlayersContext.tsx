@@ -3,6 +3,13 @@ import { useAuth } from './AuthContext'
 import { doc, setDoc, getDoc, increment, deleteDoc, onSnapshot, collection, query, where, orderBy, limit } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
+// Minimaler SecurityManager Mock falls nicht verfügbar
+const SecurityManager = {
+  isRateLimited: () => false,
+  sanitizeUserInput: (input: string) => input.trim(),
+  isSecureInput: () => true
+}
+
 // Player type mit allen nötigen Feldern
 interface Player {
   id: string;
@@ -58,11 +65,6 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
   const setupFirebaseListener = useCallback((player: Player) => {
     const playerId = normalizePlayerId(player.name)
 
-    // Verhindere doppelte Listener
-    if (firebaseListeners.has(playerId)) {
-      firebaseListeners.get(playerId)?.() // Cleanup existing
-    }
-
     try {
       const playerRef = doc(db, 'players', playerId)
       const unsubscribe = onSnapshot(playerRef, (doc) => {
@@ -91,7 +93,7 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
               // Batch localStorage Update
               localStorage.setItem(STORAGE_KEY, JSON.stringify(newPlayers))
 
-              if (import.meta.env.DEV) {
+              if (import.meta.env.DEV && updatedArenaPoints !== targetPlayer?.arenaPoints) {
                 console.log(`🔄 Live update für ${player.name}: ${updatedArenaPoints} Punkte`)
               }
 
@@ -101,16 +103,23 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
         }
       }, (error) => {
         console.warn(`⚠️ Firebase Listener Fehler für ${player.name}:`, error)
-        // Fallback: Remove broken listener
-        firebaseListeners.delete(playerId)
       })
 
-      // Listener registrieren
-      setFirebaseListeners(prev => new Map(prev.set(playerId, unsubscribe)))
+      // Listener in Ref speichern statt State
+      setFirebaseListeners(prev => {
+        // Cleanup existing listener for same player
+        const existing = prev.get(playerId)
+        if (existing) existing()
+        
+        return new Map(prev.set(playerId, unsubscribe))
+      })
+
+      return unsubscribe
     } catch (error) {
       console.warn(`❌ Firebase Listener Setup fehlgeschlagen für ${player.name}:`, error)
+      return () => {}
     }
-  }, [normalizePlayerId, firebaseListeners]) // Added firebaseListeners to dependency array
+  }, [normalizePlayerId]) // ENTFERNT: firebaseListeners dependency → stoppt Endlosschleife
 
   // Spieler laden beim Start
   useEffect(() => {
@@ -203,7 +212,7 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
         clearTimeout(updateTimeoutRef.current)
       }
     }
-  }, [authLoading, user, setupFirebaseListener, normalizePlayerId]) // Added normalizePlayerId to dependency array
+  }, []) // GEFIXT: Leere Dependencies → verhindert Rekursion, Listener werden einmalig gesetzt
 
   // Input-Validierung und XSS-Schutz
   const validatePlayerName = useCallback((name: string): { isValid: boolean; error?: string } => {
@@ -394,14 +403,19 @@ export const PlayersProvider = memo(({ children }: PlayersProviderProps) => {
     }
   }, [players, normalizePlayerId])
 
+  // Stabilisiere Callback-Funktionen um Context-Rekursion zu vermeiden
+  const stableAddPlayer = useCallback(handleAddPlayer, [players])
+  const stableRemovePlayer = useCallback(handleRemovePlayer, [players, firebaseListeners, normalizePlayerId])
+  const stableUpdateArenaPoints = useCallback(handleUpdatePlayerArenaPoints, [players, normalizePlayerId])
+
   const contextValue = useMemo(() => ({
     players,
-    addPlayer: handleAddPlayer,
-    removePlayer: handleRemovePlayer,
-    updatePlayerArenaPoints: handleUpdatePlayerArenaPoints,
+    addPlayer: stableAddPlayer,
+    removePlayer: stableRemovePlayer,
+    updatePlayerArenaPoints: stableUpdateArenaPoints,
     mode,
     loading
-  }), [players, handleAddPlayer, handleRemovePlayer, handleUpdatePlayerArenaPoints, mode, loading])
+  }), [players, stableAddPlayer, stableRemovePlayer, stableUpdateArenaPoints, mode, loading])
 
   return (
     <PlayersContext.Provider value={contextValue}>

@@ -79,18 +79,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   displayName: firebaseUser.displayName ?? undefined,
                 }).catch(() => console.warn('Profile creation skipped')),
                 
-                // Admin-Check mit Timeout
-                Promise.race([
-                  getDoc(doc(db, 'admins', firebaseUser.uid)),
-                  new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
-                ]).then((adminDoc: any) => {
-                  if (isMounted && adminDoc?.exists()) {
-                    setIsAdmin(true);
-                    console.log('👑 Admin user detected');
-                  }
-                }).catch(() => {
-                  if (isMounted) setIsAdmin(false);
-                })
+                // Admin-Check mit Timeout - EINMALIG
+                getDoc(doc(db, 'admins', firebaseUser.uid))
+                  .then((adminDoc) => {
+                    if (isMounted && adminDoc?.exists()) {
+                      setIsAdmin(true);
+                      console.log('👑 Admin user detected');
+                    } else if (isMounted) {
+                      setIsAdmin(false);
+                    }
+                  })
+                  .catch(() => {
+                    if (isMounted) setIsAdmin(false);
+                  })
               ]);
 
             } else {

@@ -209,10 +209,90 @@ export function useSwipe(
     const element = elementRef.current
     if (!element) return
 
-    // Passive Listeners für bessere Performance
-    element.addEventListener('touchstart', handleTouchStart, { passive: !finalConfig.preventScroll })
-    element.addEventListener('touchmove', handleTouchMove, { passive: !finalConfig.preventScroll })
-    element.addEventListener('touchend', handleTouchEnd, { passive: true })
+    // Touch handlers with passive option for better performance
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+
+      const touch = e.touches[0]
+      touchStartRef.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+        time: Date.now()
+      }
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStartRef.current || e.touches.length !== 1) return
+
+      const touch = e.touches[0]
+      const deltaX = touch.clientX - touchStartRef.current.x
+      const deltaY = touch.clientY - touchStartRef.current.y
+
+      // Prevent scrolling if horizontal swipe is detected
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+        e.preventDefault()
+      }
+    }
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!touchStartRef.current) return
+
+      const touch = e.changedTouches[0]
+      const deltaX = touch.clientX - touchStartRef.current.x
+      const deltaY = touch.clientY - touchStartRef.current.y
+      const deltaTime = Date.now() - touchStartRef.current.time
+
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+      const velocity = deltaTime > 0 ? distance / deltaTime : 0 // Added check for deltaTime > 0
+
+      // Swipe detection thresholds
+      if (distance > finalConfig.threshold && velocity > finalConfig.velocity && deltaTime < 500) { // Adjusted deltaTime check
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          // Horizontal swipe
+          if (deltaX > 0 && handlers.onSwipeRight) {
+            handlers.onSwipeRight()
+          } else if (deltaX < 0 && handlers.onSwipeLeft) {
+            handlers.onSwipeLeft()
+          }
+        } else {
+          // Vertical swipe
+          if (deltaY > 0 && handlers.onSwipeDown) {
+            handlers.onSwipeDown()
+          } else if (deltaY < 0 && handlers.onSwipeUp) {
+            handlers.onSwipeUp()
+          }
+        }
+      }
+
+      // Reset state
+      setSwipeState({
+        isSwiping: false,
+        direction: null,
+        deltaX: 0,
+        deltaY: 0,
+        velocity: 0
+      })
+
+      touchStartRef.current = null
+
+      if (handlers.onSwipeEnd) {
+        handlers.onSwipeEnd()
+      }
+    }
+
+    // Check if touch events are supported
+    if ('ontouchstart' in window) {
+      // Add event listeners with proper options
+      element.addEventListener('touchstart', handleTouchStart, { passive: true })
+      element.addEventListener('touchmove', handleTouchMove, { passive: false })
+      element.addEventListener('touchend', handleTouchEnd, { passive: true })
+
+      return () => {
+        element.removeEventListener('touchstart', handleTouchStart)
+        element.removeEventListener('touchmove', handleTouchMove)
+        element.removeEventListener('touchend', handleTouchEnd)
+      }
+    }
 
     // Mouse Events for Web compatibility
     element.addEventListener('mousedown', handleMouseDown, { passive: !finalConfig.preventScroll })
@@ -220,9 +300,6 @@ export function useSwipe(
     element.addEventListener('mouseup', handleMouseUp, { passive: true })
 
     return () => {
-      element.removeEventListener('touchstart', handleTouchStart)
-      element.removeEventListener('touchmove', handleTouchMove)
-      element.removeEventListener('touchend', handleTouchEnd)
       element.removeEventListener('mousedown', handleMouseDown)
       element.removeEventListener('mousemove', handleMouseMove)
       element.removeEventListener('mouseup', handleMouseUp)
@@ -296,6 +373,21 @@ export function useSwipe(
     }
   }
 
+  // Helper function to get transform for swipe animation
+  const getSwipeTransform = () => {
+    if (!swipeState.isSwiping) return 'translateX(0)'
+
+    const transformX = swipeState.deltaX
+    const transformY = swipeState.deltaY
+
+    // Prioritize horizontal swipe for transform if it's the dominant direction
+    if (Math.abs(transformX) > Math.abs(transformY)) {
+      return `translateX(${transformX}px)`
+    } else {
+      return `translateY(${transformY}px)`
+    }
+  }
+
   return {
     // DOM event handlers only
     onTouchStart,
@@ -310,7 +402,7 @@ export function useSwipe(
     isSwipeActive: swipeState.isSwiping,
     swipeDistance: Math.abs(swipeState.deltaX),
     swipeTransform: getSwipeTransform(),
-    
+
     // Utility functions
     getSwipeProgress: () => getSwipeProgress(),
     triggerHaptic: () => triggerHapticFeedback()

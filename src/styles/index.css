@@ -395,6 +395,8 @@
 /* Enter Phase */
 .enter-phase {
   animation: enterReveal 1s ease-out;
+  max-width: 600px;
+  text-align: center;
 }
 
 .enter-container {

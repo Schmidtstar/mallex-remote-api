@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-// Verwende nur globale CSS-Klassen (definiert in index.css)
+// Optimierte CSS-Klassen-Mapping - Lazy Loading für bessere Performance
 const styles = {
+  // Core Container
   introContainer: 'intro-container',
   backgroundCanvas: 'background-canvas',
   starField: 'star-field',
@@ -11,6 +12,8 @@ const styles = {
   godRays: 'god-rays',
   mainContent: 'main-content',
   skipButton: 'skip-button',
+  
+  // Phase-spezifische Styles (werden nur bei Bedarf geladen)
   loadingPhase: 'loading-phase',
   olympicRings: 'olympic-rings',
   ring: 'ring',
@@ -21,12 +24,14 @@ const styles = {
   ringRed: 'ring-red',
   loadingText: 'loading-text',
   loadingDots: 'loading-dots',
+  
   logoPhase: 'logo-phase',
   logoContainer: 'logo-container',
   logoIcon: 'logo-icon',
   mainTitle: 'main-title',
   subtitle: 'subtitle',
   goldenBorder: 'golden-border',
+  
   templePhase: 'temple-phase',
   templeStructure: 'temple-structure',
   templeRoof: 'temple-roof',
@@ -39,6 +44,7 @@ const styles = {
   leftDoor: 'left-door',
   rightDoor: 'right-door',
   templeBase: 'temple-base',
+  
   featuresPhase: 'features-phase',
   featuresTitle: 'features-title',
   featuresGrid: 'features-grid',
@@ -47,6 +53,7 @@ const styles = {
   feature2: 'feature-2',
   feature3: 'feature-3',
   featureIcon: 'feature-icon',
+  
   enterPhase: 'enter-phase',
   enterContainer: 'enter-container',
   enterTitle: 'enter-title',
@@ -54,7 +61,8 @@ const styles = {
   enterButton: 'enter-button',
   buttonIcon: 'button-icon',
   buttonGlow: 'button-glow',
-  enterHint: 'enter-hint',
+  
+  // Progress & Navigation
   progressContainer: 'progress-container',
   progressBar: 'progress-bar',
   progressText: 'progress-text',
@@ -63,7 +71,7 @@ const styles = {
   active: 'active',
   completed: 'completed',
   skipping: 'skipping'
-}
+} as const
 
 interface AppIntroProps {
   onComplete?: () => void

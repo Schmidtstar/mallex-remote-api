@@ -636,8 +636,3 @@ class PerformanceMonitor {
 export const performanceMonitor = new PerformanceMonitor();
 export { PerformanceMonitor };
 export default PerformanceMonitor;
-
-// Export both the class and an instance
-export const performanceMonitor = new PerformanceMonitor();
-export { PerformanceMonitor };
-export default PerformanceMonitor;

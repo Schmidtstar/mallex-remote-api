@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './LanguageSelector.module.css'
 
 interface LanguageSelectorProps {
-  onLanguageSelected: (language: string) => void
+  onComplete?: () => void
+  onLanguageSelected?: (language: string) => void
+  showSkip?: boolean
 }
 
-export function LanguageSelector({ onLanguageSelected }: LanguageSelectorProps) {
+export function LanguageSelector({ onComplete, onLanguageSelected, showSkip = false }: LanguageSelectorProps) {
   const { i18n, t } = useTranslation()
   const [selectedLang, setSelectedLang] = useState(i18n.language || 'de')
 
@@ -41,14 +42,14 @@ export function LanguageSelector({ onLanguageSelected }: LanguageSelectorProps) 
 
   const handleLanguageSelect = async (langCode: string) => {
     setSelectedLang(langCode)
-    
+
     // Das gleiche System wie in MenuScreen verwenden
     await i18n.changeLanguage(langCode)
     localStorage.setItem('mallex-language', langCode)
-    
+
     // Kurz warten für die Animation, dann weiterleiten
     setTimeout(() => {
-      onLanguageSelected(langCode)
+      onLanguageSelected ? onLanguageSelected(langCode) : onComplete?.()
     }, 800)
   }
 

@@ -9,6 +9,7 @@ import { AdminSettingsProvider } from './context/AdminSettingsContext'
 import { PlayersProvider } from './context/PlayersContext'
 import { TaskSuggestionsProvider } from './context/TaskSuggestionsContext'
 import AppIntro from './components/AppIntro'
+import LanguageSelector from './components/LanguageSelector'
 import PrivacyBanner from './components/PrivacyBanner'
 import { MonitoringService } from './lib/monitoring'
 import { FirebaseOptimizer } from './lib/firebase-optimized'
@@ -86,17 +87,12 @@ const App: React.FC = () => {
   }
 
   if (currentPhase === 'language') {
-    // Assuming LanguageSelector component exists and takes onLanguageSelected prop
-    // import LanguageSelector from './components/LanguageSelector';
-    // We will mock it here for compilation, but it needs to be properly imported.
-    const MockLanguageSelector = () => (
-      <div>
-        <h1>Select Language</h1>
-        <button onClick={() => handleLanguageSelected('en')}>English</button>
-        <button onClick={() => handleLanguageSelected('de')}>Deutsch</button>
-      </div>
+    return (
+      <LanguageSelector 
+        onLanguageSelected={handleLanguageSelected}
+        showSkip={true}
+      />
     )
-    return <MockLanguageSelector />
   }
 
   return (

@@ -17,23 +17,12 @@ import { MonitoringService } from './lib/monitoring'
 import ErrorBoundaryEnhanced from './components/ErrorBoundaryEnhanced'
 import { CriticalErrorHandler } from './lib/error-handler'
 import { AccessibilityManager } from './lib/a11y'
-import { SoundManager } from './lib/sound-manager'
 
 // Initialize core systems once
 const initializeCoreServices = async () => {
   try {
     // Error handling - Critical (first)
     CriticalErrorHandler.init()
-
-    // Sound System - Non-blocking with better error handling
-    try {
-      SoundManager.init().catch(err => {
-        console.warn('🔇 Sound system failed (non-critical):', err?.message || 'Audio not available')
-        // Don't track audio errors as they're non-critical
-      })
-    } catch (err) {
-      console.warn('🔇 Sound system initialization skipped')
-    }
 
     // Accessibility - Essential
     AccessibilityManager.init()

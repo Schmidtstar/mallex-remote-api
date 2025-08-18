@@ -331,30 +331,7 @@ interface LeaderboardSpecs {
 }
 ```
 
-### 🎵 **Sound-System (Immersive Audio)**
 
-Vollständiges Audio-System für bessere Spielerfahrung:
-
-```typescript
-// Sound-System Implementation
-class SoundSystemSpecs {
-  audioArchitecture: {
-    technology: 'Web Audio API + HTML5 Audio Fallback',
-    formats: 'MP3 + OGG für maximale Kompatibilität',
-    compression: 'Optimiert für schnelles Loading',
-    preloading: 'Kritische Sounds beim App-Start'
-  }
-  
-  soundLibrary: {
-    arena: {
-      start: 'Epische Intro-Fanfare',
-      triumph: 'Sieges-Sound mit Reverb',
-      defeat: 'Sanfter Niederlage-Sound',
-      background: 'Subtile Olympische Atmosphäre'
-    },
-    
-    achievements: {
-      unlock: 'Triumphale Achievement-Fanfare',
       progress: 'Sanfte Progress-Chimes',
       rare: 'Spezielle Sounds für seltene Achievements',
       combo: 'Combination-Sounds für Multiple-Unlocks'
@@ -695,31 +672,7 @@ export class MobileAppSpecs {
 
 ## 9. Sound-System & Audio-Integration
 
-### 🎵 **Immersive Audio Experience**
 
-Vollständiges Audio-System für bessere User-Experience:
-
-```typescript
-// Sound-Manager Implementation
-export class SoundManager {
-  private static audioContext: AudioContext | null = null
-  private static soundLibrary = new Map<string, AudioBuffer>()
-  private static isEnabled = true
-  private static volume = 0.7
-  
-  static async initialize() {
-    try {
-      // Web Audio API für bessere Performance
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-      
-      // Sound-Bibliothek preloaden
-      await this.preloadSounds([
-        { name: 'achievement', url: '/sounds/achievement.mp3' },
-        { name: 'arena_start', url: '/sounds/arena_start.mp3' },
-        { name: 'click', url: '/sounds/click.mp3' },
-        { name: 'correct', url: '/sounds/correct.mp3' },
-        { name: 'wrong', url: '/sounds/wrong.mp3' }
-      ])
       
       console.log('🎵 Sound-System initialisiert')
     } catch (error) {

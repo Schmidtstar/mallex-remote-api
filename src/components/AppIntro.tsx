@@ -1,237 +1,270 @@
-
-import React, { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
+import React, { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useSwipe } from '../hooks/useSwipe'
 import styles from './AppIntro.module.css'
 
-interface IntroConfig {
-  userType: 'first_time' | 'returning' | 'admin' | 'premium'
-  skipEnabled: boolean
-  duration: number
-  personalized: boolean
+interface AppIntroProps {
+  onComplete: () => void
 }
 
-export function AppIntro({ onComplete }: { onComplete: () => void }) {
-  const { user, isAdmin } = useAuth()
-  const [showSkip, setShowSkip] = useState(false)
-  const [introConfig, setIntroConfig] = useState<IntroConfig>({
-    userType: 'first_time',
-    skipEnabled: false,
-    duration: 8000,
-    personalized: false
-  })
+interface IntroStep {
+  id: string
+  title: string
+  content: string
+  icon: string
+  animation?: string
+  interactive?: boolean
+  action?: () => void
+}
+
+export default function AppIntro({ onComplete }: AppIntroProps) {
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
-  const [progress, setProgress] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Enhanced steps mit progressive onboarding
+  const steps: IntroStep[] = [
+    {
+      id: 'welcome',
+      title: t('intro.welcome.title', 'Willkommen bei MALLEX'),
+      content: t('intro.welcome.content', 'Deine olympische Trinkspiel-Arena wartet!'),
+      icon: '🏛️',
+      animation: 'fadeInUp'
+    },
+    {
+      id: 'arena',
+      title: t('intro.arena.title', 'Arena-Kämpfe'),
+      content: t('intro.arena.content', 'Tritt gegen andere Gladiatoren an und sammle Punkte'),
+      icon: '⚔️',
+      animation: 'slideInLeft',
+      interactive: true,
+      action: () => {
+        // Simuliere Arena-Action mit Animation
+        const icon = containerRef.current?.querySelector(`.${styles.icon}`)
+        icon?.classList.add(styles.bounce)
+        setTimeout(() => icon?.classList.remove(styles.bounce), 600)
+      }
+    },
+    {
+      id: 'challenges',
+      title: t('intro.challenges.title', 'Herausforderungen'),
+      content: t('intro.challenges.content', 'Wähle aus verschiedenen Kategorien und Schwierigkeiten'),
+      icon: '🎯',
+      animation: 'slideInRight'
+    },
+    {
+      id: 'features',
+      title: t('intro.features.title', 'Funktionen entdecken'),
+      content: t('intro.features.content', 'Leaderboards, Achievements und vieles mehr'),
+      icon: '✨',
+      animation: 'zoomIn'
+    },
+    {
+      id: 'ready',
+      title: t('intro.ready.title', 'Bereit für den Kampf?'),
+      content: t('intro.ready.content', 'Lass uns deine Reise beginnen!'),
+      icon: '🚀',
+      animation: 'pulse'
+    }
+  ]
+
+  // Swipe-Unterstützung für Touch-Geräte
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: nextStep,
+    onSwipeRight: prevStep,
+    threshold: 50
+  })
 
   useEffect(() => {
-    // User-Type Detection
-    const detectUserType = () => {
-      const hasVisited = localStorage.getItem('mallex_visited')
-      const lastVisit = localStorage.getItem('mallex_last_visit')
-      const isPremium = localStorage.getItem('mallex_premium') === 'true'
-      
-      let userType: IntroConfig['userType'] = 'first_time'
-      let duration = 8000
-      
-      if (isAdmin) {
-        userType = 'admin'
-        duration = 4000 // Kürzeres Intro für Admins
-      } else if (isPremium) {
-        userType = 'premium'
-        duration = 5000
-      } else if (hasVisited && lastVisit) {
-        const daysSinceLastVisit = (Date.now() - parseInt(lastVisit)) / (1000 * 60 * 60 * 24)
-        if (daysSinceLastVisit < 7) {
-          userType = 'returning'
-          duration = 3000 // Sehr kurzes Intro für wiederkehrende Nutzer
-        }
-      }
+    // Auto-progression nach Interaktion
+    if (hasInteracted && steps[currentStep].interactive) {
+      const timer = setTimeout(() => {
+        markStepCompleted(currentStep)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [hasInteracted, currentStep])
 
-      setIntroConfig({
-        userType,
-        skipEnabled: true,
-        duration,
-        personalized: true
-      })
-
-      // Analytics tracking
-      if (window.gtag) {
-        window.gtag('event', 'intro_started', {
-          user_type: userType,
-          duration: duration
-        })
+  useEffect(() => {
+    // Accessibility: Keyboard navigation
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        e.preventDefault()
+        nextStep()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        prevStep()
+      } else if (e.key === 'Escape') {
+        e.preventDefault()
+        skipIntro()
       }
     }
 
-    detectUserType()
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [currentStep])
 
-    // Skip-Button nach 2s aktivieren
-    const skipTimer = setTimeout(() => {
-      setShowSkip(true)
-    }, 2000)
-
-    // Progress-Timer
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          handleComplete()
-          return 100
-        }
-        return prev + (100 / (introConfig.duration / 100))
-      })
-    }, 100)
-
-    // Auto-Complete Timer
-    const autoCompleteTimer = setTimeout(() => {
-      handleComplete()
-    }, introConfig.duration)
-
-    return () => {
-      clearTimeout(skipTimer)
-      clearTimeout(autoCompleteTimer)
-      clearInterval(progressInterval)
-    }
-  }, [introConfig.duration])
-
-  const handleSkip = () => {
-    if (window.gtag) {
-      window.gtag('event', 'intro_skipped', {
-        user_type: introConfig.userType,
-        time_to_skip: Date.now() - startTime,
-        skip_after_seconds: (Date.now() - startTime) / 1000
-      })
-    }
-    handleComplete()
-  }
-
-  const handleComplete = () => {
-    // Besuchsdaten speichern
-    localStorage.setItem('mallex_visited', 'true')
-    localStorage.setItem('mallex_last_visit', Date.now().toString())
-    
-    if (window.gtag) {
-      window.gtag('event', 'intro_completed', {
-        user_type: introConfig.userType,
-        completion_method: showSkip ? 'manual' : 'auto'
-      })
-    }
-    
-    onComplete()
-  }
-
-  const getPersonalizedGreeting = () => {
-    switch (introConfig.userType) {
-      case 'admin':
-        return {
-          title: `Willkommen zurück, ${user?.displayName || 'Admin'}! 👑`,
-          subtitle: 'Verwalte die olympischen Spiele',
-          highlight: 'Admin-Dashboard bereit'
-        }
-      case 'premium':
-        return {
-          title: `Hey ${user?.displayName || 'Champion'}! ⭐`,
-          subtitle: 'Premium-Features warten auf dich',
-          highlight: 'Exklusive Inhalte verfügbar'
-        }
-      case 'returning':
-        return {
-          title: `Schön, dich wiederzusehen! 🎉`,
-          subtitle: 'Lass uns weitermachen wo wir aufgehört haben',
-          highlight: 'Neue Features entdecken'
-        }
-      default:
-        return {
-          title: 'Willkommen zu MALLEX! 🏛️',
-          subtitle: 'Den olympischen Saufspielen',
-          highlight: 'Lass die Spiele beginnen!'
-        }
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
+      markStepCompleted(currentStep)
+      setCurrentStep(currentStep + 1)
+      setHasInteracted(false)
+    } else {
+      completeIntro()
     }
   }
 
-  const greeting = getPersonalizedGreeting()
-  const startTime = React.useRef(Date.now()).current
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1)
+      setHasInteracted(false)
+    }
+  }
 
-  // Accessibility: Reduzierte Animationen wenn gewünscht
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const markStepCompleted = (stepIndex: number) => {
+    setCompletedSteps(prev => new Set([...prev, stepIndex]))
+  }
+
+  const skipIntro = () => {
+    setIsVisible(false)
+    setTimeout(onComplete, 300)
+  }
+
+  const completeIntro = () => {
+    // Speichere Intro-Completion im localStorage
+    localStorage.setItem('mallex_intro_completed', 'true')
+    localStorage.setItem('mallex_intro_completion_date', new Date().toISOString())
+
+    setIsVisible(false)
+    setTimeout(onComplete, 300)
+  }
+
+  const handleStepInteraction = () => {
+    setHasInteracted(true)
+    if (steps[currentStep].action) {
+      steps[currentStep].action!()
+    }
+  }
+
+  const goToStep = (stepIndex: number) => {
+    setCurrentStep(stepIndex)
+    setHasInteracted(false)
+  }
+
+  if (!isVisible) return null
+
+  const currentStepData = steps[currentStep]
+  const progress = ((currentStep + 1) / steps.length) * 100
 
   return (
-    <div className={`${styles.overlay} ${prefersReducedMotion ? styles.reducedMotion : ''}`}>
-      <div className={styles.container}>
-        {/* Progress Indicator */}
-        <div className={styles.progressContainer}>
+    <div className={styles.overlay} role="dialog" aria-modal="true" aria-labelledby="intro-title">
+      <div 
+        className={styles.container} 
+        ref={containerRef}
+        {...swipeHandlers}
+      >
+        {/* Progress Bar */}
+        <div className={styles.progressBar}>
           <div 
-            className={styles.progressBar}
+            className={styles.progressFill} 
             style={{ width: `${progress}%` }}
             role="progressbar"
             aria-valuenow={progress}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label="Intro-Fortschritt"
           />
         </div>
 
-        {/* Skip Button */}
-        {showSkip && introConfig.skipEnabled && (
-          <button
-            className={styles.skipButton}
-            onClick={handleSkip}
-            aria-label="Intro überspringen"
+        {/* Step Content */}
+        <div className={`${styles.step} ${styles[currentStepData.animation || 'fadeIn']}`}>
+          <div 
+            className={`${styles.icon} ${currentStepData.interactive ? styles.interactive : ''}`}
+            onClick={currentStepData.interactive ? handleStepInteraction : undefined}
+            role={currentStepData.interactive ? 'button' : 'presentation'}
+            tabIndex={currentStepData.interactive ? 0 : -1}
           >
-            Überspringen →
-          </button>
-        )}
-
-        {/* Hauptinhalt */}
-        <div className={styles.content}>
-          <div className={styles.logoContainer}>
-            <h1 className={styles.logo}>MALLEX</h1>
-            <div className={styles.subtitle}>
-              {greeting.subtitle}
-            </div>
+            {currentStepData.icon}
           </div>
 
-          {/* Personalisierte Begrüßung */}
-          <div className={styles.greeting}>
-            <h2 className={styles.greetingTitle}>
-              {greeting.title}
-            </h2>
-            <p className={styles.greetingHighlight}>
-              {greeting.highlight}
-            </p>
-          </div>
+          <h2 id="intro-title" className={styles.title}>
+            {currentStepData.title}
+          </h2>
 
-          {/* User-Type spezifische Hints */}
-          {introConfig.userType === 'admin' && (
-            <div className={styles.adminHints}>
-              <p>💡 Neue Admin-Features verfügbar</p>
-              <p>📊 Analytics-Dashboard erweitert</p>
-            </div>
-          )}
+          <p className={styles.content}>
+            {currentStepData.content}
+          </p>
 
-          {introConfig.userType === 'returning' && (
-            <div className={styles.returningHints}>
-              <p>🆕 Achievement-System hinzugefügt</p>
-              <p>📱 Mobile-Optimierungen verfügbar</p>
-            </div>
-          )}
-
-          {/* Accessibility-Hinweis */}
-          {prefersReducedMotion && (
-            <div className={styles.accessibilityNotice}>
-              <p>♿ Reduzierte Animationen aktiv</p>
+          {currentStepData.interactive && !hasInteracted && (
+            <div className={styles.interactionHint}>
+              <span className={styles.tapHint}>
+                {t('intro.tap_icon', 'Tippe auf das Symbol!')}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Quick-Start Button für returning users */}
-        {introConfig.userType === 'returning' && (
-          <button
-            className={styles.quickStartButton}
-            onClick={handleComplete}
-            aria-label="Schnell starten"
-          >
-            Direkt zur Arena →
-          </button>
-        )}
+        {/* Enhanced Navigation */}
+        <div className={styles.navigation}>
+          {/* Step Indicators */}
+          <div className={styles.indicators} role="tablist">
+            {steps.map((step, index) => (
+              <button
+                key={step.id}
+                className={`${styles.indicator} ${
+                  index === currentStep ? styles.active : ''
+                } ${completedSteps.has(index) ? styles.completed : ''}`}
+                onClick={() => goToStep(index)}
+                role="tab"
+                aria-selected={index === currentStep}
+                aria-label={`${t('intro.step')} ${index + 1}: ${step.title}`}
+              />
+            ))}
+          </div>
+
+          {/* Control Buttons */}
+          <div className={styles.buttons}>
+            <button 
+              onClick={skipIntro} 
+              className={styles.skipButton}
+              aria-label={t('intro.skip_aria', 'Einführung überspringen')}
+            >
+              {t('intro.skip', 'Überspringen')}
+            </button>
+
+            {currentStep > 0 && (
+              <button 
+                onClick={prevStep} 
+                className={styles.prevButton}
+                aria-label={t('intro.previous', 'Zurück')}
+              >
+                ← {t('intro.back', 'Zurück')}
+              </button>
+            )}
+
+            <button 
+              onClick={nextStep} 
+              className={styles.nextButton}
+              aria-label={
+                currentStep < steps.length - 1 
+                  ? t('intro.next_aria', 'Nächster Schritt') 
+                  : t('intro.start_aria', 'MALLEX starten')
+              }
+            >
+              {currentStep < steps.length - 1 
+                ? `${t('intro.next', 'Weiter')} →` 
+                : `${t('intro.start', 'Los geht\'s!')} 🚀`
+              }
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Swipe Hint */}
+        <div className={styles.swipeHint}>
+          <span>← {t('intro.swipe', 'Wischen zum Navigieren')} →</span>
+        </div>
       </div>
     </div>
   )

@@ -90,11 +90,11 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
   PerformanceMonitor.init()
   MonitoringService.trackUserAction('app_start')
   FirebaseOptimizer.monitorConnection()
-  
+
   // Track app initialization performance
   const initStartTime = performance.now()
   console.log('🚀 MALLEX App initialization started')
-  
+
   window.addEventListener('load', () => {
     const initTime = performance.now() - initStartTime
     console.log(`📊 App initialized in ${Math.round(initTime)}ms`)
@@ -142,7 +142,7 @@ if ('serviceWorker' in navigator) {
   }).catch(() => {
     // Silent fail - PerformanceMonitor ist optional
   })
-  
+
   window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -193,5 +193,15 @@ if ('serviceWorker' in navigator) {
 if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
 }
+
+// Initialize Performance Monitoring (Development)
+  if (import.meta.env.DEV) {
+    MonitoringService.init()
+  }
+
+  // Initialize Mobile Performance Optimizations
+  import('./lib/mobile-performance').then(({ MobilePerformanceOptimizer }) => {
+    MobilePerformanceOptimizer.init()
+  })
 
 // No problematic exports that break Fast Refresh

@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface SwipeConfig {
   threshold: number
@@ -38,7 +37,7 @@ export function useSwipe(
   }
 
   const finalConfig = { ...defaultConfig, ...config }
-  
+
   const [swipeState, setSwipeState] = useState<SwipeState>({
     isSwiping: false,
     direction: null,
@@ -62,7 +61,7 @@ export function useSwipe(
         console.debug('Haptic feedback not available')
       }
     }
-    
+
     // Web Vibration API Fallback
     if ('vibrate' in navigator) {
       const duration = { light: 50, medium: 100, heavy: 200 }[style]
@@ -209,7 +208,7 @@ export function useSwipe(
 
   const getSwipeProgress = () => {
     if (!swipeState.isSwiping) return 0
-    
+
     const distance = Math.sqrt(swipeState.deltaX ** 2 + swipeState.deltaY ** 2)
     return Math.min(distance / finalConfig.threshold, 1)
   }
@@ -217,12 +216,12 @@ export function useSwipe(
   return {
     // State
     swipeState,
-    
+
     // Utilities
     bindSwipe,
     isSwipingInDirection,
     getSwipeProgress,
-    
+
     // Manual trigger für Testing
     triggerHapticFeedback
   }
@@ -232,7 +231,7 @@ export function useSwipe(
 export function usePullToRefresh(onRefresh: () => Promise<void>) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [pullDistance, setPullDistance] = useState(0)
-  
+
   const swipeHandlers = {
     onSwipeMove: (e: TouchEvent, deltaX: number, deltaY: number) => {
       // Nur bei Scroll-Position 0 und nach unten ziehen
@@ -240,7 +239,7 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
         setPullDistance(Math.min(deltaY, 120))
       }
     },
-    
+
     onSwipeEnd: async () => {
       if (pullDistance > 80 && !isRefreshing) {
         setIsRefreshing(true)

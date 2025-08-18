@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -14,7 +15,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
-      host: '0.0.0.0',
+      host: true, // Uses location.hostname instead of hardcoded 0.0.0.0
       strictPort: true,
       allowedHosts: [
         '.replit.dev',
@@ -32,7 +33,6 @@ export default defineConfig(({ mode }) => {
         : process.env.NODE_ENV === 'development'
         ? {
             port: 5173,
-            host: '0.0.0.0',
             overlay: false
           }
         : false,
@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       sourcemap: true,
       minify: mode === 'production' ? 'esbuild' : false,
-      target: 'es2015', // Better mobile compatibility
+      target: 'es2015',
       rollupOptions: {
         output: {
           manualChunks: {
@@ -67,8 +67,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
-      exclude: ['@firebase/auth', '@firebase/firestore']
+      include: ['react', 'react-dom', 'react-router-dom']
     }
   }
 })

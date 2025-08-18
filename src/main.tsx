@@ -171,7 +171,8 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 }
 
 // Enhanced Service Worker Registration mit Performance-Integration
-if ('serviceWorker' in navigator) {
+// Service Worker Registration - only in production
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   // PerformanceMonitor global verfügbar machen
   ;(window as any).PerformanceMonitor = PerformanceMonitor
 
@@ -224,7 +225,7 @@ if ('serviceWorker' in navigator) {
 // Development debugging
 if (import.meta.env.DEV) {
   ;(window as any).__MALLEX_DEV__ = true
-  
+
   // Handle WebSocket connection issues for Vite HMR
   if (typeof window !== 'undefined') {
     window.addEventListener('error', (event) => {
@@ -238,7 +239,12 @@ if (import.meta.env.DEV) {
 
 // Initialize Performance Monitoring (Development)
   if (import.meta.env.DEV) {
-    MonitoringService.init()
+    // Initialize monitoring defensively
+    try {
+      MonitoringService.init()
+    } catch (error) {
+      console.warn('MonitoringService initialization failed:', error)
+    }
   }
 
   // Initialize Mobile Performance Optimizations

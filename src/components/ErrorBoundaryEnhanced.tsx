@@ -47,13 +47,18 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: any) {
     console.error('🚨 Error Boundary caught error:', error, errorInfo)
 
-    // Track error in Performance Monitor
-    performanceMonitor.trackError({
-      message: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      errorId: this.state.errorId
-    })
+    // Defensive error tracking
+    try {
+      const { performanceMonitor } = require('../lib/performance-monitor')
+      performanceMonitor?.trackError?.({
+        message: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        errorId: this.state.errorId
+      })
+    } catch (e) {
+      console.warn('[ErrorBoundary] trackError unavailable:', e)
+    }
 
     // Log to external service if available
     this.logErrorToService(error, errorInfo)

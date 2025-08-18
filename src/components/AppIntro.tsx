@@ -1,17 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-// CSS Module Import mit Fallback
-let styles: any
-try {
-  styles = require('./AppIntro.module.css')
-} catch (e) {
-  console.warn('CSS Module nicht gefunden, verwende Fallback-Styles')
-  styles = {}
-}
-
-// Fallback-Styles für alle verwendeten Klassen
-const fallbackStyles = {
+// Verwende nur globale CSS-Klassen (definiert in index.css)
+const styles = {
   introContainer: 'intro-container',
   backgroundCanvas: 'background-canvas',
   starField: 'star-field',
@@ -73,12 +64,6 @@ const fallbackStyles = {
   completed: 'completed',
   skipping: 'skipping'
 }
-
-// Merge styles mit fallback
-const safeStyles = Object.keys(fallbackStyles).reduce((acc, key) => {
-  acc[key] = styles[key] || fallbackStyles[key]
-  return acc
-}, {} as any)
 
 interface AppIntroProps {
   onComplete?: () => void
@@ -235,7 +220,7 @@ export function AppIntro({ onComplete, userType = 'first-time', showSkip = true 
   }
 
   return (
-    <div className={`${safeStyles.introContainer} ${safeStyles[`phase-${currentPhase}`] || ''} ${isSkipping ? safeStyles.skipping : ''}`}>
+    <div className={`${styles.introContainer} ${styles[`phase-${currentPhase}`] || ''} ${isSkipping ? styles.skipping : ''}`}>
       {/* Skip-Button */}
       {showSkip && currentPhase !== 'enter' && (
         <button

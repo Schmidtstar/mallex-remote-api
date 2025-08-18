@@ -21,17 +21,22 @@ import { SoundManager } from './lib/sound-manager'
 // Initialize core systems once
 const initializeCoreServices = () => {
   try {
-    // Sound System - Non-blocking
-    SoundManager.init().catch(err =>
+    // Error handling - Critical (first)
+    CriticalErrorHandler.init()
+
+    // Sound System - Non-blocking with better error handling
+    SoundManager.init().catch(err => {
       console.warn('Sound system failed (non-critical):', err)
-    )
+      CriticalErrorHandler.handleError(err, {
+        severity: 'low',
+        component: 'sound_system',
+        action: 'initialization'
+      })
+    })
 
     // Accessibility - Essential
     AccessibilityManager.init()
     AccessibilityManager.addSkipLinks()
-
-    // Error handling - Critical
-    CriticalErrorHandler.init()
 
     // Performance monitoring - Conditional based on environment
     if (import.meta.env.DEV) {
@@ -44,8 +49,17 @@ const initializeCoreServices = () => {
       MonitoringService.trackUserAction('app_start', { silent: true })
     }
 
-    // Firebase monitoring - Production ready
-    FirebaseOptimizer.monitorConnection()
+    // Firebase monitoring - Production ready with error handling
+    try {
+      FirebaseOptimizer.monitorConnection()
+    } catch (err) {
+      console.warn('Firebase monitoring failed:', err)
+      CriticalErrorHandler.handleError(err, {
+        severity: 'medium',
+        component: 'firebase',
+        action: 'monitor_connection'
+      })
+    }
 
     console.log('✅ MALLEX v2.1 - Core services initialized')
   } catch (error) {

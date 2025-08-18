@@ -63,7 +63,7 @@ i18n
 export const changeLanguage = async (language: string) => {
   await i18n.changeLanguage(language)
   localStorage.setItem('mallex-language', language)
-  
+
   // HTML-Attribut aktualisieren für bessere Accessibility
   document.documentElement.lang = language
 }

@@ -1,10 +1,9 @@
-
-import { 
-  collection, 
-  query, 
-  orderBy, 
-  limit, 
-  getDocs, 
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
   onSnapshot,
   QuerySnapshot,
   DocumentData,
@@ -41,6 +40,33 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
 // Optimierte Query-Builder
 export class FirebaseOptimizer {
   private static lastNetworkState = true
+  private static isOnline = true // Initial assume online
+
+  // Connection monitoring
+  static monitorConnection() {
+    if (typeof window === 'undefined') return
+
+    // Monitor online/offline status
+    window.addEventListener('online', () => {
+      this.isOnline = true
+      console.log('🌐 Firebase connection restored')
+      // Re-enable network if it was disabled
+      if (!this.lastNetworkState) {
+        this.toggleNetworkState(true)
+      }
+    })
+
+    window.addEventListener('offline', () => {
+      this.isOnline = false
+      console.log('📡 Firebase connection lost')
+      // Disable network if it was enabled
+      if (this.lastNetworkState) {
+        this.toggleNetworkState(false)
+      }
+    })
+
+    console.log('🔍 Firebase connection monitoring active')
+  }
 
   // Intelligenter Query-Builder mit automatischem Caching
   static async optimizedQuery<T>(
@@ -50,7 +76,7 @@ export class FirebaseOptimizer {
     useCache = true
   ): Promise<T[]> {
     const cacheKey = `${collectionName}_${orderField || 'none'}_${limitCount || 'all'}`
-    
+
     // Cache-Check
     if (useCache && queryCache.has(cacheKey)) {
       const cached = queryCache.get(cacheKey)
@@ -62,11 +88,11 @@ export class FirebaseOptimizer {
 
     try {
       let q = collection(db, collectionName)
-      
+
       if (orderField) {
         q = query(q, orderBy(orderField, 'desc'))
       }
-      
+
       if (limitCount) {
         q = query(q, limit(limitCount))
       }
@@ -90,13 +116,13 @@ export class FirebaseOptimizer {
 
     } catch (error: any) {
       console.error(`❌ Firestore query failed:`, error)
-      
+
       // Fallback auf Cache bei Netzwerkfehlern
       if (useCache && queryCache.has(cacheKey)) {
         console.log(`🔄 Using stale cache for ${cacheKey}`)
         return queryCache.get(cacheKey).data
       }
-      
+
       throw error
     }
   }
@@ -109,11 +135,11 @@ export class FirebaseOptimizer {
     limitCount?: number
   ): () => void {
     let q = collection(db, collectionName)
-    
+
     if (orderField) {
       q = query(q, orderBy(orderField, 'desc'))
     }
-    
+
     if (limitCount) {
       q = query(q, limit(limitCount))
     }
@@ -131,12 +157,15 @@ export class FirebaseOptimizer {
       },
       (error) => {
         console.error(`❌ Realtime subscription error:`, error)
-        
+
         // Automatischer Reconnect bei Netzwerkfehlern
         if (error.code === 'unavailable') {
           setTimeout(() => {
             console.log('🔄 Attempting to reconnect...')
-            this.optimizedRealtime(collectionName, callback, orderField, limitCount)
+            // Check if connection is restored before retrying
+            if (this.isOnline) {
+              this.optimizedRealtime(collectionName, callback, orderField, limitCount)
+            }
           }, 5000)
         }
       }
@@ -169,6 +198,11 @@ export class FirebaseOptimizer {
     console.log('🗑️ Query cache cleared')
   }
 
+  static resetCaches() {
+    // Placeholder for potential future cache reset logic
+    this.clearCache()
+  }
+
   static getCacheStats() {
     return {
       size: queryCache.size,
@@ -176,17 +210,18 @@ export class FirebaseOptimizer {
       totalSize: JSON.stringify(Array.from(queryCache.values())).length
     }
   }
+
+  // Cleanup-Funktion
+  static cleanup() {
+    this.isOnline = false
+    this.resetCaches()
+    console.log('🧹 Firebase Optimizer cleaned up')
+  }
 }
 
-// Automatische Netzwerk-Überwachung
+// Initialize connection monitoring on component mount or app start
 if (typeof window !== 'undefined') {
-  window.addEventListener('online', () => {
-    FirebaseOptimizer.toggleNetworkState(true)
-  })
-
-  window.addEventListener('offline', () => {
-    FirebaseOptimizer.toggleNetworkState(false)
-  })
+  FirebaseOptimizer.monitorConnection()
 
   // Periodische Cache-Bereinigung
   setInterval(() => {

@@ -1,9 +1,18 @@
 // MALLEX Sound Manager
 export class SoundManager {
   private static audioContext: AudioContext | null = null
-  private static sounds: Map<string, AudioBuffer> = new Map()
+  private static sounds: Map<string, AudioBuffer | null> = new Map()
   private static enabled = true
   private static loadedSounds: Map<string, AudioBuffer | null> = new Map()
+
+  // Define sound paths relative to the public directory
+  private static soundPaths = {
+    click: '/public/sounds/click.mp3',
+    correct: '/public/sounds/correct.mp3',
+    wrong: '/public/sounds/wrong.mp3',
+    achievement: '/public/sounds/achievement.mp3',
+    arena_start: '/public/sounds/arena_start.mp3'
+  }
 
   static async init() {
     try {
@@ -11,12 +20,12 @@ export class SoundManager {
       window.AudioContext = window.AudioContext || window.webkitAudioContext
       this.audioContext = new AudioContext()
 
-      // Preload critical sounds
-      await this.loadSound('achievement', '/sounds/achievement.mp3')
-      await this.loadSound('button_click', '/sounds/click.mp3')
-      await this.loadSound('arena_start', '/sounds/arena_start.mp3')
-      await this.loadSound('correct', '/sounds/correct.mp3')
-      await this.loadSound('wrong', '/sounds/wrong.mp3')
+      // Preload critical sounds using the defined paths
+      await this.loadSound('achievement', this.soundPaths.achievement)
+      await this.loadSound('button_click', this.soundPaths.click)
+      await this.loadSound('arena_start', this.soundPaths.arena_start)
+      await this.loadSound('correct', this.soundPaths.correct)
+      await this.loadSound('wrong', this.soundPaths.wrong)
 
       console.log('🔊 Sound System initialized')
     } catch (error) {
@@ -25,11 +34,16 @@ export class SoundManager {
     }
   }
 
-  private static async loadSound(name: string, url: string) {
+  private static async loadSound(name: string, url: string): Promise<void> {
     if (!this.audioContext || !this.enabled) return
 
     try {
-      const response = await fetch(url)
+      // Check if file exists first
+      const response = await fetch(url, { method: 'HEAD' })
+      if (!response.ok) {
+        throw new Error(`Sound file not found: ${url}`)
+      }
+
       const arrayBuffer = await response.arrayBuffer()
       const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
       this.sounds.set(name, audioBuffer)
@@ -54,10 +68,10 @@ export class SoundManager {
   }
 
   static play(soundName: string, volume = 0.5) {
-    if (!this.audioContext || !this.enabled || !this.sounds.has(soundName)) return
+    const audioBuffer = this.sounds.get(soundName)
+    if (!this.audioContext || !this.enabled || !audioBuffer) return
 
     try {
-      const audioBuffer = this.sounds.get(soundName)!
       const source = this.audioContext.createBufferSource()
       const gainNode = this.audioContext.createGain()
 

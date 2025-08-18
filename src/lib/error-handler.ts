@@ -131,6 +131,40 @@ export class CriticalErrorHandler {
       }
     }
 
+    // i18n errors
+    if (error.message.includes('i18next') || error.message.includes('changeLanguage')) {
+      return {
+        canRecover: true,
+        recoveryAction: async () => {
+          // Reload i18n
+          try {
+            const { default: i18n } = await import('../i18n')
+            await i18n.init()
+          } catch (e) {
+            console.warn('i18n recovery failed:', e)
+          }
+        },
+        userMessage: '🌍 Sprach-System wird neu geladen...'
+      }
+    }
+
+    // Sound system errors  
+    if (error.message.includes('Decoding failed') || error.message.includes('sound')) {
+      return {
+        canRecover: true,
+        recoveryAction: async () => {
+          // Try to reinitialize sound system
+          try {
+            const { SoundManager } = await import('./sound-manager')
+            await SoundManager.init()
+          } catch (e) {
+            console.warn('Sound system recovery failed (non-critical):', e)
+          }
+        },
+        userMessage: '🔊 Audio-System wird repariert...'
+      }
+    }
+
     // Authentication errors
     if (error.message.includes('auth') || context.action?.includes('auth')) {
       return {

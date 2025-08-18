@@ -6,32 +6,46 @@ import en from './en.json'
 import es from './es.json'
 import fr from './fr.json'
 
-// Initialize i18n properly
-const initI18n = async () => {
-  if (!i18n.isInitialized) {
-    await i18n
-      .use(initReactI18next)
-      .init({
-        lng: 'de',
-        fallbackLng: 'en',
-        debug: import.meta.env.DEV,
+// Browser language detection
+const getBrowserLanguage = (): string => {
+  const savedLanguage = localStorage.getItem('mallex-language')
+  if (savedLanguage) return savedLanguage
 
-        interpolation: {
-          escapeValue: false,
-        },
+  const browserLang = navigator.language.split('-')[0]
+  const supportedLanguages = ['de', 'en', 'es', 'fr']
 
-        resources: {
-          de: { translation: de },
-          en: { translation: en },
-          es: { translation: es },
-          fr: { translation: fr },
-        },
-      })
-  }
-  return i18n
+  return supportedLanguages.includes(browserLang) ? browserLang : 'de'
 }
 
-// Initialize immediately
-initI18n().catch(console.error)
+const resources = {
+  de: { translation: de },
+  en: { translation: en },
+  es: { translation: es },
+  fr: { translation: fr }
+}
+
+// Synchrone Initialisierung für sofortigen Zugriff
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: getBrowserLanguage(),
+    fallbackLng: 'de',
+    interpolation: {
+      escapeValue: false
+    },
+    react: {
+      useSuspense: false
+    },
+    // Synchrone Initialisierung
+    initImmediate: false,
+    // Debug nur in Development
+    debug: import.meta.env.DEV
+  })
+
+// Ensure i18n is ready immediately
+if (!i18n.isInitialized) {
+  console.warn('i18n not initialized, forcing sync init')
+}
 
 export default i18n

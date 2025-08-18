@@ -97,12 +97,28 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
   // Enhanced Performance Monitoring Initialization
   try {
-    PerformanceMonitor.init()
-    // Defensive MonitoringService call
-    if (MonitoringService?.trackUserAction) {
-      MonitoringService.trackUserAction('app_start')
+    // Initialize PerformanceMonitor first
+    if (typeof PerformanceMonitor?.init === 'function') {
+      PerformanceMonitor.init()
     }
-    FirebaseOptimizer.monitorConnection()
+    
+    // Initialize MonitoringService
+    if (typeof MonitoringService?.init === 'function') {
+      MonitoringService.init()
+    }
+    
+    // Track app start after initialization
+    if (typeof MonitoringService?.trackUserAction === 'function') {
+      MonitoringService.trackUserAction('app_start')
+    } else {
+      console.warn('MonitoringService.trackUserAction not available')
+    }
+    
+    // Initialize Firebase monitoring
+    if (typeof FirebaseOptimizer?.monitorConnection === 'function') {
+      FirebaseOptimizer.monitorConnection()
+    }
+    
     console.log('📊 Performance monitoring initialized successfully')
   } catch (error) {
     console.warn('Performance monitoring initialization failed:', error)
@@ -166,7 +182,7 @@ if (rootElement && !rootElement.hasAttribute('data-react-root')) {
 
   root.render(
     <React.StrictMode>
-      <ErrorBoundaryEnhanced context={{ component: 'App', severity: 'critical' }}>
+      <ErrorBoundaryEnhanced showReportDialog={import.meta.env.DEV}>
         <App />
       </ErrorBoundaryEnhanced>
     </React.StrictMode>

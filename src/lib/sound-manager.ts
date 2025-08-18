@@ -3,6 +3,7 @@ export class SoundManager {
   private static audioContext: AudioContext | null = null
   private static sounds: Map<string, AudioBuffer> = new Map()
   private static enabled = true
+  private static loadedSounds: Map<string, AudioBuffer | null> = new Map()
 
   static async init() {
     try {
@@ -32,8 +33,23 @@ export class SoundManager {
       const arrayBuffer = await response.arrayBuffer()
       const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
       this.sounds.set(name, audioBuffer)
+      this.loadedSounds.set(name, audioBuffer) // Keep track of loaded sounds
     } catch (error) {
-      console.warn(`🔇 Could not load sound: ${name}`, error)
+      console.warn(`🔇 Could not load sound: ${name} –`, error.message || error)
+      this.loadedSounds.set(name, null)
+
+      // Track sound loading errors
+      try {
+        const { MonitoringService } = require('./monitoring')
+        if (MonitoringService?.trackError) {
+          MonitoringService.trackError('sound_loading_failed', {
+            soundName: name,
+            error: error.message
+          })
+        }
+      } catch (e) {
+        // Silently fail monitoring
+      }
     }
   }
 

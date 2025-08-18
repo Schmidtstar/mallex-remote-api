@@ -6,8 +6,15 @@ interface ErrorInfo {
   errorCount?: number
 }
 
+interface UserAction {
+  action: string
+  metadata?: Record<string, any>
+  timestamp?: number
+}
+
 class MonitoringServiceClass {
   private errorCount = 0
+  private actionCount = 0
   private isInitialized = false
 
   init() {
@@ -19,17 +26,16 @@ class MonitoringServiceClass {
     }
   }
 
-  trackError(errorInfo: ErrorInfo) {
+  trackError(errorInfo: ErrorInfo | string, context?: any) {
     if (!this.isInitialized) {
       console.warn('Monitoring not initialized, logging error anyway:', errorInfo)
     }
 
     this.errorCount++
-    const enrichedError = {
-      ...errorInfo,
-      timestamp: new Date().toISOString(),
-      errorCount: this.errorCount
-    }
+    
+    const enrichedError = typeof errorInfo === 'string' 
+      ? { message: errorInfo, context, timestamp: new Date().toISOString(), errorCount: this.errorCount }
+      : { ...errorInfo, timestamp: new Date().toISOString(), errorCount: this.errorCount }
 
     console.error('🚨 Error tracked:', enrichedError)
 
@@ -42,12 +48,48 @@ class MonitoringServiceClass {
     }
   }
 
+  trackUserAction(action: string | UserAction, metadata?: Record<string, any>) {
+    if (!this.isInitialized) {
+      console.warn('Monitoring not initialized, logging action anyway:', action)
+    }
+
+    this.actionCount++
+    
+    const actionData = typeof action === 'string' 
+      ? { action, metadata, timestamp: Date.now() }
+      : { ...action, timestamp: action.timestamp || Date.now() }
+
+    console.log('📊 User action tracked:', actionData)
+
+    // Track in performance monitor if available
+    try {
+      const { performanceMonitor } = require('./performance-monitor')
+      performanceMonitor?.trackUserAction?.(actionData)
+    } catch (e) {
+      // Silently fail if performance monitor not available
+    }
+  }
+
   getErrorCount() {
     return this.errorCount
   }
 
+  getActionCount() {
+    return this.actionCount
+  }
+
+  getPerformanceReport() {
+    return {
+      errors: this.errorCount,
+      actions: this.actionCount,
+      initialized: this.isInitialized,
+      timestamp: new Date().toISOString()
+    }
+  }
+
   reset() {
     this.errorCount = 0
+    this.actionCount = 0
   }
 }
 

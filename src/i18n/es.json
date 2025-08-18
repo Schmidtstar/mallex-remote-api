@@ -130,6 +130,28 @@
     "points": "Puntos",
     "refresh": "Actualizar"
   },
+  "intro": {
+    "welcome": {
+      "title": "¡Bienvenido a MALLEX Arena!",
+      "description": "¡Prepárate para juegos épicos de beber!"
+    },
+    "features": {
+      "title": "Tu arena te espera",
+      "description": "¡Lucha, recolecta puntos y conviértete en leyenda!"
+    },
+    "navigation": {
+      "title": "Dominar la navegación",
+      "description": "Explora todas las áreas de la arena"
+    },
+    "ready": {
+      "title": "¿Listo para la batalla?",
+      "description": "¡Empecemos!"
+    },
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "start": "Entrar a la arena",
+    "skip": "Saltar"
+  },
   "tasks": {
     "title": "Tareas",
     "overview": "Resumen de tareas",

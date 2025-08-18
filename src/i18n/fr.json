@@ -130,6 +130,28 @@
     "points": "Points",
     "refresh": "Actualiser"
   },
+  "intro": {
+    "welcome": {
+      "title": "Bienvenue dans MALLEX Arena !",
+      "description": "Préparez-vous à des jeux à boire épiques !"
+    },
+    "features": {
+      "title": "Votre arène vous attend",
+      "description": "Combattez, collectez des points et devenez une légende !"
+    },
+    "navigation": {
+      "title": "Maîtriser la navigation",
+      "description": "Explorez toutes les zones de l'arène"
+    },
+    "ready": {
+      "title": "Prêt pour le combat ?",
+      "description": "C'est parti !"
+    },
+    "previous": "Précédent",
+    "next": "Suivant",
+    "start": "Entrer dans l'arène",
+    "skip": "Ignorer"
+  },
   "tasks": {
     "title": "Tâches",
     "overview": "Aperçu des tâches",

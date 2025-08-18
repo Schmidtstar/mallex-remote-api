@@ -57,11 +57,11 @@
     "selectPlayer": "Wähle 'Neue Aufgabe' zum Starten",
     "newTask": "Neue Aufgabe",
     "categories": {
-      "fate": "🎭 Fatum - Schicksal der Götter",
-      "shame": "🔥 Pudor - Prüfung der Scham",
-      "seduce": "💘 Venus - Kunst der Verführung",
-      "escalate": "⚡ Bacchus - Rausch der Eskalation",
-      "confess": "🗿 Veritas - Beichte der Wahrheit"
+      "fate": "🎭 Fatum",
+      "shame": "🔥 Pudor",
+      "seduce": "💘 Venus",
+      "escalate": "⚡ Bacchus",
+      "confess": "🗿 Veritas"
     },
     "fate": {
       "item1": "🪙 Wirf die Münze des Schicksals - Die Götter entscheiden über Triumph oder Tribut!",

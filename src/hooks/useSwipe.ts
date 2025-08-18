@@ -265,9 +265,38 @@ export function useSwipe(
     triggerHapticFeedback
   }
 
+  // Filter out custom props to prevent React DOM warnings
+  const filteredEventHandlers = Object.keys(eventHandlers)
+    .filter(key => typeof (handlers as any)[key] === 'undefined')
+    .reduce((obj, key) => {
+      obj[key] = eventHandlers[key as keyof typeof eventHandlers];
+      return obj;
+    }, {} as typeof eventHandlers);
+
+
+  const swipeProps = {
+    swipeState: swipeState.direction,
+    bindSwipe: bindSwipe,
+    isSwipingInDirection: (direction: 'left' | 'right' | 'up' | 'down') => swipeState.isSwiping && swipeState.direction === direction,
+    getSwipeProgress: () => {
+      if (!swipeState.isSwiping) return 0
+      const distance = Math.sqrt(swipeState.deltaX ** 2 + swipeState.deltaY ** 2)
+      return Math.min(distance / finalConfig.threshold, 1)
+    },
+    triggerHapticFeedback: () => {
+      try {
+        if ('vibrate' in navigator && navigator.vibrate) {
+          navigator.vibrate(50)
+        }
+      } catch (e) {
+        // Ignore vibration errors
+      }
+    }
+  }
+
   return {
-    ...eventHandlers,
-    ...swipeInfo
+    ...filteredEventHandlers, // Spread the filtered event handlers
+    ...swipeProps
   }
 }
 

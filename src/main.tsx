@@ -53,24 +53,29 @@ const initializeCoreServices = () => {
 
     // Firebase initialization - Production ready with error handling
     try {
-      // Initialize Firebase Optimizer with error handling
-      if (FirebaseOptimizer && typeof FirebaseOptimizer.init === 'function') {
-        FirebaseOptimizer.init()
-        console.log('🔧 Firebase Optimizer initialized')
-      } else {
-        // Fallback initialization
-        console.log('🔧 Firebase Optimizer fallback initialization')
-        if (FirebaseOptimizer && typeof FirebaseOptimizer.monitorConnection === 'function') {
+      // Initialize Firebase Optimizer with better error handling
+      if (FirebaseOptimizer) {
+        if (typeof FirebaseOptimizer.init === 'function') {
+          await FirebaseOptimizer.init()
+          console.log('🔧 Firebase Optimizer initialized')
+        } else if (typeof FirebaseOptimizer.monitorConnection === 'function') {
           FirebaseOptimizer.monitorConnection()
+          console.log('🔧 Firebase Optimizer monitoring active')
+        } else {
+          console.log('🔧 Firebase Optimizer methods not available - using basic setup')
         }
+      } else {
+        console.warn('🟡 Firebase Optimizer not available')
       }
     } catch (error: any) {
       console.warn('🟡 Firebase Optimizer failed (non-critical):', error?.message)
-      CriticalErrorHandler.handleError(error, {
-        severity: 'low',
-        component: 'firebase',
-        action: 'initialization'
-      })
+      if (CriticalErrorHandler && typeof CriticalErrorHandler.handleError === 'function') {
+        CriticalErrorHandler.handleError(error, {
+          severity: 'low',
+          component: 'firebase',
+          action: 'initialization'
+        })
+      }
     }
 
     console.log('✅ MALLEX v2.1 - Core services initialized')

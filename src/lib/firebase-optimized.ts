@@ -75,6 +75,14 @@ export class FirebaseOptimizer {
     limitCount?: number,
     useCache = true
   ): Promise<T[]> {
+    // Early return if offline and no cache
+    if (!this.isOnline && useCache) {
+      const cacheKey = `${collectionName}_${orderField || 'none'}_${limitCount || 'all'}`
+      if (queryCache.has(cacheKey)) {
+        console.log(`🔄 Offline: Using cache for ${cacheKey}`)
+        return queryCache.get(cacheKey).data
+      }
+    }
     const cacheKey = `${collectionName}_${orderField || 'none'}_${limitCount || 'all'}`
 
     // Cache-Check
@@ -237,7 +245,16 @@ if (typeof window !== 'undefined') {
 // Default export für bessere Kompatibilität
 export default FirebaseOptimizer
 
-// Static method for initialization
+// Initialization method - Add as static method to the class
+export class FirebaseOptimizerInit {
+  static init() {
+    console.log('🔧 FirebaseOptimizer initialized')
+    FirebaseOptimizer.monitorConnection()
+    return Promise.resolve()
+  }
+}
+
+// Add init method to FirebaseOptimizer class
 FirebaseOptimizer.init = () => {
   console.log('🔧 FirebaseOptimizer initialized')
   FirebaseOptimizer.monitorConnection()

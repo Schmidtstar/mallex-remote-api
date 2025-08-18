@@ -12,13 +12,11 @@ export default defineConfig({
     }
   },
   server: {
-    host: true,
+    host: '0.0.0.0',
     port: 5173,
     hmr: {
-      protocol: 'wss',
-      host: 'localhost', // Use localhost instead of 0.0.0.0
-      clientPort: 443,
-      port: 5173
+      port: 5173,
+      host: '0.0.0.0'
     },
     cors: true,
     // Add headers for better CORS support

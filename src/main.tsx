@@ -54,18 +54,14 @@ const initializeCoreServices = () => {
     // Firebase initialization - Production ready with error handling
     try {
       // Initialize Firebase Optimizer with better error handling
-      if (FirebaseOptimizer) {
-        if (typeof FirebaseOptimizer.init === 'function') {
-          await FirebaseOptimizer.init()
-          console.log('🔧 Firebase Optimizer initialized')
-        } else if (typeof FirebaseOptimizer.monitorConnection === 'function') {
-          FirebaseOptimizer.monitorConnection()
-          console.log('🔧 Firebase Optimizer monitoring active')
-        } else {
-          console.log('🔧 Firebase Optimizer methods not available - using basic setup')
-        }
+      if (FirebaseOptimizer && typeof FirebaseOptimizer.init === 'function') {
+        FirebaseOptimizer.init()
+        console.log('🔧 Firebase Optimizer initialized')
+      } else if (FirebaseOptimizer && typeof FirebaseOptimizer.monitorConnection === 'function') {
+        FirebaseOptimizer.monitorConnection()
+        console.log('🔧 Firebase Optimizer monitoring active')
       } else {
-        console.warn('🟡 Firebase Optimizer not available')
+        console.log('🔧 Firebase Optimizer methods not available - using basic setup')
       }
     } catch (error: any) {
       console.warn('🟡 Firebase Optimizer failed (non-critical):', error?.message)

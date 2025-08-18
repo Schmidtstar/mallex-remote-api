@@ -37,12 +37,7 @@ export const db = optimizedDb
 const queryCache = new Map<string, any>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 Minuten
 
-// Optimierte Query-Builder
-export class FirebaseOptimizer {
-  private static lastNetworkState = true
-  private static isOnline = true // Initial assume online
-
-  // Connection monitoring
+// Connection monitoring
   static monitorConnection() {
     if (typeof window === 'undefined') return
 
@@ -242,24 +237,20 @@ if (typeof window !== 'undefined') {
   }, 10 * 60 * 1000) // Alle 10 Minuten
 }
 
-// Default export für bessere Kompatibilität
-export default FirebaseOptimizer
+// Add static init method to the class itself
+export class FirebaseOptimizer {
+  private static lastNetworkState = true
+  private static isOnline = true // Initial assume online
 
-// Initialization method - Add as static method to the class
-export class FirebaseOptimizerInit {
+  // Static initialization method
   static init() {
     console.log('🔧 FirebaseOptimizer initialized')
-    FirebaseOptimizer.monitorConnection()
+    this.monitorConnection()
     return Promise.resolve()
   }
-}
 
-// Add init method to FirebaseOptimizer class
-FirebaseOptimizer.init = () => {
-  console.log('🔧 FirebaseOptimizer initialized')
-  FirebaseOptimizer.monitorConnection()
-  return Promise.resolve()
-}
+// Default export für bessere Kompatibilität
+export default FirebaseOptimizer
 
 // Named function exports
 export const init = () => {

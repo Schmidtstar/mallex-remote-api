@@ -33,7 +33,7 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 
 // Robuste Firebase-Services Initialisierung
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore, connectFirestoreEmulator, enableNetwork } from 'firebase/firestore'
 
 let auth: any = null;
 let db: any = null;
@@ -42,6 +42,15 @@ try {
   // Firebase Services mit Fehlerbehandlung
   auth = getAuth(app);
   db = getFirestore(app);
+
+  // Fix CORS issues by ensuring proper connection
+  if (import.meta.env.DEV && window.location.hostname.includes('replit')) {
+    console.log('🔧 Replit environment detected - using optimized Firebase config')
+    // Enable network with retry for Replit environment
+    enableNetwork(db).catch(err => {
+      console.warn('Network enable failed, retrying:', err.code)
+    })
+  }
 
   // Auth Persistence nur im Browser
   if (typeof window !== 'undefined' && auth) {

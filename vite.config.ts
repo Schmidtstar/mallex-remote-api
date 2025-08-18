@@ -1,83 +1,40 @@
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
+import { resolve } from 'path'
 
-export default defineConfig(({ mode }) => {
-  console.log('[vite] 🚀 Config loaded – mode:', mode)
-
-  return {
-    plugins: [react()],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src')
-      }
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    }
+  },
+  server: {
+    host: true,
+    port: 5173,
+    hmr: {
+      protocol: 'wss',
+      host: window?.location?.hostname || 'localhost',
+      clientPort: 443,
+      port: 5173
     },
-    server: {
-      port: 5173,
-      host: true, // Uses location.hostname instead of hardcoded 0.0.0.0
-      strictPort: true,
-      allowedHosts: [
-        '.replit.dev',
-        '.riker.replit.dev',
-        'localhost'
-      ],
-      hmr: process.env.REPL_SLUG && process.env.REPL_OWNER
-        ? {
-            protocol: 'wss',
-            host: `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.replit.dev`,
-            port: 443,
-            clientPort: 443,
-            overlay: false
-          }
-        : {
-            port: 5173,
-            host: '0.0.0.0',
-            overlay: false
-          },
-      watch: {
-        usePolling: false,
-        interval: 1000,
-        ignored: ['**/node_modules/**', '**/.git/**']
-      },
-      cors: true
-    },
-    preview: {
-      host: true,
-      port: 3000,
-      allowedHosts: [
-        '.replit.dev',
-        '.riker.replit.dev'
-      ]
-    },
-    build: {
-      outDir: 'dist',
-      sourcemap: true,
-      minify: mode === 'production' ? 'esbuild' : false,
-      target: 'es2015',
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            router: ['react-router-dom'],
-            firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
-          }
+    cors: true
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
         }
       }
-    },
-    optimizeDeps: {
-      include: [
-        'react', 
-        'react-dom', 
-        'react-router-dom',
-        'firebase/app',
-        'firebase/auth',
-        'firebase/firestore'
-      ],
-      exclude: ['@capacitor/core']
-    },
-    esbuild: {
-      logOverride: { 'this-is-undefined-in-esm': 'silent' }
     }
+  },
+  optimizeDeps: {
+    include: ['firebase/app', 'firebase/auth', 'firebase/firestore']
   }
 })

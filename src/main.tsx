@@ -53,28 +53,29 @@ const initializeCoreServices = async () => {
 
     // Firebase initialization - Production ready with error handling
     try {
-      // Initialize Firebase Optimizer with proper error handling
+      // Initialize Firebase Optimizer with proper async handling
       if (FirebaseOptimizer && typeof FirebaseOptimizer.init === 'function') {
         await FirebaseOptimizer.init()
-        console.log('🔧 Firebase Optimizer initialized')
+        console.log('🔧 Firebase Optimizer initialized successfully')
       } else {
-        console.warn('🟡 Firebase Optimizer init method not available')
+        console.warn('🟡 Firebase Optimizer init method not available - using fallback')
 
-        // Fallback: try to initialize monitoring at least
-        if (FirebaseOptimizer && typeof FirebaseOptimizer.monitorConnection === 'function') {
+        // Fallback: Initialize monitoring directly via static method
+        if (typeof FirebaseOptimizer?.monitorConnection === 'function') {
           FirebaseOptimizer.monitorConnection()
-          console.log('🔧 Firebase Optimizer monitoring active (fallback)')
+          console.log('🔧 Firebase monitoring active (fallback mode)')
+        } else {
+          // Last resort: Manual connection monitoring
+          console.log('🔧 Firebase manual monitoring fallback')
+          const { FirebaseOptimizer: FbOpt } = await import('./lib/firebase-optimized')
+          if (FbOpt?.monitorConnection) {
+            FbOpt.monitorConnection()
+          }
         }
       }
     } catch (error: any) {
       console.warn('🟡 Firebase Optimizer failed (non-critical):', error?.message)
-      if (CriticalErrorHandler && typeof CriticalErrorHandler.handleError === 'function') {
-        CriticalErrorHandler.handleError(error, {
-          severity: 'low',
-          component: 'firebase',
-          action: 'initialization'
-        })
-      }
+      // Don't track Firebase init errors as critical since app works without them
     }
 
     console.log('✅ MALLEX v2.1 - Core services initialized')

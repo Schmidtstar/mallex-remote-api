@@ -39,19 +39,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('✅ User authenticated:', firebaseUser.uid)
             setUser(firebaseUser)
 
-            // Check admin status with error handling
+            // Check admin status with comprehensive error handling
             try {
               const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
               if (userDoc.exists()) {
                 const userData = userDoc.data()
                 setIsAdmin(userData.isAdmin === true)
+                console.log('✅ Admin status checked successfully')
+              } else {
+                setIsAdmin(false)
+                console.log('🔐 User document not found - not admin')
               }
             } catch (error: any) {
+              setIsAdmin(false)
               if (error.code === 'permission-denied') {
-                console.log('🔐 Admin check skipped (permission denied)')
-                setIsAdmin(false)
+                console.log('🔐 Admin check skipped (insufficient permissions)')
+              } else if (error.code === 'unavailable') {
+                console.log('🔐 Admin check skipped (Firebase unavailable)')
               } else {
-                console.warn('Admin check failed:', error?.message)
+                console.warn('🔐 Admin check failed (non-critical):', error?.code || 'unknown')
               }
             }
           } else {

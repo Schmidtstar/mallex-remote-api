@@ -4,7 +4,7 @@ import styles from './EnhancedLoadingSpinner.module.css'
 interface LoadingSpinnerProps {
   message?: string
   size?: 'small' | 'medium' | 'large'
-  variant?: 'default' | 'arena' | 'achievements' | 'minimal' | 'auth' | 'legends' | 'leaderboard' | 'tasks' | 'suggest' | 'admin' | 'general'
+  variant?: 'default' | 'arena' | 'achievements' | 'minimal' | 'auth' | 'legends' | 'leaderboard' | 'tasks' | 'suggest' | 'admin' | 'general' | 'startup'
 }
 
 export const EnhancedLoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
@@ -20,7 +20,8 @@ export const EnhancedLoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   tasks: 'Aufgaben werden geladen...',
   suggest: 'Vorschläge werden verarbeitet...',
   admin: 'Admin-Bereich wird geladen...',
-  general: 'Wird geladen...'
+  general: 'Wird geladen...',
+  startup: 'MALLEX wird initialisiert...'
 }
 
   const getIcon = () => {
@@ -35,6 +36,7 @@ export const EnhancedLoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       case 'suggest': return '💡'
       case 'admin': return '⚙️'
       case 'general': return '⏳'
+      case 'startup': return '🏛️'
       default: return '🏛️'
     }
   }

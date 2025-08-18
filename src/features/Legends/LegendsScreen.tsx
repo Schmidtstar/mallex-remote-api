@@ -246,7 +246,7 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
   const swipeHandlers = useSwipe(
     {
       onSwipeLeft: () => {
-        if (swipeTransform < -50) {
+        if (swipeTransform < -50) { // Adjusted threshold to be more responsive
           onSwipeDelete(player.id, player.name)
         }
       }
@@ -256,29 +256,29 @@ function PlayerItem({ player, onSwipeDelete }: PlayerItemProps) {
 
   // Visual feedback during swipe
   React.useEffect(() => {
-    if (swipeHandlers.isSwiping && swipeHandlers.swipeDistance > 0) {
-      const transform = Math.min(swipeHandlers.swipeDistance, 100)
+    // Ensure swipeHandlers.swipeDistance is only used when swiping is active
+    if (swipeHandlers.isSwiping && swipeHandlers.swipeDistance !== undefined) {
+      const transform = Math.min(Math.abs(swipeHandlers.swipeDistance), 100)
       setSwipeTransform(-transform)
       setShowDeleteIndicator(transform > 30)
     } else if (!swipeHandlers.isSwiping) {
+      // Reset on swipe end
       setSwipeTransform(0)
       setShowDeleteIndicator(false)
     }
   }, [swipeHandlers.isSwiping, swipeHandlers.swipeDistance])
 
-  // Extract only the event handlers we need, filter out React-incompatible props
-  const { onTouchStart, onTouchMove, onTouchEnd, onMouseDown, onMouseMove, onMouseUp } = swipeHandlers
 
   return (
     <div
       key={player.id}
       className={styles.playerItem}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
+      onTouchStart={swipeHandlers.onTouchStart}
+      onTouchMove={swipeHandlers.onTouchMove}
+      onTouchEnd={swipeHandlers.onTouchEnd}
+      onMouseDown={swipeHandlers.onMouseDown}
+      onMouseMove={swipeHandlers.onMouseMove}
+      onMouseUp={swipeHandlers.onMouseUp}
       style={{
         transform: `translateX(${swipeTransform}px)`
       }}

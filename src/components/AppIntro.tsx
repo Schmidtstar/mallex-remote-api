@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
+
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './AppIntro.module.css'
 
@@ -13,33 +14,61 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
   const [currentPhase, setCurrentPhase] = useState<IntroPhase>('loading')
   const [canSkip, setCanSkip] = useState(false)
   const [isSkipping, setIsSkipping] = useState(false)
-  const [isCompleted, setIsCompleted] = useState(false) // State to track completion
+  
+  // Refs to prevent multiple executions
+  const isCompleted = useRef(false)
+  const timersRef = useRef<NodeJS.Timeout[]>([])
 
-  // Fix intro completion handler and state management
+  // Stable completion handler
   const handleComplete = useCallback(() => {
-    if (isCompleted) return // Prevent double-execution
-
+    if (isCompleted.current) return
+    
     console.log('🎬 Intro completion triggered')
-    setIsCompleted(true)
+    isCompleted.current = true
+    
+    // Clear all timers
+    timersRef.current.forEach(timer => clearTimeout(timer))
+    timersRef.current = []
+    
+    setCurrentPhase('complete')
+    
+    // Call onComplete after state update
+    setTimeout(() => {
+      onComplete?.()
+    }, 100)
+  }, [onComplete])
 
-    // Immediate completion without delay
-    onComplete()
-  }, [onComplete, isCompleted])
+  // Stable skip handler
+  const handleSkip = useCallback(() => {
+    if (!canSkip || isCompleted.current) return
+    
+    setIsSkipping(true)
+    setTimeout(() => {
+      handleComplete()
+    }, 300)
+  }, [canSkip, handleComplete])
 
-  // Phasen-Management mit klarem Timing
+  // Phase management - single source of truth
   useEffect(() => {
+    if (isCompleted.current) return
+
     const phaseTimings = {
       loading: 1500,
-      logo: 2500,
+      logo: 2500, 
       temple: 3000,
-      welcome: 4000
+      welcome: 6000 // Longer for user interaction
     }
 
+    const currentTiming = phaseTimings[currentPhase as keyof typeof phaseTimings]
+    if (!currentTiming) return
+
     const timer = setTimeout(() => {
+      if (isCompleted.current) return
+
       switch (currentPhase) {
         case 'loading':
           setCurrentPhase('logo')
-          setCanSkip(true) // Skip ab Logo-Phase verfügbar
+          setCanSkip(true)
           break
         case 'logo':
           setCurrentPhase('temple')
@@ -48,29 +77,21 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
           setCurrentPhase('welcome')
           break
         case 'welcome':
-          // Wenn der Benutzer auf "Arena betreten" klickt, wird handleComplete direkt aufgerufen
-          // Hier muss nichts weiter passieren, da der Button die Logik übernimmt
-          break
-        case 'complete':
-          // Wenn wir bereits im 'complete'-Zustand sind, tun wir nichts weiter
+          // Auto-complete after welcome phase if user doesn't click
+          handleComplete()
           break
       }
-    }, phaseTimings[currentPhase as keyof typeof phaseTimings] || 2000)
+    }, currentTiming)
 
-    return () => clearTimeout(timer)
-  }, [currentPhase, onComplete, isCompleted, handleComplete]) // handleComplete zu Abhängigkeiten hinzugefügt
+    timersRef.current.push(timer)
 
-  // Skip-Funktionalität
-  const handleSkip = () => {
-    if (!canSkip) return
-    setIsSkipping(true)
-    // Wenn geskippt wird, auch handleComplete aufrufen
-    setTimeout(() => {
-      handleComplete()
-    }, 300)
-  }
+    return () => {
+      clearTimeout(timer)
+      timersRef.current = timersRef.current.filter(t => t !== timer)
+    }
+  }, [currentPhase, handleComplete])
 
-  // ESC-Key Support
+  // ESC key support
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && canSkip) {
@@ -80,22 +101,18 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [canSkip, handleSkip]) // handleSkip zu Abhängigkeiten hinzugefügt
+  }, [canSkip, handleSkip])
 
-  // Simplify intro exit logic and improve state handling
-  // Auto-complete nach maximaler Zeit (Fallback)
+  // Cleanup on unmount
   useEffect(() => {
-    const maxTimer = setTimeout(() => {
-      if (!isCompleted) {
-        console.log('🎬 Intro auto-complete (timeout)')
-        handleComplete()
-      }
-    }, 8000) // 8 Sekunden Maximum (verkürzt)
+    return () => {
+      timersRef.current.forEach(timer => clearTimeout(timer))
+      timersRef.current = []
+    }
+  }, [])
 
-    return () => clearTimeout(maxTimer)
-  }, [handleComplete, isCompleted])
-
-  if (currentPhase === 'complete') {
+  // Don't render if completed
+  if (currentPhase === 'complete' || isCompleted.current) {
     return null
   }
 
@@ -143,7 +160,6 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
         {currentPhase === 'temple' && (
           <div className={styles.templePhase}>
             <div className={styles.templeContainer}>
-
               {/* Tempel-Dach */}
               <div className={styles.templePediment}>
                 <div className={styles.templeTitle}>OLYMPISCHE ARENA</div>
@@ -196,7 +212,8 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
 
               <button
                 className={styles.enterButton}
-                onClick={handleComplete} // Rufen Sie handleComplete auf, wenn der Button geklickt wird
+                onClick={handleComplete}
+                disabled={isCompleted.current}
               >
                 Arena betreten
               </button>
@@ -205,8 +222,8 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
         )}
       </div>
 
-      {/* Skip-Button (nur wenn verfügbar) */}
-      {canSkip && !isSkipping && (
+      {/* Skip-Button */}
+      {canSkip && !isSkipping && !isCompleted.current && (
         <button
           className={styles.skipButton}
           onClick={handleSkip}
@@ -218,7 +235,7 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
       )}
 
       {/* Emergency Skip (Development only) */}
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && !isCompleted.current && (
         <button
           className={styles.emergencySkip}
           onClick={handleComplete}
@@ -238,7 +255,6 @@ export function AppIntro({ onComplete }: AppIntroProps = {}) {
           DEV: Force Skip
         </button>
       )}
-
 
       {/* Fortschrittsindikator */}
       <div className={styles.progressIndicator}>

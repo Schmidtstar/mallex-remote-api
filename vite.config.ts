@@ -19,6 +19,12 @@ export default defineConfig({
       host: '0.0.0.0'
     },
     cors: true,
+    // Allow Replit dev URLs
+    allowedHosts: [
+      '.replit.dev',
+      '.repl.co',
+      'localhost'
+    ],
     // Add headers for better CORS support
     headers: {
       'Access-Control-Allow-Origin': '*',

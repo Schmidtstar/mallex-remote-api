@@ -45,7 +45,6 @@ export const EnhancedLoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       case 'achievements': return 'Erfolge werden geladen...'
       case 'minimal': return 'Laden...'
       case 'auth': return variantMessages.auth
-      case 'arena': return variantMessages.arena
       case 'legends': return variantMessages.legends
       case 'leaderboard': return variantMessages.leaderboard
       case 'tasks': return variantMessages.tasks

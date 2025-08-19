@@ -1,5 +1,5 @@
 // [AI INTEGRATION]
-import { suggestTurn } from "../../api"; // Pfad ggf. anpassen: aus Arena -> src/api.ts
+import { suggestTurn } from "../../../remoteApi";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { doc, setDoc, getDoc, increment } from "firebase/firestore";
